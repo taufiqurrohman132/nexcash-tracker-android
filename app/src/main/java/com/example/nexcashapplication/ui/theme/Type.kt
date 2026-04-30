@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.sp
 // Jika nanti pakai Inter / Plus Jakarta Sans tinggal ganti di sini
 val AppFontFamily = FontFamily.Default
 
-val AppTypography = Typography(
+val Typography = Typography(
 
     // ===============================
     // Page Title (Header)
