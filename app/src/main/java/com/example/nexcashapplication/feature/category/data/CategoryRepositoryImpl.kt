@@ -1,6 +1,6 @@
 package com.example.nexcashapplication.feature.category.data
 
-import com.example.nexcashapplication.feature.category.domain.CategoryRepository
+import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
 
-class CategoryRepositoryImpl : CategoryRepository{
+class CategoryRepositoryImpl : CategoryRepository {
 }
