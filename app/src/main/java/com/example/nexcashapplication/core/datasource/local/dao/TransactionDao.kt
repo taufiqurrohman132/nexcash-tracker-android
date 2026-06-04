@@ -8,6 +8,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
 import com.example.nexcashapplication.core.datasource.local.result.CategoryExpenseResult
+import com.example.nexcashapplication.core.datasource.local.result.MonthlySummaryResult
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -23,16 +24,18 @@ interface TransactionDao {
     )
     fun getRecentTransactions(limit: Int = 20): Flow<List<TransactionEntity>>
 
-    // dashboard: total pemasukan bulan ini
-    @Query(
-        """
-        SELECT COALESCE(SUM(amount), 0) FROM transactions
-        WHERE type = 'income'
-        AND strftime('%m', transaction_date/1000, 'unixepoch') = :month
-        AND strftime('%Y', transaction_date/1000, 'unixepoch') = :year
-    """
-    )
-    fun getTotalIncomeByMonth(month: String, year: String): Flow<Long>
+    // dashboard: total bulan ini
+    @Query("""
+    SELECT 
+        COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) AS totalPemasukan,
+        COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS totalPengeluaran,
+        COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) 
+        - COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS totalSaldo
+    FROM transactions
+    WHERE strftime('%m', transaction_date/1000, 'unixepoch') = :month
+    AND strftime('%Y', transaction_date/1000, 'unixepoch') = :year
+""")
+    fun getMonthlySummary(month: String, year: String): Flow<MonthlySummaryResult>
 
 
     // Dashboard: total pengeluaran per kategori (untuk widget anggaran)

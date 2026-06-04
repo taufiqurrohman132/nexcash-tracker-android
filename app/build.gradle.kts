@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.compose.compiler)
 
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
@@ -8,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.nexcashapplication"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.nexcashapplication"
@@ -72,6 +74,17 @@ dependencies {
     // hilt
     implementation("com.google.dagger:hilt-android:2.56.2")
     ksp("com.google.dagger:hilt-android-compiler:2.56.2")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+
+    // Navigation 3 core
+    implementation("androidx.navigation3:navigation3-ui:1.0.0")
+    // Kalau pakai ViewModel di tiap screen
+    implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:2.9.0")
+
+    // coil
+    implementation("io.coil-kt:coil-compose:2.7.0")
+
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
