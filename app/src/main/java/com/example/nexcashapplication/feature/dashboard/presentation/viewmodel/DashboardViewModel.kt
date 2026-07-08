@@ -1,9 +1,10 @@
 package com.example.nexcashapplication.feature.dashboard.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.domain.model.TransactionUi
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
 import com.example.nexcashapplication.feature.dashboard.presentation.state.DashboardState
-import com.example.nexcashapplication.feature.dashboard.presentation.state.TransactionUi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,28 +39,54 @@ class DashboardViewModel(
         private fun sampleTransactions() =
             listOf(
                 TransactionUi(
-                    1,
-                    "Kopi Kenangan",
-                    35000,
-                    "Makanan",
-                    "Hari ini, 10:20",
-                    false
+                    id = "1",
+                    title = "Gaji Bulanan",
+                    subtitle = "BCA",
+                    time = "08:00",
+                    amount = 5_000_000,
+                    isIncome = true,
+                    category = "Salary",
+                    iconRes = R.drawable.insights
                 ),
                 TransactionUi(
-                    2,
-                    "Gaji Bulanan",
-                    12500000,
-                    "Pekerjaan",
-                    "Kemarin, 09:00",
-                    true
+                    id = "2",
+                    title = "Makan Siang",
+                    subtitle = "GoPay",
+                    time = "12:30",
+                    amount = 35_000,
+                    isIncome = false,
+                    category = "Food",
+                    iconRes = R.drawable.transaction
                 ),
                 TransactionUi(
-                    3,
-                    "Grab Ride",
-                    22000,
-                    "Transportasi",
-                    "23 Okt, 08:15",
-                    false
+                    id = "3",
+                    title = "Isi Bensin",
+                    subtitle = "OVO",
+                    time = "17:15",
+                    amount = 50_000,
+                    isIncome = false,
+                    category = "Transport",
+                    iconRes = R.drawable.home
+                ),
+                TransactionUi(
+                    id = "4",
+                    title = "Freelance Project",
+                    subtitle = "SeaBank",
+                    time = "20:45",
+                    amount = 1_500_000,
+                    isIncome = true,
+                    category = "Freelance",
+                    iconRes = R.drawable.eye_show
+                ),
+                TransactionUi(
+                    id = "5",
+                    title = "Belanja Bulanan",
+                    subtitle = "ShopeePay",
+                    time = "19:20",
+                    amount = 250_000,
+                    isIncome = false,
+                    category = "Shopping",
+                    iconRes = R.drawable.category_list
                 )
             )
     }

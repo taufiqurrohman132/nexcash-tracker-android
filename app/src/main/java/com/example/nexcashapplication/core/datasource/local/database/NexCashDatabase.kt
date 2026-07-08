@@ -1,6 +1,9 @@
 package com.example.nexcashapplication.core.datasource.local.database
 
 import androidx.room.Database
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.nexcashapplication.core.datasource.local.converter.Converters
 import com.example.nexcashapplication.core.datasource.local.dao.AccountDao
 import com.example.nexcashapplication.core.datasource.local.dao.BillDao
 import com.example.nexcashapplication.core.datasource.local.dao.BillPaymentDao
@@ -44,7 +47,8 @@ import com.example.nexcashapplication.core.datasource.local.model.TransactionEnt
     version = 1,
     exportSchema = false
 )
-abstract class NexCashDatabase {
+@TypeConverters(Converters::class)
+abstract class NexCashDatabase : RoomDatabase() {
 
     abstract fun accountDao(): AccountDao
 

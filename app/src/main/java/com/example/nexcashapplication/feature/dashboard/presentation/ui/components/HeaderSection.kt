@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.dashboard.presentation.ui.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,29 +13,33 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.pointer.stylusHoverIcon
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
 @Composable
 fun HeaderSection(
-    userName: String
+    userName: String,
+    onClickNotification: () -> Unit,
+    onClickProfile: () -> Unit
 ) {
-    Row (
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(20.dp),
+            .padding(horizontal = 20.dp, vertical = 10.dp),
         horizontalArrangement =
             Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
-    ){
+    ) {
         Text(
             text = "Halo, $userName",
             style = MaterialTheme.typography.headlineSmall,
@@ -43,11 +48,17 @@ fun HeaderSection(
 
         Row {
             IconButton(
-                onClick = {}
+                modifier = Modifier.size(48.dp),
+                colors = IconButtonDefaults.iconButtonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = Color.Black
+                ),
+                onClick = onClickNotification
             ) {
                 Icon(
                     Icons.Outlined.Notifications,
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp)
                 )
             }
 
@@ -60,7 +71,14 @@ fun HeaderSection(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
+                    .clickable{ onClickProfile()}
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun Preview() {
+    HeaderSection("kdf", {}, {})
 }

@@ -4,17 +4,44 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Route: NavKey {
+sealed interface Route: NavKey
+{
     @Serializable
-    data object TodoList: Route
+    sealed interface HomeRoute : Route {
+        @Serializable
+        data object Main : HomeRoute
+    }
 
     @Serializable
-    data object TodoFavorites: Route
+    sealed interface TransactionRoute : Route {
+        @Serializable
+        data object Main : TransactionRoute
+
+        @Serializable
+        data class Detail(val transactionId: String) : TransactionRoute
+
+        @Serializable
+        data object AddNew : TransactionRoute
+    }
 
     @Serializable
-    data class TodoDetail(val todo: String): Route
+    sealed interface AssetRoute : Route {
+        @Serializable
+        data object Main : AssetRoute
+    }
 
     @Serializable
-    data object Settings: Route
+    sealed interface InsightRoute : Route {
+        @Serializable
+        data object Main : InsightRoute
+
+
+    }
+
+    @Serializable
+    sealed interface SettingsRoute : Route {
+        @Serializable
+        data object Main : SettingsRoute
+    }
 
 }

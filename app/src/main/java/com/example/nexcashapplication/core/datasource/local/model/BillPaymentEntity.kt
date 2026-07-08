@@ -3,6 +3,7 @@ package com.example.nexcashapplication.core.datasource.local.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
 @Entity(
@@ -26,7 +27,8 @@ import androidx.room.PrimaryKey
             childColumns = ["account_id"],
             onDelete = ForeignKey.SET_NULL
         )
-    ]
+    ],
+    indices = [Index(value = ["bill_id"]),Index(value = ["transaction_id"]),Index(value = ["account_id"]),]
 )
 data class BillPaymentEntity(
 

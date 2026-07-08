@@ -1,23 +1,26 @@
 package com.example.nexcashapplication.core.navigations
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Favorite
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.nexcashapplication.R
 
 data class BottomNavItem(
-    val icon: ImageVector, val title: String
+    val iconRes: Int, val title: String
 )
 
 val TOP_LEVEL_DESTINATION = mapOf(
-    Route.TodoList to BottomNavItem(
-        icon = Icons.Outlined.Check, title = "todos"
+    Route.HomeRoute.Main to BottomNavItem(
+        iconRes = R.drawable.home, title = "Home"
     ),
-    Route.TodoFavorites to BottomNavItem(
-        icon = Icons.Outlined.Favorite, title = "favorit"
+    Route.TransactionRoute.Main to BottomNavItem(
+        iconRes = R.drawable.transaction, title = "Transaction"
     ),
-    Route.Settings to BottomNavItem(
-        icon = Icons.Outlined.Settings, title = "settings"
+    Route.AssetRoute.Main to BottomNavItem(
+        iconRes = R.drawable.account_balance_bank, title = "Asset"
     ),
-    )
+    Route.InsightRoute.Main to BottomNavItem(
+        iconRes = R.drawable.insights, title = "Insight"
+    ),
+    Route.SettingsRoute.Main to BottomNavItem(
+        iconRes = R.drawable.settings, title = "Settings"
+    ),
+
+)

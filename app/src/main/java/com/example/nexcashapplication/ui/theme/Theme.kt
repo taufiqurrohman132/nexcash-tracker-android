@@ -1,6 +1,5 @@
 package com.example.nexcashapplication.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -20,11 +19,12 @@ private val DarkColorScheme = darkColorScheme(
 private val LightColorScheme = lightColorScheme(
     primary = PrimaryCyan,
     secondary = PrimaryCyan,
-    tertiary = PrimaryCyan
+    tertiary = PrimaryCyan,
 
+    background = BackgroundLight,
+    surface = SurfaceWhite,
     /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
+
     onPrimary = Color.White,
     onSecondary = Color.White,
     onTertiary = Color.White,

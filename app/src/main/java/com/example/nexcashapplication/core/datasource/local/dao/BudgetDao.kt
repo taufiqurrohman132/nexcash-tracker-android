@@ -66,9 +66,9 @@ interface BudgetDao {
         FROM transactions t
         INNER JOIN categories c ON t.category_id = c.id
         WHERE c.parent_id = :parentCategoryId
-        AND type = 'expense'
-        AND strftime('%m', transaction_date/1000, 'unixepoch') = :month
-        AND strftime('%Y', transaction_date/1000, 'unixepoch') = :year
+        AND t.type = 'expense'
+        AND strftime('%m', t.transaction_date/1000, 'unixepoch') = :month
+        AND strftime('%Y', t.transaction_date/1000, 'unixepoch') = :year
         GROUP BY t.category_id
     """)
     fun getExpenseBySubCategory(

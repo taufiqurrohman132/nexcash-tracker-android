@@ -3,15 +3,12 @@ package com.example.nexcashapplication.core.navigations
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.saveable.rememberSerializable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.toMutableStateList
-import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavEntry
@@ -24,7 +21,6 @@ import androidx.savedstate.serialization.SavedStateConfiguration
 import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import javax.inject.Provider
 
 class NavigationState(
     val startRoute: NavKey,
@@ -44,10 +40,11 @@ class NavigationState(
 val serializersConfig = SavedStateConfiguration {
     serializersModule= SerializersModule {
         polymorphic(NavKey::class){
-            subclass(Route.TodoList::class, Route.TodoList.serializer())
-            subclass(Route.TodoDetail::class, Route.TodoDetail.serializer())
-            subclass(Route.TodoFavorites::class, Route.TodoFavorites.serializer())
-            subclass(Route.Settings::class, Route.Settings.serializer())
+            subclass(Route.HomeRoute.Main::class, Route.HomeRoute.Main.serializer())
+            subclass(Route.TransactionRoute.Main::class, Route.TransactionRoute.Main.serializer())
+            subclass(Route.AssetRoute.Main::class, Route.AssetRoute.Main.serializer())
+            subclass(Route.InsightRoute.Main::class, Route.InsightRoute.Main.serializer())
+            subclass(Route.SettingsRoute.Main::class, Route.SettingsRoute.Main.serializer())
         }
     }
 }
