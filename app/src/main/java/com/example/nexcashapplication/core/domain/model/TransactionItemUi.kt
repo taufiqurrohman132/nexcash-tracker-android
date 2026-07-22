@@ -1,6 +1,6 @@
 package com.example.nexcashapplication.core.domain.model
 
-data class TransactionUi(
+data class TransactionItemUi(
     val id: String,
     val title: String,
     val subtitle: String,   // nama bank/wallet

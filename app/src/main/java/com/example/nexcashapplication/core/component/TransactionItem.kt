@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.dashboard.presentation.ui.components
+package com.example.nexcashapplication.core.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,17 +21,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
-import com.example.nexcashapplication.core.domain.model.TransactionUi
+import com.example.nexcashapplication.core.domain.model.TransactionItemUi
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.ui.theme.AccentTealGreen
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.TextSecondary
-import com.example.nexcashapplication.ui.theme.TextTertiary
 
 @Composable
 fun TransactionItem(
-    transaction: TransactionUi,
+    transaction: TransactionItemUi,
     onClick: (id: Int) -> Unit
 ) {
 
@@ -102,7 +101,7 @@ fun TransactionItem(
 @Composable
 private fun TransactionItemPreview() {
     TransactionItem(
-        TransactionUi(
+        TransactionItemUi(
             id = "1",
             title = "Transfer Gaji",
             subtitle = "BCA",
