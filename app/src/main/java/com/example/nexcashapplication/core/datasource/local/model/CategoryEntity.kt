@@ -38,6 +38,10 @@ data class CategoryEntity(
 
     @ColumnInfo(name = "color")
     val color: String,
+    @ColumnInfo(name = "used")
+    val used: Long,
+    @ColumnInfo(name = "budget")
+    val budget: Long,
 
     @ColumnInfo(name = "is_system")
     val isSystem: Boolean = false,

@@ -18,14 +18,19 @@ class Converters {
         return gson.toJson(list)
     }
 
-    // List<Int> — tambahkan ini
+    // List<Int>
     @TypeConverter
-    fun fromJsonInt(value: String?): List<Int>? {
-        return gson.fromJson(value, object : TypeToken<List<Int>>() {}.type)
+    fun fromJsonInt(value: String?): List<Int> {
+        return if (value == null) {
+            emptyList()
+        } else {
+            val type = object : TypeToken<List<Int>>() {}.type
+            gson.fromJson(value, type) ?: emptyList()
+        }
     }
 
     @TypeConverter
-    fun toJsonInt(list: List<Int>?): String? {
-        return gson.toJson(list)
+    fun toJsonInt(list: List<Int>?): String {
+        return gson.toJson(list ?: emptyList<Int>())
     }
 }
