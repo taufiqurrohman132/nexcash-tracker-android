@@ -147,7 +147,7 @@ fun BudgetCard(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 private fun BudgetCardPreview() {
     BudgetCard(

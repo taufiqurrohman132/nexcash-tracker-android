@@ -30,10 +30,10 @@ import com.example.nexcashapplication.ui.theme.LightCyan
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 @Composable
-fun QuickActionSection() {
+fun QuickActionSection(modifier: Modifier = Modifier) {
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement =
             Arrangement.SpaceEvenly
     ) {

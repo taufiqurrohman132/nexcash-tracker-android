@@ -2,7 +2,7 @@ package com.example.nexcashapplication.feature.dashboard.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.example.nexcashapplication.R
-import com.example.nexcashapplication.core.domain.model.TransactionUi
+import com.example.nexcashapplication.core.domain.model.TransactionItemUi
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
 import com.example.nexcashapplication.feature.dashboard.presentation.state.DashboardState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,7 +38,7 @@ class DashboardViewModel(
 
         private fun sampleTransactions() =
             listOf(
-                TransactionUi(
+                TransactionItemUi(
                     id = "1",
                     title = "Gaji Bulanan",
                     subtitle = "BCA",
@@ -48,7 +48,7 @@ class DashboardViewModel(
                     category = "Salary",
                     iconRes = R.drawable.insights
                 ),
-                TransactionUi(
+                TransactionItemUi(
                     id = "2",
                     title = "Makan Siang",
                     subtitle = "GoPay",
@@ -58,7 +58,7 @@ class DashboardViewModel(
                     category = "Food",
                     iconRes = R.drawable.transaction
                 ),
-                TransactionUi(
+                TransactionItemUi(
                     id = "3",
                     title = "Isi Bensin",
                     subtitle = "OVO",
@@ -68,7 +68,7 @@ class DashboardViewModel(
                     category = "Transport",
                     iconRes = R.drawable.home
                 ),
-                TransactionUi(
+                TransactionItemUi(
                     id = "4",
                     title = "Freelance Project",
                     subtitle = "SeaBank",
@@ -78,7 +78,7 @@ class DashboardViewModel(
                     category = "Freelance",
                     iconRes = R.drawable.eye_show
                 ),
-                TransactionUi(
+                TransactionItemUi(
                     id = "5",
                     title = "Belanja Bulanan",
                     subtitle = "ShopeePay",

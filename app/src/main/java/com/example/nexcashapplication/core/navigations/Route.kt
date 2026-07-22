@@ -4,8 +4,7 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Route: NavKey
-{
+sealed interface Route : NavKey {
     @Serializable
     sealed interface HomeRoute : Route {
         @Serializable
@@ -42,6 +41,19 @@ sealed interface Route: NavKey
     sealed interface SettingsRoute : Route {
         @Serializable
         data object Main : SettingsRoute
+    }
+
+
+    @Serializable
+    sealed interface CategorRoute : Route {
+        @Serializable
+        data object Main : CategorRoute
+
+        @Serializable
+        data class Detail(val kategoriId: String) : CategorRoute
+
+        @Serializable
+        data object AddNew : CategorRoute
     }
 
 }
