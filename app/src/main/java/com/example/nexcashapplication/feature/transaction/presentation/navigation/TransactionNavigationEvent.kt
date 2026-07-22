@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.transaction.presentation.event.navigation
+package com.example.nexcashapplication.feature.transaction.presentation.navigation
 
 sealed interface TransactionNavigationEvent {
     data object NavigateToAddTransaction : TransactionNavigationEvent

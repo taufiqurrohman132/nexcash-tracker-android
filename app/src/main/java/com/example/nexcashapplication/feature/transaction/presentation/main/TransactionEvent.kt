@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.transaction.presentation.event
+package com.example.nexcashapplication.feature.transaction.presentation.main
 
 sealed interface TransactionEvent {
     // Search

@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.transaction.presentation.ui
+package com.example.nexcashapplication.feature.transaction.presentation.main
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -35,7 +35,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,11 +52,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.extension.formatCompact
-import com.example.nexcashapplication.feature.dashboard.presentation.ui.components.TransactionItem
-import com.example.nexcashapplication.feature.transaction.presentation.event.TransactionEvent
-import com.example.nexcashapplication.feature.transaction.presentation.event.navigation.TransactionNavigationEvent
-import com.example.nexcashapplication.feature.transaction.presentation.state.TransactionState
-import com.example.nexcashapplication.feature.transaction.presentation.viewmodel.TransactionViewModel
+import com.example.nexcashapplication.core.component.TransactionItem
+import com.example.nexcashapplication.feature.transaction.presentation.navigation.TransactionNavigationEvent
 import com.example.nexcashapplication.ui.theme.BackgroundLight
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.PrimaryCyan

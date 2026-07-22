@@ -52,10 +52,10 @@
 //import com.example.nexcashapplication.R
 //import com.example.nexcashapplication.core.component.IconCircular
 //import com.example.nexcashapplication.core.extension.formatCompact
-//import com.example.nexcashapplication.feature.dashboard.presentation.ui.components.TransactionItem
-//import com.example.nexcashapplication.feature.transaction.presentation.event.TransactionEvent
-//import com.example.nexcashapplication.feature.transaction.presentation.state.TransactionState
-//import com.example.nexcashapplication.feature.transaction.presentation.viewmodel.TransactionViewModel
+//import com.example.nexcashapplication.core.component.TransactionItem
+//import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionEvent
+//import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionState
+//import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionViewModel
 //import com.example.nexcashapplication.ui.theme.BackgroundLight
 //import com.example.nexcashapplication.ui.theme.BorderGray
 //import com.example.nexcashapplication.ui.theme.PrimaryCyan

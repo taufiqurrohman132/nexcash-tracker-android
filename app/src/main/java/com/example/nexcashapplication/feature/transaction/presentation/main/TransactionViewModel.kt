@@ -1,12 +1,10 @@
-package com.example.nexcashapplication.feature.transaction.presentation.viewmodel
+package com.example.nexcashapplication.feature.transaction.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.R
-import com.example.nexcashapplication.core.domain.model.TransactionUi
-import com.example.nexcashapplication.feature.transaction.presentation.event.TransactionEvent
-import com.example.nexcashapplication.feature.transaction.presentation.event.navigation.TransactionNavigationEvent
-import com.example.nexcashapplication.feature.transaction.presentation.state.TransactionState
+import com.example.nexcashapplication.core.domain.model.TransactionItemUi
+import com.example.nexcashapplication.feature.transaction.presentation.navigation.TransactionNavigationEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +32,7 @@ class TransactionViewModel : ViewModel() {
 
             groupedTransactions = mapOf(
                 "Hari Ini" to listOf(
-                    TransactionUi(
+                    TransactionItemUi(
                         id = "1",
                         title = "Makan Siang",
                         subtitle = "GoPay",
@@ -44,7 +42,7 @@ class TransactionViewModel : ViewModel() {
                         category = "Food",
                         iconRes = R.drawable.eye_show
                     ),
-                    TransactionUi(
+                    TransactionItemUi(
                         id = "2",
                         title = "Isi Bensin",
                         subtitle = "OVO",
@@ -57,7 +55,7 @@ class TransactionViewModel : ViewModel() {
                 ),
 
                 "Kemarin" to listOf(
-                    TransactionUi(
+                    TransactionItemUi(
                         id = "3",
                         title = "Gaji Bulanan",
                         subtitle = "BCA",
@@ -67,7 +65,7 @@ class TransactionViewModel : ViewModel() {
                         category = "Salary",
                         iconRes = R.drawable.transaction
                     ),
-                    TransactionUi(
+                    TransactionItemUi(
                         id = "4",
                         title = "Belanja Bulanan",
                         subtitle = "ShopeePay",

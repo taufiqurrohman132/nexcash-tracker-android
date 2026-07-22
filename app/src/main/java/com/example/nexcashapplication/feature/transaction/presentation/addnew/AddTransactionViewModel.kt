@@ -1,12 +1,10 @@
-package com.example.nexcashapplication.feature.transaction.presentation.viewmodel
+package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
 import androidx.lifecycle.ViewModel
-import com.example.nexcashapplication.feature.transaction.presentation.event.AddTransactionEvent
-import com.example.nexcashapplication.feature.transaction.presentation.state.AddTransactionState
-import com.example.nexcashapplication.feature.transaction.presentation.state.TransactionType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class AddTransactionViewModel : ViewModel() {
     private var _state = MutableStateFlow(
@@ -60,7 +58,9 @@ class AddTransactionViewModel : ViewModel() {
             }
 
             is AddTransactionEvent.OnTypeChange -> {
-
+                _state.update {
+                    it.copy(type = event.type)
+                }
             }
         }
     }

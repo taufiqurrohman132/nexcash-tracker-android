@@ -1,6 +1,4 @@
-package com.example.nexcashapplication.feature.transaction.presentation.event
-
-import com.example.nexcashapplication.feature.transaction.presentation.state.TransactionType
+package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
 sealed interface AddTransactionEvent {
 

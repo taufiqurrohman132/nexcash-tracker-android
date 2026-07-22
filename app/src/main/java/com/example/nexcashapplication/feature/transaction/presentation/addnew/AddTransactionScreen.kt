@@ -1,8 +1,5 @@
-package com.example.nexcashapplication.feature.transaction.presentation.ui
+package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -28,10 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.nexcashapplication.feature.transaction.presentation.event.AddTransactionEvent
-import com.example.nexcashapplication.feature.transaction.presentation.state.AddTransactionState
-import com.example.nexcashapplication.feature.transaction.presentation.state.TransactionType
-import com.example.nexcashapplication.feature.transaction.presentation.viewmodel.AddTransactionViewModel
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 
@@ -127,6 +121,31 @@ fun AddTransactionContent(
 
             Spacer(Modifier.height(20.dp))
 
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Box(modifier = Modifier.weight(1f)) {
+                    Column {
+                        SectionLabel("Date")
+                        CompactSelector(
+                            icon = Icons.Outlined.Call,
+                            text = state.date,
+                            onClick = { onEvent(AddTransactionEvent.OnDateClick) }
+                        )
+                    }
+                }
+                Box(modifier = Modifier.weight(1f)) {
+                    Column {
+                        SectionLabel("Time")
+                        CompactSelector(
+                            icon = Icons.Outlined.Notifications,
+                            text = state.time,
+                            onClick = { onEvent(AddTransactionEvent.OnTimeClick) }
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
             // ---- Category (required field #2) ----
             SectionLabel("Category")
             SelectorRow(
@@ -149,97 +168,74 @@ fun AddTransactionContent(
                 onClick = { onEvent(AddTransactionEvent.OnAccountClick) }
             )
 
-            Spacer(Modifier.height(20.dp))
+//            Spacer(Modifier.height(20.dp))
 
             // ---- Optional detail section, collapsed by default ----
-            ExpandableDetailHeader(
-                expanded = detailExpanded,
-                onToggle = { detailExpanded = !detailExpanded }
+//            ExpandableDetailHeader(
+//                expanded = detailExpanded,
+//                onToggle = { detailExpanded = !detailExpanded }
+//            )
+
+//            AnimatedVisibility(
+//                visible = detailExpanded,
+//                enter = expandVertically(),
+//                exit = shrinkVertically()
+//            ) {
+//
+//            }
+
+            Spacer(Modifier.height(16.dp))
+
+
+
+            SectionLabel("Note")
+            OutlinedTextField(
+                value = state.note,
+                onValueChange = { onEvent(AddTransactionEvent.OnNoteChange(it)) },
+                placeholder = { Text("Add a note here...") },
+                leadingIcon = {
+                    Icon(
+                        Icons.Outlined.FavoriteBorder,
+                        contentDescription = null
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
+                shape = RoundedCornerShape(14.dp)
             )
 
-            AnimatedVisibility(
-                visible = detailExpanded,
-                enter = expandVertically(),
-                exit = shrinkVertically()
+            Spacer(Modifier.height(16.dp))
+
+            SectionLabel("Attachment")
+            AttachmentBox(
+                fileName = state.attachmentName,
+                onClick = { onEvent(AddTransactionEvent.OnAttachmentClick) })
+
+            Spacer(Modifier.height(16.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Column {
-                    Spacer(Modifier.height(16.dp))
-
-                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Box(modifier = Modifier.weight(1f)) {
-                            Column {
-                                SectionLabel("Date")
-                                CompactSelector(
-                                    icon = Icons.Outlined.Call,
-                                    text = state.date,
-                                    onClick = { onEvent(AddTransactionEvent.OnDateClick) }
-                                )
-                            }
-                        }
-                        Box(modifier = Modifier.weight(1f)) {
-                            Column {
-                                SectionLabel("Time")
-                                CompactSelector(
-                                    icon = Icons.Outlined.Notifications,
-                                    text = state.time,
-                                    onClick = { onEvent(AddTransactionEvent.OnTimeClick) }
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(Modifier.height(16.dp))
-
-                    SectionLabel("Note")
-                    OutlinedTextField(
-                        value = state.note,
-                        onValueChange = { onEvent(AddTransactionEvent.OnNoteChange(it)) },
-                        placeholder = { Text("Add a note here...") },
-                        leadingIcon = {
-                            Icon(
-                                Icons.Outlined.FavoriteBorder,
-                                contentDescription = null
-                            )
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(100.dp),
-                        shape = RoundedCornerShape(14.dp)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        Icons.Default.LocationOn,
+                        contentDescription = null,
+                        tint = accent,
+                        modifier = Modifier.size(20.dp)
                     )
-
-                    Spacer(Modifier.height(16.dp))
-
-                    SectionLabel("Attachment")
-                    AttachmentBox(
-                        fileName = state.attachmentName,
-                        onClick = { onEvent(AddTransactionEvent.OnAttachmentClick) })
-
-                    Spacer(Modifier.height(16.dp))
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                Icons.Default.LocationOn,
-                                contentDescription = null,
-                                tint = accent,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(Modifier.width(8.dp))
-                            Text(
-                                "Recurring Transaction",
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 14.sp
-                            )
-                        }
-                        Switch(
-                            checked = state.isRecurring,
-                            onCheckedChange = { onEvent(AddTransactionEvent.OnRecurringChange(it)) })
-                    }
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        "Recurring Transaction",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 14.sp
+                    )
                 }
+                Switch(
+                    checked = state.isRecurring,
+                    onCheckedChange = { onEvent(AddTransactionEvent.OnRecurringChange(it)) })
             }
 
             Spacer(Modifier.height(24.dp))
@@ -271,7 +267,7 @@ private fun SegmentedTypeToggle(
             label = "Income",
             icon = Icons.Default.ThumbUp,
             selected = selected == TransactionType.INCOME,
-            selectedColor = Color(0xFF1FA463),
+            selectedColor = PrimaryCyan,
             modifier = Modifier.weight(1f),
             onClick = { onSelect(TransactionType.INCOME) }
         )
@@ -281,7 +277,7 @@ private fun SegmentedTypeToggle(
 @Composable
 private fun ToggleChip(
     label: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     selected: Boolean,
     selectedColor: Color,
     modifier: Modifier = Modifier,
@@ -359,7 +355,7 @@ private fun SectionLabel(text: String) {
 
 @Composable
 private fun SelectorRow(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     iconBg: Color,
     title: String,
     subtitle: String,
@@ -394,7 +390,7 @@ private fun SelectorRow(
 
 @Composable
 private fun CompactSelector(
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    icon: ImageVector,
     text: String,
     onClick: () -> Unit
 ) {

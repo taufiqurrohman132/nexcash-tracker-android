@@ -1,7 +1,4 @@
-package com.example.nexcashapplication.feature.transaction.presentation.state
-
-import com.example.nexcashapplication.core.datasource.local.model.CategoryEntity
-import com.example.nexcashapplication.core.domain.model.TransactionUi
+package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
 data class AddTransactionState(
     val type: TransactionType = TransactionType.EXPENSE,
