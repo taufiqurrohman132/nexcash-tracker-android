@@ -3,7 +3,6 @@ package com.example.nexcashapplication.feature.category.presentation.detail;
 import android.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,11 +21,13 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -254,7 +255,7 @@ fun DetailCategoryContent(
 
             FormField(
                 title = "Tren Pengeluaran",
-                actionText = "Lihat Semua",
+                actionText = "7 Hari Terakhir",
                 onActionClick = { },
             )
 
@@ -273,7 +274,7 @@ fun DetailCategoryContent(
 
             FormField(
                 title = "Transaksi Terakhir",
-                icon = Icons.Default.ShoppingCart,
+                icon = Icons.Default.Replay,
                 actionText = "Lihat Semua",
             )
 
@@ -297,11 +298,17 @@ fun TransactionListCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, PrimaryCyan),
+        border = BorderStroke(1.dp, BorderGray),
     ) {
         Column(modifier = Modifier.padding(vertical = 4.dp)) {
             transactions.forEachIndexed { index, transactionUi ->
                 TransactionItem(transactionUi) {}
+                HorizontalDivider(
+                    modifier = Modifier.fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                    color = BorderGray,
+                    thickness = 1.dp
+                )
             }
         }
     }
@@ -337,10 +344,11 @@ fun SubcategoryGrid(
 @Composable
 fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick: () -> Unit) {
     Card(
+        onClick = { },
+        modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         border = BorderStroke(1.dp, BorderGray),
-        modifier = modifier.clickable(onClick = onClick),
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(
@@ -566,7 +574,7 @@ fun WeeklyTrendChart(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-        border = BorderStroke(1.dp, PrimaryCyan),
+        border = BorderStroke(1.dp, BorderGray),
     ) {
         CartesianChartHost(
             modifier = Modifier
