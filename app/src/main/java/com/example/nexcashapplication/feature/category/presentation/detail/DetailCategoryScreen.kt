@@ -7,7 +7,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,8 +14,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
@@ -34,7 +34,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable;
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -53,9 +53,11 @@ import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUi
 import com.example.nexcashapplication.feature.category.presentation.detail.model.SubCategoryItemUi
+import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.SecondaryDeepPurple
+import com.example.nexcashapplication.ui.theme.TextTertiary
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
@@ -233,69 +235,56 @@ fun DetailCategoryContent(
             )
         },
     ) { padding ->
-        LazyColumn(
+        Column(
             modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .padding(horizontal = 16.dp),
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState()),
 //            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 16.dp),
         ) {
-            item {
-                BudgetSummaryCard(
-                    totalBudget = totalBudget,
-                    used = used,
-                    remaining = remaining,
-                    usedPersentage = usedPercentage,
-                )
-            }
+            Spacer(Modifier.height(4.dp)) // pengganti contentPadding top
 
-            item {
-                FormField(
-                    title = "Tren Pengeluaran",
-                    actionText = "Lihat Semua",
-                    onActionClick = { },
-                )
-            }
+            BudgetSummaryCard(
+                totalBudget = totalBudget,
+                used = used,
+                remaining = remaining,
+                usedPersentage = usedPercentage,
+            )
 
-            item {
-                WeeklyTrendChart(
+            FormField(
+                title = "Tren Pengeluaran",
+                actionText = "Lihat Semua",
+                onActionClick = { },
+            )
 
-                )
-            }
+            WeeklyTrendChart()
 
-            item {
-                FormField(
-                    title = "SubCategory",
-                    actionText = "Lihat Semua",
-                    onActionClick = { },
-                )
-            }
+            FormField(
+                title = "SubCategory",
+                actionText = "Lihat Semua",
+                onActionClick = { },
+            )
 
-            item {
-                SubcategoryGrid(
-                    subcategories = subcategories,
-                    onSubcategoryClick = { },
-                )
-            }
+            SubcategoryGrid(
+                subcategories = subcategories,
+                onSubcategoryClick = { },
+            )
 
-            item {
-                FormField(
-                    title = "Transaksi Terakhir",
-                    icon = Icons.Default.ShoppingCart,
-                    actionText = "Lihat Semua",
-                )
-            }
+            FormField(
+                title = "Transaksi Terakhir",
+                icon = Icons.Default.ShoppingCart,
+                actionText = "Lihat Semua",
+            )
 
-            item {
-                TransactionListCard(
-                    transactions = transactions,
-                    onLoadMoreClick = { },
-                )
-            }
+            TransactionListCard(
+                transactions = transactions,
+                onLoadMoreClick = { },
+            )
+
+            Spacer(Modifier.height(16.dp)) // pengganti contentPadding bottom
         }
     }
-
 }
 
 
@@ -348,10 +337,10 @@ fun SubcategoryGrid(
 @Composable
 fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick: () -> Unit) {
     Card(
-        modifier = modifier.clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, PrimaryCyan),
+        border = BorderStroke(1.dp, BorderGray),
+        modifier = modifier.clickable(onClick = onClick),
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(
@@ -363,13 +352,13 @@ fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick:
                     modifier = Modifier
                             .size(36.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(PrimaryCyan),
+                            .background(PrimaryCyan.copy(alpha = 0.1f)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         subcategory.icon,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = PrimaryCyan,
                         modifier = Modifier.size(18.dp),
                     )
                 }
@@ -377,7 +366,7 @@ fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick:
                 Text(
                     text = "${subcategory.percentage}%",
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFF9CA3AF),
+                    color = Color.Black,
                 )
             }
 
@@ -392,7 +381,7 @@ fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick:
             Text(
                 text = subcategory.amount,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color.Black,
+                color = TextTertiary,
             )
             Spacer(Modifier.height(8.dp))
             LinearProgressIndicator(
@@ -402,7 +391,7 @@ fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick:
                         .height(4.dp)
                         .clip(RoundedCornerShape(50)),
                 color = PrimaryCyan,
-                trackColor = SecondaryDeepPurple,
+                trackColor = BorderGray,
             )
         }
     }
