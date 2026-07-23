@@ -50,7 +50,7 @@ sealed interface Route : NavKey {
         data object Main : CategorRoute
 
         @Serializable
-        data class Detail(val kategoriId: String) : CategorRoute
+        data class Detail(val kategoriId: Long) : CategorRoute
 
         @Serializable
         data object AddNew : CategorRoute

@@ -16,7 +16,7 @@ val TOP_LEVEL_DESTINATION = mapOf(
     Route.AssetRoute.Main to BottomNavItem(
         iconRes = R.drawable.account_balance_bank, title = "Asset"
     ),
-    Route.InsightRoute.Main to BottomNavItem(
+    Route.CategorRoute.Main to BottomNavItem(
         iconRes = R.drawable.insights, title = "Insight"
     ),
     Route.SettingsRoute.Main to BottomNavItem(

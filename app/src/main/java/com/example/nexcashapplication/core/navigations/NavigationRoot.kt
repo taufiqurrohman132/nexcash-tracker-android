@@ -17,6 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
+import com.example.nexcashapplication.feature.category.presentation.addnew.category.AddCategoryScreen
+import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryScreen
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.DashboardScreen
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.AddTransactionScreen
@@ -28,7 +30,7 @@ private val BottomNavHeight = 80.dp // sesuaikan dengan tinggi asli BottomNavBar
 fun NavigationRoot(modifier: Modifier = Modifier) {
     val navigationState = rememberNavigationState(
         startRoute = Route.HomeRoute.Main,
-        topLevelRoutes = TOP_LEVEL_DESTINATION.keys
+        topLevelRoutes = TOP_LEVEL_DESTINATION.keys,
     )
     val navigator = remember {
         Navigator(navigationState)
@@ -42,7 +44,7 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
     // LANGSUNG PAKE BOX UTAMA
     Box(
         modifier = modifier
-            .fillMaxSize()
+                .fillMaxSize(),
     ) {
         NavDisplay(
             modifier = Modifier.fillMaxSize(),
@@ -53,7 +55,7 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
             },
             // --- animasi balik (pop / back) ---
             popTransitionSpec = {
-                slideInHorizontally(initialOffsetX = { -it  }) togetherWith
+                slideInHorizontally(initialOffsetX = { -it }) togetherWith
                         slideOutHorizontally(targetOffsetX = { it })
             },
             // --- animasi kalau predictive back di-swipe tapi dibatalkan ---
@@ -61,46 +63,76 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
                 slideInHorizontally(initialOffsetX = { -it }) togetherWith
                         slideOutHorizontally(targetOffsetX = { it })
             },
-            entries = navigationState.toEntries(entryProvider {
-                entry<Route.HomeRoute.Main> {
-                    Box(Modifier.fillMaxSize().padding(bottom = BottomNavHeight)) {
-                        DashboardScreen()
+            entries = navigationState.toEntries(
+                entryProvider {
+                    entry<Route.HomeRoute.Main> {
+                        Box(
+                            Modifier
+                                    .fillMaxSize()
+                                    .padding(bottom = BottomNavHeight),
+                        ) {
+                            DashboardScreen()
+                        }
                     }
-                }
-                entry<Route.TransactionRoute.Main> {
-                    Box(Modifier.fillMaxSize().padding(bottom = BottomNavHeight)) {
-                        TransactionScreen(
-                            onNavigateToAddTransaction = { navigator.navigate(Route.TransactionRoute.AddNew) },
-                            onNavigateToDetail = { id -> navigator.navigate(Route.TransactionRoute.Detail(id)) }
-                        )
+                    entry<Route.TransactionRoute.Main> {
+                        Box(
+                            Modifier
+                                    .fillMaxSize()
+                                    .padding(bottom = BottomNavHeight),
+                        ) {
+                            TransactionScreen(
+                                onNavigateToAddTransaction = { navigator.navigate(Route.TransactionRoute.AddNew) },
+                                onNavigateToDetail = { id ->
+                                    navigator.navigate(
+                                        Route.TransactionRoute.Detail(
+                                            id,
+                                        ),
+                                    )
+                                },
+                            )
+                        }
                     }
-                }
-                entry<Route.TransactionRoute.AddNew> {
-                    AddTransactionScreen()
-                }
-                entry<Route.AssetRoute.Main> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CategoryScreen (
-                            onNavigateAddCategory = { }
-                        )
+                    entry<Route.TransactionRoute.AddNew> {
+                        AddTransactionScreen()
                     }
-                }
-                entry<Route.InsightRoute.Main> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Insight")
-                    }
-                }
-                entry<Route.SettingsRoute.Main> {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text("Settings")
+                    entry<Route.AssetRoute.Main> {
 
                     }
-                }
+                    entry<Route.InsightRoute.Main> {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("Insight")
+                        }
+                    }
+                    entry<Route.SettingsRoute.Main> {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text("Settings")
 
-                entry<Route.CategorRoute.Main> {
+                        }
+                    }
 
-                }
-            })
+                    entry<Route.CategorRoute.Main> {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CategoryScreen(
+                                onNavigateAddCategory = { navigator.navigate(Route.CategorRoute.AddNew) },
+                                onNavigateCategoryDetail = { id ->
+                                    navigator.navigate(
+                                        Route.CategorRoute.Detail(
+                                            id,
+                                        ),
+                                    )
+                                },
+
+                                )
+                        }
+                    }
+                    entry<Route.CategorRoute.AddNew> {
+                        AddCategoryScreen()
+                    }
+                    entry<Route.CategorRoute.Detail> {
+                        DetailCategoryScreen()
+                    }
+                },
+            ),
         )
 
         // Overlay BottomNavBar kamu tetap aman di sini
@@ -108,11 +140,11 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
             visible = showBottomBar,
             modifier = Modifier.align(Alignment.BottomCenter),
             enter = fadeIn(),
-            exit = fadeOut()
+            exit = fadeOut(),
         ) {
             BottomNavBar(
                 selectionKey = navigationState.topLevelRoute,
-                onSelectKey = { navigator.navigate(it) }
+                onSelectKey = { navigator.navigate(it) },
             )
         }
     }

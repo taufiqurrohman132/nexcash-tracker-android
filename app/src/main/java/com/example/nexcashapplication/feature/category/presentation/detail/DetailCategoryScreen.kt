@@ -26,12 +26,14 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable;
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -68,28 +70,28 @@ val dummySubCategories = listOf(
         name = "Makan di Luar",
         icon = Icons.Default.Settings,
         amount = "Rp450.000",
-        percentage = 35
+        percentage = 35,
     ),
     SubCategoryItemUi(
         id = 2L,
         name = "Groceries",
         icon = Icons.Default.ShoppingCart,
         amount = "Rp320.000",
-        percentage = 25
+        percentage = 25,
     ),
     SubCategoryItemUi(
         id = 3L,
         name = "Kopi & Snack",
         icon = Icons.Default.Notifications,
         amount = "Rp180.000",
-        percentage = 14
+        percentage = 14,
     ),
     SubCategoryItemUi(
         id = 4L,
         name = "Delivery/Ojol",
         icon = Icons.Default.Notifications,
         amount = "Rp150.000",
-        percentage = 12
+        percentage = 12,
     ),
 )
 
@@ -102,7 +104,7 @@ val dummyTransactions = listOf(
         amount = 5_000_000,
         isIncome = true,
         category = "Gaji",
-        iconRes = R.drawable.ic_media_ff
+        iconRes = R.drawable.ic_media_ff,
     ),
     TransactionItemUi(
         id = "2",
@@ -112,7 +114,7 @@ val dummyTransactions = listOf(
         amount = 35_000,
         isIncome = false,
         category = "Makanan",
-        iconRes = R.drawable.ic_lock_lock
+        iconRes = R.drawable.ic_lock_lock,
     ),
     TransactionItemUi(
         id = "3",
@@ -122,7 +124,7 @@ val dummyTransactions = listOf(
         amount = 120_000,
         isIncome = false,
         category = "Pendidikan",
-        iconRes = R.drawable.ic_dialog_map
+        iconRes = R.drawable.ic_dialog_map,
     ),
     TransactionItemUi(
         id = "4",
@@ -132,7 +134,7 @@ val dummyTransactions = listOf(
         amount = 750_000,
         isIncome = true,
         category = "Freelance",
-        iconRes = R.drawable.ic_dialog_map
+        iconRes = R.drawable.ic_dialog_map,
     ),
     TransactionItemUi(
         id = "5",
@@ -142,7 +144,7 @@ val dummyTransactions = listOf(
         amount = 25_000,
         isIncome = false,
         category = "Kopi & Snack",
-        iconRes = R.drawable.ic_lock_silent_mode_off
+        iconRes = R.drawable.ic_lock_silent_mode_off,
     ),
     TransactionItemUi(
         id = "6",
@@ -152,7 +154,7 @@ val dummyTransactions = listOf(
         amount = 250_000,
         isIncome = false,
         category = "Tagihan",
-        iconRes = R.drawable.ic_input_get
+        iconRes = R.drawable.ic_input_get,
     ),
     TransactionItemUi(
         id = "7",
@@ -162,7 +164,7 @@ val dummyTransactions = listOf(
         amount = 180_000,
         isIncome = false,
         category = "Belanja",
-        iconRes = R.drawable.ic_input_delete
+        iconRes = R.drawable.ic_input_delete,
     ),
     TransactionItemUi(
         id = "8",
@@ -172,19 +174,21 @@ val dummyTransactions = listOf(
         amount = 100_000,
         isIncome = true,
         category = "Transfer",
-        iconRes = R.drawable.ic_input_get
-    )
+        iconRes = R.drawable.ic_input_get,
+    ),
 )
+
 @Composable
 fun DetailCategoryScreen(
     viewModel: DetailCategoryViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
 
     DetailCategoryContent()
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailCategoryContent(
     categoryName: String = "Transportasi",
@@ -193,33 +197,56 @@ fun DetailCategoryContent(
     used: String = "Rp 1.050.000",
     remaining: String = "Rp 450.000",
     usedPercentage: Int = 70,
-    subcategories: List<SubCategoryItemUi> =dummySubCategories,
+    subcategories: List<SubCategoryItemUi> = dummySubCategories,
     transactions: List<TransactionItemUi> = dummyTransactions,
 ) {
     Scaffold(
         topBar = {
-            CategoryDetailTopBar(
-                categoryName = categoryName,
-                categoryIcon = categoryIcon,
-                onBackClick = {},
-                onMenuClick = {}
+            TopAppBar(
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = categoryIcon,
+                            contentDescription = null,
+                            tint = PrimaryCyan,
+                            modifier = Modifier
+                                    .padding(end = 8.dp)
+                                    .size(20.dp),
+                        )
+                        Text(
+                            text = categoryName,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton(onClick = { }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+                    }
+                },
             )
-        }
+        },
     ) { padding ->
         LazyColumn(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .padding(horizontal = 16.dp),
+                    .fillMaxSize()
+                    .padding(padding)
+                    .padding(horizontal = 16.dp),
 //            verticalArrangement = Arrangement.spacedBy(16.dp),
-            contentPadding = PaddingValues(vertical = 16.dp)
+            contentPadding = PaddingValues(vertical = 16.dp),
         ) {
             item {
                 BudgetSummaryCard(
                     totalBudget = totalBudget,
                     used = used,
                     remaining = remaining,
-                    usedPersentage = usedPercentage
+                    usedPersentage = usedPercentage,
                 )
             }
 
@@ -227,7 +254,7 @@ fun DetailCategoryContent(
                 FormField(
                     title = "Tren Pengeluaran",
                     actionText = "Lihat Semua",
-                    onActionClick = { }
+                    onActionClick = { },
                 )
             }
 
@@ -241,14 +268,14 @@ fun DetailCategoryContent(
                 FormField(
                     title = "SubCategory",
                     actionText = "Lihat Semua",
-                    onActionClick = { }
+                    onActionClick = { },
                 )
             }
 
             item {
                 SubcategoryGrid(
                     subcategories = subcategories,
-                    onSubcategoryClick = {  }
+                    onSubcategoryClick = { },
                 )
             }
 
@@ -256,14 +283,14 @@ fun DetailCategoryContent(
                 FormField(
                     title = "Transaksi Terakhir",
                     icon = Icons.Default.ShoppingCart,
-                    actionText = "Lihat Semua"
+                    actionText = "Lihat Semua",
                 )
             }
 
             item {
                 TransactionListCard(
                     transactions = transactions,
-                    onLoadMoreClick = { }
+                    onLoadMoreClick = { },
                 )
             }
         }
@@ -275,13 +302,13 @@ fun DetailCategoryContent(
 @Composable
 fun TransactionListCard(
     transactions: List<TransactionItemUi>,
-    onLoadMoreClick: () -> Unit
+    onLoadMoreClick: () -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, PrimaryCyan)
+        border = BorderStroke(1.dp, PrimaryCyan),
     ) {
         Column(modifier = Modifier.padding(vertical = 4.dp)) {
             transactions.forEachIndexed { index, transactionUi ->
@@ -294,20 +321,20 @@ fun TransactionListCard(
 @Composable
 fun SubcategoryGrid(
     subcategories: List<SubCategoryItemUi>,
-    onSubcategoryClick: (Long) -> Unit
+    onSubcategoryClick: (Long) -> Unit,
 ) {
     val rows = subcategories.chunked(2)
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         rows.forEach { rowItems ->
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 rowItems.forEach { item ->
                     SubcategoryCard(
                         subcategory = item,
                         modifier = Modifier.weight(1f),
-                        onClick = { onSubcategoryClick(item.id) }
+                        onClick = { onSubcategoryClick(item.id) },
                     )
                 }
                 if (rowItems.size == 1) {
@@ -324,33 +351,33 @@ fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick:
         modifier = modifier.clickable(onClick = onClick),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, PrimaryCyan)
+        border = BorderStroke(1.dp, PrimaryCyan),
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Box(
                     modifier = Modifier
-                        .size(36.dp)
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(PrimaryCyan),
-                    contentAlignment = Alignment.Center
+                            .size(36.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(PrimaryCyan),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         subcategory.icon,
                         contentDescription = null,
                         tint = Color.White,
-                        modifier= Modifier.size(18.dp)
+                        modifier = Modifier.size(18.dp),
                     )
                 }
 
                 Text(
                     text = "${subcategory.percentage}%",
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color(0xFF9CA3AF)
+                    color = Color(0xFF9CA3AF),
                 )
             }
 
@@ -360,7 +387,7 @@ fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick:
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                overflow = TextOverflow.Ellipsis,
             )
             Text(
                 text = subcategory.amount,
@@ -369,13 +396,13 @@ fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick:
             )
             Spacer(Modifier.height(8.dp))
             LinearProgressIndicator(
-                progress = { subcategory.percentage /100f},
-                modifier= Modifier
-                    .fillMaxWidth()
-                    .height(4.dp)
-                    .clip(RoundedCornerShape(50)),
+                progress = { subcategory.percentage / 100f },
+                modifier = Modifier
+                        .fillMaxWidth()
+                        .height(4.dp)
+                        .clip(RoundedCornerShape(50)),
                 color = PrimaryCyan,
-                trackColor = SecondaryDeepPurple
+                trackColor = SecondaryDeepPurple,
             )
         }
     }
@@ -385,42 +412,42 @@ fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick:
 fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, usedPersentage: Int) {
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(20.dp))
-            .background(
-                Brush.linearGradient(
-                    colors = listOf(
-                        PrimaryCyan,
-                        SecondaryDeepPurple
-                    )
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            PrimaryCyan,
+                            SecondaryDeepPurple,
+                        ),
 
+                        ),
                 )
-            )
-            .padding(20.dp)
-    ){
+                .padding(20.dp),
+    ) {
         Column {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = "Total Anggaran",
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.White,
-                    letterSpacing = 0.5.sp
+                    letterSpacing = 0.5.sp,
                 )
                 Box(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(50))
-                        .background(PrimaryCyan)
-                        .padding(horizontal = 12.dp, vertical = 4.dp)
-                ){
+                            .clip(RoundedCornerShape(50))
+                            .background(PrimaryCyan)
+                            .padding(horizontal = 12.dp, vertical = 4.dp),
+                ) {
                     Text(
                         text = "$usedPersentage% Terpakai",
                         color = Color.White,
                         style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 }
             }
@@ -431,24 +458,24 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
                 text = totalBudget,
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White
+                color = Color.White,
             )
             Spacer(Modifier.height(12.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Row {
                     Text(
                         text = "Terpakai: ",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.White
+                        color = Color.White,
                     )
                     Text(
                         text = used,
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White
+                        color = Color.White,
                     )
 
                 }
@@ -457,28 +484,29 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
                     Text(
                         text = "Sisa: ",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF6B7280)
+                        color = Color(0xFF6B7280),
                     )
                     Text(
                         text = remaining,
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF6366F1)
+                        color = Color(0xFF6366F1),
                     )
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
 
-                LinearProgressIndicator(
-                    progress = { usedPersentage / 100f },
-                    modifier = Modifier
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            LinearProgressIndicator(
+                progress = { usedPersentage / 100f },
+                modifier = Modifier
                         .fillMaxWidth()
                         .height(6.dp)
                         .clip(RoundedCornerShape(50)),
-                    color = Color(0xFF6366F1),
-                    trackColor = Color(0xFFC7CCF5)
-                )
-            }
+                color = Color(0xFF6366F1),
+                trackColor = Color(0xFFC7CCF5),
+            )
         }
     }
 }
@@ -488,18 +516,18 @@ fun CategoryDetailTopBar(
     categoryName: String,
     categoryIcon: ImageVector,
     onBackClick: () -> Unit,
-    onMenuClick: () -> Unit
+    onMenuClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         IconButton(
             onClick = {
 
-            }
+            },
         ) {
             Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
         }
@@ -509,21 +537,21 @@ fun CategoryDetailTopBar(
             contentDescription = null,
             tint = PrimaryCyan,
             modifier = Modifier
-                .padding(start = 4.dp, end = 8.dp)
-                .size(20.dp)
+                    .padding(start = 4.dp, end = 8.dp)
+                    .size(20.dp),
         )
 
         Text(
             text = categoryName,
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
 
         IconButton(
             onClick = {
 
-            }
+            },
         ) {
             Icon(Icons.Default.MoreVert, contentDescription = "Menu")
         }
@@ -535,7 +563,7 @@ fun CategoryDetailTopBar(
 fun WeeklyTrendChart(
     modifier: Modifier = Modifier,
     data: List<Float> = listOf(300f, 350f, 280f, 450f, 550f, 850f, 650f),
-    labels: List<String> = listOf("Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min")
+    labels: List<String> = listOf("Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"),
 ) {
     val modelProducer = remember { CartesianChartModelProducer() }
 
@@ -553,14 +581,17 @@ fun WeeklyTrendChart(
     ) {
         CartesianChartHost(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            chart = rememberCartesianChart(rememberLineCartesianLayer(), startAxis = VerticalAxis.rememberStart(), bottomAxis = HorizontalAxis.rememberBottom(
+                    .fillMaxWidth()
+                    .padding(16.dp),
+            chart = rememberCartesianChart(
+                rememberLineCartesianLayer(), startAxis = VerticalAxis.rememberStart(),
+                bottomAxis = HorizontalAxis.rememberBottom(
                     valueFormatter = { _, value, _ ->
                         labels.getOrElse(value.toInt()) { "" }
-                    }
-                )),
-            modelProducer = modelProducer
+                    },
+                ),
+            ),
+            modelProducer = modelProducer,
         )
     }
 
