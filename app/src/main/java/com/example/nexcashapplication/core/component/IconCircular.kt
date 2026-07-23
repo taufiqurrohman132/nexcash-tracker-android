@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.size.Size
@@ -28,11 +29,12 @@ fun IconCircular(
 ) {
 
     Box(
-        modifier = modifier.background(
-            color = backgroundColor,
-            shape = CircleShape
-        )
-            .size(size),
+        modifier = modifier
+                .background(
+                    color = backgroundColor,
+                    shape = CircleShape
+                )
+                .size(size),
         contentAlignment = Alignment.Center
     ){
         Icon(
@@ -42,4 +44,10 @@ fun IconCircular(
             modifier = Modifier.size(size / 3)
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun IconCircularPreview() {
+    
 }
