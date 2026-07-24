@@ -43,15 +43,21 @@ class AddCategoryViewModel : ViewModel() {
             }
 
             is AddCategoryEvent.OnAccountSelected -> {
-
+                _state.update {
+                    it.copy(defaultAccount = event.accountId)
+                }
             }
 
             is AddCategoryEvent.OnBudgetChanged -> {
-
+                _state.update {
+                    it.copy(budgetLimit = event.amount)
+                }
             }
 
-            is AddCategoryEvent.OnChangeIconColorClicked -> {
-
+            is AddCategoryEvent.OnChangeIcon -> {
+//                _state.update {
+//                    it.copy(name = event.name)
+//                }
             }
 
             is AddCategoryEvent.OnColorSelected -> {
@@ -61,7 +67,9 @@ class AddCategoryViewModel : ViewModel() {
             }
 
             is AddCategoryEvent.OnNotesChanged -> {
-
+                _state.update {
+                    it.copy(note = event.notes)
+                }
             }
 
             is AddCategoryEvent.OnPeriodSelected -> {

@@ -3,6 +3,7 @@ package com.example.nexcashapplication.feature.category.presentation.addnew.cate
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
@@ -54,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,8 +67,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconRounded
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
+import com.example.nexcashapplication.core.domain.model.CategoryIcon
+import com.example.nexcashapplication.core.domain.model.DummyCategoryIcons
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -151,15 +157,18 @@ fun AddCategoryContent(
                 )
             }
 
-            // Ikon & Warna
-//            IconColorRow(
-//                colorIndex = state.selectedColorIndex,
-//                onChangeClick = { },
-//            )
+
             ColorSwatchRow(
                 colors = listOf(Color.Red, Color.Green, Color.Blue),
                 selectedIndex = state.selectedColorIndex,
                 onColorSelected = { onEvent(AddCategoryEvent.OnColorSelected(it)) },
+            )
+
+            IconPreviewRow(
+                selectedIcon = state.selectedIcon,
+//                recentIcons = state.recentIcons,
+                recentIcons = DummyCategoryIcons.recentIcons,
+                onIconClick = { },
             )
 
             // Rencana Anggaran
@@ -189,7 +198,7 @@ fun AddCategoryContent(
                     placeholder = {
                         Text(
                             "Tambahkan deskripsi atau catatan khusus untuk kategori ini...",
-                            color = Color(0xFFBBBBBB),
+                            color = TextTertiary,
                         )
                     },
                     colors = OutlinedTextFieldDefaults.colors(
@@ -465,7 +474,7 @@ fun RencanaAnggaranCard(
         FormField(
             title = "Batas Anggaran",
             fontWeight = FontWeight.Normal,
-            textColor = TextSecondary
+            textColor = TextSecondary,
         ) {
             OutlinedTextField(
                 value = budgetLimit,
@@ -532,6 +541,84 @@ fun BudgetPeriodSelector(
                 ),
             )
         }
+    }
+}
+
+
+@Composable
+fun IconPreviewRow(
+    selectedIcon: CategoryIcon?,
+    recentIcons: List<CategoryIcon>,
+    onIconClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = modifier
+                    .horizontalScroll(rememberScrollState())
+                    .weight(1f)
+        ) {
+
+            recentIcons.forEach { icon ->
+                IconChip(
+                    icon = icon.icon,
+                    isSelected = icon == selectedIcon,
+                    onClick = onIconClick
+                )
+            }
+        }
+
+        IconChip(
+            icon = Icons.Default.GridView,
+            isSelected = false,
+            onClick = {  },
+            contentDescription = "Lihat semua icon",
+            iconColor = Color.White,
+            backgroundColor = PrimaryCyan
+        )
+    }
+}
+
+@Composable
+fun IconChip(
+    icon: ImageVector,
+    isSelected: Boolean,
+    iconColor: Color? = null,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    backgroundColor: Color? = null,
+    contentDescription: String? = null,
+) {
+    Box(
+        modifier = modifier
+                .size(56.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(
+                    backgroundColor ?: run {
+                        if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
+                        else Color.White
+                    },
+                )
+                .border(
+                    width = if (isSelected) 2.dp else 1.dp,
+                    color = if (isSelected) MaterialTheme.colorScheme.primary
+                    else Color(0xFFE0E0E0),
+                    shape = RoundedCornerShape(16.dp),
+                )
+                .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = contentDescription,
+            tint = iconColor ?: run {
+                if (isSelected) MaterialTheme.colorScheme.primary else Color(0xFF666666)
+            },
+            modifier = Modifier.size(24.dp),
+        )
     }
 }
 
