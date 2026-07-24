@@ -35,7 +35,7 @@ fun FormField(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit = {}
 ) {
-    Column {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
 
         Row(
             modifier = modifier.padding(top = 8.dp)

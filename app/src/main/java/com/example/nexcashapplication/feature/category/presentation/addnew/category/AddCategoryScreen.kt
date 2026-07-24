@@ -129,7 +129,7 @@ fun AddCategoryContent(
             ) {
                 OutlinedTextField(
                     value = state.name,
-                    onValueChange = { },
+                    onValueChange = { onEvent(AddCategoryEvent.OnNameChanged(it)) },
                     placeholder = { Text(text = "Misal: Langganan Film", color = TextTertiary) },
                     singleLine = true,
                     shape = RoundedCornerShape(14.dp),
@@ -139,7 +139,7 @@ fun AddCategoryContent(
                     ),
                     textStyle = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
-                            .padding(top = 8.dp)
+                            .height(50.dp)
                             .fillMaxWidth(),
                 )
             }
@@ -148,21 +148,20 @@ fun AddCategoryContent(
             FormField(title = "Tipe Kategori") {
 
                 TipeKategoriToggle(
-                    modifier = Modifier.padding(top = 6.dp),
                     selected = state.typeCategory,
                     onSelectedCategory = { onEvent(AddCategoryEvent.OnTypeSelected(it)) },
                 )
             }
 
             // Ikon & Warna
-            IconColorRow(
-                colorIndex = state.selectedColorIndex,
-                onChangeClick = { },
-            )
+//            IconColorRow(
+//                colorIndex = state.selectedColorIndex,
+//                onChangeClick = { },
+//            )
             ColorSwatchRow(
                 colors = listOf(Color.Red, Color.Green, Color.Blue),
                 selectedIndex = state.selectedColorIndex,
-                onColorSelected = { },
+                onColorSelected = { onEvent(AddCategoryEvent.OnColorSelected(it)) },
             )
 
             // Rencana Anggaran
@@ -181,14 +180,14 @@ fun AddCategoryContent(
                     value = state.defaultAccount,
                     isPlaceHolder = false,
                     options = listOf("Aset", "Bank", "Investasi"),
-                    onOptionSelected = { _ -> },
+                    onOptionSelected = { onEvent(AddCategoryEvent.OnAccountSelected(it)) },
                 )
             }
 
             FormField("Catatan Tambahan") {
                 OutlinedTextField(
                     value = state.note,
-                    onValueChange = { _ -> },
+                    onValueChange = { onEvent(AddCategoryEvent.OnNotesChanged(it)) },
                     placeholder = {
                         Text(
                             "Tambahkan deskripsi atau catatan khusus untuk kategori ini...",
@@ -396,7 +395,7 @@ fun CategoryDropdownField(
             onValueChange = { },
             readOnly = true,
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            shape = RoundedCornerShape(14.dp),
+            shape = RoundedCornerShape(16.dp),
             modifier = Modifier
                     .fillMaxWidth()
                     .menuAnchor(),
@@ -473,7 +472,9 @@ fun RencanaAnggaranCard(
                     unfocusedBorderColor = BorderGray,
                 ),
                 modifier = Modifier
-                        .padding(top = 8.dp)
+                        .height(
+                            50.dp,
+                        )
                         .fillMaxWidth(),
             )
         }

@@ -16,7 +16,7 @@ sealed class AddCategoryEvent {
     data class OnAccountSelected(val accountId: String) : AddCategoryEvent()
 
     // Pemilihan Visual
-    data class OnColorSelected(val colorHex: String) : AddCategoryEvent()
+    data class OnColorSelected(val colorIndex: Int) : AddCategoryEvent()
     object OnChangeIconColorClicked : AddCategoryEvent() // Tombol "Ubah"
 
     // Aksi Navigasi & Tombol Utama
