@@ -81,6 +81,7 @@ dependencies {
     implementation("androidx.navigation3:navigation3-ui:1.0.0")
     // Kalau pakai ViewModel di tiap screen
     implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:2.9.0")
+    implementation("androidx.compose.foundation:foundation:1.4.0")
 
     // coil
     implementation("io.coil-kt:coil-compose:2.7.0")

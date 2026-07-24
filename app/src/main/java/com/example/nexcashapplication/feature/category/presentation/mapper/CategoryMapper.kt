@@ -12,18 +12,18 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.nexcashapplication.core.datasource.local.model.CategoryEntity
-import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryFilter
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryItem
 
 // mapper — taruh di file terpisah biar rapi, misal ui/kategori/mapper/KategoriMapper.kt
 fun CategoryEntity.toUiModel(): CategoryItem = CategoryItem(
     id = id,
     nama = name,
-    tipe = CategoryFilter.valueOf(type.uppercase()),
+    tipe = TypeCategory.valueOf(type.uppercase()),
     icon = icon.toIconVector(),
     iconBgColor = icon.toIconColor(),
     terpakai = used,
-    budget = budget
+    budget = budget,
 )
 
 fun CategoryItem.toEntity(): CategoryEntity = CategoryEntity(
@@ -33,8 +33,9 @@ fun CategoryItem.toEntity(): CategoryEntity = CategoryEntity(
     icon = icon.toIconKey(), // reverse mapping, atau simpan iconKey terpisah di form input
     used = terpakai,
     color = "",
-    budget = budget
+    budget = budget,
 )
+
 // helper mapping icon key <-> ImageVector
 fun String.toIconVector(): ImageVector = when (this) {
     "makanan" -> Icons.Default.ShoppingCart

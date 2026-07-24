@@ -2,12 +2,13 @@ package com.example.nexcashapplication.feature.category.presentation.main.model
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 
 // ============ MODEL ============
 data class CategoryItem(
     val id: Long,
     val nama: String,
-    val tipe: CategoryFilter,
+    val tipe: TypeCategory,
     val icon: ImageVector,
     val iconBgColor: Color,
     val terpakai: Long,
@@ -17,7 +18,3 @@ data class CategoryItem(
         get() = if (budget == 0L) 0 else ((terpakai * 100) / budget).toInt()
 }
 
-enum class CategoryFilter(val label: String) {
-    EXPENSE("Pengeluaran"),
-    INCOME("Pendapatan")
-}

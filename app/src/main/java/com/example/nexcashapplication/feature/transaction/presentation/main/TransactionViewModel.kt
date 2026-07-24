@@ -138,6 +138,7 @@ class TransactionViewModel : ViewModel() {
                     _navigationEvent.send(TransactionNavigationEvent.NavigateToAddTransaction)
                 }
             }
+
         }
     }
 }

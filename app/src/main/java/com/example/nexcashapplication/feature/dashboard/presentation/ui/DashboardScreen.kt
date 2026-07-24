@@ -7,9 +7,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -86,63 +89,50 @@ fun DashboardContent(
         ) { padding ->
 
 
-        LazyColumn(
+        Column(
             modifier = modifier
-                .fillMaxSize(),
-            contentPadding = padding,
-//            verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(padding)
         ) {
 
-            item(key = "HeaderSection") {
-                HeaderSection(
-                    userName = state.userName,
-                    onClickNotification = {
+            HeaderSection(
+                userName = state.userName,
+                onClickNotification = {
 
-                    },
-                    onClickProfile = {
+                },
+                onClickProfile = {
 
-                    }
-                )
-            }
+                }
+            )
 
-            item(key = "BalanceCard") {
-                BalanceCard(
-                    totalBalance = state.totalBalance,
-                    income = state.income,
-                    expense = state.expense,
-                    isVisible = state.isBalanceVisible,
-                    onEyeClick = {
-                        onEvent(
-                            DashboardEvent.ToggleBalanceVisibility
-                        )
-                    }
-                )
-            }
+            BalanceCard(
+                totalBalance = state.totalBalance,
+                income = state.income,
+                expense = state.expense,
+                isVisible = state.isBalanceVisible,
+                onEyeClick = {
+                    onEvent(DashboardEvent.ToggleBalanceVisibility)
+                }
+            )
 
-            item(key = "QuickActionSection") {
-                QuickActionSection(
-                    modifier = Modifier.padding(vertical = 16.dp)
-                )
-            }
+            QuickActionSection(
+                modifier = Modifier.padding(vertical = 16.dp)
+            )
 
-            item(key = "BudgetCard") {
-                BudgetCard(
-                    remainingBudget = state.remainingBudget,
-                    progress = state.budgetUsedPercentage
-                )
-            }
+            BudgetCard(
+                remainingBudget = state.remainingBudget,
+                progress = state.budgetUsedPercentage
+            )
 
-            // Item transaksi langsung di LazyColumn
-            item(key = "transaction_list_card") {
-
-                FormField(
-                    title = "Transaksi Terakhir",
-                    actionText = "Semua",
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                ){
-                    Card(
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier
+            FormField(
+                title = "Transaksi Terakhir",
+                actionText = "Semua",
+                modifier = Modifier.padding(horizontal = 16.dp)
+            ) {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
                             .border(
@@ -150,20 +140,23 @@ fun DashboardContent(
                                 color = BorderGray,
                                 shape = RoundedCornerShape(16.dp)
                             )
-                    ) {
-                        // pakai LazyColumn nested? JANGAN
-                        // Tapi kalau transaksi dibatasi misal max 5, Column fine
-                        state.transactions.take(5).forEach { transaction ->
-                            TransactionItem(transaction = transaction, onClick = {})
-                            HorizontalDivider(modifier = Modifier.padding(horizontal = 8.dp))
+                ) {
+                    state.transactions.take(5).forEachIndexed { index, transaction ->
+                        TransactionItem(
+                            transaction = transaction,
+                            onClick = {}
+                        )
+
+                        if (index != state.transactions.take(5).lastIndex) {
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
                         }
                     }
                 }
-
-
-
-                Spacer(modifier = Modifier.height(20.dp))
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.example.nexcashapplication.feature.category.presentation.addnew.category
 
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.TypeCategory
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 
 sealed class AddCategoryEvent {
     // Input Teks

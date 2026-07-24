@@ -64,7 +64,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.TypeCategory
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -124,8 +124,6 @@ fun AddCategoryContent(
             // nama kategori
             FormField(
                 title = "Nama Kategori",
-                textStyle = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Medium,
             ) {
                 OutlinedTextField(
                     value = state.name,
@@ -194,8 +192,11 @@ fun AddCategoryContent(
                             color = Color(0xFFBBBBBB),
                         )
                     },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryCyan,
+                        unfocusedBorderColor = BorderGray,
+                    ),
                     shape = RoundedCornerShape(14.dp),
-                    colors = OutlinedTextFieldDefaults.colors(PrimaryCyan),
                     modifier = Modifier
                             .fillMaxWidth()
                             .height(90.dp),
@@ -394,6 +395,10 @@ fun CategoryDropdownField(
             value = value,
             onValueChange = { },
             readOnly = true,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = PrimaryCyan,
+                unfocusedBorderColor = BorderGray,
+            ),
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
@@ -403,6 +408,7 @@ fun CategoryDropdownField(
 
         ExposedDropdownMenu(
             expanded = expanded,
+            shape = RoundedCornerShape(16.dp),
             onDismissRequest = { expanded = false },
         ) {
             options.forEach { options ->
@@ -459,6 +465,7 @@ fun RencanaAnggaranCard(
         FormField(
             title = "Batas Anggaran",
             fontWeight = FontWeight.Normal,
+            textColor = TextSecondary
         ) {
             OutlinedTextField(
                 value = budgetLimit,
