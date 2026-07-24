@@ -13,10 +13,10 @@ data class CategoryState(
     val selectedTabCategory: TypeCategory = TypeCategory.EXPANSE,
     val error: String? = null,
 ) {
-    val filteredCategoryList: List<CategoryItem>
-        get() = categoryList.filter { item ->
-            val matchesSearch = item.nama.contains(searchQuery, ignoreCase = true)
-            val matchesType = item.tipe == selectedTabCategory
-            matchesSearch && matchesType
-        }
+//    val filteredCategoryList: List<CategoryItem>
+//        get() = categoryList.filter { item ->
+//            val matchesSearch = item.nama.contains(searchQuery, ignoreCase = true)
+//            val matchesType = item.tipe == selectedTabCategory
+//            matchesSearch && matchesType
+//        }
 }

@@ -33,23 +33,20 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.FavoriteBorder
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -67,7 +64,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -77,6 +76,7 @@ import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryItem
 import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
+import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 // ============ DUMMY DATA ============
@@ -218,7 +218,7 @@ fun CategoryContent(
                 },
                 onCategoryClick = { id ->
                     onEvent(CategoryEvent.OnKategoriClick(id))
-                }
+                },
             )
 
             // Add new category
@@ -239,45 +239,41 @@ fun CategorySearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
 ) {
-    Row(
+    OutlinedTextField(
+        value = query,
+        onValueChange = onQueryChange,
         modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp)
-                .clip(RoundedCornerShape(14.dp))
-                .background(Color(0xFFF2F2F2))
-                .padding(horizontal = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = Icons.Default.Search,
-            contentDescription = null,
-            tint = Color(0xFF9E9E9E),
-            modifier = Modifier.size(20.dp),
-        )
-        Spacer(Modifier.width(8.dp))
-        Box(modifier = Modifier.weight(1f)) {
-            if (query.isEmpty()) {
-                Text(
-                    text = "Cari kategori...",
-                    color = Color(0xFF9E9E9E),
-                    fontSize = 14.sp,
-                )
-            }
-            BasicTextField(
-                value = query,
-                onValueChange = onQueryChange,
-                singleLine = true,
-                textStyle = LocalTextStyle.current.copy(fontSize = 14.sp, color = Color.Black),
-                modifier = Modifier.fillMaxWidth(),
+                .height(48.dp),
+        singleLine = true,
+        placeholder = {
+            Text("Cari kategori...")
+        },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null
             )
-        }
-        Icon(
-            imageVector = Icons.Default.Lock,
-            contentDescription = "Filter",
-            tint = Color(0xFF9E9E9E),
-            modifier = Modifier.size(20.dp),
+        },
+        trailingIcon = {
+            Icon(
+                imageVector = Icons.Default.Lock,
+                contentDescription = "Filter"
+            )
+        },
+        shape = RoundedCornerShape(14.dp),
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFFF2F2F2),
+            unfocusedContainerColor = Color(0xFFF2F2F2),
+            disabledContainerColor = Color(0xFFF2F2F2),
+
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            disabledBorderColor = Color.Transparent,
+
+            cursorColor = Color.Black
         )
-    }
+    )
 }
 
 // ============ BUDGET SUMMARY CARD ============
@@ -344,8 +340,19 @@ fun CategoryPager(
         PrimaryTabRow(
             selectedTabIndex = pagerState.currentPage,
             containerColor = Color.White,
-            contentColor = Color(0xFF29B6F6),
-        ) {
+            contentColor = PrimaryCyan,
+            indicator = {
+                TabRowDefaults.PrimaryIndicator(
+                    modifier = Modifier.tabIndicatorOffset(
+                        selectedTabIndex = pagerState.currentPage,
+                        matchContentSize = false
+                    ),
+                    width = Dp.Unspecified,
+                    color = PrimaryCyan,
+                )
+            }
+
+            ) {
             tabs.forEach { type ->
                 Tab(
                     selected = tabs[pagerState.currentPage] == type,
@@ -354,11 +361,11 @@ fun CategoryPager(
                         Text(
                             text = type.label,
                             fontSize = 14.sp,
-                            fontWeight = if (tabs[pagerState.currentPage] == type) FontWeight.Bold else FontWeight.Medium
+                            fontWeight = if (tabs[pagerState.currentPage] == type) FontWeight.Bold else FontWeight.Medium,
                         )
                     },
-                    selectedContentColor = Color(0xFF29B6F6),
-                    unselectedContentColor = Color(0xFF7A8A99)
+                    selectedContentColor = PrimaryCyan,
+                    unselectedContentColor = Color(0xFF7A8A99),
                 )
             }
         }
@@ -375,7 +382,7 @@ fun CategoryPager(
 
             CategoryGrid(
                 list = filteredList,
-                onItemClick = { item -> onCategoryClick(item.id) }
+                onItemClick = { item -> onCategoryClick(item.id) },
             )
         }
     }
@@ -391,14 +398,14 @@ fun CategoryGrid(
         if (list.isEmpty()) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 32.dp),
-                contentAlignment = Alignment.Center
+                        .fillMaxWidth()
+                        .padding(vertical = 32.dp),
+                contentAlignment = Alignment.Center,
             ) {
                 Text(
                     text = "Tidak ada kategori",
                     color = Color(0xFF9E9E9E),
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
                 )
             }
         }
