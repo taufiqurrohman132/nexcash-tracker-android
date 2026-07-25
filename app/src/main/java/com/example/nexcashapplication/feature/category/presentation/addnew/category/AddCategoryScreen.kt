@@ -184,7 +184,9 @@ fun AddCategoryContent(
             // Rencana Anggaran
             RencanaAnggaranCard(
                 budgetLimit = state.budgetLimit,
-                onBudgetLimitChange = { },
+                onBudgetLimitChange = {
+                    onEvent(AddCategoryEvent.OnBudgetChanged(it))
+                },
                 selectedPeriod = state.selectedPeriod,
                 onPeriodChange = { period ->
                     onEvent(AddCategoryEvent.OnPeriodSelected(period))
@@ -226,11 +228,11 @@ fun AddCategoryContent(
 
             // Tombol Aksi
             Button(
-                onClick = { },
+                onClick = { onEvent },
                 enabled = state.isValid,
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF6C5CE7),
+                    containerColor = PrimaryCyan,
                     disabledContainerColor = Color(0xFFB8AEEB),
                 ),
                 modifier = Modifier
@@ -427,6 +429,7 @@ fun CategoryDropdownField(
 
         ExposedDropdownMenu(
             expanded = expanded,
+            shadowElevation = 8.dp,
             shape = RoundedCornerShape(16.dp),
             onDismissRequest = { expanded = false },
         ) {
@@ -446,7 +449,7 @@ fun CategoryDropdownField(
 @Composable
 fun RencanaAnggaranCard(
     budgetLimit: String,
-    onBudgetLimitChange: () -> Unit,
+    onBudgetLimitChange: (String) -> Unit,
     selectedPeriod: BudgetPeriod,
     onPeriodChange: (BudgetPeriod) -> Unit,
     modifier: Modifier = Modifier,
@@ -488,7 +491,7 @@ fun RencanaAnggaranCard(
         ) {
             OutlinedTextField(
                 value = budgetLimit,
-                onValueChange = { },
+                onValueChange = { onBudgetLimitChange(it)},
                 leadingIcon = { },
                 placeholder = { },
                 singleLine = true,

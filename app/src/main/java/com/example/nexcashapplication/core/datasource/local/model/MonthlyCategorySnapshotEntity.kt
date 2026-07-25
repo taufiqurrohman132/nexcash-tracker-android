@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(
     tableName = "monthly_category_snapshots",
@@ -13,22 +14,22 @@ import androidx.room.PrimaryKey
             entity = MonthlySnapshotEntity::class,
             parentColumns = ["id"],
             childColumns = ["snapshot_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = CategoryEntity::class,
             parentColumns = ["id"],
             childColumns = ["category_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         )
     ],
-    indices = [Index(value = ["snapshot_id"]),Index(value = ["category_id"]),]
+    indices = [Index(value = ["snapshot_id"]), Index(value = ["category_id"])],
 
-)
+    )
 data class MonthlyCategorySnapshotEntity(
 
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
 
     @ColumnInfo(name = "snapshot_id")
     val snapshotId: Long,
@@ -43,5 +44,5 @@ data class MonthlyCategorySnapshotEntity(
     val budgetAmount: Double = 0.0,
 
     @ColumnInfo(name = "transaction_count")
-    val transactionCount: Int = 0
+    val transactionCount: Int = 0,
 )

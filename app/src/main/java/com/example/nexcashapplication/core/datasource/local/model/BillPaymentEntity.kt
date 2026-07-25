@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(
     tableName = "bill_payments",
@@ -13,27 +14,27 @@ import androidx.room.PrimaryKey
             entity = BillEntity::class,
             parentColumns = ["id"],
             childColumns = ["bill_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         ),
         ForeignKey(
             entity = TransactionEntity::class,
             parentColumns = ["id"],
             childColumns = ["transaction_id"],
-            onDelete = ForeignKey.SET_NULL
+            onDelete = ForeignKey.SET_NULL,
         ),
         ForeignKey(
             entity = AccountEntity::class,
             parentColumns = ["id"],
             childColumns = ["account_id"],
-            onDelete = ForeignKey.SET_NULL
+            onDelete = ForeignKey.SET_NULL,
         )
     ],
-    indices = [Index(value = ["bill_id"]),Index(value = ["transaction_id"]),Index(value = ["account_id"]),]
+    indices = [Index(value = ["bill_id"]), Index(value = ["transaction_id"]), Index(value = ["account_id"])],
 )
 data class BillPaymentEntity(
 
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
 
     @ColumnInfo(name = "bill_id")
     val billId: Long,
@@ -55,5 +56,5 @@ data class BillPaymentEntity(
 
     // pending, paid, overdue, cancelled
     @ColumnInfo(name = "status")
-    val status: String
+    val status: String,
 )

@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.category.presentation.addnew.category
 
+import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 
@@ -17,7 +18,7 @@ sealed class AddCategoryEvent {
 
     // Pemilihan Visual
     data class OnColorSelected(val colorIndex: Int) : AddCategoryEvent()
-    object OnChangeIcon : AddCategoryEvent() // Tombol "Ubah"
+    data class OnChangeIcon(val icon: CategoryIcon) : AddCategoryEvent() // Tombol "Ubah"
 
     // Aksi Navigasi & Tombol Utama
     object OnSaveClicked : AddCategoryEvent() // Tombol "Simpan" & "Selesaikan Pembuatan"

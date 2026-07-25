@@ -4,7 +4,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
@@ -12,41 +11,46 @@ import androidx.compose.material.icons.filled.Warning
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.nexcashapplication.core.datasource.local.model.CategoryEntity
+import com.example.nexcashapplication.core.domain.model.CategoryIcon
+import com.example.nexcashapplication.core.domain.model.DummyCategoryIcons
 import com.example.nexcashapplication.core.domain.model.TypeCategory
-import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryItem
+import com.example.nexcashapplication.feature.category.domain.model.Category
 
-// mapper — taruh di file terpisah biar rapi, misal ui/kategori/mapper/KategoriMapper.kt
-fun CategoryEntity.toUiModel(): CategoryItem = CategoryItem(
+
+fun CategoryEntity.toDomain() = Category(
     id = id,
-    nama = name,
-    tipe = TypeCategory.valueOf(type.uppercase()),
-    icon = icon.toIconVector(),
-    iconBgColor = icon.toIconColor(),
-    terpakai = used,
+    parentId = parentId,
+    name = name,
+    type = TypeCategory.valueOf(type.uppercase()),
+    icon = icon,
+    color = color,
+    used = used,
     budget = budget,
+    period = period,
+    isSystem = isSystem,
+    deletedAt = deletedAt,
 )
 
-fun CategoryItem.toEntity(): CategoryEntity = CategoryEntity(
+fun Category.toEntity() = CategoryEntity(
     id = id,
-    name = nama,
-    type = tipe.name.lowercase(),
-    icon = icon.toIconKey(), // reverse mapping, atau simpan iconKey terpisah di form input
-    used = terpakai,
-    color = "",
+    parentId = parentId,
+    name = name,
+    type = type.name.lowercase(), // sesuai komentar entity: "expense / income" (lowercase)
+    icon = icon,
+    color = color,
+    used = used,
+    period = period,
     budget = budget,
+    isSystem = isSystem,
+    deletedAt = deletedAt ?: 0L, // sesuaikan sama default Entity — lihat catatan di bawah
 )
+
+val default: CategoryIcon = DummyCategoryIcons.lainnya.last() // "more_horiz" sebagai fallback
 
 // helper mapping icon key <-> ImageVector
-fun String.toIconVector(): ImageVector = when (this) {
-    "makanan" -> Icons.Default.ShoppingCart
-    "transportasi" -> Icons.Default.LocationOn
-    "belanja" -> Icons.Default.Star
-    "kesehatan" -> Icons.Default.Favorite
-    "tagihan" -> Icons.Default.Warning
-    "hiburan" -> Icons.Default.PlayArrow
-    "investasi" -> Icons.Default.Info
-    else -> Icons.Default.MoreVert
-}
+fun String.toIconVector(): CategoryIcon = DummyCategoryIcons.allGroups
+        .flatMap { it.icons }
+        .find { it.id == this } ?: default
 
 fun ImageVector.toIconKey(): String = when (this) {
     Icons.Default.ShoppingCart -> "makanan"

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(
     tableName = "bills",
@@ -13,16 +14,16 @@ import androidx.room.PrimaryKey
             entity = CategoryEntity::class,
             parentColumns = ["id"],
             childColumns = ["category_id"],
-            onDelete = ForeignKey.SET_NULL
+            onDelete = ForeignKey.SET_NULL,
         )
     ],
-    indices = [Index(value = ["category_id"]),]
+    indices = [Index(value = ["category_id"])],
 
-)
+    )
 data class BillEntity(
 
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
 
     @ColumnInfo(name = "category_id")
     val categoryId: Long? = null,
@@ -52,5 +53,5 @@ data class BillEntity(
     val notifyEnabled: Boolean = true,
 
     @ColumnInfo(name = "deleted_at")
-    val deletedAt: Long? = null
+    val deletedAt: Long? = null,
 )

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(
     tableName = "insights",
@@ -13,16 +14,16 @@ import androidx.room.PrimaryKey
             entity = CategoryEntity::class,
             parentColumns = ["id"],
             childColumns = ["related_category_id"],
-            onDelete = ForeignKey.SET_NULL
+            onDelete = ForeignKey.SET_NULL,
         )
     ],
-    indices = [Index(value = ["related_category_id"]),]
+    indices = [Index(value = ["related_category_id"])],
 
-)
+    )
 data class InsightEntity(
 
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
 
     @ColumnInfo(name = "related_category_id")
     val relatedCategoryId: Long? = null,
@@ -53,5 +54,5 @@ data class InsightEntity(
     val periodMonth: Short,
 
     @ColumnInfo(name = "expires_at")
-    val expiresAt: Long? = null
+    val expiresAt: Long? = null,
 )

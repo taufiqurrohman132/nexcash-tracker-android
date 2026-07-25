@@ -2,16 +2,16 @@ package com.example.nexcashapplication.core.datasource.local.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(
     tableName = "notifications",
 )
 data class NotificationEntity(
 
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
 
     // contoh: reminder, budget_alert, transaction, promo
     @ColumnInfo(name = "type")
@@ -33,5 +33,5 @@ data class NotificationEntity(
     val isRead: Boolean = false,
 
     @ColumnInfo(name = "sent_at")
-    val sentAt: Long
+    val sentAt: Long,
 )

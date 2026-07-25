@@ -3,14 +3,15 @@ package com.example.nexcashapplication.core.datasource.local.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(
-    tableName = "accounts"
+    tableName = "accounts",
 )
 data class AccountEntity(
 
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
 
     // contoh: cash, bank, ewallet, credit_card, investment
     @ColumnInfo(name = "account_type")
@@ -32,5 +33,5 @@ data class AccountEntity(
     val isActive: Boolean = true,
 
     @ColumnInfo(name = "deleted_at")
-    val deletedAt: Long? = null
+    val deletedAt: Long? = null,
 )

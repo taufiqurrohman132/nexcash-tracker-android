@@ -2,7 +2,11 @@ package com.example.nexcashapplication.feature.category.presentation.addnew.cate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nexcashapplication.feature.category.domain.model.Category
+import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
+import com.example.nexcashapplication.feature.category.presentation.mapper.toIconVector
 import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -10,8 +14,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AddCategoryViewModel : ViewModel() {
+@HiltViewModel
+class AddCategoryViewModel @Inject constructor(
+    val repository: CategoryRepository,
+) : ViewModel() {
     private var _state = MutableStateFlow(AddCategoryState())
     val state: StateFlow<AddCategoryState> = _state.asStateFlow()
 
@@ -31,6 +39,7 @@ class AddCategoryViewModel : ViewModel() {
             }
 
             is AddCategoryEvent.OnSaveClicked -> {
+
 //                viewModelScope.launch {
 //                    _navigationEvent.send(CategoryNavigationEvent.NavigateToDetail(event.id))
 //                }
@@ -59,9 +68,9 @@ class AddCategoryViewModel : ViewModel() {
             }
 
             is AddCategoryEvent.OnChangeIcon -> {
-//                _state.update {
-//                    it.copy(name = event.name)
-//                }
+                _state.update {
+                    it.copy(selectedIcon = event.icon)
+                }
             }
 
             is AddCategoryEvent.OnColorSelected -> {
@@ -89,5 +98,26 @@ class AddCategoryViewModel : ViewModel() {
             }
         }
 
+    }
+
+    fun loadCategory(id: String): Unit {
+        viewModelScope.launch {
+
+            try {
+                val category = repository.getCategoryById(id)
+                if (category != null){
+                    _state.update {
+                        it.copy(
+                            name = category.name,
+                            typeCategory = category.type,
+                            selectedIcon = category.icon.toIconVector(),
+                            selectedColorIndex = category.color,
+                            budgetLimit = category.budget,
+                            selectedPeriod = category.
+                        )
+                    }
+                }
+            }
+        }
     }
 }

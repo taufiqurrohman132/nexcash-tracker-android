@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.util.UUID
 
 @Entity(
     tableName = "investment_details",
@@ -13,16 +14,16 @@ import androidx.room.PrimaryKey
             entity = AccountEntity::class,
             parentColumns = ["id"],
             childColumns = ["account_id"],
-            onDelete = ForeignKey.CASCADE
+            onDelete = ForeignKey.CASCADE,
         )
     ],
-    indices = [Index(value = ["account_id"]),]
+    indices = [Index(value = ["account_id"])],
 
-)
+    )
 data class InvestmentDetailEntity(
 
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @PrimaryKey
+    val id: String = UUID.randomUUID().toString(),
 
     @ColumnInfo(name = "account_id")
     val accountId: Long,
@@ -41,5 +42,5 @@ data class InvestmentDetailEntity(
     val unitPrice: Double = 0.0,
 
     @ColumnInfo(name = "last_synced_at")
-    val lastSyncedAt: Long? = null
+    val lastSyncedAt: Long? = null,
 )

@@ -15,41 +15,49 @@ interface CategoryDao {
     // LIST SCREEN ─────────────────────────────────────
 
     // Semua kategori pengeluaran (tab Pengeluaran)
-    @Query("""
+    @Query(
+        """
         SELECT * FROM categories 
         WHERE type = 'expense' AND parent_id IS NULL
         ORDER BY name ASC
-    """)
+    """,
+    )
     fun getExpenseCategories(): Flow<List<CategoryEntity>>
 
     // Semua kategori pemasukan (tab Pemasukan)
-    @Query("""
+    @Query(
+        """
         SELECT * FROM categories 
         WHERE type = 'income' AND parent_id IS NULL
         ORDER BY name ASC
-    """)
+    """,
+    )
     fun getIncomeCategories(): Flow<List<CategoryEntity>>
 
     // Search kategori (search bar di list)
-    @Query("""
+    @Query(
+        """
         SELECT * FROM categories 
         WHERE name LIKE '%' || :query || '%'
         AND type = :type
-    """)
+    """,
+    )
     fun searchCategories(query: String, type: String): Flow<List<CategoryEntity>>
 
     // DETAIL KATEGORI ─────────────────────────────────
 
     // Ambil satu kategori by ID
     @Query("SELECT * FROM categories WHERE id = :id")
-    fun getCategoryById(id: String): Flow<CategoryEntity?>
+    suspend fun getCategoryById(id: String): CategoryEntity?
 
     // Ambil subkategori dari kategori induk
-    @Query("""
+    @Query(
+        """
         SELECT * FROM categories 
         WHERE parent_id = :parentId
         ORDER BY name ASC
-    """)
+    """,
+    )
     fun getSubCategories(parentId: String): Flow<List<CategoryEntity>>
 
     // CRUD ────────────────────────────────────────────
@@ -67,23 +75,29 @@ interface CategoryDao {
     suspend fun deleteCategory(category: CategoryEntity)
 
     // Cek duplikat nama sebelum insert
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(*) FROM categories 
         WHERE name = :name AND type = :type AND parent_id IS :parentId
-    """)
+    """,
+    )
     suspend fun countByName(name: String, type: String, parentId: String?): Int
 
     // Cek apakah kategori punya transaksi (sebelum hapus)
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(*) FROM transactions 
         WHERE category_id = :categoryId
-    """)
+    """,
+    )
     suspend fun countTransactionsByCategory(categoryId: String): Int
 
     // Cek apakah kategori punya subkategori (sebelum hapus)
-    @Query("""
+    @Query(
+        """
         SELECT COUNT(*) FROM categories 
         WHERE parent_id = :categoryId
-    """)
+    """,
+    )
     suspend fun countSubCategories(categoryId: String): Int
 }
