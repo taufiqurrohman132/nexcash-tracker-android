@@ -1,10 +1,11 @@
 package com.example.nexcashapplication.core.navigations
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,18 +51,31 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxSize(),
             onBack = navigator::goBack,
             transitionSpec = {
-                slideInHorizontally(initialOffsetX = { it }) togetherWith
-                        slideOutHorizontally(targetOffsetX = { -it / 3 })
+                // screen baru masuk — muncul dari agak kecil, membesar ke normal + fade in
+                (scaleIn(
+                    initialScale = 0.92f,
+                    animationSpec = tween(250),
+                ) + fadeIn(tween(250))) togetherWith
+                        // screen lama keluar — sedikit membesar (kesan "didorong ke belakang") + fade out
+                        (scaleOut(targetScale = 1.05f, animationSpec = tween(200)) + fadeOut(
+                            tween(
+                                150,
+                            ),
+                        ))
             },
             // --- animasi balik (pop / back) ---
             popTransitionSpec = {
-                slideInHorizontally(initialOffsetX = { -it }) togetherWith
-                        slideOutHorizontally(targetOffsetX = { it })
+                // masuk (screen sebelumnya muncul lagi) — scale up dikit dari kecil + fade in
+                (scaleIn(initialScale = 0.9f) + fadeIn()) togetherWith
+                        // keluar (screen saat ini) — scale down + fade out, kesan "mengecil hilang"
+                        (scaleOut(targetScale = 0.85f) + fadeOut())
             },
             // --- animasi kalau predictive back di-swipe tapi dibatalkan ---
             predictivePopTransitionSpec = {
-                slideInHorizontally(initialOffsetX = { -it }) togetherWith
-                        slideOutHorizontally(targetOffsetX = { it })
+                (scaleIn(initialScale = 0.9f) + fadeIn()) togetherWith
+                        (scaleOut(targetScale = 0.8f, animationSpec = tween(300)) + fadeOut(
+                            animationSpec = tween(200),
+                        ))
             },
             entries = navigationState.toEntries(
                 entryProvider {
@@ -126,7 +140,9 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
                         }
                     }
                     entry<Route.CategorRoute.AddNew> {
-                        AddCategoryScreen()
+                        AddCategoryScreen(
+                            onBack = navigator::goBack,
+                        )
                     }
                     entry<Route.CategorRoute.Detail> {
                         DetailCategoryScreen()

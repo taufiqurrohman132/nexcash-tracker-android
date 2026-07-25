@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.feature.category.presentation.addnew.category
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -8,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class AddCategoryViewModel : ViewModel() {
     private var _state = MutableStateFlow(AddCategoryState())
@@ -23,7 +25,9 @@ class AddCategoryViewModel : ViewModel() {
             }
 
             is AddCategoryEvent.OnBackClicked -> {
-
+                viewModelScope.launch {
+                    _navigationEvent.send(CategoryNavigationEvent.NavigateBack)
+                }
             }
 
             is AddCategoryEvent.OnSaveClicked -> {

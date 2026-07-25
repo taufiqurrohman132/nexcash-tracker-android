@@ -28,7 +28,6 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
@@ -40,7 +39,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.PrimaryTabRow
@@ -64,7 +62,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -95,6 +92,7 @@ fun CategoryScreen(
             when (event) {
                 is CategoryNavigationEvent.NavigateToAddCategory -> onNavigateAddCategory()
                 is CategoryNavigationEvent.NavigateToDetail -> onNavigateCategoryDetail(event.categoryId)
+                else -> {}
             }
         }
     }
@@ -252,13 +250,13 @@ fun CategorySearchBar(
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = null
+                contentDescription = null,
             )
         },
         trailingIcon = {
             Icon(
                 imageVector = Icons.Default.Lock,
-                contentDescription = "Filter"
+                contentDescription = "Filter",
             )
         },
         shape = RoundedCornerShape(14.dp),
@@ -271,8 +269,8 @@ fun CategorySearchBar(
             unfocusedBorderColor = Color.Transparent,
             disabledBorderColor = Color.Transparent,
 
-            cursorColor = Color.Black
-        )
+            cursorColor = Color.Black,
+        ),
     )
 }
 
@@ -345,12 +343,12 @@ fun CategoryPager(
                 TabRowDefaults.PrimaryIndicator(
                     modifier = Modifier.tabIndicatorOffset(
                         selectedTabIndex = pagerState.currentPage,
-                        matchContentSize = false
+                        matchContentSize = false,
                     ),
                     width = Dp.Unspecified,
                     color = PrimaryCyan,
                 )
-            }
+            },
 
             ) {
             tabs.forEach { type ->

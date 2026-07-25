@@ -25,7 +25,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
@@ -48,6 +47,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -71,6 +71,7 @@ import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.DummyCategoryIcons
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
+import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -80,11 +81,20 @@ import com.example.nexcashapplication.ui.theme.TextTertiary
 
 @Composable
 fun AddCategoryScreen(
+    onBack: () -> Unit,
     viewModel: AddCategoryViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { navigate ->
+            when (navigate) {
+                is CategoryNavigationEvent.NavigateBack -> onBack()
+                else -> {}
+            }
+        }
+    }
     AddCategoryContent(state, viewModel::onEvent)
 
 }
@@ -109,7 +119,7 @@ fun AddCategoryContent(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
+                    IconButton(onClick = { onEvent(AddCategoryEvent.OnBackClicked) }) {
                         Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Kembali")
                     }
                 },
@@ -559,14 +569,14 @@ fun IconPreviewRow(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             modifier = modifier
                     .horizontalScroll(rememberScrollState())
-                    .weight(1f)
+                    .weight(1f),
         ) {
 
             recentIcons.forEach { icon ->
                 IconChip(
                     icon = icon.icon,
                     isSelected = icon == selectedIcon,
-                    onClick = onIconClick
+                    onClick = onIconClick,
                 )
             }
         }
@@ -574,10 +584,10 @@ fun IconPreviewRow(
         IconChip(
             icon = Icons.Default.GridView,
             isSelected = false,
-            onClick = {  },
+            onClick = { },
             contentDescription = "Lihat semua icon",
             iconColor = Color.White,
-            backgroundColor = PrimaryCyan
+            backgroundColor = PrimaryCyan,
         )
     }
 }
@@ -626,7 +636,9 @@ fun IconChip(
 @Composable
 private fun AddCategoryPreview() {
     NexCashApplicationTheme {
-        AddCategoryScreen()
+        AddCategoryScreen(
+            onBack = {},
+        )
     }
 }
 
