@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.category.di
+package com.example.nexcashapplication.di
 
 import android.content.Context
 import androidx.room.Room

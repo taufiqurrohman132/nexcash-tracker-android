@@ -1,8 +1,14 @@
 package com.example.nexcashapplication.feature.category.presentation.addnew.category
 
 import android.util.Log
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nexcashapplication.core.datasource.local.datastore.PreferencesKeys
+import com.example.nexcashapplication.core.domain.repository.PreferencesRepository
+import com.example.nexcashapplication.core.extension.moveToFront
+import com.example.nexcashapplication.core.extension.toColor
+import com.example.nexcashapplication.core.extension.toHex
 import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
 import com.example.nexcashapplication.feature.category.presentation.mapper.toDomain
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiState
@@ -12,14 +18,19 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
 import javax.inject.Inject
 
 @HiltViewModel
 class AddCategoryViewModel @Inject constructor(
     val repository: CategoryRepository,
+    val preferencesRepository: PreferencesRepository,
 ) : ViewModel() {
     private var _state = MutableStateFlow(AddCategoryState())
     val state: StateFlow<AddCategoryState> = _state.asStateFlow()
@@ -111,12 +122,17 @@ class AddCategoryViewModel @Inject constructor(
 
     fun loadCategory(id: String) {
         viewModelScope.launch {
+            val currentState = _state.value
 
             try {
                 val category = repository.getCategoryById(id)
                 if (category != null) {
                     _state.update {
-                        category.toUiState()
+                        category.toUiState(
+                            recentColors = getRecentColorsSnapshot().moveToFront(
+                                color = currentState.selectedColor,
+                            ),
+                        )
                     }
                 }
             } catch (e: Exception) {
@@ -137,7 +153,12 @@ class AddCategoryViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
+                // simpan
                 val category = currentState.toDomain(id = currentState.id)
+                val colorSelected = currentState.selectedColor
+                val recentColors = currentState.recentColors.map { it.toHex() }
+
+                saveRecentColors(recentColors)
                 repository.insertCategory(category)
             } catch (e: Exception) {
                 Log.e(TAG, "save: $e")
@@ -147,6 +168,20 @@ class AddCategoryViewModel @Inject constructor(
 //            }
         }
     }
+
+    suspend fun saveRecentColors(colors: List<String>) {
+        preferencesRepository.saveList(
+            key = PreferencesKeys.RECENT_COLORS,
+            value = colors,
+            serializer = ListSerializer(String.serializer()),
+        )
+    }
+
+    suspend fun getRecentColorsSnapshot(): List<Color> =
+        preferencesRepository
+                .getList(PreferencesKeys.RECENT_COLORS, ListSerializer(String.serializer()))
+                .map { hexList -> hexList.map { it.toColor() } }
+                .first()
 
     companion object {
         private val TAG = AddCategoryViewModel::class.java.simpleName

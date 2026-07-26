@@ -5,6 +5,8 @@ plugins {
 
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
+
+
 }
 
 android {
@@ -72,11 +74,14 @@ dependencies {
     implementation("androidx.room:room-ktx:2.7.2")
     implementation("androidx.room:room-paging:2.7.2")
 
+    // data store
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
+
     // hilt
     implementation("com.google.dagger:hilt-android:2.59.2")
     ksp("com.google.dagger:hilt-android-compiler:2.59.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
-
+ 
     // Navigation 3 core
     implementation("androidx.navigation3:navigation3-ui:1.0.0")
     // Kalau pakai ViewModel di tiap screen
