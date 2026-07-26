@@ -5,7 +5,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface CategoryRepository {
     suspend fun getCategoryById(id: String): Category?
-    suspend fun getAllCategory(): Flow<List<Category?>>
+
+    //    suspend fun getAllCategory(): Flow<List<Category?>>
     fun searchCategories(query: String, type: String): Flow<List<Category>>
     fun getExpenseCategories(): Flow<List<Category>>
     fun getIncomeCategories(): Flow<List<Category>>

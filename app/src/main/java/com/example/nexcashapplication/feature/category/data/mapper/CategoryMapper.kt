@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.category.presentation.mapper
+package com.example.nexcashapplication.feature.category.data.mapper
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -12,9 +12,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.nexcashapplication.core.datasource.local.model.CategoryEntity
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
-import com.example.nexcashapplication.core.domain.model.DummyCategoryIcons
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.category.domain.model.Category
+import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
+import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
 
 
 fun CategoryEntity.toDomain() = Category(
@@ -26,7 +27,9 @@ fun CategoryEntity.toDomain() = Category(
     color = color,
     used = used,
     budget = budget,
-    period = period,
+    period = BudgetPeriod.valueOf(period.uppercase()),
+    defaultAccount = defaultAccount,
+    note = note,
     isSystem = isSystem,
     deletedAt = deletedAt,
 )
@@ -35,20 +38,22 @@ fun Category.toEntity() = CategoryEntity(
     id = id,
     parentId = parentId,
     name = name,
-    type = type.name.lowercase(), // sesuai komentar entity: "expense / income" (lowercase)
+    type = type.name.lowercase(),
     icon = icon,
     color = color,
     used = used,
-    period = period,
     budget = budget,
+    period = period.name.lowercase(),
+    defaultAccount = defaultAccount,
+    note = note,
     isSystem = isSystem,
-    deletedAt = deletedAt ?: 0L, // sesuaikan sama default Entity — lihat catatan di bawah
+    deletedAt = deletedAt,
 )
 
-val default: CategoryIcon = DummyCategoryIcons.lainnya.last() // "more_horiz" sebagai fallback
+val default: CategoryIcon = CategoryIcons.lainnya.last() // "more_horiz" sebagai fallback
 
 // helper mapping icon key <-> ImageVector
-fun String.toIconVector(): CategoryIcon = DummyCategoryIcons.allGroups
+fun String.toIconVector(): CategoryIcon = CategoryIcons.allGroups
         .flatMap { it.icons }
         .find { it.id == this } ?: default
 

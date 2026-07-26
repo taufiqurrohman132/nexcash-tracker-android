@@ -1,11 +1,12 @@
 package com.example.nexcashapplication.feature.category.data
 
 import com.example.nexcashapplication.core.datasource.local.dao.CategoryDao
-import com.example.nexcashapplication.core.datasource.local.mapper.toDomain
-import com.example.nexcashapplication.core.datasource.local.mapper.toEntity
+import com.example.nexcashapplication.feature.category.data.mapper.toDomain
+import com.example.nexcashapplication.feature.category.data.mapper.toEntity
 import com.example.nexcashapplication.feature.category.domain.model.Category
 import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class CategoryRepositoryImpl @Inject constructor(
@@ -15,22 +16,29 @@ class CategoryRepositoryImpl @Inject constructor(
         return dao.getCategoryById(id)?.toDomain()
     }
 
-    override suspend fun getAllCategory(): Flow<List<Category?>> {
-    }
+//    override suspend fun getAllCategory(): Flow<List<Category?>> {
+//        retur
+//    }
 
     override fun searchCategories(
         query: String,
         type: String,
     ): Flow<List<Category>> {
-        TODO("Not yet implemented")
+        return dao.searchCategories(
+            query = query,
+            type = type,
+        ).map { list ->
+            list.map { it.toDomain() }
+        }
     }
 
     override fun getExpenseCategories(): Flow<List<Category>> {
-        TODO("Not yet implemented")
+        return dao.getExpenseCategories().map { list -> list.map { it.toDomain() } }
     }
 
     override fun getIncomeCategories(): Flow<List<Category>> {
-        TODO("Not yet implemented")
+        return dao.getIncomeCategories().map { list -> list.map { it.toDomain() } }
+
     }
 
     override suspend fun insertCategory(category: Category) {
@@ -38,11 +46,11 @@ class CategoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateCategory(category: Category) {
-        TODO("Not yet implemented")
+        dao.updateCategory(category.toEntity())
     }
 
     override suspend fun deleteCategory(category: Category) {
-        TODO("Not yet implemented")
+        dao.deleteCategory(category.toEntity())
     }
 
     override suspend fun countByName(
@@ -50,14 +58,22 @@ class CategoryRepositoryImpl @Inject constructor(
         type: String,
         parentId: String?,
     ): Int {
-        TODO("Not yet implemented")
+        return dao.countByName(
+            name = name,
+            type = type,
+            parentId = parentId,
+        )
     }
 
     override suspend fun countTransactionsByCategory(categoryId: String): Int {
-        TODO("Not yet implemented")
+        return countTransactionsByCategory(
+            categoryId,
+        )
     }
 
     override suspend fun countSubCategories(categoryId: String): Int {
-        TODO("Not yet implemented")
+        return countSubCategories(
+            categoryId,
+        )
     }
 }

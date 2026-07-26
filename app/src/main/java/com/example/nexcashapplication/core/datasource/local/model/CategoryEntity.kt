@@ -17,7 +17,10 @@ import java.util.UUID
             onDelete = ForeignKey.SET_NULL,
         )
     ],
-    indices = [Index(value = ["parent_id"])],
+    indices = [
+        Index("parent_id"),
+        Index("deleted_at")
+    ],
 )
 data class CategoryEntity(
 
@@ -30,7 +33,6 @@ data class CategoryEntity(
     @ColumnInfo(name = "name")
     val name: String,
 
-    // expense / income
     @ColumnInfo(name = "type")
     val type: String,
 
@@ -39,13 +41,21 @@ data class CategoryEntity(
 
     @ColumnInfo(name = "color")
     val color: String,
+
     @ColumnInfo(name = "used")
     val used: Long,
+
     @ColumnInfo(name = "budget")
     val budget: Long,
 
     @ColumnInfo(name = "period")
     val period: String,
+
+    @ColumnInfo(name = "default_account")
+    val defaultAccount: String,
+
+    @ColumnInfo(name = "note")
+    val note: String = "",
 
     @ColumnInfo(name = "is_system")
     val isSystem: Boolean = false,

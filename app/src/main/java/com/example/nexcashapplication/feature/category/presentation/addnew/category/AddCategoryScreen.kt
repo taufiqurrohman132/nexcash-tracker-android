@@ -70,6 +70,7 @@ import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.DummyCategoryIcons
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
 import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent
 import com.example.nexcashapplication.ui.theme.BorderGray
@@ -170,14 +171,13 @@ fun AddCategoryContent(
 
             ColorSwatchRow(
                 colors = listOf(Color.Red, Color.Green, Color.Blue),
-                selectedIndex = state.selectedColorIndex,
+                selectedColor = state.selectedColor,
                 onColorSelected = { onEvent(AddCategoryEvent.OnColorSelected(it)) },
             )
 
             IconPreviewRow(
                 selectedIcon = state.selectedIcon,
-//                recentIcons = state.recentIcons,
-                recentIcons = DummyCategoryIcons.recentIcons,
+                recentIcons = CategoryIcons.recentIcons,
                 onIconClick = { },
             )
 
@@ -228,7 +228,7 @@ fun AddCategoryContent(
 
             // Tombol Aksi
             Button(
-                onClick = { onEvent },
+                onClick = { onEvent(AddCategoryEvent.OnSaveClicked) },
                 enabled = state.isValid,
                 shape = RoundedCornerShape(14.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -263,23 +263,23 @@ fun AddCategoryContent(
 
 
 @Composable
-fun ColorSwatchRow(colors: List<Color>, selectedIndex: Int, onColorSelected: (Int) -> Unit) {
+fun ColorSwatchRow(colors: List<Color>, selectedColor: Color, onColorSelected: (Color) -> Unit) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        colors.forEachIndexed { index, color ->
+        colors.forEach {  color ->
             Box(
                 modifier = Modifier
                         .size(46.dp)
                         .then(
-                            if (index == selectedIndex) {
+                            if (color == selectedColor) {
                                 Modifier.border(2.dp, Color.Black, CircleShape)
                             } else Modifier,
                         )
                         .padding(4.dp)
                         .clip(CircleShape)
                         .background(color)
-                        .clickable { onColorSelected(index) },
+                        .clickable { onColorSelected(color) },
             )
         }
     }

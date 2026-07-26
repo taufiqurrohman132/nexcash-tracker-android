@@ -1,8 +1,9 @@
 package com.example.nexcashapplication.feature.category.presentation.addnew.category
 
+import androidx.compose.ui.graphics.Color
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
 
 sealed class AddCategoryEvent {
     // Input Teks
@@ -17,7 +18,7 @@ sealed class AddCategoryEvent {
     data class OnAccountSelected(val accountId: String) : AddCategoryEvent()
 
     // Pemilihan Visual
-    data class OnColorSelected(val colorIndex: Int) : AddCategoryEvent()
+    data class OnColorSelected(val color: Color) : AddCategoryEvent()
     data class OnChangeIcon(val icon: CategoryIcon) : AddCategoryEvent() // Tombol "Ubah"
 
     // Aksi Navigasi & Tombol Utama

@@ -1,10 +1,11 @@
 package com.example.nexcashapplication.feature.category.presentation.addnew.category
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nexcashapplication.feature.category.domain.model.Category
 import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
-import com.example.nexcashapplication.feature.category.presentation.mapper.toIconVector
+import com.example.nexcashapplication.feature.category.presentation.mapper.toDomain
+import com.example.nexcashapplication.feature.category.presentation.mapper.toUiState
 import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -26,6 +27,13 @@ class AddCategoryViewModel @Inject constructor(
     private var _navigationEvent = Channel<CategoryNavigationEvent>()
     val navigationEvent = _navigationEvent.receiveAsFlow()
 
+    init {
+        val id = _state.value.id
+        if (id.isNotBlank()) {
+            loadCategory(id)
+        }
+    }
+
     fun onEvent(event: AddCategoryEvent) {
         when (event) {
             is AddCategoryEvent.OnParentCategorySelected -> {
@@ -39,10 +47,11 @@ class AddCategoryViewModel @Inject constructor(
             }
 
             is AddCategoryEvent.OnSaveClicked -> {
+                save()
 
-//                viewModelScope.launch {
-//                    _navigationEvent.send(CategoryNavigationEvent.NavigateToDetail(event.id))
-//                }
+                viewModelScope.launch {
+                    _navigationEvent.send(CategoryNavigationEvent.NavigateBack)
+                }
             }
 
             is AddCategoryEvent.OnCancelClicked -> {
@@ -75,7 +84,7 @@ class AddCategoryViewModel @Inject constructor(
 
             is AddCategoryEvent.OnColorSelected -> {
                 _state.update {
-                    it.copy(selectedColorIndex = event.colorIndex)
+                    it.copy(selectedColor = event.color)
                 }
             }
 
@@ -100,24 +109,46 @@ class AddCategoryViewModel @Inject constructor(
 
     }
 
-    fun loadCategory(id: String): Unit {
+    fun loadCategory(id: String) {
         viewModelScope.launch {
 
             try {
                 val category = repository.getCategoryById(id)
-                if (category != null){
+                if (category != null) {
                     _state.update {
-                        it.copy(
-                            name = category.name,
-                            typeCategory = category.type,
-                            selectedIcon = category.icon.toIconVector(),
-                            selectedColorIndex = category.color,
-                            budgetLimit = category.budget,
-                            selectedPeriod = category.
-                        )
+                        category.toUiState()
                     }
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "loadCategory: $e")
             }
         }
+    }
+
+    fun save() {
+        val currentState = _state.value
+
+        if (!currentState.isValid) {
+            viewModelScope.launch {
+                // effect error dll
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                val category = currentState.toDomain(id = currentState.id)
+                repository.insertCategory(category)
+            } catch (e: Exception) {
+                Log.e(TAG, "save: $e")
+            }
+//            finally {
+//                _state.update { it.copy(isLoading = false) }
+//            }
+        }
+    }
+
+    companion object {
+        private val TAG = AddCategoryViewModel::class.java.simpleName
     }
 }
