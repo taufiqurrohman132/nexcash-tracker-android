@@ -651,7 +651,7 @@ fun AddCategoryContentPreview() {
     AddCategoryContent(
         state = AddCategoryState(
             name = "Makan & Minum",
-            typeCategory = TypeCategory.EXPANSE,
+            typeCategory = TypeCategory.EXPENSE,
             selectedColor = Color(0xFF4CAF50),
             budgetLimit = 500000,
             selectedIcon = CategoryIcons.recentIcons.first(),
@@ -684,7 +684,7 @@ fun AddCategoryContentEditPreview() {
         state = AddCategoryState(
             id = "cat-001", // ada id = mode edit
             name = "Transportasi",
-            typeCategory = TypeCategory.EXPANSE,
+            typeCategory = TypeCategory.EXPENSE,
             selectedColor = Color(0xFF2196F3),
             budgetLimit = 300000,
             selectedPeriod = BudgetPeriod.BULANAN,

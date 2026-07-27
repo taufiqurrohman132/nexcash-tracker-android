@@ -1,9 +1,9 @@
 package com.example.nexcashapplication.feature.category.presentation.mapper
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.core.graphics.toColorInt
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
+import com.example.nexcashapplication.core.extension.toColor
+import com.example.nexcashapplication.core.extension.toHex
 import com.example.nexcashapplication.feature.category.domain.model.Category
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.AddCategoryState
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
@@ -15,7 +15,7 @@ fun AddCategoryState.toDomain(id: String): Category {
         name = name,
         type = typeCategory,
         icon = selectedIcon?.id.orEmpty(),
-        color = selectedColor.toString(),
+        color = selectedColor.toHex(),
         used = 0L,
         budget = budgetLimit ?: 0L,
         period = selectedPeriod,
@@ -28,15 +28,15 @@ fun Category.toUiState(
     recentColors: List<Color> = emptyList(),
     recentIcons: List<CategoryIcon> = emptyList(),
 ): AddCategoryState {
-    val matchedIcon = recentIcons.find { it.id == icon }
-    val matchedColor = recentColors.find { it.toArgb() == color.toColorInt() }
+//    val matchedIcon = recentIcons.find { it.id == icon }
+//    val matchedColor = recentColors.find { it.toArgb() == color.toColorInt() }
 
     return AddCategoryState(
         id = id,
         name = name,
         typeCategory = type,
-        selectedIcon = matchedIcon,
-        selectedColor = matchedColor ?: Color.Black,
+        selectedIcon = CategoryIcons.fromId(id = icon),
+        selectedColor = color.toColor(),
         recentIcons = recentIcons,
         recentColors = recentColors,
         budgetLimit = budget,

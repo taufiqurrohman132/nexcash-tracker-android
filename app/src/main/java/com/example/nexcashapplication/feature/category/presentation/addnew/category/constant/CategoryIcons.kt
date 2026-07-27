@@ -111,4 +111,12 @@ object CategoryIcons {
         transportasi[2], // Bus
         lainnya[0],      // Lokasi
     )
+
+    private val flatMap: Map<String, CategoryIcon> by lazy {
+        allGroups.flatMap { it.icons }.associateBy { it.id }
+    }
+
+    fun fromId(id: String): CategoryIcon {
+        return flatMap[id] ?: lainnya[0] // fallback default: icon "location"
+    }
 }

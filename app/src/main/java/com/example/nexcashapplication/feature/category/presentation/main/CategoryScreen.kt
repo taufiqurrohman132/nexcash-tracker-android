@@ -207,10 +207,9 @@ fun CategoryContent(
             )
 
             CategoryPager(
+                incomeList = state.incomeList,
+                expanseList = state.expenseList,
                 pagerState = pagerState,
-                categoryList = state.categoryList.filter {
-                    it.nama.contains(state.searchQuery, ignoreCase = true)
-                },
                 onTabCategoryClick = { type ->
                     onEvent(CategoryEvent.OnTabCategoryClick(type))
                 },
@@ -327,8 +326,9 @@ fun BudgetSummaryCard(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryPager(
+    expanseList: List<CategoryItem>,
+    incomeList: List<CategoryItem>,
     pagerState: PagerState,
-    categoryList: List<CategoryItem>,
     onTabCategoryClick: (TypeCategory) -> Unit,
     onCategoryClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -375,8 +375,11 @@ fun CategoryPager(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.Top,
         ) { pageIndex ->
-            val currentType = tabs[pageIndex]
-            val filteredList = categoryList.filter { it.tipe == currentType }
+            val filteredList = when (pageIndex) {
+                0 -> expanseList
+                1 -> incomeList
+                else -> emptyList()
+            }
 
             CategoryGrid(
                 list = filteredList,
@@ -437,7 +440,7 @@ fun CategoryCard(
     onClick: () -> Unit,
 ) {
     val isOverBudget = item.persentase > 100
-    val progressColor = if (isOverBudget) Color(0xFFEF5350) else Color(0xFF29B6F6)
+    val progressColor = if (isOverBudget) PrimaryCyan else Color(0xFF29B6F6)
     val badgeBg = if (isOverBudget) Color(0xFFFFEBEE) else Color(0xFFF2F2F2)
     val badgeText = if (isOverBudget) Color(0xFFE53935) else Color(0xFF616161)
 
@@ -458,13 +461,13 @@ fun CategoryCard(
                 modifier = Modifier
                         .size(40.dp)
                         .clip(RoundedCornerShape(12.dp))
-                        .background(item.iconBgColor),
+                        .background(item.iconColor.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    imageVector = item.icon,
+                    imageVector = item.icon.icon,
                     contentDescription = item.nama,
-                    tint = Color(0xFF444444),
+                    tint = item.iconColor,
                     modifier = Modifier.size(20.dp),
                 )
             }

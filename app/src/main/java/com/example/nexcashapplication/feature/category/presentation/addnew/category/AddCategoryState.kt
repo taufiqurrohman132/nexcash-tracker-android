@@ -9,7 +9,7 @@ import com.example.nexcashapplication.ui.theme.PrimaryCyan
 data class AddCategoryState(
     val id: String = "", // bukan form field, ini identitas — kosong = mode tambah baru
     val name: String = "",
-    val typeCategory: TypeCategory = TypeCategory.EXPANSE,
+    val typeCategory: TypeCategory = TypeCategory.EXPENSE,
 //    val parentCategory: String? = null,
     val selectedColor: Color = PrimaryCyan,
     val recentColors: List<Color> = emptyList(),

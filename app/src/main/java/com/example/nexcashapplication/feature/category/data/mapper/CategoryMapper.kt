@@ -67,14 +67,3 @@ fun ImageVector.toIconKey(): String = when (this) {
     else -> "lainnya"
 }
 
-
-fun String.toIconColor(): Color = when (this) {
-    "makanan" -> Color(0xFFFFE0CC)
-    "transportasi" -> Color(0xFFD9E4FF)
-    "belanja" -> Color(0xFFFFD9E8)
-    "kesehatan" -> Color(0xFFD4F5E0)
-    "tagihan" -> Color(0xFFFFF3D0)
-    "hiburan" -> Color(0xFFEBDCFF)
-    "investasi" -> Color(0xFFD4EAFF)
-    else -> Color(0xFFEDEDED)
-}
