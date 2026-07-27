@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.GridView
@@ -59,6 +60,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -68,13 +70,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
-import com.example.nexcashapplication.core.domain.model.DummyCategoryIcons
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
 import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent
 import com.example.nexcashapplication.ui.theme.BorderGray
-import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.TextSecondary
 import com.example.nexcashapplication.ui.theme.TextTertiary
@@ -84,7 +85,6 @@ import com.example.nexcashapplication.ui.theme.TextTertiary
 fun AddCategoryScreen(
     onBack: () -> Unit,
     viewModel: AddCategoryViewModel = hiltViewModel(),
-    modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -175,10 +175,11 @@ fun AddCategoryContent(
                 onColorSelected = { onEvent(AddCategoryEvent.OnColorSelected(it)) },
             )
 
+
             IconPreviewRow(
                 selectedIcon = state.selectedIcon,
                 recentIcons = CategoryIcons.recentIcons,
-                onIconClick = { },
+                onIconClick = { onEvent(AddCategoryEvent.OnChangeIcon(it)) },
             )
 
             // Rencana Anggaran
@@ -267,7 +268,7 @@ fun ColorSwatchRow(colors: List<Color>, selectedColor: Color, onColorSelected: (
     Row(
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
-        colors.forEach {  color ->
+        colors.forEach { color ->
             Box(
                 modifier = Modifier
                         .size(46.dp)
@@ -448,8 +449,8 @@ fun CategoryDropdownField(
 
 @Composable
 fun RencanaAnggaranCard(
-    budgetLimit: String,
-    onBudgetLimitChange: (String) -> Unit,
+    budgetLimit: Long?,
+    onBudgetLimitChange: (Long?) -> Unit,
     selectedPeriod: BudgetPeriod,
     onPeriodChange: (BudgetPeriod) -> Unit,
     modifier: Modifier = Modifier,
@@ -490,11 +491,18 @@ fun RencanaAnggaranCard(
             textColor = TextSecondary,
         ) {
             OutlinedTextField(
-                value = budgetLimit,
-                onValueChange = { onBudgetLimitChange(it)},
+                value = budgetLimit?.formatCurrency() ?: "",
+                onValueChange = { newValue ->
+                    // filter hanya angka
+                    val filtered = newValue.filter { it.isDigit() }
+                    onBudgetLimitChange(filtered.toLongOrNull())
+                },
                 leadingIcon = { },
                 placeholder = { },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.Number,
+                ),
                 shape = RoundedCornerShape(16.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryCyan,
@@ -562,7 +570,7 @@ fun BudgetPeriodSelector(
 fun IconPreviewRow(
     selectedIcon: CategoryIcon?,
     recentIcons: List<CategoryIcon>,
-    onIconClick: () -> Unit,
+    onIconClick: (CategoryIcon) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -579,7 +587,9 @@ fun IconPreviewRow(
                 IconChip(
                     icon = icon.icon,
                     isSelected = icon == selectedIcon,
-                    onClick = onIconClick,
+                    onClick = {
+                        onIconClick(icon)
+                    },
                 )
             }
         }
@@ -618,7 +628,7 @@ fun IconChip(
                 .border(
                     width = if (isSelected) 2.dp else 1.dp,
                     color = if (isSelected) MaterialTheme.colorScheme.primary
-                    else Color(0xFFE0E0E0),
+                    else BorderGray,
                     shape = RoundedCornerShape(16.dp),
                 )
                 .clickable(onClick = onClick),
@@ -635,14 +645,69 @@ fun IconChip(
     }
 }
 
-@Preview
+@Preview(showBackground = true, name = "Default")
 @Composable
-private fun AddCategoryPreview() {
-    NexCashApplicationTheme {
-        AddCategoryScreen(
-            onBack = {},
-        )
-    }
+fun AddCategoryContentPreview() {
+    AddCategoryContent(
+        state = AddCategoryState(
+            name = "Makan & Minum",
+            typeCategory = TypeCategory.EXPANSE,
+            selectedColor = Color(0xFF4CAF50),
+            budgetLimit = 500000,
+            selectedIcon = CategoryIcons.recentIcons.first(),
+            selectedPeriod = BudgetPeriod.BULANAN,
+            defaultAccount = "Dompet Utama (Cash)",
+            note = "Kebutuhan harian",
+            recentColors = listOf(
+                Color(0xFF4CAF50),
+                Color(0xFF2196F3),
+                Color(0xFFF44336),
+            ),
+        ),
+        onEvent = {},
+    )
+}
+
+@Preview(showBackground = true, name = "Empty / Mode Tambah Baru")
+@Composable
+fun AddCategoryContentEmptyPreview() {
+    AddCategoryContent(
+        state = AddCategoryState(),
+        onEvent = {},
+    )
+}
+
+@Preview(showBackground = true, name = "Mode Edit")
+@Composable
+fun AddCategoryContentEditPreview() {
+    AddCategoryContent(
+        state = AddCategoryState(
+            id = "cat-001", // ada id = mode edit
+            name = "Transportasi",
+            typeCategory = TypeCategory.EXPANSE,
+            selectedColor = Color(0xFF2196F3),
+            budgetLimit = 300000,
+            selectedPeriod = BudgetPeriod.BULANAN,
+            defaultAccount = "Dompet Utama (Cash)",
+            note = "Bensin & parkir",
+        ),
+        onEvent = {},
+    )
+}
+
+@Preview(showBackground = true, name = "Income Type")
+@Composable
+fun AddCategoryContentIncomePreview() {
+    AddCategoryContent(
+        state = AddCategoryState(
+            name = "Gaji",
+            typeCategory = TypeCategory.INCOME,
+            selectedColor = Color(0xFF9C27B0),
+            budgetLimit = 3000000,
+            selectedPeriod = BudgetPeriod.BULANAN,
+        ),
+        onEvent = {},
+    )
 }
 
 

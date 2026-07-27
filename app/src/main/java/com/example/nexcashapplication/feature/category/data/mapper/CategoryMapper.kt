@@ -35,7 +35,6 @@ fun CategoryEntity.toDomain() = Category(
 )
 
 fun Category.toEntity() = CategoryEntity(
-    id = id,
     parentId = parentId,
     name = name,
     type = type.name.lowercase(),
