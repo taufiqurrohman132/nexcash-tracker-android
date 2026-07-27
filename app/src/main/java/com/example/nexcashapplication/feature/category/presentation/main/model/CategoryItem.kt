@@ -16,5 +16,7 @@ data class CategoryItem(
 ) {
     val persentase: Int
         get() = if (budget == 0L) 0 else ((terpakai * 100) / budget).toInt()
+
+
 }
 

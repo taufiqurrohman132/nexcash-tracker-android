@@ -30,10 +30,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -70,6 +69,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryItem
 import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
@@ -201,14 +201,19 @@ fun CategoryContent(
             )
 
             // Budget summary card
+
             BudgetSummaryCard(
                 totalBudget = state.totalAnggaran,
                 remainingBudget = state.sisaAnggaran,
+                selectedTab = state.selectedTabCategory,
+                totalPemasukan = state.totalPemasukan,
             )
 
             CategoryPager(
                 incomeList = state.incomeList,
                 expanseList = state.expenseList,
+                categorySearchList = state.categorySearchList,
+                searchQuery = state.searchQuery,
                 pagerState = pagerState,
                 onTabCategoryClick = { type ->
                     onEvent(CategoryEvent.OnTabCategoryClick(type))
@@ -217,6 +222,7 @@ fun CategoryContent(
                     onEvent(CategoryEvent.OnKategoriClick(id))
                 },
             )
+
 
             // Add new category
             AddCategoryButton(
@@ -241,7 +247,7 @@ fun CategorySearchBar(
         onValueChange = onQueryChange,
         modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp),
+                .height(50.dp),
         singleLine = true,
         placeholder = {
             Text("Cari kategori...")
@@ -252,19 +258,19 @@ fun CategorySearchBar(
                 contentDescription = null,
             )
         },
-        trailingIcon = {
-            Icon(
-                imageVector = Icons.Default.Lock,
-                contentDescription = "Filter",
-            )
-        },
-        shape = RoundedCornerShape(14.dp),
+//        trailingIcon = {
+//            Icon(
+//                imageVector = Icons.Default.Lock,
+//                contentDescription = "Filter",
+//            )
+//        },
+        shape = RoundedCornerShape(50.dp),
         colors = OutlinedTextFieldDefaults.colors(
             focusedContainerColor = Color(0xFFF2F2F2),
             unfocusedContainerColor = Color(0xFFF2F2F2),
             disabledContainerColor = Color(0xFFF2F2F2),
 
-            focusedBorderColor = Color.Transparent,
+            focusedBorderColor = PrimaryCyan,
             unfocusedBorderColor = Color.Transparent,
             disabledBorderColor = Color.Transparent,
 
@@ -276,8 +282,10 @@ fun CategorySearchBar(
 // ============ BUDGET SUMMARY CARD ============
 @Composable
 fun BudgetSummaryCard(
+    selectedTab: TypeCategory,
     totalBudget: Long,
     remainingBudget: Long,
+    totalPemasukan: Long,  // dari incomeList
 ) {
     Row(
         modifier = Modifier
@@ -295,30 +303,43 @@ fun BudgetSummaryCard(
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.Default.AccountBox,
+                imageVector = Icons.Outlined.AccountBalanceWallet,
                 contentDescription = null,
                 tint = Color(0xFF29B6F6),
                 modifier = Modifier.size(22.dp),
             )
         }
         Spacer(Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text("Total Anggaran", fontSize = 12.sp, color = Color(0xFF7A8A99))
-            Text(
-                text = (totalBudget).formatCurrency(),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-            )
-        }
-        Column(horizontalAlignment = Alignment.End) {
-            Text("Sisa", fontSize = 12.sp, color = Color(0xFF7A8A99))
-            Text(
-                text = (remainingBudget).formatCurrency(),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = Color.Black,
-            )
+
+        if (selectedTab == TypeCategory.EXPENSE) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Total Anggaran", fontSize = 12.sp, color = Color(0xFF7A8A99))
+                Text(
+                    text = "Rp ${(totalBudget).formatCurrency()}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                )
+            }
+            Column(horizontalAlignment = Alignment.End) {
+                Text("Sisa", fontSize = 12.sp, color = Color(0xFF7A8A99))
+                Text(
+                    text = (remainingBudget).formatCurrency(),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                )
+            }
+        } else {
+            Column(modifier = Modifier.weight(1f)) {
+                Text("Total Pemasukan Bulan Ini", fontSize = 12.sp, color = Color(0xFF7A8A99))
+                Text(
+                    text = "Rp ${(totalPemasukan).formatCurrency()}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black,
+                )
+            }
         }
     }
 }
@@ -328,6 +349,8 @@ fun BudgetSummaryCard(
 fun CategoryPager(
     expanseList: List<CategoryItem>,
     incomeList: List<CategoryItem>,
+    categorySearchList: List<CategoryItem>,
+    searchQuery: String,
     pagerState: PagerState,
     onTabCategoryClick: (TypeCategory) -> Unit,
     onCategoryClick: (Long) -> Unit,
@@ -375,14 +398,20 @@ fun CategoryPager(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.Top,
         ) { pageIndex ->
-            val filteredList = when (pageIndex) {
+            val normalList = when (pageIndex) {
                 0 -> expanseList
                 1 -> incomeList
                 else -> emptyList()
             }
 
+            val displayList = if (searchQuery.isNotBlank()) {
+                categorySearchList  // lagi search -> pakai hasil search
+            } else {
+                normalList  // nggak search -> pakai data asli
+            }
+
             CategoryGrid(
-                list = filteredList,
+                list = displayList,
                 onItemClick = { item -> onCategoryClick(item.id) },
             )
         }
@@ -558,11 +587,91 @@ fun AddCategoryButton(onClick: () -> Unit) {
 }
 
 
-@Preview
+// ============ PREVIEW ============
+
+private val dummyExpenseList = listOf(
+    CategoryItem(
+        id = 1L,
+        nama = "Makan & Minum",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcons.makanan[0], // "restaurant"
+        iconColor = Color(0xFF29B6F6),
+        terpakai = 850_000L,
+        budget = 1_000_000L,
+    ),
+    CategoryItem(
+        id = 2L,
+        nama = "Transportasi",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcons.transportasi[1], // "car"
+        iconColor = Color(0xFF66BB6A),
+        terpakai = 1_200_000L,
+        budget = 1_000_000L, // over budget, buat test badge merah
+    ),
+    CategoryItem(
+        id = 3L,
+        nama = "Hiburan",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcons.hiburan[0], // "movie"
+        iconColor = Color(0xFFFFA726),
+        terpakai = 200_000L,
+        budget = 500_000L,
+    ),
+)
+
+private val dummyIncomeList = listOf(
+    CategoryItem(
+        id = 4L,
+        nama = "Gaji Bulanan",
+        tipe = TypeCategory.INCOME,
+        icon = CategoryIcons.lainnya[0], // "location" - ganti kalau ada icon income khusus
+        iconColor = Color(0xFF29B6F6),
+        terpakai = 4_500_000L,
+        budget = 5_000_000L,
+    ),
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
 @Composable
 private fun PreviewCategoryScreen() {
-    NexCashApplicationTheme {
-        CategoryScreen()
-    }
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        pageCount = { TypeCategory.entries.size },
+    )
 
+    NexCashApplicationTheme {
+        CategoryContent(
+            pagerState = pagerState,
+            state = CategoryState(
+                isLoading = false,
+                expenseList = dummyExpenseList,
+                incomeList = dummyIncomeList,
+                searchQuery = "",
+                selectedTabCategory = TypeCategory.EXPENSE,
+            ),
+            onEvent = {}, // preview nggak butuh handle event beneran
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Empty State")
+@Composable
+private fun PreviewCategoryScreenEmpty() {
+    val pagerState = rememberPagerState(
+        initialPage = 0,
+        pageCount = { TypeCategory.entries.size },
+    )
+
+    NexCashApplicationTheme {
+        CategoryContent(
+            pagerState = pagerState,
+            state = CategoryState(
+                isLoading = false,
+                expenseList = emptyList(),
+                incomeList = emptyList(),
+            ),
+            onEvent = {},
+        )
+    }
 }

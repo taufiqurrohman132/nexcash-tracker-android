@@ -8,19 +8,25 @@ data class CategoryState(
     val isLoading: Boolean = false,
     val expenseList: List<CategoryItem> = emptyList(),
     val incomeList: List<CategoryItem> = emptyList(),
+    val categorySearchList: List<CategoryItem> = emptyList(),
     val searchQuery: String = "",
-    val totalAnggaran: Long = 0L,
-    val sisaAnggaran: Long = 0L,
     val selectedTabCategory: TypeCategory = TypeCategory.EXPENSE,
     val error: String? = null,
 ) {
-    // computed property — UI tinggal pakai ini, nggak perlu tau soal expense/income
-    val categoryList: List<CategoryItem>
+
+    private val activeList: List<CategoryItem>
         get() = when (selectedTabCategory) {
             TypeCategory.EXPENSE -> expenseList
             TypeCategory.INCOME -> incomeList
         }
 
+    val totalAnggaran: Long
+        get() = activeList.sumOf { it.budget }
+
+    val sisaAnggaran: Long
+        get() = activeList.sumOf { it.budget - it.terpakai }
+
+    val totalPemasukan: Long get() = incomeList.sumOf { it.terpakai }
 //    val filteredCategoryList: List<CategoryItem>
 //        get() = categoryList.filter { item ->
 //            val matchesSearch = item.nama.contains(searchQuery, ignoreCase = true)
