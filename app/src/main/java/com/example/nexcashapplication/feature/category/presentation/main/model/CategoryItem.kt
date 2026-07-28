@@ -6,7 +6,7 @@ import com.example.nexcashapplication.core.domain.model.TypeCategory
 
 // ============ MODEL ============
 data class CategoryItem(
-    val id: Long,
+    val id: String,
     val nama: String,
     val tipe: TypeCategory,
     val icon: CategoryIcon,

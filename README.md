@@ -6,8 +6,11 @@ NexCash is a modern personal finance management application built with **Jetpack
 
 - **Interactive Dashboard**: Get a quick summary of your monthly spending and budget status using visual charts.
 - **Transaction Management**: Easily record new transactions and view a detailed history of your spending.
-- **Category & Budgeting**: Create and manage categories with specific budget limits. Track how much you've spent versus your remaining balance.
-- **Sub-category Support**: Further organize your expenses with nested sub-categories.
+- **Asset & Investment Tracking**: Monitor various asset types including Stocks, Crypto, Gold, and Mutual Funds.
+- **Category & Budgeting**: Create and manage categories with specific budget limits and track spending.
+- **Bill Management**: Keep track of your recurring bills and upcoming payments.
+- **Financial Insights**: Gain deeper understanding of your financial habits with detailed analytics.
+- **Notification System**: Receive timely alerts for budgets, reminders, and transaction updates.
 - **Modern UI/UX**: Built entirely with Material 3 components for a sleek and responsive experience.
 
 ## 🛠️ Tech Stack
@@ -16,7 +19,8 @@ NexCash is a modern personal finance management application built with **Jetpack
 - **Architecture**: MVVM (Model-View-ViewModel) with Clean Architecture principles.
 - **Dependency Injection**: [Hilt](https://developer.android.com/training/dependency-injection/hilt-android)
 - **Navigation**: [Navigation 3](https://developer.android.com/jetpack/androidx/releases/navigation3) (Experimental)
-- **Local Database**: [Room](https://developer.android.com/training/data-storage/room)
+- **Local Database**: [Room](https://developer.android.com/training/data-storage/room) with Paging 3 support.
+- **Data Persistence**: [DataStore](https://developer.android.com/topic/libraries/architecture/datastore) for user preferences.
 - **Charts**: [Vico](https://github.com/patrykandpatrick/vico) for financial data visualization.
 - **Image Loading**: [Coil](https://coil-kt.github.io/coil/compose/)
 - **Serialization**: Kotlinx Serialization & Gson
@@ -27,12 +31,17 @@ NexCash is a modern personal finance management application built with **Jetpack
 com.example.nexcashapplication
 ├── core                # Common components, navigation logic, and extensions
 │   ├── component       # Reusable UI components (TransactionItem, etc.)
+│   ├── datasource      # Local database (Room) and Preferences (DataStore)
 │   ├── extension       # Kotlin extension functions
-│   └── navigations     # NavigationRoot and route definitions
+│   └── navigations     # NavigationRoot, Navigator, and Route definitions
 ├── feature             # Module-based features
-│   ├── dashboard       # Dashboard UI and domain models
-│   ├── transaction     # Transaction screens and logic
-│   └── category        # Category and sub-category management
+│   ├── dashboard       # Dashboard UI and main overview
+│   ├── transaction     # Transaction recording and history
+│   ├── category        # Category and budget management
+│   ├── aset            # Asset and investment tracking
+│   ├── insight         # Financial analytics and reports
+│   ├── tagihan         # Bill and payment management
+│   └── settings        # User preferences and app settings
 └── ui.theme            # App theme, typography, and color palette
 ```
 

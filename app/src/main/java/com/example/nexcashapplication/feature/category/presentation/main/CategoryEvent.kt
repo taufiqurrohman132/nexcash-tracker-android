@@ -8,7 +8,7 @@ sealed interface CategoryEvent {
     data class OnSearchQueryChange(val query: String) : CategoryEvent
 
     //    data class OnFilterSelect(val filter: CategoryFilter) : CategoryEvent
-    data class OnKategoriClick(val id: Long) : CategoryEvent
+    data class OnKategoriClick(val id: String) : CategoryEvent
     data object OnAddKategoriClick : CategoryEvent
     data object OnRefresh : CategoryEvent
 

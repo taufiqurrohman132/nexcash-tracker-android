@@ -1,9 +1,16 @@
 package com.example.nexcashapplication.feature.category.presentation.detail
 
 sealed interface DetailCategoryEvent {
-    data object onAddTransactionClick : DetailCategoryEvent
-    data class onSubcategoryClick(val id: Long) : DetailCategoryEvent
-    data object onReminderClick : DetailCategoryEvent
-    data object onSeeAllSubcategoriesClick : DetailCategoryEvent
-    data object onLoadMoreTransactions : DetailCategoryEvent
+    data object OnBackClick : DetailCategoryEvent
+    data object OnMenuClick : DetailCategoryEvent          // ikon "..."
+    data object OnEditClick : DetailCategoryEvent
+    data object OnAddTransactionClick : DetailCategoryEvent
+    data object OnManageSubCategoryClick : DetailCategoryEvent
+    data object OnReminderClick : DetailCategoryEvent
+    data object OnSeeAllSubCategoryClick : DetailCategoryEvent
+    data class OnSubCategoryClick(val subCategoryId: String) : DetailCategoryEvent
+    data class OnTransactionClick(val transactionId: String) : DetailCategoryEvent
+    data object OnLoadMoreTransactionsClick : DetailCategoryEvent
+    data object OnFabAddClick : DetailCategoryEvent
+    data object OnRetryClick : DetailCategoryEvent
 }

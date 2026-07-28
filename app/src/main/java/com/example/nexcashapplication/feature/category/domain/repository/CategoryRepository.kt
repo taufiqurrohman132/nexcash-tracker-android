@@ -10,6 +10,7 @@ interface CategoryRepository {
     fun searchCategories(query: String, type: String): Flow<List<Category>>
     fun getExpenseCategories(): Flow<List<Category>>
     fun getIncomeCategories(): Flow<List<Category>>
+    fun getSubCategories(parentId: String): Flow<List<Category>>  // ← ini yang kurang
 
     suspend fun insertCategory(category: Category)
     suspend fun updateCategory(category: Category)

@@ -18,12 +18,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Replay
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -37,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,10 +47,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUi
-import com.example.nexcashapplication.feature.category.presentation.detail.model.SubCategoryItemUi
+import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
+import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryDetail
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -67,36 +67,6 @@ import com.patrykandpatrick.vico.compose.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 
-val dummySubCategories = listOf(
-    SubCategoryItemUi(
-        id = 1L,
-        name = "Makan di Luar",
-        icon = Icons.Default.Settings,
-        amount = "Rp450.000",
-        percentage = 35,
-    ),
-    SubCategoryItemUi(
-        id = 2L,
-        name = "Groceries",
-        icon = Icons.Default.ShoppingCart,
-        amount = "Rp320.000",
-        percentage = 25,
-    ),
-    SubCategoryItemUi(
-        id = 3L,
-        name = "Kopi & Snack",
-        icon = Icons.Default.Notifications,
-        amount = "Rp180.000",
-        percentage = 14,
-    ),
-    SubCategoryItemUi(
-        id = 4L,
-        name = "Delivery/Ojol",
-        icon = Icons.Default.Notifications,
-        amount = "Rp150.000",
-        percentage = 12,
-    ),
-)
 
 val dummyTransactions = listOf(
     TransactionItemUi(
@@ -183,41 +153,45 @@ val dummyTransactions = listOf(
 
 @Composable
 fun DetailCategoryScreen(
-    viewModel: DetailCategoryViewModel = hiltViewModel(),
+    categoryId: String,
+    viewModel: DetailCategoryViewModel = hiltViewModel<DetailCategoryViewModel, DetailCategoryViewModel.Factory>(
+        key = categoryId,
+    ) { factory -> factory.create(categoryId) },
     modifier: Modifier = Modifier,
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
-    DetailCategoryContent()
+    DetailCategoryContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+    )
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailCategoryContent(
-    categoryName: String = "Transportasi",
-    categoryIcon: ImageVector = Icons.Default.Email,
-    totalBudget: String = "Rp 1.500.000",
-    used: String = "Rp 1.050.000",
-    remaining: String = "Rp 450.000",
-    usedPercentage: Int = 70,
-    subcategories: List<SubCategoryItemUi> = dummySubCategories,
-    transactions: List<TransactionItemUi> = dummyTransactions,
+    state: DetailCategoryState,
+    onEvent: (DetailCategoryEvent) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = categoryIcon,
-                            contentDescription = null,
-                            tint = PrimaryCyan,
-                            modifier = Modifier
-                                    .padding(end = 8.dp)
-                                    .size(20.dp),
-                        )
+                        state.category?.icon?.icon?.let {
+                            Icon(
+                                imageVector = it,
+                                contentDescription = null,
+                                tint = PrimaryCyan,
+                                modifier = Modifier
+                                        .padding(end = 8.dp)
+                                        .size(20.dp),
+                            )
+                        }
                         Text(
-                            text = categoryName,
+                            text = state.category?.name ?: "Detail",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                         )
@@ -247,10 +221,10 @@ fun DetailCategoryContent(
             Spacer(Modifier.height(4.dp)) // pengganti contentPadding top
 
             BudgetSummaryCard(
-                totalBudget = totalBudget,
-                used = used,
-                remaining = remaining,
-                usedPersentage = usedPercentage,
+                totalBudget = state.category?.totalBudget?.formatCurrency() ?: "",
+                used = state.category?.usedBudget?.formatCurrency() ?: "",
+                remaining = state.category?.remainingBudget?.formatCurrency() ?: "",
+                usedPersentage = state.category?.usedPercentage ?: 0,
             )
 
             FormField(
@@ -268,7 +242,7 @@ fun DetailCategoryContent(
             )
 
             SubcategoryGrid(
-                subcategories = subcategories,
+                subcategories = state.subCategories,
                 onSubcategoryClick = { },
             )
 
@@ -279,7 +253,7 @@ fun DetailCategoryContent(
             )
 
             TransactionListCard(
-                transactions = transactions,
+                transactions = state.recentTransactions,
                 onLoadMoreClick = { },
             )
 
@@ -304,10 +278,11 @@ fun TransactionListCard(
             transactions.forEachIndexed { index, transactionUi ->
                 TransactionItem(transactionUi) {}
                 HorizontalDivider(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier
+                            .fillMaxWidth()
                             .padding(horizontal = 16.dp),
                     color = BorderGray,
-                    thickness = 1.dp
+                    thickness = 1.dp,
                 )
             }
         }
@@ -316,8 +291,8 @@ fun TransactionListCard(
 
 @Composable
 fun SubcategoryGrid(
-    subcategories: List<SubCategoryItemUi>,
-    onSubcategoryClick: (Long) -> Unit,
+    subcategories: List<CategoryDetail>,
+    onSubcategoryClick: (String) -> Unit,
 ) {
     val rows = subcategories.chunked(2)
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -342,7 +317,7 @@ fun SubcategoryGrid(
 }
 
 @Composable
-fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick: () -> Unit) {
+fun SubcategoryCard(subcategory: CategoryDetail, modifier: Modifier, onClick: () -> Unit) {
     Card(
         onClick = { },
         modifier = modifier,
@@ -364,7 +339,7 @@ fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick:
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        subcategory.icon,
+                        subcategory.icon.icon,
                         contentDescription = null,
                         tint = PrimaryCyan,
                         modifier = Modifier.size(18.dp),
@@ -372,7 +347,7 @@ fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick:
                 }
 
                 Text(
-                    text = "${subcategory.percentage}%",
+                    text = "${subcategory.usedPercentage}%",
                     style = MaterialTheme.typography.labelSmall,
                     color = Color.Black,
                 )
@@ -387,13 +362,13 @@ fun SubcategoryCard(subcategory: SubCategoryItemUi, modifier: Modifier, onClick:
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = subcategory.amount,
+                text = subcategory.totalBudget.formatCurrency(),
                 style = MaterialTheme.typography.bodySmall,
                 color = TextTertiary,
             )
             Spacer(Modifier.height(8.dp))
             LinearProgressIndicator(
-                progress = { subcategory.percentage / 100f },
+                progress = { subcategory.usedPercentage / 100f },
                 modifier = Modifier
                         .fillMaxWidth()
                         .height(4.dp)
@@ -430,14 +405,14 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
             ) {
                 Text(
                     text = "Total Anggaran",
-                    style = MaterialTheme.typography.labelSmall,
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color.White,
                     letterSpacing = 0.5.sp,
                 )
                 Box(
                     modifier = Modifier
                             .clip(RoundedCornerShape(50))
-                            .background(PrimaryCyan)
+                            .background(PrimaryCyan.copy(alpha = 0.5f))
                             .padding(horizontal = 12.dp, vertical = 4.dp),
                 ) {
                     Text(
@@ -594,10 +569,55 @@ fun WeeklyTrendChart(
 
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-private fun DetailCategoryScreenPreview() {
+private fun DetailCategoryContentPreview() {
     NexCashApplicationTheme {
-        DetailCategoryScreen()
+        DetailCategoryContent(
+            state = DetailCategoryState(
+                isLoading = false,
+                category = CategoryDetail(
+                    id = "1",
+                    name = "Transportasi",
+                    icon = CategoryIcons.fromId("5"), // sesuaikan dgn tipe icon kamu
+                    totalBudget = 1_500_000,
+                    usedBudget = 1_050_000,
+
+                    ),
+
+                subCategories = listOf(
+                    CategoryDetail(
+                        id = "sub1",
+                        name = "Bensin",
+                        icon = CategoryIcons.fromId("5"),
+                        totalBudget = 450_000,
+                        usedBudget = 270_000,
+                    ),
+                    CategoryDetail(
+                        id = "sub2",
+                        name = "Parkir",
+                        icon = CategoryIcons.fromId("5"),
+                        totalBudget = 120_000,
+                        usedBudget = 48_000,
+                    ),
+                    CategoryDetail(
+                        id = "sub3",
+                        name = "Ojek Online",
+                        icon = CategoryIcons.fromId("5"),
+                        totalBudget = 380_000,
+                        usedBudget = 323_000,
+                    ),
+                    CategoryDetail(
+                        id = "sub4",
+                        name = "Tol & Tiket",
+                        icon = CategoryIcons.fromId("5"),
+                        totalBudget = 100_000,
+                        usedBudget = 25_000,
+                    ),
+                ),
+                recentTransactions = dummyTransactions,
+            ),
+            onEvent = {},
+        )
     }
 }

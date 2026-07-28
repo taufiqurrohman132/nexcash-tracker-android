@@ -41,6 +41,10 @@ class CategoryRepositoryImpl @Inject constructor(
 
     }
 
+    override fun getSubCategories(parentId: String): Flow<List<Category>> {
+        return dao.getSubCategories(parentId).map { list -> list.map { it.toDomain() } }
+    }
+
     override suspend fun insertCategory(category: Category) {
         dao.insertCategory(category.toEntity())
     }

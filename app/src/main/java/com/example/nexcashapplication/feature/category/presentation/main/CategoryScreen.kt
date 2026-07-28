@@ -84,7 +84,7 @@ fun CategoryScreen(
     modifier: Modifier = Modifier,
     viewModel: CategoryViewModel = hiltViewModel(),
     onNavigateAddCategory: () -> Unit = {},
-    onNavigateCategoryDetail: (Long) -> Unit = {},
+    onNavigateCategoryDetail: (String) -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
@@ -353,7 +353,7 @@ fun CategoryPager(
     searchQuery: String,
     pagerState: PagerState,
     onTabCategoryClick: (TypeCategory) -> Unit,
-    onCategoryClick: (Long) -> Unit,
+    onCategoryClick: (String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val tabs = TypeCategory.entries
@@ -591,7 +591,7 @@ fun AddCategoryButton(onClick: () -> Unit) {
 
 private val dummyExpenseList = listOf(
     CategoryItem(
-        id = 1L,
+        id = "1L",
         nama = "Makan & Minum",
         tipe = TypeCategory.EXPENSE,
         icon = CategoryIcons.makanan[0], // "restaurant"
@@ -600,7 +600,7 @@ private val dummyExpenseList = listOf(
         budget = 1_000_000L,
     ),
     CategoryItem(
-        id = 2L,
+        id = "2L",
         nama = "Transportasi",
         tipe = TypeCategory.EXPENSE,
         icon = CategoryIcons.transportasi[1], // "car"
@@ -609,7 +609,7 @@ private val dummyExpenseList = listOf(
         budget = 1_000_000L, // over budget, buat test badge merah
     ),
     CategoryItem(
-        id = 3L,
+        id = "3L",
         nama = "Hiburan",
         tipe = TypeCategory.EXPENSE,
         icon = CategoryIcons.hiburan[0], // "movie"
@@ -621,7 +621,7 @@ private val dummyExpenseList = listOf(
 
 private val dummyIncomeList = listOf(
     CategoryItem(
-        id = 4L,
+        id = "4L",
         nama = "Gaji Bulanan",
         tipe = TypeCategory.INCOME,
         icon = CategoryIcons.lainnya[0], // "location" - ganti kalau ada icon income khusus

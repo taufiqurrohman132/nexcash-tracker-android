@@ -113,8 +113,14 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
 
                     }
                     entry<Route.InsightRoute.Main> {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text("Insight")
+                        Box(
+                            Modifier
+                                    .fillMaxSize()
+                                    .padding(bottom = BottomNavHeight),
+                        ) {
+                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text("Insight")
+                            }
                         }
                     }
                     entry<Route.SettingsRoute.Main> {
@@ -125,18 +131,23 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
                     }
 
                     entry<Route.CategorRoute.Main> {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CategoryScreen(
-                                onNavigateAddCategory = { navigator.navigate(Route.CategorRoute.AddNew) },
-                                onNavigateCategoryDetail = { id ->
-                                    navigator.navigate(
-                                        Route.CategorRoute.Detail(
-                                            id,
-                                        ),
-                                    )
-                                },
-
+                        Box(
+                            Modifier
+                                    .fillMaxSize()
+                                    .padding(bottom = BottomNavHeight),
+                        ) {
+                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                CategoryScreen(
+                                    onNavigateAddCategory = { navigator.navigate(Route.CategorRoute.AddNew) },
+                                    onNavigateCategoryDetail = { id ->
+                                        navigator.navigate(
+                                            Route.CategorRoute.Detail(
+                                                id,
+                                            ),
+                                        )
+                                    },
                                 )
+                            }
                         }
                     }
                     entry<Route.CategorRoute.AddNew> {
@@ -144,8 +155,8 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
                             onBack = navigator::goBack,
                         )
                     }
-                    entry<Route.CategorRoute.Detail> {
-                        DetailCategoryScreen()
+                    entry<Route.CategorRoute.Detail> { key ->
+                        DetailCategoryScreen(key.categoryId)
                     }
                 },
             ),

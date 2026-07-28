@@ -7,7 +7,7 @@ import com.example.nexcashapplication.feature.category.presentation.main.model.C
 
 fun Category.toCategoryItem(): CategoryItem {
     return CategoryItem(
-        id = id.toLongOrNull() ?: 0L, // lihat catatan soal id di bawah
+        id = id, // lihat catatan soal id di bawah
         nama = name,
         tipe = type,
         icon = CategoryIcons.fromId(id = icon),
