@@ -9,9 +9,11 @@ import com.example.nexcashapplication.feature.category.presentation.addnew.categ
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
 
 
-fun AddCategoryState.toDomain(id: String): Category {
+fun AddCategoryState.toDomain(id: String, parentId: String? = null): Category {
 
     return Category(
+        id = id,
+        parentId = parentId,
         name = name,
         type = typeCategory,
         icon = selectedIcon?.id.orEmpty(),

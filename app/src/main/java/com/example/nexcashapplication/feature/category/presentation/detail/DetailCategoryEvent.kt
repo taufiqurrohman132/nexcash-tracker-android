@@ -5,6 +5,7 @@ sealed interface DetailCategoryEvent {
     data object OnMenuClick : DetailCategoryEvent          // ikon "..."
     data object OnEditClick : DetailCategoryEvent
     data object OnAddTransactionClick : DetailCategoryEvent
+    data object OnAddSubCategoryClick : DetailCategoryEvent
     data object OnManageSubCategoryClick : DetailCategoryEvent
     data object OnReminderClick : DetailCategoryEvent
     data object OnSeeAllSubCategoryClick : DetailCategoryEvent

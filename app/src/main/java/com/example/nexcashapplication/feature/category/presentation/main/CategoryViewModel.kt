@@ -4,9 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
+import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect.NavigateToDetail
 import com.example.nexcashapplication.feature.category.presentation.mapper.toCategoryItemList
-import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent
-import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent.NavigateToDetail
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,7 +33,7 @@ class CategoryViewModel @Inject constructor(
     )
     val state: StateFlow<CategoryState> = _state.asStateFlow()
 
-    private var _navigationEvent = Channel<CategoryNavigationEvent>()
+    private var _navigationEvent = Channel<CategoryEffect>()
     val navigationEvent = _navigationEvent.receiveAsFlow()
 
     init {
@@ -56,7 +55,7 @@ class CategoryViewModel @Inject constructor(
 
             is CategoryEvent.OnAddKategoriClick -> {
                 viewModelScope.launch {
-                    _navigationEvent.send(CategoryNavigationEvent.NavigateToAddCategory)
+                    _navigationEvent.send(CategoryEffect.NavigateToAddCategory(categoryId = ""))
                 }
             }
 

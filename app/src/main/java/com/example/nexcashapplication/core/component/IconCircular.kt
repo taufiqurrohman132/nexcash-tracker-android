@@ -49,5 +49,8 @@ fun IconCircular(
 @Preview(showBackground = true)
 @Composable
 private fun IconCircularPreview() {
-    
+    IconCircular(
+        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+        backgroundColor = PrimaryCyan
+    )
 }

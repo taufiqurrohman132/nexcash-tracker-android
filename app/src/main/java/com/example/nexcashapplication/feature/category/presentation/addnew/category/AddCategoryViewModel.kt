@@ -10,9 +10,13 @@ import com.example.nexcashapplication.core.extension.moveToFront
 import com.example.nexcashapplication.core.extension.toColor
 import com.example.nexcashapplication.core.extension.toHex
 import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
+import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
+import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect
 import com.example.nexcashapplication.feature.category.presentation.mapper.toDomain
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiState
-import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,23 +29,50 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
-import javax.inject.Inject
 
-@HiltViewModel
-class AddCategoryViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = AddCategoryViewModel.Factory::class)
+class AddCategoryViewModel @AssistedInject constructor(
     val repository: CategoryRepository,
     val preferencesRepository: PreferencesRepository,
+    @Assisted("categoryId") private val categoryId: String,
+    @Assisted("parentId") private val parentId: String?,
 ) : ViewModel() {
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            @Assisted("categoryId") categoryId: String,
+            @Assisted("parentId") parentId: String?,
+        ): AddCategoryViewModel
+    }
+
     private var _state = MutableStateFlow(AddCategoryState())
     val state: StateFlow<AddCategoryState> = _state.asStateFlow()
 
-    private var _navigationEvent = Channel<CategoryNavigationEvent>()
+    private var _navigationEvent = Channel<CategoryEffect>()
     val navigationEvent = _navigationEvent.receiveAsFlow()
 
     init {
-        val id = _state.value.id
-        if (id.isNotBlank()) {
-            loadCategory(id)
+        parentId?.let { pid ->
+            viewModelScope.launch {
+                val parent = repository.getCategoryById(pid)
+
+                parent?.let {
+                    _state.update {
+                        it.copy(
+                            parentCategory = ParentCategoryUi(
+                                id = parent.id,
+                                name = parent.name,
+                                icon = CategoryIcons.fromId(parent.icon),
+                                color = parent.color.toColor(),
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+        if (categoryId.isNotBlank()) {
+            loadCategory(categoryId)
         }
     }
 
@@ -53,7 +84,7 @@ class AddCategoryViewModel @Inject constructor(
 
             is AddCategoryEvent.OnBackClicked -> {
                 viewModelScope.launch {
-                    _navigationEvent.send(CategoryNavigationEvent.NavigateBack)
+                    _navigationEvent.send(CategoryEffect.NavigateBack)
                 }
             }
 
@@ -61,7 +92,7 @@ class AddCategoryViewModel @Inject constructor(
                 save()
 
                 viewModelScope.launch {
-                    _navigationEvent.send(CategoryNavigationEvent.NavigateBack)
+                    _navigationEvent.send(CategoryEffect.NavigateBack)
                 }
             }
 
@@ -154,7 +185,7 @@ class AddCategoryViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 // simpan
-                val category = currentState.toDomain(id = currentState.id)
+                val category = currentState.toDomain(id = currentState.id, parentId = parentId)
                 val colorSelected = currentState.selectedColor
                 val recentColors = currentState.recentColors.map { it.toHex() }
 

@@ -30,6 +30,8 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -74,8 +76,9 @@ import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
-import com.example.nexcashapplication.feature.category.presentation.navigation.CategoryNavigationEvent
+import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect
 import com.example.nexcashapplication.ui.theme.BorderGray
+import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.TextSecondary
 import com.example.nexcashapplication.ui.theme.TextTertiary
@@ -84,14 +87,18 @@ import com.example.nexcashapplication.ui.theme.TextTertiary
 @Composable
 fun AddCategoryScreen(
     onBack: () -> Unit,
-    viewModel: AddCategoryViewModel = hiltViewModel(),
+    categoryId: String,
+    parentId: String?,
+    viewModel: AddCategoryViewModel = hiltViewModel<AddCategoryViewModel, AddCategoryViewModel.Factory>(
+        key = "${categoryId}_${parentId}",
+    ) { factory -> factory.create(categoryId, parentId) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { navigate ->
             when (navigate) {
-                is CategoryNavigationEvent.NavigateBack -> onBack()
+                is CategoryEffect.NavigateBack -> onBack()
                 else -> {}
             }
         }
@@ -134,9 +141,18 @@ fun AddCategoryContent(
                     .padding(padding)
                     .padding(horizontal = 20.dp)
                     .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Spacer(Modifier.height(4.dp))
+
+            state.parentCategory?.let { parent ->
+                ParentCategoryBanner(
+                    icon = parent.icon.icon,
+                    iconColor = parent.color,
+                    bannerColor = parent.color.copy(alpha = 0.2f),
+                    nameCategory = parent.name,
+                )
+            }
 
             // nama kategori
             FormField(
@@ -262,6 +278,47 @@ fun AddCategoryContent(
 
 }
 
+@Composable
+fun ParentCategoryBanner(
+    iconColor: Color,
+    bannerColor: Color,
+    icon: ImageVector,
+    nameCategory: String,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(bannerColor),
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            IconRounded(
+                iconColor = Color.White,
+                backgroundColor = iconColor,
+                imageVector = icon,
+            )
+
+            Column(
+
+            ) {
+                Text(
+                    text = "Subkategori Dari",
+                    style = MaterialTheme.typography.titleSmall,
+                    color = TextSecondary,
+                )
+                Text(
+                    text = nameCategory,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+
+        }
+    }
+}
 
 @Composable
 fun ColorSwatchRow(colors: List<Color>, selectedColor: Color, onColorSelected: (Color) -> Unit) {
@@ -695,20 +752,91 @@ fun AddCategoryContentEditPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Income Type")
+@Preview(showBackground = true, name = "Add - Expense (Default)")
 @Composable
-fun AddCategoryContentIncomePreview() {
-    AddCategoryContent(
-        state = AddCategoryState(
-            name = "Gaji",
-            typeCategory = TypeCategory.INCOME,
-            selectedColor = Color(0xFF9C27B0),
-            budgetLimit = 3000000,
-            selectedPeriod = BudgetPeriod.BULANAN,
-        ),
-        onEvent = {},
-    )
+private fun AddCategoryContentDefaultPreview() {
+    NexCashApplicationTheme {
+        AddCategoryContent(
+            state = AddCategoryState(),
+            onEvent = {},
+        )
+    }
 }
 
+@Preview(showBackground = true, name = "Add - Income Type")
+@Composable
+private fun AddCategoryContentIncomePreview() {
+    NexCashApplicationTheme {
+        AddCategoryContent(
+            state = AddCategoryState(
+                name = "Gaji",
+                typeCategory = TypeCategory.INCOME,
+                selectedColor = Color(0xFF9C27B0),
+                budgetLimit = 3_000_000,
+                selectedPeriod = BudgetPeriod.BULANAN,
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Add - SubCategory (with Parent)")
+@Composable
+private fun AddCategoryContentSubCategoryPreview() {
+    NexCashApplicationTheme {
+        AddCategoryContent(
+            state = AddCategoryState(
+                name = "Bensin",
+                typeCategory = TypeCategory.EXPENSE,
+                parentCategory = ParentCategoryUi(
+                    id = "id_transportasi",
+                    name = "Transportasi",
+                    icon = CategoryIcons.lainnya[0], // sesuaikan sama enum/sealed class icon kamu
+                    color = PrimaryCyan,
+                ),
+                selectedColor = Color(0xFF3B82F6),
+                budgetLimit = 450_000,
+                selectedPeriod = BudgetPeriod.BULANAN,
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Edit - Existing Category")
+@Composable
+private fun AddCategoryContentEdittPreview() {
+    NexCashApplicationTheme {
+        AddCategoryContent(
+            state = AddCategoryState(
+                id = "cat_001",
+                name = "Makanan",
+                typeCategory = TypeCategory.EXPENSE,
+                selectedColor = Color(0xFFEF4444),
+                budgetLimit = 2_000_000,
+                selectedPeriod = BudgetPeriod.BULANAN,
+                defaultAccount = "Dompet Utama (Cash)",
+                note = "Kebutuhan makan sehari-hari",
+            ),
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Add - No Budget Limit")
+@Composable
+private fun AddCategoryContentNoBudgetPreview() {
+    NexCashApplicationTheme {
+        AddCategoryContent(
+            state = AddCategoryState(
+                name = "Hiburan",
+                typeCategory = TypeCategory.EXPENSE,
+                selectedColor = Color(0xFFF59E0B),
+                budgetLimit = null,
+            ),
+            onEvent = {},
+        )
+    }
+}
 
 

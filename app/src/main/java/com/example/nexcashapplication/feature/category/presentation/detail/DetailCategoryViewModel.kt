@@ -8,10 +8,12 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -29,6 +31,9 @@ class DetailCategoryViewModel @AssistedInject constructor(
     private var _state = MutableStateFlow(DetailCategoryState())
     val state: StateFlow<DetailCategoryState> = _state.asStateFlow()
 
+    private var _detailCategoryEffect = Channel<DetailCategoryEffect>()
+    val detailCategoryEffect = _detailCategoryEffect.receiveAsFlow()
+
     init {
         loadDetailCategory(categoryId)
     }
@@ -40,7 +45,6 @@ class DetailCategoryViewModel @AssistedInject constructor(
             }
 
             DetailCategoryEvent.OnBackClick -> {
-
             }
 
             DetailCategoryEvent.OnEditClick -> TODO()
@@ -53,6 +57,16 @@ class DetailCategoryViewModel @AssistedInject constructor(
             DetailCategoryEvent.OnSeeAllSubCategoryClick -> TODO()
             is DetailCategoryEvent.OnSubCategoryClick -> TODO()
             is DetailCategoryEvent.OnTransactionClick -> TODO()
+            DetailCategoryEvent.OnAddSubCategoryClick -> {
+                viewModelScope.launch {
+                    _detailCategoryEffect.send(
+                        DetailCategoryEffect.NavigateToAddSubCategory(
+                            categoryId,
+                        ),
+                    )
+                }
+
+            }
         }
     }
 

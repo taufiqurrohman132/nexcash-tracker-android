@@ -10,7 +10,7 @@ data class AddCategoryState(
     val id: String = "", // bukan form field, ini identitas — kosong = mode tambah baru
     val name: String = "",
     val typeCategory: TypeCategory = TypeCategory.EXPENSE,
-//    val parentCategory: String? = null,
+    val parentCategory: ParentCategoryUi? = null,
     val selectedColor: Color = PrimaryCyan,
     val recentColors: List<Color> = emptyList(),
     val budgetLimit: Long? = null,
@@ -23,3 +23,10 @@ data class AddCategoryState(
     val isValid: Boolean
         get() = name.isNotBlank()
 }
+
+data class ParentCategoryUi(
+    val id: String,
+    val name: String,
+    val icon: CategoryIcon,
+    val color: Color,
+)

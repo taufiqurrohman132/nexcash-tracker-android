@@ -18,11 +18,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -158,8 +160,28 @@ fun DetailCategoryScreen(
         key = categoryId,
     ) { factory -> factory.create(categoryId) },
     modifier: Modifier = Modifier,
+
+    onNavigateAddSubCategory: () -> Unit = {},
+    onNavigateCategoryDetail: (String) -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.detailCategoryEffect.collect { effect ->
+            when (effect) {
+                DetailCategoryEffect.NavigateBack -> TODO()
+                is DetailCategoryEffect.NavigateToAddSubCategory -> onNavigateAddSubCategory()
+                is DetailCategoryEffect.NavigateToAddTransaction -> TODO()
+                is DetailCategoryEffect.NavigateToAllSubCategories -> TODO()
+                is DetailCategoryEffect.NavigateToEditCategory -> TODO()
+                is DetailCategoryEffect.NavigateToSubCategoryDetail -> TODO()
+                is DetailCategoryEffect.NavigateToSubCategoryManagement -> TODO()
+                is DetailCategoryEffect.NavigateToTransactionDetail -> TODO()
+                DetailCategoryEffect.ShowMenuBottomSheet -> TODO()
+                is DetailCategoryEffect.ShowSnackbar -> TODO()
+            }
+        }
+    }
 
     DetailCategoryContent(
         state = state,
@@ -208,6 +230,18 @@ fun DetailCategoryContent(
                     }
                 },
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { onEvent(DetailCategoryEvent.OnAddSubCategoryClick) },
+                containerColor = PrimaryCyan,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    tint = Color.White,
+                    contentDescription = "Add Sub Category",
+                )
+            }
         },
     ) { padding ->
         Column(

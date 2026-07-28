@@ -138,7 +138,14 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
                         ) {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 CategoryScreen(
-                                    onNavigateAddCategory = { navigator.navigate(Route.CategorRoute.AddNew) },
+                                    onNavigateAddCategory = { categoryId, parentId ->
+                                        navigator.navigate(
+                                            Route.CategorRoute.AddNew(
+                                                categoryId = categoryId,
+                                                parentId = parentId,
+                                            ),
+                                        )
+                                    },
                                     onNavigateCategoryDetail = { id ->
                                         navigator.navigate(
                                             Route.CategorRoute.Detail(
@@ -150,13 +157,25 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
                             }
                         }
                     }
-                    entry<Route.CategorRoute.AddNew> {
+                    entry<Route.CategorRoute.AddNew> { key ->
                         AddCategoryScreen(
                             onBack = navigator::goBack,
+                            categoryId = key.categoryId,
+                            parentId = key.parentId,
                         )
                     }
                     entry<Route.CategorRoute.Detail> { key ->
-                        DetailCategoryScreen(key.categoryId)
+                        DetailCategoryScreen(
+                            categoryId = key.categoryId,
+                            onNavigateAddSubCategory = {
+                                navigator.navigate(
+                                    Route.CategorRoute.AddNew(
+                                        categoryId = "",
+                                        parentId = key.categoryId,
+                                    ),
+                                )
+                            },
+                        )
                     }
                 },
             ),
