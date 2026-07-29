@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material3.Card
@@ -161,19 +162,20 @@ fun DetailCategoryScreen(
     ) { factory -> factory.create(categoryId) },
     modifier: Modifier = Modifier,
 
+    onBack: () -> Unit,
     onNavigateAddSubCategory: () -> Unit = {},
-    onNavigateCategoryDetail: (String) -> Unit = {},
+    onNavigateEditCategory: () -> Unit = {},
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.detailCategoryEffect.collect { effect ->
             when (effect) {
-                DetailCategoryEffect.NavigateBack -> TODO()
+                DetailCategoryEffect.NavigateBack -> onBack()
                 is DetailCategoryEffect.NavigateToAddSubCategory -> onNavigateAddSubCategory()
                 is DetailCategoryEffect.NavigateToAddTransaction -> TODO()
                 is DetailCategoryEffect.NavigateToAllSubCategories -> TODO()
-                is DetailCategoryEffect.NavigateToEditCategory -> TODO()
+                is DetailCategoryEffect.NavigateToEditCategory -> onNavigateEditCategory()
                 is DetailCategoryEffect.NavigateToSubCategoryDetail -> TODO()
                 is DetailCategoryEffect.NavigateToSubCategoryManagement -> TODO()
                 is DetailCategoryEffect.NavigateToTransactionDetail -> TODO()
@@ -220,13 +222,13 @@ fun DetailCategoryContent(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = { onEvent(DetailCategoryEvent.OnBackClick)}) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+                    IconButton(onClick = { onEvent(DetailCategoryEvent.OnEditClick)}) {
+                        Icon(Icons.Default.Edit, contentDescription = "Edit")
                     }
                 },
             )

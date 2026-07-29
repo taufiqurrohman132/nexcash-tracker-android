@@ -45,9 +45,21 @@ class DetailCategoryViewModel @AssistedInject constructor(
             }
 
             DetailCategoryEvent.OnBackClick -> {
+                viewModelScope.launch {
+                    _detailCategoryEffect.send(DetailCategoryEffect.NavigateBack)
+                }
             }
 
-            DetailCategoryEvent.OnEditClick -> TODO()
+            DetailCategoryEvent.OnEditClick -> {
+                viewModelScope.launch {
+                    _detailCategoryEffect.send(
+                        DetailCategoryEffect.NavigateToEditCategory(
+                            categoryId,
+                        ),
+                    )
+                }
+            }
+
             DetailCategoryEvent.OnFabAddClick -> TODO()
             DetailCategoryEvent.OnLoadMoreTransactionsClick -> TODO()
             DetailCategoryEvent.OnManageSubCategoryClick -> TODO()
@@ -79,7 +91,6 @@ class DetailCategoryViewModel @AssistedInject constructor(
                         category = category?.toUiModel(),
                     )
                 }
-
 
                 // subcategory tetap Flow karena mungkin butuh observe realtime
                 // (misal saat nambah/edit/hapus subkategori)

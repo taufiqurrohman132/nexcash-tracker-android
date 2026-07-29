@@ -138,6 +138,7 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
                         ) {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 CategoryScreen(
+                                    // add category
                                     onNavigateAddCategory = { categoryId, parentId ->
                                         navigator.navigate(
                                             Route.CategorRoute.AddNew(
@@ -169,12 +170,22 @@ fun NavigationRoot(modifier: Modifier = Modifier) {
                             categoryId = key.categoryId,
                             onNavigateAddSubCategory = {
                                 navigator.navigate(
+                                    // add sub category
                                     Route.CategorRoute.AddNew(
                                         categoryId = "",
                                         parentId = key.categoryId,
                                     ),
                                 )
                             },
+                            onNavigateEditCategory = {
+                                navigator.navigate(
+                                    // edit category
+                                    Route.CategorRoute.AddNew(
+                                        categoryId = key.categoryId,
+                                    ),
+                                )
+                            },
+                            onBack = navigator::goBack,
                         )
                     }
                 },
