@@ -48,7 +48,7 @@ interface CategoryDao {
 
     // Ambil satu kategori by ID
     @Query("SELECT * FROM categories WHERE id = :id")
-    suspend fun getCategoryById(id: String): CategoryEntity?
+    fun getCategoryById(id: String): Flow<CategoryEntity?>
 
     // Ambil subkategori dari kategori induk
     @Query(

@@ -12,8 +12,8 @@ import javax.inject.Inject
 class CategoryRepositoryImpl @Inject constructor(
     val dao: CategoryDao,
 ) : CategoryRepository {
-    override suspend fun getCategoryById(id: String): Category? {
-        return dao.getCategoryById(id)?.toDomain()
+    override fun getCategoryById(id: String): Flow<Category?> {
+        return dao.getCategoryById(id).map { it?.toDomain() }
     }
 
 //    override suspend fun getAllCategory(): Flow<List<Category?>> {

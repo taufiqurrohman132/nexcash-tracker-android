@@ -4,7 +4,7 @@ import com.example.nexcashapplication.feature.category.domain.model.Category
 import kotlinx.coroutines.flow.Flow
 
 interface CategoryRepository {
-    suspend fun getCategoryById(id: String): Category?
+    fun getCategoryById(id: String): Flow<Category?>
 
     //    suspend fun getAllCategory(): Flow<List<Category?>>
     fun searchCategories(query: String, type: String): Flow<List<Category>>

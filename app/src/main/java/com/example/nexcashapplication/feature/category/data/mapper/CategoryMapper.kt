@@ -8,7 +8,6 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Warning
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.nexcashapplication.core.datasource.local.model.CategoryEntity
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
@@ -16,6 +15,7 @@ import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.category.domain.model.Category
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
+import java.util.UUID
 
 
 fun CategoryEntity.toDomain() = Category(
@@ -35,6 +35,7 @@ fun CategoryEntity.toDomain() = Category(
 )
 
 fun Category.toEntity() = CategoryEntity(
+    id = id.ifBlank { UUID.randomUUID().toString() },
     parentId = parentId,
     name = name,
     type = type.name.lowercase(),

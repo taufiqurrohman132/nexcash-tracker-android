@@ -55,20 +55,22 @@ class AddCategoryViewModel @AssistedInject constructor(
     init {
         parentId?.let { pid ->
             viewModelScope.launch {
-                val parent = repository.getCategoryById(pid)
+                repository.getCategoryById(id = pid)
+                        .collect { detailCategory ->
+                            detailCategory?.let {
+                                _state.update {
+                                    it.copy(
+                                        parentCategory = ParentCategoryUi(
+                                            id = detailCategory.id,
+                                            name = detailCategory.name,
+                                            icon = CategoryIcons.fromId(detailCategory.icon),
+                                            color = detailCategory.color.toColor(),
+                                        ),
+                                    )
+                                }
+                            }
+                        }
 
-                parent?.let {
-                    _state.update {
-                        it.copy(
-                            parentCategory = ParentCategoryUi(
-                                id = parent.id,
-                                name = parent.name,
-                                icon = CategoryIcons.fromId(parent.icon),
-                                color = parent.color.toColor(),
-                            ),
-                        )
-                    }
-                }
             }
         }
         if (categoryId.isNotBlank()) {
@@ -89,7 +91,7 @@ class AddCategoryViewModel @AssistedInject constructor(
             }
 
             is AddCategoryEvent.OnSaveClicked -> {
-                save()
+                saveOrUpdate()
 
                 viewModelScope.launch {
                     _navigationEvent.send(CategoryEffect.NavigateBack)
@@ -156,23 +158,25 @@ class AddCategoryViewModel @AssistedInject constructor(
             val currentState = _state.value
 
             try {
-                val category = repository.getCategoryById(id)
-                if (category != null) {
-                    _state.update {
-                        category.toUiState(
-                            recentColors = getRecentColorsSnapshot().moveToFront(
-                                color = currentState.selectedColor,
-                            ),
-                        )
-                    }
-                }
+                repository.getCategoryById(id = categoryId)
+                        .collect { detailCategory ->
+                            if (detailCategory != null) {
+                                _state.update {
+                                    detailCategory.toUiState(
+                                        recentColors = getRecentColorsSnapshot().moveToFront(
+                                            color = currentState.selectedColor,
+                                        ),
+                                    )
+                                }
+                            }
+                        }
             } catch (e: Exception) {
                 Log.e(TAG, "loadCategory: $e")
             }
         }
     }
 
-    fun save() {
+    fun saveOrUpdate() {
         val currentState = _state.value
 
         if (!currentState.isValid) {
@@ -190,7 +194,13 @@ class AddCategoryViewModel @AssistedInject constructor(
                 val recentColors = currentState.recentColors.map { it.toHex() }
 
                 saveRecentColors(recentColors)
-                repository.insertCategory(category)
+                Log.d(TAG, "saveOrUpdate: state id : ${currentState.id}")
+                if (currentState.id.isBlank()) {
+                    repository.insertCategory(category)
+                } else {
+                    Log.d(TAG, "saveOrUpdate: update")
+                    repository.updateCategory(category)
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "save: $e")
             }

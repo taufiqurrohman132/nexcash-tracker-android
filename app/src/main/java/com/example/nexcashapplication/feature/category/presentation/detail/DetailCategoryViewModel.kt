@@ -85,12 +85,15 @@ class DetailCategoryViewModel @AssistedInject constructor(
     fun loadDetailCategory(categoryId: String) {
         viewModelScope.launch {
             try {
-                val category = categoryRepository.getCategoryById(categoryId)
-                _state.update {
-                    it.copy(
-                        category = category?.toUiModel(),
-                    )
-                }
+                categoryRepository.getCategoryById(id = categoryId)
+                        .catch { e -> _state.update { it.copy(error = e.message) } }
+                        .collect { detailCategory ->
+                            _state.update {
+                                it.copy(
+                                    category = detailCategory?.toUiModel(),
+                                )
+                            }
+                        }
 
                 // subcategory tetap Flow karena mungkin butuh observe realtime
                 // (misal saat nambah/edit/hapus subkategori)
