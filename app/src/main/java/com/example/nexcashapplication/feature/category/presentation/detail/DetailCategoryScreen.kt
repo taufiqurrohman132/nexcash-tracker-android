@@ -51,10 +51,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUi
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryDetail
 import com.example.nexcashapplication.ui.theme.BorderGray
@@ -157,25 +159,26 @@ val dummyTransactions = listOf(
 @Composable
 fun DetailCategoryScreen(
     categoryId: String,
-    viewModel: DetailCategoryViewModel = hiltViewModel<DetailCategoryViewModel, DetailCategoryViewModel.Factory>(
-        key = categoryId,
-    ) { factory -> factory.create(categoryId) },
+    viewModel: DetailCategoryViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
-
-    onBack: () -> Unit,
-    onNavigateAddSubCategory: () -> Unit = {},
-    onNavigateEditCategory: () -> Unit = {},
+    navController: NavHostController,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.detailCategoryEffect.collect { effect ->
             when (effect) {
-                DetailCategoryEffect.NavigateBack -> onBack()
-                is DetailCategoryEffect.NavigateToAddSubCategory -> onNavigateAddSubCategory()
+                DetailCategoryEffect.NavigateBack -> navController.popBackStack()
+                is DetailCategoryEffect.NavigateToAddSubCategory -> navController.navigate(
+                    Route.CategoryRoute.AddNew(categoryId = "", parentId = effect.parentId),
+                )
+
                 is DetailCategoryEffect.NavigateToAddTransaction -> TODO()
                 is DetailCategoryEffect.NavigateToAllSubCategories -> TODO()
-                is DetailCategoryEffect.NavigateToEditCategory -> onNavigateEditCategory()
+                is DetailCategoryEffect.NavigateToEditCategory -> navController.navigate(
+                    Route.CategoryRoute.AddNew(effect.categoryId),
+                )
+
                 is DetailCategoryEffect.NavigateToSubCategoryDetail -> TODO()
                 is DetailCategoryEffect.NavigateToSubCategoryManagement -> TODO()
                 is DetailCategoryEffect.NavigateToTransactionDetail -> TODO()
@@ -222,12 +225,12 @@ fun DetailCategoryContent(
                     }
                 },
                 navigationIcon = {
-                    IconButton(onClick = { onEvent(DetailCategoryEvent.OnBackClick)}) {
+                    IconButton(onClick = { onEvent(DetailCategoryEvent.OnBackClick) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
-                    IconButton(onClick = { onEvent(DetailCategoryEvent.OnEditClick)}) {
+                    IconButton(onClick = { onEvent(DetailCategoryEvent.OnEditClick) }) {
                         Icon(Icons.Default.Edit, contentDescription = "Edit")
                     }
                 },

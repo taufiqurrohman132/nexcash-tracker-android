@@ -81,9 +81,13 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.59.2")
     ksp("com.google.dagger:hilt-android-compiler:2.59.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
- 
+
     // Navigation 3 core
-    implementation("androidx.navigation3:navigation3-ui:1.0.0")
+//    implementation("androidx.navigation3:navigation3-ui:1.0.0")
+    implementation("androidx.navigation:navigation-compose:2.9.8")
+    // JSON serialization library, works with the Kotlin serialization plugin
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
     // Kalau pakai ViewModel di tiap screen
     implementation("androidx.lifecycle:lifecycle-viewmodel-navigation3:2.9.0")
     implementation("androidx.compose.foundation:foundation:1.4.0")
@@ -106,6 +110,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
+    // Testing Navigation
+    androidTestImplementation("androidx.navigation:navigation-testing:2.9.8")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

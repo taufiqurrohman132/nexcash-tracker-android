@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
@@ -86,19 +87,17 @@ import com.example.nexcashapplication.ui.theme.TextTertiary
 
 @Composable
 fun AddCategoryScreen(
-    onBack: () -> Unit,
     categoryId: String,
     parentId: String?,
-    viewModel: AddCategoryViewModel = hiltViewModel<AddCategoryViewModel, AddCategoryViewModel.Factory>(
-        key = "${categoryId}_${parentId}",
-    ) { factory -> factory.create(categoryId, parentId) },
+    viewModel: AddCategoryViewModel = hiltViewModel(),
+    navController: NavHostController,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { navigate ->
             when (navigate) {
-                is CategoryEffect.NavigateBack -> onBack()
+                is CategoryEffect.NavigateBack -> navController.popBackStack()
                 else -> {}
             }
         }

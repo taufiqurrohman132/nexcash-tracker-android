@@ -1,10 +1,9 @@
 package com.example.nexcashapplication.core.navigations
 
-import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Serializable
-sealed interface Route : NavKey {
+sealed interface Route {
     @Serializable
     sealed interface HomeRoute : Route {
         @Serializable
@@ -45,15 +44,15 @@ sealed interface Route : NavKey {
 
 
     @Serializable
-    sealed interface CategorRoute : Route {
+    sealed interface CategoryRoute : Route {
         @Serializable
-        data object Main : CategorRoute
+        data object Main : CategoryRoute
 
         @Serializable
-        data class Detail(val categoryId: String) : CategorRoute
+        data class Detail(val categoryId: String) : CategoryRoute
 
         @Serializable
-        data class AddNew(val categoryId: String, val parentId: String? = null) : CategorRoute
+        data class AddNew(val categoryId: String, val parentId: String? = null) : CategoryRoute
     }
 
 }

@@ -67,8 +67,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryItem
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
@@ -82,15 +84,20 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 fun CategoryScreen(
     modifier: Modifier = Modifier,
     viewModel: CategoryViewModel = hiltViewModel(),
-    onNavigateAddCategory: (String, String?) -> Unit,
-    onNavigateCategoryDetail: (String) -> Unit = {},
+    navController: NavHostController,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { event ->
             when (event) {
-                is CategoryEffect.NavigateToAddCategory -> onNavigateAddCategory(event.categoryId, event.parentId)
-                is CategoryEffect.NavigateToDetail -> onNavigateCategoryDetail(event.categoryId)
+                is CategoryEffect.NavigateToAddCategory -> navController.navigate(
+                    Route.CategoryRoute.AddNew(event.categoryId, event.parentId),
+                )
+
+                is CategoryEffect.NavigateToDetail -> navController.navigate(
+                    Route.CategoryRoute.Detail(event.categoryId),
+                )
+
                 else -> {}
             }
         }
