@@ -22,6 +22,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -177,23 +181,23 @@ fun TransactionContent(
                         title= "Hari Ini",
                         amount= state.todayTotal,
                         modifier= Modifier.weight(1f),
-                        iconPainter = painterResource(R.drawable.down),
+                        icon= Icons.Default.KeyboardArrowDown,
                         iconColor = Color.Red
                     )
                     SummaryCard(
                         title= "Minggu Ini",
                         amount= state.weekTotal,
                         modifier= Modifier.weight(1f),
-                        iconPainter = painterResource(R.drawable.insights),
+                        icon= Icons.Default.KeyboardArrowUp,
                         iconColor = WarningAmber,
-
                     )
                     SummaryCard(
                         title= "Sisa Budget",
                         amount= state.remainingBudget,
                         modifier= Modifier.weight(1f),
                         iconColor = SuccessGreen,
-                        iconPainter = painterResource(R.drawable.scan)
+                        icon= Icons.Default.QrCodeScanner,
+
                     )
                 }
             }
@@ -293,7 +297,7 @@ fun SummaryCard(
     title: String,
     amount: Long,
     modifier: Modifier,
-    iconPainter: Painter,
+    icon: ImageVector,
     iconColor: Color
 ) {
     Card(
@@ -311,7 +315,7 @@ fun SummaryCard(
             modifier = Modifier.padding(10.dp)
         ){
             IconCircular(
-                painter = iconPainter,
+                icon = icon,
                 iconColor = iconColor,
                 backgroundColor = iconColor.copy(alpha = 0.1f),
                 size = 26.dp

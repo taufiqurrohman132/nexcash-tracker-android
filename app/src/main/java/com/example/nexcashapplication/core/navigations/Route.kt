@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.core.navigations
 
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -53,6 +54,8 @@ sealed interface Route {
 
         @Serializable
         data class AddNew(val categoryId: String, val parentId: String? = null) : CategoryRoute
+        @Serializable
+        data class Delete(val categoryId: String, val parentId: String? = null, val typeCategory: TypeCategory) : CategoryRoute
     }
 
 }

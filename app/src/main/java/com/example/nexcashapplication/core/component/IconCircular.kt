@@ -5,12 +5,15 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -25,7 +28,8 @@ fun IconCircular(
     iconColor: Color = Color.Black,
     backgroundColor: Color = Color.White,
     size: Dp = 40.dp,
-    painter: Painter,
+    iconToCountainerRatio: Int = 3,
+    icon: ImageVector,
 ) {
 
     Box(
@@ -38,10 +42,10 @@ fun IconCircular(
         contentAlignment = Alignment.Center
     ){
         Icon(
-            painter = painter,
+            imageVector = icon,
             tint = iconColor,
             contentDescription = null,
-            modifier = Modifier.size(size / 3)
+            modifier = Modifier.size(size / iconToCountainerRatio)
         )
     }
 }
@@ -50,7 +54,7 @@ fun IconCircular(
 @Composable
 private fun IconCircularPreview() {
     IconCircular(
-        painter = painterResource(id = R.drawable.ic_launcher_foreground),
+        icon = Icons.Default.Settings,
         backgroundColor = PrimaryCyan
     )
 }

@@ -1,12 +1,12 @@
 package com.example.nexcashapplication.core.datasource.local.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.example.nexcashapplication.core.datasource.local.model.CategoryEntity
+import com.example.nexcashapplication.core.datasource.local.result.CategoryNameResult
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -60,6 +60,24 @@ interface CategoryDao {
     )
     fun getSubCategories(parentId: String): Flow<List<CategoryEntity>>
 
+    @Query(
+        """
+            SELECT * FROM categories
+            WHERE parent_id IS NULL
+            ORDER BY name ASC
+        """,
+    )
+    suspend fun getParentCategories(): List<CategoryEntity>
+
+    @Query(
+        """
+            SELECT id, name, icon, color FROM categories
+            WHERE parent_id IS NULL AND type = :type
+            ORDER BY name ASC
+        """,
+    )
+    suspend fun getParentCategoriesNameByType(type: String): List<CategoryNameResult>
+
     // CRUD ────────────────────────────────────────────
 
     // Tambah kategori baru
@@ -71,8 +89,19 @@ interface CategoryDao {
     suspend fun updateCategory(category: CategoryEntity)
 
     // Hapus kategori
-    @Delete
-    suspend fun deleteCategory(category: CategoryEntity)
+    @Query("DELETE FROM transactions WHERE category_id = :categoryId ")
+    suspend fun deleteTransactionByCategory(categoryId: String)
+
+    @Query("DELETE FROM categories WHERE id = :categoryId ")
+    suspend fun deleteCategoryRow(categoryId: String)
+
+    // pindah ke kategori lain
+    @Query("UPDATE transactions SET category_id = :targetId WHERE category_id = :categoryId ")
+    suspend fun reassignTransactions(categoryId: String, targetId: String)
+
+    // ubah ke tanpa kateogri
+    @Query("UPDATE transactions SET category_id = NULL WHERE category_id = :categoryId ")
+    suspend fun uncategorizeTransactions(categoryId: String)
 
     // Cek duplikat nama sebelum insert
     @Query(

@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.feature.category.presentation.detail.model
 
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 
 data class CategoryDetail(
     val id: String,
@@ -8,6 +9,7 @@ data class CategoryDetail(
     val icon: CategoryIcon,
     val totalBudget: Long,
     val usedBudget: Long,
+    val typeCategory: TypeCategory,
 
     ) {
     val remainingBudget: Long = totalBudget - usedBudget

@@ -88,14 +88,14 @@ fun CategoryScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect { event ->
-            when (event) {
+        viewModel.navigationEvent.collect { effect ->
+            when (effect) {
                 is CategoryEffect.NavigateToAddCategory -> navController.navigate(
-                    Route.CategoryRoute.AddNew(event.categoryId, event.parentId),
+                    Route.CategoryRoute.AddNew(effect.categoryId, effect.parentId),
                 )
 
                 is CategoryEffect.NavigateToDetail -> navController.navigate(
-                    Route.CategoryRoute.Detail(event.categoryId),
+                    Route.CategoryRoute.Detail(effect.categoryId),
                 )
 
                 else -> {}

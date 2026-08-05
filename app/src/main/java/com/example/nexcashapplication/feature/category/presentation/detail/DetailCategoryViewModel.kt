@@ -4,8 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
+import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToAddSubCategory
+import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToDeleteCategory
+import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToEditCategory
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -52,7 +56,7 @@ class DetailCategoryViewModel @Inject constructor(
             DetailCategoryEvent.OnEditClick -> {
                 viewModelScope.launch {
                     _detailCategoryEffect.send(
-                        DetailCategoryEffect.NavigateToEditCategory(
+                        NavigateToEditCategory(
                             categoryId,
                         ),
                     )
@@ -71,12 +75,21 @@ class DetailCategoryViewModel @Inject constructor(
             DetailCategoryEvent.OnAddSubCategoryClick -> {
                 viewModelScope.launch {
                     _detailCategoryEffect.send(
-                        DetailCategoryEffect.NavigateToAddSubCategory(
+                        NavigateToAddSubCategory(
                             parentId = categoryId,
                         ),
                     )
                 }
 
+            }
+
+            DetailCategoryEvent.OnDeleteClick -> viewModelScope.launch {
+                _detailCategoryEffect.send(
+                    NavigateToDeleteCategory(
+                        categoryId = categoryId,
+                        typeCategory = _state.value.category?.typeCategory ?: TypeCategory.EXPENSE,
+                    ),
+                )
             }
         }
     }

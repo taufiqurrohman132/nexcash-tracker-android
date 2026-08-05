@@ -1,0 +1,367 @@
+package com.example.nexcashapplication.feature.category.presentation.delete
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.HelpOutline
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import com.example.nexcashapplication.core.component.IconCircular
+import com.example.nexcashapplication.core.domain.model.CategoryIcon
+import com.example.nexcashapplication.feature.category.presentation.delete.model.CategoryDeleteItemUI
+import com.example.nexcashapplication.feature.category.presentation.delete.model.DeleteOption
+import com.example.nexcashapplication.ui.theme.BorderGray
+import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
+import com.example.nexcashapplication.ui.theme.PrimaryCyan
+import kotlinx.coroutines.flow.collectLatest
+
+@Composable
+fun DeleteCategoryScreen(
+    viewModel: DeleteCategoryViewModel = hiltViewModel(),
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+) {
+
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collectLatest { effect ->
+            when (effect) {
+                DeleteCategoryEffect.DeleteSuccess -> TODO()
+                DeleteCategoryEffect.NavigateBack -> TODO()
+                is DeleteCategoryEffect.ShowError -> TODO()
+            }
+        }
+    }
+
+    DeleteCategoryContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeleteCategoryContent(
+    state: DeleteCategoryState,
+    onEvent: (DeleteCategoryEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Hapus Kategori?", fontWeight = FontWeight.Bold) },
+                navigationIcon = {
+                    IconButton(onClick = { onEvent(DeleteCategoryEvent.Cancel) }) {
+                        Icon(Icons.Filled.ArrowBackIosNew, contentDescription = "Kembali")
+                    }
+                },
+            )
+        },
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                    .padding(padding)
+                    .padding(horizontal = 16.dp)
+                    .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Spacer(Modifier.height(24.dp))
+
+            IconCircular(
+                icon = Icons.Default.Warning,
+                iconColor = Color.Red,
+                backgroundColor = Color.Red.copy(alpha = 0.1f),
+                size = 72.dp,
+                iconToCountainerRatio = 2,
+            )
+
+            Spacer(Modifier.height(16.dp))
+            Text(
+                "Konfirmasi Penghapusan",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+            )
+            Spacer(Modifier.height(6.dp))
+            Text(
+                buildString {
+                    append("Kategori \"${state.categoryName}\" masih memiliki ")
+                    append("${state.transactionCount} transaksi terkait. ")
+                    append("Apa yang ingin Anda lakukan?")
+                },
+                textAlign = TextAlign.Center,
+                fontSize = 13.sp,
+                color = Color(0xFF888888),
+            )
+
+            Spacer(Modifier.height(20.dp))
+
+            OptionCard(
+                icon = Icons.Filled.Delete,
+                title = "Hapus Semua Transaksi",
+                description = "Semua data transaksi di kategori ini akan ikut terhapus secara permanen.",
+                selected = state.selectedOption == DeleteOption.DELETE_ALL_TRANSACTIONS,
+                onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.DELETE_ALL_TRANSACTIONS)) },
+            )
+
+            Spacer(Modifier.height(10.dp))
+
+            OptionCard(
+                icon = Icons.AutoMirrored.Filled.ArrowForward,
+                title = "Pindahkan ke Kategori Lain",
+                description = "Alihkan transaksi ke kategori yang sudah ada agar laporan tetap akurat.",
+                selected = state.selectedOption == DeleteOption.MOVE_TO_CATEGORY,
+                onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.MOVE_TO_CATEGORY)) },
+            )
+
+            if (state.selectedOption == DeleteOption.MOVE_TO_CATEGORY) {
+                Spacer(Modifier.height(10.dp))
+                CategoryDropdown(
+                    modifier = Modifier.padding(start = 28.dp),
+                    categories = state.availableCategories,
+                    selected = state.targetCategory,
+                    expanded = state.isDropdownExpanded,
+                    onExpandedChange = { onEvent(DeleteCategoryEvent.ToggleDropdown) },
+                    onSelect = { onEvent(DeleteCategoryEvent.SelectTargetCategory(it)) },
+                )
+            }
+
+            Spacer(Modifier.height(10.dp))
+
+            OptionCard(
+                icon = Icons.Filled.HelpOutline,
+                title = "Biarkan Tidak Berkategori",
+                description = "Transaksi akan tetap ada namun tidak memiliki label kategori.",
+                selected = state.selectedOption == DeleteOption.UNCATEGORIZED,
+                onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.UNCATEGORIZED)) },
+            )
+
+            Spacer(Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+fun OptionCard(
+    icon: ImageVector,
+    title: String,
+    description: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Card(
+        onClick = onClick,
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (selected) PrimaryCyan.copy(alpha = 0.1f) else Color.White,
+        ),
+        border = BorderStroke(
+            width = if (selected) 1.5.dp else 1.dp,
+            color = if (selected) PrimaryCyan else BorderGray,
+        ),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.Top,
+        ) {
+            RadioButton(
+                selected = selected,
+                onClick = onClick,
+                modifier = Modifier.size(20.dp),
+            )
+            Spacer(Modifier.width(10.dp))
+
+            Column {
+                Row {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = null,
+                        modifier = Modifier
+                                .size(18.dp)
+                                .padding(top = 2.dp),
+                        tint = if (selected) Color(0xFF3B82F6) else Color(0xFF555555),
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                }
+                Spacer(Modifier.height(2.dp))
+                Text(description, fontSize = 12.sp, color = Color(0xFF999999))
+            }
+        }
+
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CategoryDropdown(
+    categories: List<CategoryDeleteItemUI>,
+    selected: CategoryDeleteItemUI?,
+    expanded: Boolean,
+    onExpandedChange: () -> Unit,
+    onSelect: (CategoryDeleteItemUI) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    ExposedDropdownMenuBox(
+        modifier = modifier,
+        expanded = expanded,
+        onExpandedChange = { onExpandedChange() },
+    ) {
+        OutlinedTextField(
+            value = selected?.name ?: "Pilih kategori tujuan",
+            onValueChange = {},
+            readOnly = true,
+            placeholder = { Text("Pilih kategori tujuan") },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+            shape = RoundedCornerShape(12.dp),
+            modifier = Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = PrimaryCyan,
+                unfocusedBorderColor = BorderGray,
+            ),
+        )
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { onExpandedChange() },
+            shape = RoundedCornerShape(16.dp),
+            containerColor = Color.White,
+        ) {
+            categories.forEach { category ->
+                DropdownMenuItem(
+                    text = { Text(category.name) },
+                    onClick = { onSelect(category) },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = category.icon.icon,
+                            contentDescription = null,
+                            tint = category.iconColor,
+                        )
+                    },
+                    trailingIcon = {
+                        if (selected?.id == category.id) {
+                            Icon(
+                                Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = PrimaryCyan,
+                            )
+                        }
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun DeleteCategoryPreview() {
+    val sampleCategories = listOf(
+        CategoryDeleteItemUI(
+            id = "1L", name = "Kebutuhan Rumah", icon = CategoryIcon(id = "", Icons.Filled.Home),
+            iconColor = Color.Blue,
+        ),
+        CategoryDeleteItemUI(
+            id = "2L",
+            name = "Makanan & Minum",
+            icon = CategoryIcon(id = "", Icons.Filled.Home),
+            iconColor = Color.Blue,
+
+            ),
+        CategoryDeleteItemUI(
+            id = "3L",
+            name = "Transportasi",
+            icon = CategoryIcon(id = "", Icons.Filled.Home),
+            iconColor = Color.Blue,
+
+            ),
+        CategoryDeleteItemUI(
+            id = "4L",
+            name = "Belanja Umum",
+            icon = CategoryIcon(id = "", Icons.Filled.Home),
+            iconColor = Color.Blue,
+
+            ),
+    )
+
+    val previewState = DeleteCategoryState(
+        categoryName = "Hiburan",
+        transactionCount = 12,
+        selectedOption = DeleteOption.MOVE_TO_CATEGORY,
+        availableCategories = sampleCategories,
+        targetCategory = sampleCategories.first(),
+        isDropdownExpanded = false,
+    )
+
+    NexCashApplicationTheme {
+        DeleteCategoryContent(
+            state = previewState,
+            onEvent = {},
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Delete All - No Target Selected")
+@Composable
+private fun DeleteCategoryDeleteAllPreview() {
+    NexCashApplicationTheme {
+        DeleteCategoryContent(
+            state = DeleteCategoryState(
+                categoryName = "Hiburan",
+                transactionCount = 12,
+                selectedOption = DeleteOption.DELETE_ALL_TRANSACTIONS,
+                availableCategories = emptyList(),
+                targetCategory = null,
+                isDropdownExpanded = false,
+            ),
+            onEvent = {},
+        )
+    }
+}
+

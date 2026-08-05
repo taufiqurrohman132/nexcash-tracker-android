@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.AddCategoryScreen
+import com.example.nexcashapplication.feature.category.presentation.delete.DeleteCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryScreen
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.DashboardScreen
@@ -44,6 +45,12 @@ fun NavigationStack(
             AddCategoryScreen(
                 categoryId = args.categoryId,
                 parentId = args.parentId,
+                navController = navController,
+            )
+        }
+        composable<Route.CategoryRoute.Delete> { entry ->
+            val args = entry.toRoute<Route.CategoryRoute.Delete>()
+            DeleteCategoryScreen(
                 navController = navController,
             )
         }

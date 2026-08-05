@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Replay
@@ -55,8 +56,10 @@ import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUi
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.core.navigations.Route.CategoryRoute.AddNew
 import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryDetail
 import com.example.nexcashapplication.ui.theme.BorderGray
@@ -170,13 +173,13 @@ fun DetailCategoryScreen(
             when (effect) {
                 DetailCategoryEffect.NavigateBack -> navController.popBackStack()
                 is DetailCategoryEffect.NavigateToAddSubCategory -> navController.navigate(
-                    Route.CategoryRoute.AddNew(categoryId = "", parentId = effect.parentId),
+                    AddNew(categoryId = "", parentId = effect.parentId),
                 )
 
                 is DetailCategoryEffect.NavigateToAddTransaction -> TODO()
                 is DetailCategoryEffect.NavigateToAllSubCategories -> TODO()
                 is DetailCategoryEffect.NavigateToEditCategory -> navController.navigate(
-                    Route.CategoryRoute.AddNew(effect.categoryId),
+                    AddNew(effect.categoryId),
                 )
 
                 is DetailCategoryEffect.NavigateToSubCategoryDetail -> TODO()
@@ -184,6 +187,12 @@ fun DetailCategoryScreen(
                 is DetailCategoryEffect.NavigateToTransactionDetail -> TODO()
                 DetailCategoryEffect.ShowMenuBottomSheet -> TODO()
                 is DetailCategoryEffect.ShowSnackbar -> TODO()
+                is DetailCategoryEffect.NavigateToDeleteCategory -> navController.navigate(
+                    Route.CategoryRoute.Delete(
+                        categoryId = effect.categoryId,
+                        typeCategory = effect.typeCategory,
+                    ),
+                )
             }
         }
     }
@@ -230,8 +239,13 @@ fun DetailCategoryContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { onEvent(DetailCategoryEvent.OnEditClick) }) {
-                        Icon(Icons.Default.Edit, contentDescription = "Edit")
+                    Row {
+                        IconButton(onClick = { onEvent(DetailCategoryEvent.OnEditClick) }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit")
+                        }
+                        IconButton(onClick = { onEvent(DetailCategoryEvent.OnDeleteClick) }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        }
                     }
                 },
             )
@@ -621,6 +635,7 @@ private fun DetailCategoryContentPreview() {
                     icon = CategoryIcons.fromId("5"), // sesuaikan dgn tipe icon kamu
                     totalBudget = 1_500_000,
                     usedBudget = 1_050_000,
+                    typeCategory = TypeCategory.EXPENSE,
 
                     ),
 
@@ -631,28 +646,36 @@ private fun DetailCategoryContentPreview() {
                         icon = CategoryIcons.fromId("5"),
                         totalBudget = 450_000,
                         usedBudget = 270_000,
-                    ),
+                        typeCategory = TypeCategory.EXPENSE,
+
+                        ),
                     CategoryDetail(
                         id = "sub2",
                         name = "Parkir",
                         icon = CategoryIcons.fromId("5"),
                         totalBudget = 120_000,
                         usedBudget = 48_000,
-                    ),
+                        typeCategory = TypeCategory.EXPENSE,
+
+                        ),
                     CategoryDetail(
                         id = "sub3",
                         name = "Ojek Online",
                         icon = CategoryIcons.fromId("5"),
                         totalBudget = 380_000,
                         usedBudget = 323_000,
-                    ),
+                        typeCategory = TypeCategory.EXPENSE,
+
+                        ),
                     CategoryDetail(
                         id = "sub4",
                         name = "Tol & Tiket",
                         icon = CategoryIcons.fromId("5"),
                         totalBudget = 100_000,
                         usedBudget = 25_000,
-                    ),
+                        typeCategory = TypeCategory.EXPENSE,
+
+                        ),
                 ),
                 recentTransactions = dummyTransactions,
             ),
