@@ -6,8 +6,8 @@ import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.category.domain.model.Category
 import com.example.nexcashapplication.feature.category.domain.model.CategoryName
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
+import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
+import com.example.nexcashapplication.feature.category.presentation.addnew.model.BudgetPeriod
 import java.util.UUID
 
 

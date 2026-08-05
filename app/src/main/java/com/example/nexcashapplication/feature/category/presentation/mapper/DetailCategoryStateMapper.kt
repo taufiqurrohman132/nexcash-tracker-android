@@ -1,7 +1,7 @@
 package com.example.nexcashapplication.feature.category.presentation.mapper
 
 import com.example.nexcashapplication.feature.category.domain.model.Category
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
+import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryDetail
 
 

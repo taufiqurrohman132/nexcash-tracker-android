@@ -6,7 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.AddCategoryScreen
+import com.example.nexcashapplication.feature.category.presentation.addnew.AddCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.delete.DeleteCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryScreen

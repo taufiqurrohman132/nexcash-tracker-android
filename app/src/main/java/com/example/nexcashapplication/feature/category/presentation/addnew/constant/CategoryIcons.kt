@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.category.presentation.addnew.category.constant
+package com.example.nexcashapplication.feature.category.presentation.addnew.constant
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt

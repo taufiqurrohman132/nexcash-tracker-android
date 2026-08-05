@@ -5,8 +5,8 @@ import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.extension.toColor
 import com.example.nexcashapplication.core.extension.toHex
 import com.example.nexcashapplication.feature.category.domain.model.Category
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.AddCategoryState
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
+import com.example.nexcashapplication.feature.category.presentation.addnew.AddCategoryState
+import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 
 
 fun AddCategoryState.toDomain(id: String, parentId: String? = null): Category {

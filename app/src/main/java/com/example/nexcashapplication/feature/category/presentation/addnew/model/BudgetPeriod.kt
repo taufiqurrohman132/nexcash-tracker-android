@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.category.presentation.addnew.category.model
+package com.example.nexcashapplication.feature.category.presentation.addnew.model
 
 enum class BudgetPeriod(val label: String) {
     BULANAN("Bulanan"),

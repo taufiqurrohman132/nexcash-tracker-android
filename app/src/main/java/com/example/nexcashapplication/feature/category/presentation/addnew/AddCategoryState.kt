@@ -1,9 +1,9 @@
-package com.example.nexcashapplication.feature.category.presentation.addnew.category
+package com.example.nexcashapplication.feature.category.presentation.addnew
 
 import androidx.compose.ui.graphics.Color
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.TypeCategory
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.model.BudgetPeriod
+import com.example.nexcashapplication.feature.category.presentation.addnew.model.BudgetPeriod
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 data class AddCategoryState(

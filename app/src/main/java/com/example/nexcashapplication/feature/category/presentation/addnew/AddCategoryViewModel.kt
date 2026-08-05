@@ -1,9 +1,8 @@
-package com.example.nexcashapplication.feature.category.presentation.addnew.category
+package com.example.nexcashapplication.feature.category.presentation.addnew
 
 import android.util.Log
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.datasource.local.datastore.PreferencesKeys
@@ -13,22 +12,13 @@ import com.example.nexcashapplication.core.extension.toColor
 import com.example.nexcashapplication.core.extension.toHex
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
-import com.example.nexcashapplication.feature.category.presentation.addnew.category.constant.CategoryIcons
+import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect
 import com.example.nexcashapplication.feature.category.presentation.mapper.toDomain
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiState
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
