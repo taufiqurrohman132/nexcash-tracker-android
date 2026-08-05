@@ -75,7 +75,7 @@ fun TransactionScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect { event ->
+        viewModel.effect.collect { event ->
             when(event){
                 is TransactionNavigationEvent.NavigateToAddTransaction -> onNavigateToAddTransaction()
                 is TransactionNavigationEvent.NavigateToDetail -> onNavigateToDetail(event.transactionId)

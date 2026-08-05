@@ -95,7 +95,7 @@ fun AddCategoryScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.navigationEvent.collect { navigate ->
+        viewModel.effect.collect { navigate ->
             when (navigate) {
                 is CategoryEffect.NavigateBack -> navController.popBackStack()
                 else -> {}

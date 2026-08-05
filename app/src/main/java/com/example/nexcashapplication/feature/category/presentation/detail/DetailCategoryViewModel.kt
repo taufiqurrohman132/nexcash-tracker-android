@@ -22,26 +22,24 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
+
 @HiltViewModel
 class DetailCategoryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    val categoryRepository: CategoryRepository,
-) : ViewModel() {
+    private val categoryRepository: CategoryRepository,
+    private val categoryUseCases: CategoryUseCases,
+) : BaseViewModel<DetailCategoryState, DetailCategoryEvent, DetailCategoryEffect>(DetailCategoryState()) {
 
     private val route: Route.CategoryRoute.Detail = savedStateHandle.toRoute()
     private val categoryId = route.categoryId
-
-    private var _state = MutableStateFlow(DetailCategoryState())
-    val state: StateFlow<DetailCategoryState> = _state.asStateFlow()
-
-    private var _detailCategoryEffect = Channel<DetailCategoryEffect>()
-    val detailCategoryEffect = _detailCategoryEffect.receiveAsFlow()
 
     init {
         loadDetailCategory(categoryId)
     }
 
-    fun onEvent(event: DetailCategoryEvent) {
+    override fun onEvent(event: DetailCategoryEvent) {
         when (event) {
             DetailCategoryEvent.OnAddTransactionClick -> {
 
@@ -49,13 +47,13 @@ class DetailCategoryViewModel @Inject constructor(
 
             DetailCategoryEvent.OnBackClick -> {
                 viewModelScope.launch {
-                    _detailCategoryEffect.send(DetailCategoryEffect.NavigateBack)
+                    sendEffect(DetailCategoryEffect.NavigateBack)
                 }
             }
 
             DetailCategoryEvent.OnEditClick -> {
                 viewModelScope.launch {
-                    _detailCategoryEffect.send(
+                    sendEffect(
                         NavigateToEditCategory(
                             categoryId,
                         ),
@@ -74,7 +72,7 @@ class DetailCategoryViewModel @Inject constructor(
             is DetailCategoryEvent.OnTransactionClick -> TODO()
             DetailCategoryEvent.OnAddSubCategoryClick -> {
                 viewModelScope.launch {
-                    _detailCategoryEffect.send(
+                    sendEffect(
                         NavigateToAddSubCategory(
                             parentId = categoryId,
                         ),
@@ -84,10 +82,10 @@ class DetailCategoryViewModel @Inject constructor(
             }
 
             DetailCategoryEvent.OnDeleteClick -> viewModelScope.launch {
-                _detailCategoryEffect.send(
+                sendEffect(
                     NavigateToDeleteCategory(
                         categoryId = categoryId,
-                        typeCategory = _state.value.category?.typeCategory ?: TypeCategory.EXPENSE,
+                        typeCategory = state.value.category?.typeCategory ?: TypeCategory.EXPENSE,
                     ),
                 )
             }
@@ -97,10 +95,10 @@ class DetailCategoryViewModel @Inject constructor(
     fun loadDetailCategory(categoryId: String) {
         viewModelScope.launch {
             try {
-                categoryRepository.getCategoryById(id = categoryId)
-                        .catch { e -> _state.update { it.copy(error = e.message) } }
+                categoryUseCases.getCategoryById(id = categoryId)
+                        .catch { e -> updateState { it.copy(error = e.message) } }
                         .collect { detailCategory ->
-                            _state.update {
+                            updateState {
                                 it.copy(
                                     category = detailCategory?.toUiModel(),
                                 )
@@ -110,17 +108,15 @@ class DetailCategoryViewModel @Inject constructor(
                 // subcategory tetap Flow karena mungkin butuh observe realtime
                 // (misal saat nambah/edit/hapus subkategori)
                 categoryRepository.getSubCategories(categoryId)
-                        .catch { e -> _state.update { it.copy(error = e.message) } }
+                        .catch { e -> updateState { it.copy(error = e.message) } }
                         .collect { subCategory ->
-                            _state.update {
+                            updateState {
                                 it.copy(subCategories = subCategory.map { it.toUiModel() })
                             }
                         }
             } catch (e: Exception) {
-                _state.update { it.copy(isLoading = false, error = e.message) }
+                updateState { it.copy(isLoading = false, error = e.message) }
             }
         }
     }
-
-
 }

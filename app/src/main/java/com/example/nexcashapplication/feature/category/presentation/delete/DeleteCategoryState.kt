@@ -12,6 +12,7 @@ data class DeleteCategoryState(
     val targetCategory: CategoryDeleteItemUI? = null, // null = user belum pilih
     val isDropdownExpanded: Boolean = false,
     val isSubmitting: Boolean = false,
+    val isLoading: Boolean = true,
 ) {
     val isConfirmEnabled: Boolean
         get() = when (selectedOption) {

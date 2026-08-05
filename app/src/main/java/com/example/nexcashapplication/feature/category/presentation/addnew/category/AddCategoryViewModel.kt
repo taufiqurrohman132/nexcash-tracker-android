@@ -34,30 +34,28 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import javax.inject.Inject
 
+import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
+
 @HiltViewModel
 class AddCategoryViewModel @Inject constructor(
-    val repository: CategoryRepository,
-    val preferencesRepository: PreferencesRepository,
+    private val repository: CategoryRepository,
+    private val preferencesRepository: PreferencesRepository,
+    private val categoryUseCases: CategoryUseCases,
     savedStateHandle: SavedStateHandle
-) : ViewModel() {
+) : BaseViewModel<AddCategoryState, AddCategoryEvent, CategoryEffect>(AddCategoryState()) {
 
     private val route: Route.CategoryRoute.AddNew = savedStateHandle.toRoute()
     private val categoryId = route.categoryId
     private val parentId = route.parentId
 
-    private var _state = MutableStateFlow(AddCategoryState())
-    val state: StateFlow<AddCategoryState> = _state.asStateFlow()
-
-    private var _navigationEvent = Channel<CategoryEffect>()
-    val navigationEvent = _navigationEvent.receiveAsFlow()
-
     init {
         parentId?.let { pid ->
             viewModelScope.launch {
-                repository.getCategoryById(id = pid)
+                categoryUseCases.getCategoryById(id = pid)
                         .collect { detailCategory ->
                             detailCategory?.let {
-                                _state.update {
+                                updateState {
                                     it.copy(
                                         parentCategory = ParentCategoryUi(
                                             id = detailCategory.id,
@@ -77,7 +75,7 @@ class AddCategoryViewModel @Inject constructor(
         }
     }
 
-    fun onEvent(event: AddCategoryEvent) {
+    override fun onEvent(event: AddCategoryEvent) {
         when (event) {
             is AddCategoryEvent.OnParentCategorySelected -> {
 
@@ -85,7 +83,7 @@ class AddCategoryViewModel @Inject constructor(
 
             is AddCategoryEvent.OnBackClicked -> {
                 viewModelScope.launch {
-                    _navigationEvent.send(CategoryEffect.NavigateBack)
+                    sendEffect(CategoryEffect.NavigateBack)
                 }
             }
 
@@ -93,7 +91,7 @@ class AddCategoryViewModel @Inject constructor(
                 saveOrUpdate()
 
                 viewModelScope.launch {
-                    _navigationEvent.send(CategoryEffect.NavigateBack)
+                    sendEffect(CategoryEffect.NavigateBack)
                 }
             }
 
@@ -102,49 +100,49 @@ class AddCategoryViewModel @Inject constructor(
             }
 
             is AddCategoryEvent.OnNameChanged -> {
-                _state.update {
+                updateState {
                     it.copy(name = event.name)
                 }
             }
 
             is AddCategoryEvent.OnAccountSelected -> {
-                _state.update {
+                updateState {
                     it.copy(defaultAccount = event.accountId)
                 }
             }
 
             is AddCategoryEvent.OnBudgetChanged -> {
-                _state.update {
+                updateState {
                     it.copy(budgetLimit = event.amount)
                 }
             }
 
             is AddCategoryEvent.OnChangeIcon -> {
-                _state.update {
+                updateState {
                     it.copy(selectedIcon = event.icon)
                 }
             }
 
             is AddCategoryEvent.OnColorSelected -> {
-                _state.update {
+                updateState {
                     it.copy(selectedColor = event.color)
                 }
             }
 
             is AddCategoryEvent.OnNotesChanged -> {
-                _state.update {
+                updateState {
                     it.copy(note = event.notes)
                 }
             }
 
             is AddCategoryEvent.OnPeriodSelected -> {
-                _state.update {
+                updateState {
                     it.copy(selectedPeriod = event.period)
                 }
             }
 
             is AddCategoryEvent.OnTypeSelected -> {
-                _state.update {
+                updateState {
                     it.copy(typeCategory = event.type)
                 }
             }
@@ -154,16 +152,15 @@ class AddCategoryViewModel @Inject constructor(
 
     fun loadCategory(id: String) {
         viewModelScope.launch {
-            val currentState = _state.value
-
             try {
-                repository.getCategoryById(id = categoryId)
+                categoryUseCases.getCategoryById(id = categoryId)
                         .collect { detailCategory ->
                             if (detailCategory != null) {
-                                _state.update {
+                                val recentColorsSnapshot = getRecentColorsSnapshot()
+                                updateState {
                                     detailCategory.toUiState(
-                                        recentColors = getRecentColorsSnapshot().moveToFront(
-                                            color = currentState.selectedColor,
+                                        recentColors = recentColorsSnapshot.moveToFront(
+                                            color = it.selectedColor,
                                         ),
                                     )
                                 }
@@ -176,7 +173,7 @@ class AddCategoryViewModel @Inject constructor(
     }
 
     fun saveOrUpdate() {
-        val currentState = _state.value
+        val currentState = state.value
 
         if (!currentState.isValid) {
             viewModelScope.launch {
@@ -189,7 +186,6 @@ class AddCategoryViewModel @Inject constructor(
             try {
                 // simpan
                 val category = currentState.toDomain(id = currentState.id, parentId = parentId)
-                val colorSelected = currentState.selectedColor
                 val recentColors = currentState.recentColors.map { it.toHex() }
 
                 saveRecentColors(recentColors)
@@ -203,9 +199,6 @@ class AddCategoryViewModel @Inject constructor(
             } catch (e: Exception) {
                 Log.e(TAG, "save: $e")
             }
-//            finally {
-//                _state.update { it.copy(isLoading = false) }
-//            }
         }
     }
 

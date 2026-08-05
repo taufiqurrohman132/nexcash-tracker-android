@@ -1,20 +1,16 @@
 package com.example.nexcashapplication.feature.category.presentation.delete
 
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.domain.model.CategoryDeleteResolution
 import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
+import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
 import com.example.nexcashapplication.feature.category.presentation.delete.model.DeleteOption
 import com.example.nexcashapplication.feature.category.presentation.mapper.toCategoryDeleteItemList
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,16 +18,11 @@ import javax.inject.Inject
 class DeleteCategoryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val categoryRepository: CategoryRepository,
-) : ViewModel() {
+    private val categoryUseCases: CategoryUseCases,
+) : BaseViewModel<DeleteCategoryState, DeleteCategoryEvent, DeleteCategoryEffect>(DeleteCategoryState()) {
     private val route: Route.CategoryRoute.Delete = savedStateHandle.toRoute()
     private val categoryId = route.categoryId
     private val typeCategory = route.typeCategory
-
-    private val _state = MutableStateFlow(DeleteCategoryState())
-    val state: StateFlow<DeleteCategoryState> = _state
-
-    private val _effect = Channel<DeleteCategoryEffect>(Channel.BUFFERED)
-    val effect = _effect.receiveAsFlow()
 
     init {
         loadData()
@@ -39,30 +30,38 @@ class DeleteCategoryViewModel @Inject constructor(
 
     private fun loadData() {
         viewModelScope.launch {
-            val category = categoryRepository.getCategoryById(categoryId)
-//            val count = categoryRepository.countTransactionsByCategory(categoryId) masih eror
+            updateState { it.copy(isLoading = true) }
+            try {
+                val transactionCount = categoryRepository.countTransactionsByCategory(categoryId)
 
-            category.collect { data ->
-                val listCategories =
-                    categoryRepository.getParentCategoriesNameByType(typeCategory.name.lowercase())
+                categoryUseCases.getCategoryById(categoryId).collect { data ->
+                    val listCategories =
+                        categoryRepository.getParentCategoriesNameByType(typeCategory.name.lowercase())
                             .filter { it.id != data?.id }
                             .toCategoryDeleteItemList()
 
-                _state.value = _state.value.copy(
-                    categoryId = categoryId,
-                    categoryName = data?.name ?: "",
-                    transactionCount = 0,
-                    availableCategories = listCategories,
-                )
+                    updateState {
+                        it.copy(
+                            categoryId = categoryId,
+                            categoryName = data?.name ?: "",
+                            transactionCount = transactionCount,
+                            availableCategories = listCategories,
+                            isLoading = false,
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                updateState { it.copy(isLoading = false) }
+                sendEffect(DeleteCategoryEffect.ShowError("Gagal memuat data"))
             }
         }
     }
 
-    fun onEvent(event: DeleteCategoryEvent) {
+    override fun onEvent(event: DeleteCategoryEvent) {
         when (event) {
             DeleteCategoryEvent.Cancel -> {
                 viewModelScope.launch {
-                    _effect.send(DeleteCategoryEffect.NavigateBack)
+                    sendEffect(DeleteCategoryEffect.NavigateBack)
                 }
             }
 
@@ -71,7 +70,7 @@ class DeleteCategoryViewModel @Inject constructor(
             }
 
             is DeleteCategoryEvent.SelectOption -> {
-                _state.update {
+                updateState {
                     it.copy(
                         selectedOption = event.option,
                         isDropdownExpanded = false,
@@ -80,7 +79,7 @@ class DeleteCategoryViewModel @Inject constructor(
             }
 
             is DeleteCategoryEvent.SelectTargetCategory -> {
-                _state.update {
+                updateState {
                     it.copy(
                         targetCategory = event.category,
                         isDropdownExpanded = false,
@@ -89,7 +88,7 @@ class DeleteCategoryViewModel @Inject constructor(
             }
 
             DeleteCategoryEvent.ToggleDropdown -> {
-                _state.update {
+                updateState {
                     it.copy(
                         isDropdownExpanded = !it.isDropdownExpanded,
                     )
@@ -99,26 +98,26 @@ class DeleteCategoryViewModel @Inject constructor(
     }
 
     private fun confirmDelete() {
-        val currentStete = _state.value
-        if (!currentStete.isConfirmEnabled) return
+        val currentState = state.value
+        if (!currentState.isConfirmEnabled) return
 
-        val resolution = when (currentStete.selectedOption) {
+        val resolution = when (currentState.selectedOption) {
             DeleteOption.DELETE_ALL_TRANSACTIONS -> CategoryDeleteResolution.DeleteAllTransactions
             DeleteOption.MOVE_TO_CATEGORY -> CategoryDeleteResolution.MoveToCategory(
-                requireNotNull(currentStete.targetCategory).id,
+                requireNotNull(currentState.targetCategory).id,
             )
 
             DeleteOption.UNCATEGORIZED -> CategoryDeleteResolution.Uncategorize
         }
 
         viewModelScope.launch {
-            _state.value = currentStete.copy(isSubmitting = true)
+            updateState { it.copy(isSubmitting = true) }
             try {
-                categoryRepository.deleteCategory(currentStete.categoryId, resolution)
-                _effect.send(DeleteCategoryEffect.DeleteSuccess)
+                categoryUseCases.deleteCategory(currentState.categoryId, resolution)
+                sendEffect(DeleteCategoryEffect.DeleteSuccess)
             } catch (e: Exception) {
-                _state.value = _state.value.copy(isSubmitting = false)
-                _effect.send(
+                updateState { it.copy(isSubmitting = false) }
+                sendEffect(
                     DeleteCategoryEffect.ShowError(
                         e.message ?: "Gagal menghapus kategori",
                     ),

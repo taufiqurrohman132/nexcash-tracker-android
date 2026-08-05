@@ -1,30 +1,25 @@
 package com.example.nexcashapplication.feature.dashboard.presentation.viewmodel
 
-import androidx.lifecycle.ViewModel
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.model.TransactionItemUi
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
 import com.example.nexcashapplication.feature.dashboard.presentation.state.DashboardState
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class DashboardViewModel(
-
-): ViewModel() {
-    private val _state= MutableStateFlow(
+@HiltViewModel
+class DashboardViewModel @Inject constructor() : 
+    BaseViewModel<DashboardState, DashboardEvent, Unit>(
         DashboardState(
             transactions = sampleTransactions()
         )
-    )
-    val state: StateFlow<DashboardState> =
-        _state.asStateFlow()
+    ) {
 
-    fun onEvent(event: DashboardEvent){
+    override fun onEvent(event: DashboardEvent){
         when(event){
             DashboardEvent.ToggleBalanceVisibility -> {
-                _state.update {
+                updateState {
                     it.copy(
                         isBalanceVisible = !it.isBalanceVisible
                     )
@@ -35,7 +30,6 @@ class DashboardViewModel(
     }
 
     companion object {
-
         private fun sampleTransactions() =
             listOf(
                 TransactionItemUi(

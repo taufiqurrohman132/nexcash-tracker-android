@@ -169,7 +169,7 @@ fun DetailCategoryScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        viewModel.detailCategoryEffect.collect { effect ->
+        viewModel.effect.collect { effect ->
             when (effect) {
                 DetailCategoryEffect.NavigateBack -> navController.popBackStack()
                 is DetailCategoryEffect.NavigateToAddSubCategory -> navController.navigate(

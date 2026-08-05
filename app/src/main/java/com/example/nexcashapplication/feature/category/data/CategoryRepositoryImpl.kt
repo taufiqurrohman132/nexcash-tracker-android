@@ -98,13 +98,13 @@ class CategoryRepositoryImpl @Inject constructor(
     }
 
     override suspend fun countTransactionsByCategory(categoryId: String): Int {
-        return countTransactionsByCategory(
+        return dao.countTransactionsByCategory(
             categoryId,
         )
     }
 
     override suspend fun countSubCategories(categoryId: String): Int {
-        return countSubCategories(
+        return dao.countSubCategories(
             categoryId,
         )
     }

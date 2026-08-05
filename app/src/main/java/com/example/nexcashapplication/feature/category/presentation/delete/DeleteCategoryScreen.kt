@@ -57,27 +57,50 @@ import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.collectLatest
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.key
+import androidx.compose.ui.platform.LocalContext
+import android.widget.Toast
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.HorizontalDivider
+
 @Composable
 fun DeleteCategoryScreen(
     viewModel: DeleteCategoryViewModel = hiltViewModel(),
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
-
+    val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                DeleteCategoryEffect.DeleteSuccess -> TODO()
-                DeleteCategoryEffect.NavigateBack -> TODO()
-                is DeleteCategoryEffect.ShowError -> TODO()
+                DeleteCategoryEffect.DeleteSuccess -> {
+                    Toast.makeText(context, "Kategori berhasil dihapus", Toast.LENGTH_SHORT).show()
+                    navController.popBackStack()
+                }
+                DeleteCategoryEffect.NavigateBack -> {
+                    navController.popBackStack()
+                }
+                is DeleteCategoryEffect.ShowError -> {
+                    snackbarHostState.showSnackbar(effect.message)
+                }
             }
         }
     }
 
     DeleteCategoryContent(
         state = state,
+        snackbarHostState = snackbarHostState,
         onEvent = viewModel::onEvent,
     )
 }
@@ -86,6 +109,7 @@ fun DeleteCategoryScreen(
 @Composable
 fun DeleteCategoryContent(
     state: DeleteCategoryState,
+    snackbarHostState: SnackbarHostState,
     onEvent: (DeleteCategoryEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -100,85 +124,127 @@ fun DeleteCategoryContent(
                 },
             )
         },
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                    .padding(padding)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Spacer(Modifier.height(24.dp))
-
-            IconCircular(
-                icon = Icons.Default.Warning,
-                iconColor = Color.Red,
-                backgroundColor = Color.Red.copy(alpha = 0.1f),
-                size = 72.dp,
-                iconToCountainerRatio = 2,
-            )
-
-            Spacer(Modifier.height(16.dp))
-            Text(
-                "Konfirmasi Penghapusan",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                buildString {
-                    append("Kategori \"${state.categoryName}\" masih memiliki ")
-                    append("${state.transactionCount} transaksi terkait. ")
-                    append("Apa yang ingin Anda lakukan?")
-                },
-                textAlign = TextAlign.Center,
-                fontSize = 13.sp,
-                color = Color(0xFF888888),
-            )
-
-            Spacer(Modifier.height(20.dp))
-
-            OptionCard(
-                icon = Icons.Filled.Delete,
-                title = "Hapus Semua Transaksi",
-                description = "Semua data transaksi di kategori ini akan ikut terhapus secara permanen.",
-                selected = state.selectedOption == DeleteOption.DELETE_ALL_TRANSACTIONS,
-                onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.DELETE_ALL_TRANSACTIONS)) },
-            )
-
-            Spacer(Modifier.height(10.dp))
-
-            OptionCard(
-                icon = Icons.AutoMirrored.Filled.ArrowForward,
-                title = "Pindahkan ke Kategori Lain",
-                description = "Alihkan transaksi ke kategori yang sudah ada agar laporan tetap akurat.",
-                selected = state.selectedOption == DeleteOption.MOVE_TO_CATEGORY,
-                onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.MOVE_TO_CATEGORY)) },
-            )
-
-            if (state.selectedOption == DeleteOption.MOVE_TO_CATEGORY) {
-                Spacer(Modifier.height(10.dp))
-                CategoryDropdown(
-                    modifier = Modifier.padding(start = 28.dp),
-                    categories = state.availableCategories,
-                    selected = state.targetCategory,
-                    expanded = state.isDropdownExpanded,
-                    onExpandedChange = { onEvent(DeleteCategoryEvent.ToggleDropdown) },
-                    onSelect = { onEvent(DeleteCategoryEvent.SelectTargetCategory(it)) },
-                )
+        snackbarHost = { SnackbarHost(snackbarHostState) },
+        bottomBar = {
+            Column {
+                HorizontalDivider(color = BorderGray.copy(alpha = 0.5f))
+                Box(
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                ) {
+                    Button(
+                        onClick = { onEvent(DeleteCategoryEvent.ConfirmDelete) },
+                        modifier = Modifier
+                                .fillMaxWidth()
+                                .height(52.dp),
+                        enabled = state.isConfirmEnabled,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red,
+                            contentColor = Color.White,
+                            disabledContainerColor = Color.Red.copy(alpha = 0.3f)
+                        )
+                    ) {
+                        if (state.isSubmitting) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(24.dp),
+                                color = Color.White,
+                                strokeWidth = 2.dp
+                            )
+                        } else {
+                            Text("Hapus Kategori", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        }
+                    }
+                }
             }
+        }
+    ) { padding ->
+        if (state.isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = PrimaryCyan)
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                        .padding(padding)
+                        .padding(horizontal = 16.dp)
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Spacer(Modifier.height(24.dp))
 
-            Spacer(Modifier.height(10.dp))
+                IconCircular(
+                    icon = Icons.Default.Warning,
+                    iconColor = Color.Red,
+                    backgroundColor = Color.Red.copy(alpha = 0.1f),
+                    size = 72.dp,
+                    iconToCountainerRatio = 2,
+                )
 
-            OptionCard(
-                icon = Icons.Filled.HelpOutline,
-                title = "Biarkan Tidak Berkategori",
-                description = "Transaksi akan tetap ada namun tidak memiliki label kategori.",
-                selected = state.selectedOption == DeleteOption.UNCATEGORIZED,
-                onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.UNCATEGORIZED)) },
-            )
+                Spacer(Modifier.height(16.dp))
+                Text(
+                    "Konfirmasi Penghapusan",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                Spacer(Modifier.height(6.dp))
+                Text(
+                    buildString {
+                        append("Kategori \"${state.categoryName}\" masih memiliki ")
+                        append("${state.transactionCount} transaksi terkait. ")
+                        append("Apa yang ingin Anda lakukan?")
+                    },
+                    textAlign = TextAlign.Center,
+                    fontSize = 13.sp,
+                    color = Color(0xFF888888),
+                )
 
-            Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(20.dp))
+
+                OptionCard(
+                    icon = Icons.Filled.Delete,
+                    title = "Hapus Semua Transaksi",
+                    description = "Semua data transaksi di kategori ini akan ikut terhapus secara permanen.",
+                    selected = state.selectedOption == DeleteOption.DELETE_ALL_TRANSACTIONS,
+                    onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.DELETE_ALL_TRANSACTIONS)) },
+                )
+
+                Spacer(Modifier.height(10.dp))
+
+                OptionCard(
+                    icon = Icons.AutoMirrored.Filled.ArrowForward,
+                    title = "Pindahkan ke Kategori Lain",
+                    description = "Alihkan transaksi ke kategori yang sudah ada agar laporan tetap akurat.",
+                    selected = state.selectedOption == DeleteOption.MOVE_TO_CATEGORY,
+                    onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.MOVE_TO_CATEGORY)) },
+                )
+
+                if (state.selectedOption == DeleteOption.MOVE_TO_CATEGORY) {
+                    Spacer(Modifier.height(10.dp))
+                    CategoryDropdown(
+                        modifier = Modifier.padding(start = 28.dp),
+                        categories = state.availableCategories,
+                        selected = state.targetCategory,
+                        expanded = state.isDropdownExpanded,
+                        onExpandedChange = { onEvent(DeleteCategoryEvent.ToggleDropdown) },
+                        onSelect = { onEvent(DeleteCategoryEvent.SelectTargetCategory(it)) },
+                    )
+                }
+
+                Spacer(Modifier.height(10.dp))
+
+                OptionCard(
+                    icon = Icons.Filled.HelpOutline,
+                    title = "Biarkan Tidak Berkategori",
+                    description = "Transaksi akan tetap ada namun tidak memiliki label kategori.",
+                    selected = state.selectedOption == DeleteOption.UNCATEGORIZED,
+                    onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.UNCATEGORIZED)) },
+                )
+
+                Spacer(Modifier.height(24.dp))
+            }
         }
     }
 }
@@ -274,26 +340,28 @@ private fun CategoryDropdown(
             containerColor = Color.White,
         ) {
             categories.forEach { category ->
-                DropdownMenuItem(
-                    text = { Text(category.name) },
-                    onClick = { onSelect(category) },
-                    leadingIcon = {
-                        Icon(
-                            imageVector = category.icon.icon,
-                            contentDescription = null,
-                            tint = category.iconColor,
-                        )
-                    },
-                    trailingIcon = {
-                        if (selected?.id == category.id) {
+                key(category.id) {
+                    DropdownMenuItem(
+                        text = { Text(category.name) },
+                        onClick = { onSelect(category) },
+                        leadingIcon = {
                             Icon(
-                                Icons.Filled.Check,
+                                imageVector = category.icon.icon,
                                 contentDescription = null,
-                                tint = PrimaryCyan,
+                                tint = category.iconColor,
                             )
-                        }
-                    },
-                )
+                        },
+                        trailingIcon = {
+                            if (selected?.id == category.id) {
+                                Icon(
+                                    Icons.Filled.Check,
+                                    contentDescription = null,
+                                    tint = PrimaryCyan,
+                                )
+                            }
+                        },
+                    )
+                }
             }
         }
     }
@@ -342,6 +410,7 @@ private fun DeleteCategoryPreview() {
     NexCashApplicationTheme {
         DeleteCategoryContent(
             state = previewState,
+            snackbarHostState = remember { SnackbarHostState() },
             onEvent = {},
         )
     }
@@ -360,6 +429,7 @@ private fun DeleteCategoryDeleteAllPreview() {
                 targetCategory = null,
                 isDropdownExpanded = false,
             ),
+            snackbarHostState = remember { SnackbarHostState() },
             onEvent = {},
         )
     }

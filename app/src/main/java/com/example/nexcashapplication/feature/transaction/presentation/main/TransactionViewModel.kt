@@ -1,20 +1,17 @@
 package com.example.nexcashapplication.feature.transaction.presentation.main
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.model.TransactionItemUi
 import com.example.nexcashapplication.feature.transaction.presentation.navigation.TransactionNavigationEvent
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TransactionViewModel : ViewModel() {
-    private var _state = MutableStateFlow(
+@HiltViewModel
+class TransactionViewModel @Inject constructor() : 
+    BaseViewModel<TransactionState, TransactionEvent, TransactionNavigationEvent>(
         TransactionState(
             searchQuery = "Makan",
             caategoryList = listOf(
@@ -86,15 +83,9 @@ class TransactionViewModel : ViewModel() {
             isLoading = false,
             errorMessage = null
         )
-    )
+    ) {
 
-    val state: StateFlow<TransactionState> =
-        _state.asStateFlow()
-
-    private val _navigationEvent = Channel<TransactionNavigationEvent>()
-    val navigationEvent = _navigationEvent.receiveAsFlow()
-
-    fun onEvent(event: TransactionEvent) {
+    override fun onEvent(event: TransactionEvent) {
         when (event) {
             is TransactionEvent.OnRefresh -> {
 
@@ -110,7 +101,7 @@ class TransactionViewModel : ViewModel() {
 
             is TransactionEvent.OnGroupToggle -> {
                 val current = state.value.expandedGroups
-                _state.update {
+                updateState {
                     it.copy(
                         expandedGroups = if (current.contains(event.groupLabel)) {
                             current - event.groupLabel
@@ -122,7 +113,7 @@ class TransactionViewModel : ViewModel() {
             }
 
             is TransactionEvent.OnCategorySelected -> {
-                _state.update {
+                updateState {
                     it.copy(
                         selectedCategory = event.category
                     )
@@ -135,7 +126,7 @@ class TransactionViewModel : ViewModel() {
 
             is TransactionEvent.OnAddTransactionClick -> {
                 viewModelScope.launch {
-                    _navigationEvent.send(TransactionNavigationEvent.NavigateToAddTransaction)
+                    sendEffect(TransactionNavigationEvent.NavigateToAddTransaction)
                 }
             }
 
