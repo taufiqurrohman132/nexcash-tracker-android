@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.feature.aset.presentation.AccountAssetScreen
 import com.example.nexcashapplication.feature.category.presentation.addnew.AddCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.delete.DeleteCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryScreen
@@ -60,7 +61,7 @@ fun NavigationStack(
         }
 
         composable<Route.AssetRoute.Main> {
-            // AssetScreen()
+            AccountAssetScreen(navController = navController)
         }
 
         composable<Route.InsightRoute.Main> {
