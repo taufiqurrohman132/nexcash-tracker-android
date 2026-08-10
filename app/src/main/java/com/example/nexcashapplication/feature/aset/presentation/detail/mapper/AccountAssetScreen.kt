@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.aset.presentation
+package com.example.nexcashapplication.feature.aset.presentation.detail.mapper
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -51,7 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.extension.formatCurrency
-import com.example.nexcashapplication.feature.aset.presentation.model.AccountUiModel
+import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -186,14 +186,18 @@ fun TotalBalanceCard(
     ) {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Total Saldo Gabungan", color = Color.White.copy(alpha = 0.9f), fontSize = 13.sp)
+                Text(
+                    "Total Saldo Gabungan",
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontSize = 13.sp,
+                )
                 Spacer(Modifier.width(6.dp))
                 IconButton(onClick = onToggleVisibility, modifier = Modifier.size(20.dp)) {
                     Icon(
                         imageVector = if (isVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                         contentDescription = "Toggle saldo",
                         tint = Color.White,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(16.dp),
                     )
                 }
                 Spacer(Modifier.weight(1f))
@@ -201,7 +205,7 @@ fun TotalBalanceCard(
                     modifier = Modifier
                             .clip(RoundedCornerShape(50))
                             .background(Color.White.copy(alpha = 0.25f))
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .padding(horizontal = 10.dp, vertical = 4.dp),
                 ) {
                     Text("IDR", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
@@ -213,7 +217,7 @@ fun TotalBalanceCard(
                 text = if (isVisible) totalBalance.formatCurrency() else "Rp ••••••••",
                 color = Color.White,
                 fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
 
             Spacer(Modifier.height(20.dp))
@@ -226,21 +230,26 @@ fun TotalBalanceCard(
                             Icons.Filled.TrendingUp,
                             contentDescription = null,
                             tint = Color(0xFFB9F6CA),
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(14.dp),
                         )
                         Spacer(Modifier.width(2.dp))
                         Text(
                             "+${monthlyChangePercent}%",
                             color = Color(0xFFB9F6CA),
                             fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold
+                            fontWeight = FontWeight.SemiBold,
                         )
                     }
                 }
                 Spacer(Modifier.width(24.dp))
                 Column {
                     Text("ASET AKTIF", color = Color.White.copy(alpha = 0.75f), fontSize = 10.sp)
-                    Text("$activeAssetCount Akun", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        "$activeAssetCount Akun",
+                        color = Color.White,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
                 }
             }
         }
@@ -352,11 +361,29 @@ private fun AccountAssetContentLoadedPreview() {
             monthlyChangePercent = 4.2,
             activeAssetCount = 5,
             bankAccounts = listOf(
-                AccountUiModel(id = "1", name = "BCA Utama", provider = "BCA", maskedNumber = "•••• 4521", balance = 8_500_000L),
-                AccountUiModel(id = "2", name = "Mandiri Tabungan", provider = "Mandiri", maskedNumber = "•••• 7788", balance = 3_200_000L),
+                AccountUiModel(
+                    id = "1",
+                    name = "BCA Utama",
+                    provider = "BCA",
+                    maskedNumber = "•••• 4521",
+                    balance = 8_500_000L,
+                ),
+                AccountUiModel(
+                    id = "2",
+                    name = "Mandiri Tabungan",
+                    provider = "Mandiri",
+                    maskedNumber = "•••• 7788",
+                    balance = 3_200_000L,
+                ),
             ),
             eWallets = listOf(
-                AccountUiModel(id = "3", name = "GoPay", provider = "GoPay", maskedNumber = "0812xxxxxxx", balance = 450_000L),
+                AccountUiModel(
+                    id = "3",
+                    name = "GoPay",
+                    provider = "GoPay",
+                    maskedNumber = "0812xxxxxxx",
+                    balance = 450_000L,
+                ),
             ),
         ),
         onEvent = {},

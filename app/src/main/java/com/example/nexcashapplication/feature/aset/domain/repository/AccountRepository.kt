@@ -1,8 +1,8 @@
 package com.example.nexcashapplication.feature.aset.domain.repository
 
 import com.example.nexcashapplication.core.datasource.local.model.AccountEntity
-import com.example.nexcashapplication.core.datasource.local.result.MonthlySummaryAccountResult
 import com.example.nexcashapplication.feature.aset.domain.model.AccountModel
+import com.example.nexcashapplication.feature.aset.domain.model.MonthlySummaryAccount
 import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {
@@ -15,5 +15,7 @@ interface AccountRepository {
 
     // List semua akun/aset
     fun getAllAccounts(): Flow<List<AccountModel>>
-    fun getMonthlySummary(): Flow<MonthlySummaryAccountResult>
+    fun getMonthlySummary(): Flow<MonthlySummaryAccount>
+
+    fun getAccountById(accountId: String): Flow<AccountModel>
 }

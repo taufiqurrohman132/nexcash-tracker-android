@@ -38,7 +38,7 @@ val TOP_LEVEL_DESTINATION = listOf(
         title = "Asset",
         selectedIcon = Icons.Filled.AccountBalance,
         unselectedIcon = Icons.Outlined.AccountBalance,
-        route = Route.AssetRoute.Main,
+        route = Route.AccountRoute.Main,
 
         ),
     BottomNavItem(

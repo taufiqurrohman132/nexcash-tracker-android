@@ -1,7 +1,7 @@
-package com.example.nexcashapplication.feature.aset.presentation.mapper
+package com.example.nexcashapplication.feature.aset.presentation.detail.mapper
 
 import com.example.nexcashapplication.feature.aset.domain.model.AccountModel
-import com.example.nexcashapplication.feature.aset.presentation.model.AccountUiModel
+import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
 
 fun AccountModel.toAccountUiModel() = AccountUiModel(
     id = id,

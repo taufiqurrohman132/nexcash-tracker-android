@@ -31,4 +31,7 @@ interface AccountDao {
 """,
     )
     fun getMonthlySummary(): Flow<MonthlySummaryAccountResult>
+
+    @Query("SELECT * FROM accounts WHERE id = :accountId")
+    fun getAccountById(accountId: String): Flow<AccountEntity>
 }

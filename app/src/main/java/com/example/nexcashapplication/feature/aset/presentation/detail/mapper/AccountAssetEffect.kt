@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.aset.presentation
+package com.example.nexcashapplication.feature.aset.presentation.detail.mapper
 
 sealed interface AccountAssetEffect {
     data object NavigateToAddAccount : AccountAssetEffect

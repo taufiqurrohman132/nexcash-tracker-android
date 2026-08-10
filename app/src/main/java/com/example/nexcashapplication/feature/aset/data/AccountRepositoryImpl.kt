@@ -2,9 +2,9 @@ package com.example.nexcashapplication.feature.aset.data
 
 import com.example.nexcashapplication.core.datasource.local.dao.AccountDao
 import com.example.nexcashapplication.core.datasource.local.model.AccountEntity
-import com.example.nexcashapplication.core.datasource.local.result.MonthlySummaryAccountResult
 import com.example.nexcashapplication.feature.aset.data.mapper.toDomain
 import com.example.nexcashapplication.feature.aset.domain.model.AccountModel
+import com.example.nexcashapplication.feature.aset.domain.model.MonthlySummaryAccount
 import com.example.nexcashapplication.feature.aset.domain.repository.AccountRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -25,8 +25,12 @@ class AccountRepositoryImpl @Inject constructor(
         return dao.getAllAccounts().map { list -> list.map { it.toDomain() } }
     }
 
-    override fun getMonthlySummary(): Flow<MonthlySummaryAccountResult> {
-        return dao.getMonthlySummary()
+    override fun getMonthlySummary(): Flow<MonthlySummaryAccount> {
+        return dao.getMonthlySummary().map { it.toDomain() }
+    }
+
+    override fun getAccountById(accountId: String): Flow<AccountModel> {
+        return dao.getAccountById(accountId).map { it.toDomain() }
     }
 
 }

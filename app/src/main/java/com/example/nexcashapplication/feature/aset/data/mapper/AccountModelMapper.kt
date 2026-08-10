@@ -2,7 +2,7 @@ package com.example.nexcashapplication.feature.aset.data.mapper
 
 import com.example.nexcashapplication.core.datasource.local.model.AccountEntity
 import com.example.nexcashapplication.feature.aset.domain.model.AccountModel
-import com.example.nexcashapplication.feature.aset.presentation.model.TypeAccount
+import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
 import java.util.UUID
 
 fun AccountModel.toEntity() = AccountEntity(

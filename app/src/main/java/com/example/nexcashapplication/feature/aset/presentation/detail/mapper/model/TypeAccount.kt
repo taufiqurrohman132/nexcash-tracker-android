@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.aset.presentation.model
+package com.example.nexcashapplication.feature.aset.presentation.detail.mapper.model
 
 enum class TypeAccount(val label: String) {
     CASH("Tunai"),

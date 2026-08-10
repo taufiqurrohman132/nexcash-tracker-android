@@ -1,6 +1,6 @@
 package com.example.nexcashapplication.feature.aset.domain.model
 
-import com.example.nexcashapplication.feature.aset.presentation.model.TypeAccount
+import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
 
 data class AccountModel(
 

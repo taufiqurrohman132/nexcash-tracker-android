@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.aset.presentation.model
+package com.example.nexcashapplication.feature.aset.presentation.addedit.model
 
 import androidx.compose.runtime.Immutable
 

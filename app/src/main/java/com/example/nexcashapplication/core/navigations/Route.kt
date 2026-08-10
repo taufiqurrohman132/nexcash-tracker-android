@@ -24,9 +24,15 @@ sealed interface Route {
     }
 
     @Serializable
-    sealed interface AssetRoute : Route {
+    sealed interface AccountRoute : Route {
         @Serializable
-        data object Main : AssetRoute
+        data object Main : AccountRoute
+
+        @Serializable
+        data class Detail(val accountId: String) : AccountRoute
+
+        @Serializable
+        data object AddEdit : AccountRoute
     }
 
     @Serializable
@@ -54,8 +60,13 @@ sealed interface Route {
 
         @Serializable
         data class AddNew(val categoryId: String, val parentId: String? = null) : CategoryRoute
+
         @Serializable
-        data class Delete(val categoryId: String, val parentId: String? = null, val typeCategory: TypeCategory) : CategoryRoute
+        data class Delete(
+            val categoryId: String,
+            val parentId: String? = null,
+            val typeCategory: TypeCategory,
+        ) : CategoryRoute
     }
 
 }

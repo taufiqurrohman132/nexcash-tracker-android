@@ -1,8 +1,7 @@
-package com.example.nexcashapplication.feature.aset.presentation
+package com.example.nexcashapplication.feature.aset.presentation.main
 
 import androidx.compose.runtime.Immutable
-import com.example.nexcashapplication.feature.aset.presentation.model.AccountUiModel
-import com.example.nexcashapplication.feature.aset.presentation.model.InvestmentUiModel
+import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
 
 @Immutable
 data class AccountAssetState(

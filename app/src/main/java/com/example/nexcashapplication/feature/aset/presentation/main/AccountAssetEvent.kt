@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.aset.presentation
+package com.example.nexcashapplication.feature.aset.presentation.main
 
 sealed interface AccountAssetEvent {
     data object OnToggleBalanceVisibility : AccountAssetEvent
