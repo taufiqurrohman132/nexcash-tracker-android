@@ -30,4 +30,12 @@ class FakeAccountRepositoryImpl @Inject constructor() : AccountRepository {
     override fun getAccountById(accountId: String): Flow<AccountModel> {
         return flowOf(DummyData.accounts.find { it.id == accountId } ?: DummyData.accounts[0])
     }
+
+    override suspend fun insertAccount(account: AccountModel) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun updateAccount(account: AccountModel) {
+        TODO("Not yet implemented")
+    }
 }

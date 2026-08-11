@@ -2,6 +2,7 @@ package com.example.nexcashapplication.feature.aset.data.dummy
 
 import com.example.nexcashapplication.core.datasource.local.result.MonthlySummaryAccountResult
 import com.example.nexcashapplication.feature.aset.domain.model.AccountModel
+import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderItem
 import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
 
 // data/dummy/DummyData.kt
@@ -22,7 +23,7 @@ object DummyData {
             id = "acc-002",
             accountType = TypeAccount.BANK,
             name = "BCA Tabungan",
-            institution = "BCA",
+            institution = AccountProviderItem("bca", "BCA"),
             accountNumber = "1234567890",
             currentBalance = 15_750_000L,
             isActive = true,
@@ -32,7 +33,7 @@ object DummyData {
             id = "acc-003",
             accountType = TypeAccount.PREPAID_CARD,
             name = "GoPay",
-            institution = "Gojek",
+            institution = AccountProviderItem("bca", "BCA"),
             accountNumber = "081234567890",
             currentBalance = 350_000L,
             isActive = true,
@@ -42,7 +43,8 @@ object DummyData {
             id = "acc-004",
             accountType = TypeAccount.BANK,
             name = "OVO",
-            institution = "OVO",
+            institution = AccountProviderItem("bca", "BCA"),
+
             accountNumber = "081234567891",
             currentBalance = 125_000L,
             isActive = true,
@@ -52,7 +54,7 @@ object DummyData {
             id = "acc-005",
             accountType = TypeAccount.BANK,
             name = "BSI Syariah",
-            institution = "BSI",
+            institution = AccountProviderItem("bca", "BCA"),
             accountNumber = "9876543210",
             currentBalance = 8_000_000L,
             isActive = true,
@@ -62,7 +64,7 @@ object DummyData {
             id = "acc-006",
             accountType = TypeAccount.INSURANCE,
             name = "BCA Credit Card",
-            institution = "BCA",
+            institution = AccountProviderItem("bca", "BCA"),
             accountNumber = "4111111111111234",
             currentBalance = -2_300_000L, // minus = hutang kartu kredit
             isActive = true,
@@ -72,7 +74,7 @@ object DummyData {
             id = "acc-007",
             accountType = TypeAccount.INVESTMENT,
             name = "Bibit Reksa Dana",
-            institution = "Bibit",
+            institution = AccountProviderItem("bca", "BCA"),
             accountNumber = null,
             currentBalance = 5_200_000L,
             isActive = true,
@@ -82,7 +84,7 @@ object DummyData {
             id = "acc-008",
             accountType = TypeAccount.BANK,
             name = "Mandiri Lama",
-            institution = "Mandiri",
+            institution = AccountProviderItem("bca", "BCA"),
             accountNumber = "1122334455",
             currentBalance = 0L,
             isActive = false,

@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.aset.presentation.addedit
+package com.example.nexcashapplication.feature.aset.presentation.addedit.typeoption
 
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.common.BaseViewModel
@@ -12,25 +12,25 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
 @HiltViewModel
-class AccountAssetViewModel @Inject constructor(
+class AddEditAccountViewModel @Inject constructor(
     private val getMonthlySummaryUseCase: GetMonthlySummaryUseCase,
     private val accountRepository: AccountRepository,
-) : BaseViewModel<AccountAssetState, AccountAssetEvent, AccountAssetEffect>(initialState = AccountAssetState()) {
+) : BaseViewModel<AddEditAccountState, AddEditAccountEvent, AddEditAccountEffect>(initialState = AddEditAccountState()) {
 
     init {
         observeMonthlySummary()
         observeAccount()
     }
 
-    override fun onEvent(event: AccountAssetEvent) {
+    override fun onEvent(event: AddEditAccountEvent) {
         when (event) {
-            is AccountAssetEvent.OnAccountClick -> TODO()
-            AccountAssetEvent.OnAddAccountClick -> TODO()
-            AccountAssetEvent.OnAddAssetClick -> TODO()
-            is AccountAssetEvent.OnInvestmentClick -> TODO()
-            AccountAssetEvent.OnRetry -> TODO()
-            AccountAssetEvent.OnSeeAllBankAccountsClick -> TODO()
-            AccountAssetEvent.OnToggleBalanceVisibility -> TODO()
+            is AddEditAccountEvent.OnAddEditAccountClick -> TODO()
+            AddEditAccountEvent.OnAddAddEditAccountClick -> TODO()
+            AddEditAccountEvent.OnAddClickAddEdit -> TODO()
+            is AddEditAccountEvent.OnInvestmentClick -> TODO()
+            AddEditAccountEvent.OnRetry -> TODO()
+            AddEditAccountEvent.OnSeeAllBankAccountsClick -> TODO()
+            AddEditAccountEvent.OnToggleBalanceVisibility -> TODO()
         }
     }
 
@@ -61,7 +61,7 @@ class AccountAssetViewModel @Inject constructor(
                 .catch { throwable ->
                     updateState { it.copy(isLoading = false, error = throwable.message) }
                     sendEffect(
-                        AccountAssetEffect.ShowError(
+                        AddEditAccountEffect.ShowError(
                             throwable.message ?: "Gagal memuat data",
                         ),
                     )

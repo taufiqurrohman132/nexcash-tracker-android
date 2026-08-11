@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.aset.presentation.detail.mapper
+package com.example.nexcashapplication.feature.aset.presentation.addedit.typeoption.mapper
 
 import com.example.nexcashapplication.feature.aset.domain.model.AccountModel
 import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
@@ -6,7 +6,7 @@ import com.example.nexcashapplication.feature.aset.presentation.main.model.Accou
 fun AccountModel.toAccountUiModel() = AccountUiModel(
     id = id,
     name = name,
-    provider = institution ?: "",
+    provider = institution?.name ?: "",
     maskedNumber = accountNumber ?: "",
     balance = currentBalance,
     iconUrl = "",

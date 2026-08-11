@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.aset.domain.model
 
+import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderItem
 import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
 
 data class AccountModel(
@@ -8,7 +9,7 @@ data class AccountModel(
     // contoh: cash, bank, ewallet, credit_card, investment
     val accountType: TypeAccount,
     val name: String,
-    val institution: String? = null,
+    val institution: AccountProviderItem? = null,
     val accountNumber: String? = null,
     val currentBalance: Long = 0,
     val isActive: Boolean = true,

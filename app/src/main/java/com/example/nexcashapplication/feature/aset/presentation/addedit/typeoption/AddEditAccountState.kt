@@ -1,10 +1,10 @@
-package com.example.nexcashapplication.feature.aset.presentation.detail.mapper
+package com.example.nexcashapplication.feature.aset.presentation.addedit.typeoption
 
 import androidx.compose.runtime.Immutable
 import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
 
 @Immutable
-data class AccountAssetState(
+data class AddEditAccountState(
     val isLoading: Boolean = false,
     val totalBalance: Long = 0L,
     val isBalanceVisible: Boolean = true,

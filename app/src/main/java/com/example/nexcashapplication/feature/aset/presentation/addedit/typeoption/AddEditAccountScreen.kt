@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.aset.presentation.detail.mapper
+package com.example.nexcashapplication.feature.aset.presentation.addedit.typeoption
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,7 +56,7 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun AccountAssetScreen(
-    viewModel: AccountAssetViewModel = hiltViewModel(),
+    viewModel: AddEditAccountViewModel = hiltViewModel(),
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
@@ -66,12 +66,12 @@ fun AccountAssetScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                is AccountAssetEffect.NavigateToAccountDetail -> TODO()
-                AccountAssetEffect.NavigateToAddAccount -> TODO()
-                AccountAssetEffect.NavigateToAddAsset -> TODO()
-                AccountAssetEffect.NavigateToAllBankAccounts -> TODO()
-                is AccountAssetEffect.NavigateToInvestmentDetail -> TODO()
-                is AccountAssetEffect.ShowError -> TODO()
+                is AddEditAccountEffect.NavigateToAddEditAccountDetail -> TODO()
+                AddEditAccountEffect.NavigateToAddAddEditAccount -> TODO()
+                AddEditAccountEffect.NavigateToAddAddEdit -> TODO()
+                AddEditAccountEffect.NavigateToAllBankAccounts -> TODO()
+                is AddEditAccountEffect.NavigateToInvestmentDetail -> TODO()
+                is AddEditAccountEffect.ShowError -> TODO()
             }
         }
     }
@@ -87,8 +87,8 @@ fun AccountAssetScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccountAssetContent(
-    state: AccountAssetState,
-    onEvent: (AccountAssetEvent) -> Unit,
+    state: AddEditAccountState,
+    onEvent: (AddEditAccountEvent) -> Unit,
     snackbarHostState: SnackbarHostState,
     modifier: Modifier = Modifier,
 ) {
@@ -98,7 +98,7 @@ fun AccountAssetContent(
             TopAppBar(
                 title = { Text("Akun & Aset", fontWeight = FontWeight.Bold) },
                 actions = {
-                    IconButton(onClick = { onEvent(AccountAssetEvent.OnAddAccountClick) }) {
+                    IconButton(onClick = { onEvent(AddEditAccountEvent.OnAddAddEditAccountClick) }) {
                         Icon(Icons.Filled.Add, contentDescription = "Tambah akun")
                     }
                 },
@@ -127,7 +127,7 @@ fun AccountAssetContent(
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text(state.error, color = MaterialTheme.colorScheme.error)
                         Spacer(Modifier.height(8.dp))
-                        Button(onClick = { onEvent(AccountAssetEvent.OnRetry) }) { Text("Coba lagi") }
+                        Button(onClick = { onEvent(AddEditAccountEvent.OnRetry) }) { Text("Coba lagi") }
                     }
                 }
             }
@@ -144,19 +144,19 @@ fun AccountAssetContent(
                         isVisible = state.isBalanceVisible,
                         monthlyChangePercent = state.monthlyChangePercent,
                         activeAssetCount = state.activeAssetCount,
-                        onToggleVisibility = { onEvent(AccountAssetEvent.OnToggleBalanceVisibility) },
+                        onToggleVisibility = { onEvent(AddEditAccountEvent.OnToggleBalanceVisibility) },
                     )
 
                     FormField(
                         title = "Rekening Bank",
                         actionText = "Lihat Semua",
-                        onActionClick = { onEvent(AccountAssetEvent.OnSeeAllBankAccountsClick) },
+                        onActionClick = { onEvent(AddEditAccountEvent.OnSeeAllBankAccountsClick) },
                     ) {
                         state.bankAccounts.forEach { account ->
                             AccountRow(
                                 account = account,
                                 isBalanceVisible = state.isBalanceVisible,
-                                onClick = { onEvent(AccountAssetEvent.OnAccountClick(account.id)) },
+                                onClick = { onEvent(AddEditAccountEvent.OnAddEditAccountClick(account.id)) },
                             )
                         }
                     }
@@ -353,7 +353,7 @@ private fun AccountRow(
 @Composable
 private fun AccountAssetContentLoadedPreview() {
     AccountAssetContent(
-        state = AccountAssetState(
+        state = AddEditAccountState(
             isLoading = false,
             error = null,
             totalBalance = 15_750_000L,
@@ -395,7 +395,7 @@ private fun AccountAssetContentLoadedPreview() {
 @Composable
 private fun AccountAssetContentLoadingPreview() {
     AccountAssetContent(
-        state = AccountAssetState(
+        state = AddEditAccountState(
             isLoading = true,
             error = null,
             totalBalance = 0L,
@@ -414,7 +414,7 @@ private fun AccountAssetContentLoadingPreview() {
 @Composable
 private fun AccountAssetContentErrorPreview() {
     AccountAssetContent(
-        state = AccountAssetState(
+        state = AddEditAccountState(
             isLoading = false,
             error = "Gagal memuat data akun. Periksa koneksi internet.",
             totalBalance = 0L,

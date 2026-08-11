@@ -22,15 +22,19 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -50,11 +54,12 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.FormField
+import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
+import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.collectLatest
-import kotlin.collections.forEach
 
 @Composable
 fun AccountAssetScreen(
@@ -69,10 +74,13 @@ fun AccountAssetScreen(
         viewModel.effect.collectLatest { effect ->
             when (effect) {
                 is AccountAssetEffect.NavigateToAccountDetail -> navController.navigate(
-                    Route.AccountRoute.Detail(effect.accountId)
+                    Route.AccountRoute.Detail(effect.accountId),
                 )
-                AccountAssetEffect.NavigateToAddAccount -> TODO()
-                AccountAssetEffect.NavigateToAddAsset -> TODO()
+
+                AccountAssetEffect.NavigateToAddAccount -> navController.navigate(
+                    Route.AccountRoute.AddEdit,
+                )
+
                 AccountAssetEffect.NavigateToAllBankAccounts -> TODO()
                 is AccountAssetEffect.NavigateToInvestmentDetail -> TODO()
                 is AccountAssetEffect.ShowError -> TODO()
@@ -156,7 +164,7 @@ fun AccountAssetContent(
                         actionText = "Lihat Semua",
                         onActionClick = { onEvent(AccountAssetEvent.OnSeeAllBankAccountsClick) },
                     ) {
-                        dummyAccounts.forEach { account ->
+                        state.bankAccounts.take(5).forEach { account ->
                             AccountRow(
                                 account = account,
                                 isBalanceVisible = state.isBalanceVisible,
@@ -169,6 +177,7 @@ fun AccountAssetContent(
         }
     }
 }
+
 
 @Composable
 fun TotalBalanceCard(
@@ -190,14 +199,18 @@ fun TotalBalanceCard(
     ) {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Total Saldo Gabungan", color = Color.White.copy(alpha = 0.9f), fontSize = 13.sp)
+                Text(
+                    "Total Saldo Gabungan",
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontSize = 13.sp,
+                )
                 Spacer(Modifier.width(6.dp))
                 IconButton(onClick = onToggleVisibility, modifier = Modifier.size(20.dp)) {
                     Icon(
                         imageVector = if (isVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                         contentDescription = "Toggle saldo",
                         tint = Color.White,
-                        modifier = Modifier.size(16.dp)
+                        modifier = Modifier.size(16.dp),
                     )
                 }
                 Spacer(Modifier.weight(1f))
@@ -205,7 +218,7 @@ fun TotalBalanceCard(
                     modifier = Modifier
                             .clip(RoundedCornerShape(50))
                             .background(Color.White.copy(alpha = 0.25f))
-                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .padding(horizontal = 10.dp, vertical = 4.dp),
                 ) {
                     Text("IDR", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
@@ -213,14 +226,29 @@ fun TotalBalanceCard(
 
             Spacer(Modifier.height(8.dp))
 
-            Text(
-                text = if (isVisible) totalBalance.formatCurrency() else "Rp ••••••••",
-                color = Color.White,
-                fontSize = 28.sp,
-                fontWeight = FontWeight.Bold
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = if (isVisible) totalBalance.formatCurrency() else "Rp ••••••••",
+                    color = Color.White,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                )
 
-            Spacer(Modifier.height(20.dp))
+                IconCircular(
+                    icon = Icons.Outlined.Visibility,
+                    iconColor = Color.White,
+                    backgroundColor = Color.White.copy(alpha = 0.1f),
+                    iconToCountainerRatio = 2,
+                )
+            }
+
+            Spacer(Modifier.height(10.dp))
+            HorizontalDivider()
+            Spacer(Modifier.height(10.dp))
 
             Row {
                 Column {
@@ -230,21 +258,26 @@ fun TotalBalanceCard(
                             Icons.Filled.TrendingUp,
                             contentDescription = null,
                             tint = Color(0xFFB9F6CA),
-                            modifier = Modifier.size(14.dp)
+                            modifier = Modifier.size(14.dp),
                         )
                         Spacer(Modifier.width(2.dp))
                         Text(
                             "+${monthlyChangePercent}%",
                             color = Color(0xFFB9F6CA),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
                         )
                     }
                 }
                 Spacer(Modifier.width(24.dp))
                 Column {
                     Text("ASET AKTIF", color = Color.White.copy(alpha = 0.75f), fontSize = 10.sp)
-                    Text("$activeAssetCount Akun", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.SemiBold)
+                    Text(
+                        "$activeAssetCount Akun",
+                        color = Color.White,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             }
         }
@@ -352,7 +385,7 @@ val dummyAccounts = listOf(
         provider = "Cash",
         maskedNumber = "****",
         balance = 2_500_000L,
-        iconUrl = null
+        iconUrl = null,
     ),
     AccountUiModel(
         id = "acc-002",
@@ -360,7 +393,7 @@ val dummyAccounts = listOf(
         provider = "BCA",
         maskedNumber = "**** **** **** 1234",
         balance = 15_750_000L,
-        iconUrl = "https://example.com/bca.png"
+        iconUrl = "https://example.com/bca.png",
     ),
     AccountUiModel(
         id = "acc-003",
@@ -368,7 +401,7 @@ val dummyAccounts = listOf(
         provider = "Gojek",
         maskedNumber = "**** 5678",
         balance = 350_000L,
-        iconUrl = "https://example.com/gopay.png"
+        iconUrl = "https://example.com/gopay.png",
     ),
     AccountUiModel(
         id = "acc-004",
@@ -376,7 +409,7 @@ val dummyAccounts = listOf(
         provider = "OVO",
         maskedNumber = "**** 9012",
         balance = 125_000L,
-        iconUrl = "https://example.com/ovo.png"
+        iconUrl = "https://example.com/ovo.png",
     ),
     AccountUiModel(
         id = "acc-005",
@@ -384,7 +417,7 @@ val dummyAccounts = listOf(
         provider = "BSI",
         maskedNumber = "**** **** **** 3456",
         balance = 8_000_000L,
-        iconUrl = null
+        iconUrl = null,
     ),
 )
 
@@ -405,14 +438,14 @@ private fun AccountAssetContentLoadedPreview() {
                     name = "BCA Utama",
                     provider = "BCA",
                     maskedNumber = "•••• 4521",
-                    balance = 8_500_000L
+                    balance = 8_500_000L,
                 ),
                 AccountUiModel(
                     id = "2",
                     name = "Mandiri Tabungan",
                     provider = "Mandiri",
                     maskedNumber = "•••• 7788",
-                    balance = 3_200_000L
+                    balance = 3_200_000L,
                 ),
             ),
             eWallets = listOf(
@@ -421,7 +454,7 @@ private fun AccountAssetContentLoadedPreview() {
                     name = "GoPay",
                     provider = "GoPay",
                     maskedNumber = "0812xxxxxxx",
-                    balance = 450_000L
+                    balance = 450_000L,
                 ),
             ),
         ),

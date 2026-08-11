@@ -6,7 +6,7 @@ import com.example.nexcashapplication.feature.aset.presentation.main.model.Accou
 fun AccountModel.toAccountUiModel() = AccountUiModel(
     id = id,
     name = name,
-    provider = institution ?: "",
+    provider = institution?.name ?: "",
     maskedNumber = accountNumber ?: "",
     balance = currentBalance,
     iconUrl = "",

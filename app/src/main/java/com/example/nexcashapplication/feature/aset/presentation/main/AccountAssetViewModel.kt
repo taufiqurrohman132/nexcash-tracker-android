@@ -30,7 +30,11 @@ class AccountAssetViewModel @Inject constructor(
                     sendEffect(AccountAssetEffect.NavigateToAccountDetail(event.accountId))
                 }
             }
-            AccountAssetEvent.OnAddAccountClick -> TODO()
+            AccountAssetEvent.OnAddAccountClick -> {
+                viewModelScope.launch {
+                    sendEffect(AccountAssetEffect.NavigateToAddAccount)
+                }
+            }
             AccountAssetEvent.OnAddAssetClick -> TODO()
             is AccountAssetEvent.OnInvestmentClick -> TODO()
             AccountAssetEvent.OnRetry -> TODO()

@@ -25,7 +25,11 @@ class DetailAccountViewModel @Inject constructor(
 
     override fun onEvent(event: DetailAccountEvent) {
         when (event) {
-            DetailAccountEvent.OnBackClick -> TODO()
+            DetailAccountEvent.OnBackClick -> {
+                viewModelScope.launch {
+                    sendEffect(DetailAccountEffect.NavigateBack)
+                }
+            }
             DetailAccountEvent.OnConfirmDelete -> TODO()
             DetailAccountEvent.OnDismissDeleteDialog -> TODO()
             DetailAccountEvent.OnHapusAsetClick -> TODO()

@@ -3,6 +3,7 @@ package com.example.nexcashapplication.feature.aset.data
 import com.example.nexcashapplication.core.datasource.local.dao.AccountDao
 import com.example.nexcashapplication.core.datasource.local.model.AccountEntity
 import com.example.nexcashapplication.feature.aset.data.mapper.toDomain
+import com.example.nexcashapplication.feature.aset.data.mapper.toEntity
 import com.example.nexcashapplication.feature.aset.domain.model.AccountModel
 import com.example.nexcashapplication.feature.aset.domain.model.MonthlySummaryAccount
 import com.example.nexcashapplication.feature.aset.domain.repository.AccountRepository
@@ -31,6 +32,14 @@ class AccountRepositoryImpl @Inject constructor(
 
     override fun getAccountById(accountId: String): Flow<AccountModel> {
         return dao.getAccountById(accountId).map { it.toDomain() }
+    }
+
+    override suspend fun insertAccount(account: AccountModel) {
+        dao.insertAccount(account.toEntity())
+    }
+
+    override suspend fun updateAccount(account: AccountModel) {
+        dao.updateAccount(account.toEntity())
     }
 
 }

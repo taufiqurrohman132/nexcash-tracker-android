@@ -25,6 +25,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
@@ -44,6 +45,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -65,6 +67,7 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.domain.model.TransactionItemUi
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.feature.category.presentation.addnew.AddCategoryEvent
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.collectLatest
 
@@ -80,7 +83,7 @@ fun DetailAccountScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                DetailAccountEffect.NavigateBack -> TODO()
+                DetailAccountEffect.NavigateBack -> navController.popBackStack()
                 DetailAccountEffect.NavigateBackAfterDelete -> TODO()
                 is DetailAccountEffect.NavigateToAddTransaction -> TODO()
                 is DetailAccountEffect.NavigateToAllTransactions -> TODO()
@@ -113,12 +116,19 @@ fun DetailAssetContent(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Akun & Aset", fontWeight = FontWeight.Bold) },
-                actions = {
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Filled.Add, contentDescription = "Tambah akun")
+                title = {
+                    Text(
+                        text = "Detail Account",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { onEvent(DetailAccountEvent.OnBackClick) }) {
+                        Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Kembali")
                     }
                 },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
             )
         },
     ) { padding ->
