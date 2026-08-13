@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.core.navigations
 
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -32,7 +33,9 @@ sealed interface Route {
         data class Detail(val accountId: String) : AccountRoute
 
         @Serializable
-        data object AddEdit : AccountRoute
+        data object AddEditTypeAccount : AccountRoute
+        @Serializable
+        data class AddEditInfo(val typeAccount: TypeAccount) : AccountRoute
     }
 
     @Serializable

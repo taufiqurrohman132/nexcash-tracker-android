@@ -5,8 +5,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,11 +22,9 @@ import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.TrendingUp
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -34,7 +34,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -44,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -78,7 +78,7 @@ fun AccountAssetScreen(
                 )
 
                 AccountAssetEffect.NavigateToAddAccount -> navController.navigate(
-                    Route.AccountRoute.AddEdit,
+                    Route.AccountRoute.AddEditTypeAccount,
                 )
 
                 AccountAssetEffect.NavigateToAllBankAccounts -> TODO()
@@ -162,6 +162,7 @@ fun AccountAssetContent(
                     FormField(
                         title = "Rekening Bank",
                         actionText = "Lihat Semua",
+                        icon = Icons.Outlined.AccountBalanceWallet,
                         onActionClick = { onEvent(AccountAssetEvent.OnSeeAllBankAccountsClick) },
                     ) {
                         state.bankAccounts.take(5).forEach { account ->
@@ -195,7 +196,7 @@ fun TotalBalanceCard(
                 .background(
                     Brush.linearGradient(listOf(Color(0xFF29B6F6), Color(0xFF5C6BC0))),
                 )
-                .padding(16.dp),
+                .padding(24.dp),
     ) {
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -205,14 +206,6 @@ fun TotalBalanceCard(
                     fontSize = 13.sp,
                 )
                 Spacer(Modifier.width(6.dp))
-                IconButton(onClick = onToggleVisibility, modifier = Modifier.size(20.dp)) {
-                    Icon(
-                        imageVector = if (isVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
-                        contentDescription = "Toggle saldo",
-                        tint = Color.White,
-                        modifier = Modifier.size(16.dp),
-                    )
-                }
                 Spacer(Modifier.weight(1f))
                 Box(
                     modifier = Modifier
@@ -243,12 +236,13 @@ fun TotalBalanceCard(
                     iconColor = Color.White,
                     backgroundColor = Color.White.copy(alpha = 0.1f),
                     iconToCountainerRatio = 2,
+                    onClick = onToggleVisibility
                 )
             }
 
-            Spacer(Modifier.height(10.dp))
-            HorizontalDivider()
-            Spacer(Modifier.height(10.dp))
+            Spacer(Modifier.height(12.dp))
+            HorizontalDivider(color = Color.White.copy(0.5f))
+            Spacer(Modifier.height(12.dp))
 
             Row {
                 Column {
@@ -324,48 +318,72 @@ private fun AccountRow(
     isBalanceVisible: Boolean,
     onClick: () -> Unit,
 ) {
+
     Row(
         modifier = Modifier
+                .padding(bottom = 8.dp)
                 .fillMaxWidth()
+                .height(IntrinsicSize.Min)
+                .shadow(
+                    elevation = 4.dp,
+                    shape = RoundedCornerShape(8.dp),
+                    ambientColor = Color.Black.copy(alpha = 0.2f),
+                    spotColor = Color.Black.copy(alpha = 0.2f),
+                )
                 .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .clickable(onClick = onClick)
-                .padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
+                .background(
+                    Color.White,
+//                    Color.Red
+                )
+
+                .clickable(onClick = onClick),
     ) {
         Box(
             modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer),
-            contentAlignment = Alignment.Center,
+                    .width(3.dp)
+                    .fillMaxHeight()
+                    .background(PrimaryCyan),
+        )
+        Row(
+            modifier = Modifier
+                    .weight(1f)
+                    .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(Icons.Filled.AccountBalance, contentDescription = null)
-        }
+            Box(
+                modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(Icons.Filled.AccountBalance, contentDescription = null)
+            }
 
-        Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.width(12.dp))
 
-        Column(modifier = Modifier.weight(1f)) {
-            Text(account.name, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+            Column(modifier = Modifier.weight(1f)) {
+                Text(account.name, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+                Text(
+                    "${account.provider} • ${account.maskedNumber}",
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+
             Text(
-                "${account.provider} • ${account.maskedNumber}",
-                fontSize = 12.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                text = if (isBalanceVisible) account.balance.formatCurrency() else "Rp ••••••",
+                fontWeight = FontWeight.Bold,
+                fontSize = 14.sp,
+            )
+
+            Spacer(Modifier.width(4.dp))
+            Icon(
+                Icons.Filled.ChevronRight,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-
-        Text(
-            text = if (isBalanceVisible) account.balance.formatCurrency() else "Rp ••••••",
-            fontWeight = FontWeight.Bold,
-            fontSize = 14.sp,
-        )
-
-        Spacer(Modifier.width(4.dp))
-        Icon(
-            Icons.Filled.ChevronRight,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
     }
 }
 

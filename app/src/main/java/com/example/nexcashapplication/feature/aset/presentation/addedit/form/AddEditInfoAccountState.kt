@@ -2,11 +2,12 @@ package com.example.nexcashapplication.feature.aset.presentation.addedit.form
 
 import androidx.compose.runtime.Immutable
 import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderItem
+import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
 
 @Immutable
 data class AddEditInfoAccountState(
     val namaAset: String = "",
-    val tipeAset: String = "Bank",        // locked, dikirim dari screen sebelumnya
+    val typeAccount: String = "",        // locked, dikirim dari screen sebelumnya
     val saldoAwal: String = "",           // simpan sebagai String mentah
     val providers: List<AccountProviderItem> = defaultProviders(),
     val selectedProviderId: String? = null,

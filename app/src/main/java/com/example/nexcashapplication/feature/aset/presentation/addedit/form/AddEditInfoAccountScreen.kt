@@ -70,7 +70,7 @@ fun AddEditInfoAccountScreen(
         viewModel.effect.collectLatest { effect ->
             when (effect) {
                 AddEditInfoAccountEffect.AssetSavedNavigateHome -> TODO()
-                AddEditInfoAccountEffect.NavigateBack -> TODO()
+                AddEditInfoAccountEffect.NavigateBack -> navController.popBackStack()
                 AddEditInfoAccountEffect.NavigateToProviderList -> TODO()
                 is AddEditInfoAccountEffect.ShowError -> TODO()
             }
@@ -132,6 +132,7 @@ fun AddEditAccountContent(
                     FormFieldEdit(
                         asetName = state.namaAset,
                         saldoAwal = state.saldoAwal,
+                        typeAccountName = state.typeAccount,
                         onAsetNameChange = {
                             onEvent(AddEditInfoAccountEvent.NamaAsetChanged(it))
                         },
@@ -193,6 +194,7 @@ private fun SimpanAsetButton(
 fun FormFieldEdit(
     asetName: String,
     saldoAwal: String,
+    typeAccountName: String,
     onAsetNameChange: (String) -> Unit,
     onSaldoAwalChange: (String) -> Unit,
     error: String? = null,
@@ -240,15 +242,10 @@ fun FormFieldEdit(
 
             ) {
             OutlinedTextField(
-                value = "",
-                onValueChange = onAsetNameChange,
-                placeholder = {
-                    Text(
-                        "Contoh: Tabungan Darurat",
-                        color = TextSecondary.copy(alpha = 0.6f),
-                    )
-                },
+                value = typeAccountName,
+                onValueChange = {},
                 isError = error != null,
+                enabled = false,
                 singleLine = true,
                 shape = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
