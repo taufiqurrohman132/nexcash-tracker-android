@@ -9,8 +9,7 @@ data class AccountModel(
     // contoh: cash, bank, ewallet, credit_card, investment
     val accountType: TypeAccount,
     val name: String,
-    val institution: AccountProviderItem? = null,
-    val accountNumber: String? = null,
+    val providerAccount: AccountProviderItem? = null,
     val currentBalance: Long = 0,
     val isActive: Boolean = true,
     val deletedAt: Long? = null,

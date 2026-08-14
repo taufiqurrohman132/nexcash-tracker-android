@@ -15,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -57,8 +59,11 @@ import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiGroupModel
 import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
+import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
+import com.example.nexcashapplication.ui.theme.TextTertiary
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -81,7 +86,7 @@ fun AccountAssetScreen(
                     Route.AccountRoute.AddEditTypeAccount,
                 )
 
-                AccountAssetEffect.NavigateToAllBankAccounts -> TODO()
+                AccountAssetEffect.NavigateToAllBankAccounts -> {}
                 is AccountAssetEffect.NavigateToInvestmentDetail -> TODO()
                 is AccountAssetEffect.ShowError -> TODO()
             }
@@ -110,7 +115,10 @@ fun AccountAssetContent(
             TopAppBar(
                 title = { Text("Akun & Aset", fontWeight = FontWeight.Bold) },
                 actions = {
-                    IconButton(onClick = { onEvent(AccountAssetEvent.OnAddAccountClick) }) {
+                    IconButton(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        onClick = { onEvent(AccountAssetEvent.OnAddAccountClick) },
+                    ) {
                         Icon(Icons.Filled.Add, contentDescription = "Tambah akun")
                     }
                 },
@@ -159,18 +167,23 @@ fun AccountAssetContent(
                         onToggleVisibility = { onEvent(AccountAssetEvent.OnToggleBalanceVisibility) },
                     )
 
-                    FormField(
-                        title = "Rekening Bank",
-                        actionText = "Lihat Semua",
-                        icon = Icons.Outlined.AccountBalanceWallet,
-                        onActionClick = { onEvent(AccountAssetEvent.OnSeeAllBankAccountsClick) },
-                    ) {
-                        state.bankAccounts.take(5).forEach { account ->
-                            AccountRow(
-                                account = account,
-                                isBalanceVisible = state.isBalanceVisible,
-                                onClick = { onEvent(AccountAssetEvent.OnAccountClick(account.id)) },
-                            )
+                    LazyColumn {
+                        state.bankAccounts.forEach { group ->
+                            stickyHeader(key = group.nameGroup) {
+                                FormField(
+                                    title = group.nameGroup,
+                                    icon = Icons.Outlined.AccountBalanceWallet,
+                                    actionText = if (group.listAccount.size > 4) "Lihat Semua"
+                                    else null,
+                                )
+                            }
+                            items(group.listAccount, key = { it.id }) { items ->
+                                AccountRow(
+                                    account = items,
+                                    isBalanceVisible = state.isBalanceVisible,
+                                    onClick = { onEvent(AccountAssetEvent.OnAccountClick(items.id)) },
+                                )
+                            }
                         }
                     }
                 }
@@ -236,7 +249,7 @@ fun TotalBalanceCard(
                     iconColor = Color.White,
                     backgroundColor = Color.White.copy(alpha = 0.1f),
                     iconToCountainerRatio = 2,
-                    onClick = onToggleVisibility
+                    onClick = onToggleVisibility,
                 )
             }
 
@@ -365,14 +378,14 @@ private fun AccountRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(account.name, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                 Text(
-                    "${account.provider} • ${account.maskedNumber}",
+                    account.provider,
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
 
             Text(
-                text = if (isBalanceVisible) account.balance.formatCurrency() else "Rp ••••••",
+                text = account.balance.formatCurrency(),
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
             )
@@ -381,7 +394,7 @@ private fun AccountRow(
             Icon(
                 Icons.Filled.ChevronRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = TextTertiary,
             )
         }
     }
@@ -451,21 +464,46 @@ private fun AccountAssetContentLoadedPreview() {
             monthlyChangePercent = 4.2,
             activeAssetCount = 5,
             bankAccounts = listOf(
-                AccountUiModel(
-                    id = "1",
-                    name = "BCA Utama",
-                    provider = "BCA",
-                    maskedNumber = "•••• 4521",
-                    balance = 8_500_000L,
+                AccountUiGroupModel(
+                    nameGroup = TypeAccount.BANK.name,
+                    listAccount = listOf(
+                        AccountUiModel(
+                            id = "1",
+                            name = "BCA Utama",
+                            provider = "BCA",
+                            maskedNumber = "•••• 4521",
+                            balance = 8_500_000L,
+                        ),
+                        AccountUiModel(
+                            id = "2",
+                            name = "Mandiri Tabungan",
+                            provider = "Mandiri",
+                            maskedNumber = "•••• 7788",
+                            balance = 3_200_000L,
+                        ),
+                    ),
                 ),
-                AccountUiModel(
-                    id = "2",
-                    name = "Mandiri Tabungan",
-                    provider = "Mandiri",
-                    maskedNumber = "•••• 7788",
-                    balance = 3_200_000L,
+                AccountUiGroupModel(
+                    nameGroup = TypeAccount.CARD.name,
+                    listAccount = listOf(
+                        AccountUiModel(
+                            id = "3",
+                            name = "BCA Utama",
+                            provider = "BCA",
+                            maskedNumber = "•••• 4521",
+                            balance = 8_500_000L,
+                        ),
+                        AccountUiModel(
+                            id = "4",
+                            name = "Mandiri Tabungan",
+                            provider = "Mandiri",
+                            maskedNumber = "•••• 7788",
+                            balance = 3_200_000L,
+                        ),
+                    ),
                 ),
-            ),
+
+                ),
             eWallets = listOf(
                 AccountUiModel(
                     id = "3",

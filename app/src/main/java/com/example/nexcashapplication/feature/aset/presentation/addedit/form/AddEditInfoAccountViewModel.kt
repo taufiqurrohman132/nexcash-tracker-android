@@ -73,7 +73,7 @@ class AddEditInfoAccountViewModel @Inject constructor(
                 account = AccountModel(
                     name = current.namaAset,
                     currentBalance = current.saldoAwal.toLong(),
-                    institution = current.providers.find { it.id == current.selectedProviderId },
+                    providerAccount = current.providers.find { it.id == current.selectedProviderId },
                     accountType = TypeAccount.valueOf(current.typeAccount.uppercase()),
                     isActive = true,
                 ),

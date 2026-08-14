@@ -228,7 +228,6 @@ fun AssetTypeCard(
     modifier: Modifier = Modifier,
 ) {
 
-
     Card(
         onClick = onClick,
         modifier = modifier.height(140.dp),
