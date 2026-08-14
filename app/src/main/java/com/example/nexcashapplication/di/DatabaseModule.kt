@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.example.nexcashapplication.core.datasource.local.dao.AccountDao
 import com.example.nexcashapplication.core.datasource.local.dao.CategoryDao
+import com.example.nexcashapplication.core.datasource.local.dao.TransactionDao
 import com.example.nexcashapplication.core.datasource.local.database.NexCashDatabase
 import dagger.Module
 import dagger.Provides
@@ -34,6 +35,11 @@ object DatabaseModule {
     @Singleton
     fun provideAccountDao(database: NexCashDatabase): AccountDao =
         database.accountDao()
+
+    @Provides
+    @Singleton
+    fun provideTransactionDao(database: NexCashDatabase): TransactionDao =
+        database.transactionDao()
 
 
 }

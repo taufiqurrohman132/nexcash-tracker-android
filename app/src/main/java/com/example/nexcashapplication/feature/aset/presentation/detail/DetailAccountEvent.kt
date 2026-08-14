@@ -7,8 +7,8 @@ sealed interface DetailAccountEvent {
     data object OnTransferClick : DetailAccountEvent
     data object OnLihatSemuaClick : DetailAccountEvent
     data class OnTransactionClick(val transactionId: String) : DetailAccountEvent
-    data object OnUbahNamaAsetClick : DetailAccountEvent
-    data object OnHapusAsetClick : DetailAccountEvent
+    data object OnEditAccountClick : DetailAccountEvent
+    data object OnDeleteAccountClick : DetailAccountEvent
     data object OnConfirmDelete : DetailAccountEvent
     data object OnDismissDeleteDialog : DetailAccountEvent
 }

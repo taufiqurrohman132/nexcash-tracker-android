@@ -19,6 +19,7 @@ interface AccountRepository {
 
     fun getAccountById(accountId: String): Flow<AccountModel>
 
+
     suspend fun insertAccount(account: AccountModel)
 
     suspend fun updateAccount(account: AccountModel)

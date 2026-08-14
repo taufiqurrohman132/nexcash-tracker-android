@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.aset.domain.usecase.DeleteAccountUseCase
 import com.example.nexcashapplication.feature.aset.domain.usecase.GetAccountDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -12,6 +13,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class DetailAccountViewModel @Inject constructor(
+    private val deleteAccountUseCase: DeleteAccountUseCase,
     private val getAccountDetailUseCase: GetAccountDetailUseCase,
     savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<DetailAccountState, DetailAccountEvent, DetailAccountEffect>(initialState = DetailAccountState()) {
@@ -31,15 +33,33 @@ class DetailAccountViewModel @Inject constructor(
                 }
             }
 
-            DetailAccountEvent.OnConfirmDelete -> TODO()
-            DetailAccountEvent.OnDismissDeleteDialog -> TODO()
-            DetailAccountEvent.OnHapusAsetClick -> TODO()
+            DetailAccountEvent.OnConfirmDelete -> {
+
+
+            }
+
+            DetailAccountEvent.OnDismissDeleteDialog -> {
+                updateState { it.copy(deleteDialogDesision = null) }
+            }
+
+            DetailAccountEvent.OnDeleteAccountClick -> {
+                viewModelScope.launch {
+                    deleteAccountUseCase(accountId).collect { decision ->
+                        updateState {
+                            it.copy(
+                                deleteDialogDesision = decision,
+                            )
+                        }
+                    }
+                }
+            }
+
             DetailAccountEvent.OnLihatSemuaClick -> TODO()
             DetailAccountEvent.OnSettingsClick -> TODO()
             is DetailAccountEvent.OnTransactionClick -> TODO()
             DetailAccountEvent.OnTransaksiClick -> TODO()
             DetailAccountEvent.OnTransferClick -> TODO()
-            DetailAccountEvent.OnUbahNamaAsetClick -> TODO()
+            DetailAccountEvent.OnEditAccountClick -> TODO()
         }
     }
 

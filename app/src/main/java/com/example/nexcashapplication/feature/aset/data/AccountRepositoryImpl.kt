@@ -34,6 +34,7 @@ class AccountRepositoryImpl @Inject constructor(
         return dao.getAccountById(accountId).map { it.toDomain() }
     }
 
+
     override suspend fun insertAccount(account: AccountModel) {
         dao.insertAccount(account.toEntity())
     }

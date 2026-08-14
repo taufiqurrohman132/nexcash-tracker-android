@@ -20,12 +20,13 @@ interface TransactionDao {
         SELECT * FROM transactions
         ORDER BY transaction_date DESC
         LIMIT :limit
-    """
+    """,
     )
     fun getRecentTransactions(limit: Int = 20): Flow<List<TransactionEntity>>
 
     // dashboard: total bulan ini
-    @Query("""
+    @Query(
+        """
     SELECT 
         COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) AS totalPemasukan,
         COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS totalPengeluaran,
@@ -34,20 +35,31 @@ interface TransactionDao {
     FROM transactions
     WHERE strftime('%m', transaction_date/1000, 'unixepoch') = :month
     AND strftime('%Y', transaction_date/1000, 'unixepoch') = :year
-""")
+""",
+    )
     fun getMonthlySummary(month: String, year: String): Flow<MonthlySummaryResult>
 
 
     // Dashboard: total pengeluaran per kategori (untuk widget anggaran)
-    @Query("""
+    @Query(
+        """
         SELECT category_id, SUM(amount) as total 
         FROM transactions 
         WHERE type = 'expense'
         AND strftime('%m', transaction_date/1000, 'unixepoch') = :month
         AND strftime('%Y', transaction_date/1000, 'unixepoch') = :year
         GROUP BY category_id
-    """)
+    """,
+    )
     fun getExpenseGroupedByCategory(month: String, year: String): Flow<List<CategoryExpenseResult>>
+
+    @Query(
+        """
+            SELECT COUNT(*) FROM transactions
+            WHERE account_id = :accountId
+        """,
+    )
+    fun getCountTransactionsByAccount(accountId: String): Flow<Int>
 
     // Insert transaksi baru (dari FAB +)
     @Insert(onConflict = OnConflictStrategy.REPLACE)

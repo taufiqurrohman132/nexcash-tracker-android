@@ -22,12 +22,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Replay
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
@@ -43,7 +42,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -67,7 +65,7 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.domain.model.TransactionItemUi
 import com.example.nexcashapplication.core.extension.formatCurrency
-import com.example.nexcashapplication.feature.category.presentation.addnew.AddCategoryEvent
+import com.example.nexcashapplication.feature.aset.presentation.shared.component.DeleteAccountDialog
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.collectLatest
 
@@ -128,10 +126,21 @@ fun DetailAssetContent(
                         Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Kembali")
                     }
                 },
+                actions = {
+                    Row {
+                        IconButton(onClick = { onEvent(DetailAccountEvent.OnEditAccountClick) }) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit")
+                        }
+                        IconButton(onClick = { onEvent(DetailAccountEvent.OnDeleteAccountClick) }) {
+                            Icon(Icons.Default.Delete, contentDescription = "Delete")
+                        }
+                    }
+                },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
             )
         },
-    ) { padding ->
+
+        ) { padding ->
         when {
             state.isLoading -> {
                 Box(
@@ -171,8 +180,8 @@ fun DetailAssetContent(
                     FormField(
                         title = "Transaksi terakhir",
                         icon = Icons.Default.Replay,
-                        actionText = "Lihat Semua"
-                    ){
+                        actionText = "Lihat Semua",
+                    ) {
                         RecentTransactionsSection(state.recentTransactions, onEvent)
                     }
                     Spacer(Modifier.height(24.dp))
@@ -183,23 +192,30 @@ fun DetailAssetContent(
 
 
         }
-        if (state.showDeleteConfirmation) {
-            AlertDialog(
-                onDismissRequest = { onEvent(DetailAccountEvent.OnDismissDeleteDialog) },
-                title = { Text("Hapus Aset Ini?") },
-                text = { Text("Tindakan ini akan menghapus \"${state.assetName}\" beserta seluruh transaksi terkait. Tindakan ini tidak dapat dibatalkan.") },
-                confirmButton = {
-                    TextButton(
-                        onClick = { onEvent(DetailAccountEvent.OnConfirmDelete) },
-                    ) { Text("Hapus", color = MaterialTheme.colorScheme.error) }
-                },
-                dismissButton = {
-                    TextButton(onClick = { onEvent(DetailAccountEvent.OnDismissDeleteDialog) }) {
-                        Text("Batal")
-                    }
-                },
+        state.deleteDialogDesision?.let {
+            DeleteAccountDialog(
+                dialogDesision = it,
+                onDismiss = { onEvent(DetailAccountEvent.OnDismissDeleteDialog) },
+                onConfirm = { onEvent(DetailAccountEvent.OnConfirmDelete) },
             )
         }
+//        if (state.showDeleteConfirmation) {
+//            AlertDialog(
+//                onDismissRequest = { onEvent(DetailAccountEvent.OnDismissDeleteDialog) },
+//                title = { Text("Hapus Aset Ini?") },
+//                text = { Text("Tindakan ini akan menghapus \"${state.assetName}\" beserta seluruh transaksi terkait. Tindakan ini tidak dapat dibatalkan.") },
+//                confirmButton = {
+//                    TextButton(
+//                        onClick = { onEvent(DetailAccountEvent.OnConfirmDelete) },
+//                    ) { Text("Hapus", color = MaterialTheme.colorScheme.error) }
+//                },
+//                dismissButton = {
+//                    TextButton(onClick = { onEvent(DetailAccountEvent.OnDismissDeleteDialog) }) {
+//                        Text("Batal")
+//                    }
+//                },
+//            )
+//        }
     }
 }
 
@@ -213,7 +229,7 @@ fun AssetSettingsSection(onEvent: (DetailAccountEvent) -> Unit) {
             label = "Ubah Nama Aset",
             tint = Color(0xFF29C5E0),
             background = Color(0xFFF3FAFB),
-            onClick = { onEvent(DetailAccountEvent.OnUbahNamaAsetClick) },
+            onClick = { onEvent(DetailAccountEvent.OnEditAccountClick) },
         )
         Spacer(Modifier.height(10.dp))
         SettingsRow(
@@ -221,7 +237,7 @@ fun AssetSettingsSection(onEvent: (DetailAccountEvent) -> Unit) {
             label = "Hapus Aset Ini",
             tint = Color(0xFFE6455B),
             background = Color(0xFFFCEEF0),
-            onClick = { onEvent(DetailAccountEvent.OnHapusAsetClick) },
+            onClick = { onEvent(DetailAccountEvent.OnDeleteAccountClick) },
         )
     }
 }
@@ -257,19 +273,19 @@ private fun RecentTransactionsSection(
     onEvent: (DetailAccountEvent) -> Unit,
 ) {
 
-        Column(
-            modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .border(1.dp, Color(0xFFEFEFEF), RoundedCornerShape(16.dp)),
-        ) {
-            transactions.forEachIndexed { index, tx ->
-                TransactionRow(tx) { onEvent(DetailAccountEvent.OnTransactionClick(tx.id)) }
-                if (index != transactions.lastIndex) {
-                    HorizontalDivider(color = Color(0xFFF0F0F0))
-                }
+    Column(
+        modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .border(1.dp, Color(0xFFEFEFEF), RoundedCornerShape(16.dp)),
+    ) {
+        transactions.forEachIndexed { index, tx ->
+            TransactionRow(tx) { onEvent(DetailAccountEvent.OnTransactionClick(tx.id)) }
+            if (index != transactions.lastIndex) {
+                HorizontalDivider(color = Color(0xFFF0F0F0))
             }
         }
+    }
 
 }
 
@@ -368,7 +384,7 @@ fun BalanceCard(
                 shape = CircleShape,
                 label = { Text(state.accountLabel, fontSize = 12.sp) },
                 colors = AssistChipDefaults.assistChipColors(containerColor = Color.White),
-                modifier = Modifier.height(28.dp) // paksa lebih pendek dari minimum touch target
+                modifier = Modifier.height(28.dp), // paksa lebih pendek dari minimum touch target
             )
         }
         Spacer(Modifier.height(6.dp))
