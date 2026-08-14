@@ -10,7 +10,6 @@ fun AccountModel.toEntity() = AccountEntity(
     name = name,
     accountType = accountType.name.lowercase(),
     institution = providerAccount?.id,
-    accountNumber = accountNumber,
     isActive = isActive,
     deletedAt = deletedAt,
 )
@@ -19,8 +18,8 @@ fun AccountEntity.toDomain() = AccountModel(
     id = id,
     name = name,
     accountType = TypeAccount.valueOf(accountType.uppercase()),
-//    institution = institution,
-    accountNumber = accountNumber,
+    providerAccount = null,
+    currentBalance = currentBalance,
     isActive = isActive,
     deletedAt = deletedAt,
 )

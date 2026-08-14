@@ -23,11 +23,8 @@ data class AccountEntity(
     @ColumnInfo(name = "institution")
     val institution: String? = null,
 
-    @ColumnInfo(name = "account_number")
-    val accountNumber: String? = null,
-
     @ColumnInfo(name = "current_balance")
-    val currentBalance: Double = 0.0,
+    val currentBalance: Long = 0L,
 
     @ColumnInfo(name = "is_active")
     val isActive: Boolean = true,
