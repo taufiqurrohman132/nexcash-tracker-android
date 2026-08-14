@@ -15,6 +15,9 @@ fun AccountModel.toAccountUiModel() = AccountUiModel(
 fun List<AccountModel>.toAccountUiModelList(): List<AccountUiGroupModel> = groupBy {
     it.accountType
 }.map { (type, accounts) ->
-    AccountUiGroupModel(type.name, accounts.map { it.toAccountUiModel() })
+    AccountUiGroupModel(
+        type.name,
+        accounts.sortedByDescending { it.lastUpdateAt }.map { it.toAccountUiModel() },
+    )
 }
 

@@ -10,8 +10,10 @@ fun AccountModel.toEntity() = AccountEntity(
     name = name,
     accountType = accountType.name.lowercase(),
     provider = providerAccount,
+    currentBalance = currentBalance,
     isActive = isActive,
     deletedAt = deletedAt,
+    lastUpdateAt = System.currentTimeMillis(),
 )
 
 fun AccountEntity.toDomain() = AccountModel(
@@ -22,4 +24,5 @@ fun AccountEntity.toDomain() = AccountModel(
     currentBalance = currentBalance,
     isActive = isActive,
     deletedAt = deletedAt,
+    lastUpdateAt = lastUpdateAt,
 )

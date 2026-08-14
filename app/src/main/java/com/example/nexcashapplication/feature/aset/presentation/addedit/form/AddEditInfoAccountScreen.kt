@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -58,6 +59,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconRounded
+import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.aset.presentation.addedit.form.catalog.ProviderCatalog
@@ -151,7 +153,7 @@ fun AddEditAccountContent(
                     LangkahTerakhirBanner()
                     FormFieldEdit(
                         asetName = state.namaAset,
-                        saldoAwal = state.saldoAwal,
+                        saldoAwal = state.saldoAwal.formatCurrency(),
                         typeAccountName = state.typeAccount,
                         onAsetNameChange = {
                             onEvent(AddEditInfoAccountEvent.NamaAsetChanged(it))
@@ -179,7 +181,6 @@ fun AddEditAccountContent(
                             )
                         } else {
                             ProviderGrid(
-                                modifier = Modifier.padding(top = 8.dp),
                                 providers = state.providers,
                                 selectedProviderId = state.selectedProviderId,
                                 onProviderSelected = {
@@ -270,11 +271,10 @@ fun FormFieldEdit(
     saldoAwal: String,
     typeAccountName: String,
     onAsetNameChange: (String) -> Unit,
-    onSaldoAwalChange: (String) -> Unit,
+    onSaldoAwalChange: (Long) -> Unit,
     error: String? = null,
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         FormField(
             "Nama Aset (Alias)",
@@ -298,7 +298,6 @@ fun FormFieldEdit(
                     unfocusedBorderColor = BorderGray,
                 ),
                 modifier = Modifier
-                        .padding(top = 8.dp)
                         .height(50.dp)
                         .fillMaxWidth(),
             )
@@ -321,13 +320,26 @@ fun FormFieldEdit(
                 isError = error != null,
                 enabled = false,
                 singleLine = true,
+                trailingIcon = {
+                    Surface(
+                        shape = CircleShape,
+                        color = BorderGray.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(end = 16.dp)
+                    ) {
+                        Text(
+                            text = "TERKUNCI",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = Color.Gray,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                },
                 shape = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = PrimaryCyan,
                     unfocusedBorderColor = BorderGray,
                 ),
                 modifier = Modifier
-                        .padding(top = 8.dp)
                         .height(50.dp)
                         .fillMaxWidth(),
             )
@@ -339,7 +351,9 @@ fun FormFieldEdit(
         ) {
             OutlinedTextField(
                 value = saldoAwal,
-                onValueChange = onSaldoAwalChange,
+                onValueChange = {
+                    onSaldoAwalChange(it.toLongOrNull() ?: 0)
+                },
                 leadingIcon = { Text("Rp", color = TextSecondary, fontSize = 15.sp) },
                 placeholder = { Text("0", color = TextSecondary.copy(alpha = 0.6f)) },
                 singleLine = true,
@@ -350,7 +364,6 @@ fun FormFieldEdit(
                     unfocusedBorderColor = BorderGray,
                 ),
                 modifier = Modifier
-                        .padding(top = 8.dp)
                         .height(50.dp)
                         .fillMaxWidth(),
             )

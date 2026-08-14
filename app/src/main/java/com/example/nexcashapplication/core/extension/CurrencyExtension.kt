@@ -1,5 +1,7 @@
 package com.example.nexcashapplication.core.extension
 
+import androidx.compose.ui.res.stringResource
+import com.example.nexcashapplication.R
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -69,4 +71,16 @@ private fun formatDecimal(value: Double): String {
     return String.format(Locale("id", "ID"), "%.2f", value)
             .trimEnd('0')  // hapus 0 di belakang → 1.50 jadi 1.5
             .trimEnd('.')  // hapus titik kalau tidak ada desimal → 1. jadi 1
+}
+
+
+// visibilty
+fun Long.toFormatCurrencyVisibility(isVisible: Boolean, isTotalSaldoOverflow: Boolean = false): String {
+    return  if (!isVisible) {
+        "••••••••"
+    } else if (isTotalSaldoOverflow) {
+        this.formatCompact()
+    } else {
+        this.formatCurrency()
+    }
 }

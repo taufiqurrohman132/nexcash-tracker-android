@@ -35,11 +35,19 @@ class AccountAssetViewModel @Inject constructor(
                     sendEffect(AccountAssetEffect.NavigateToAddAccount)
                 }
             }
-            AccountAssetEvent.OnAddAssetClick -> TODO()
-            is AccountAssetEvent.OnInvestmentClick -> TODO()
-            AccountAssetEvent.OnRetry -> TODO()
-            AccountAssetEvent.OnSeeAllBankAccountsClick -> TODO()
-            AccountAssetEvent.OnToggleBalanceVisibility -> TODO()
+            AccountAssetEvent.OnRetry -> {
+
+            }
+            is AccountAssetEvent.OnSeeAllAccountsClick -> {
+                viewModelScope.launch {
+                    sendEffect(AccountAssetEffect.NavigateToAllAccounts(event.type))
+                }
+            }
+            AccountAssetEvent.OnToggleBalanceVisibility -> {
+                viewModelScope.launch {
+                    updateState { it.copy(isBalanceVisible = !it.isBalanceVisible) }
+                }
+            }
         }
     }
 

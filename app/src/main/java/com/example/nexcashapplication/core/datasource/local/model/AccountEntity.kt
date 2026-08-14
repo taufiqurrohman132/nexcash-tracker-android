@@ -31,4 +31,7 @@ data class AccountEntity(
 
     @ColumnInfo(name = "deleted_at")
     val deletedAt: Long? = null,
+
+    @ColumnInfo(name = "last_update_at")
+    val lastUpdateAt: Long = 0L,
 )

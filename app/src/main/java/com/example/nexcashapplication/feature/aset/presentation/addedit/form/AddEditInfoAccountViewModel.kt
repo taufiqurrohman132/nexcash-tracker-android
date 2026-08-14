@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.aset.presentation.addedit.form
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
@@ -27,7 +28,7 @@ class AddEditInfoAccountViewModel @Inject constructor(
         updateState {
             it.copy(
                 typeAccount = typeAccount.name,
-                providers = ProviderCatalog.getByType(typeAccount)
+                providers = ProviderCatalog.getByType(typeAccount),
             )
         }
     }
@@ -73,11 +74,12 @@ class AddEditInfoAccountViewModel @Inject constructor(
         viewModelScope.launch {
             updateState { it.copy(isSaving = true) }
 
+            Log.d(TAG, "handleSimpan: saldo awal = ${current.saldoAwal}")
             saveAssetUseCase(
                 account = AccountModel(
                     name = current.namaAset,
-                    currentBalance = current.saldoAwal.toLong(),
-                    providerAccount = current.selectedProviderId?.let{ id ->
+                    currentBalance = current.saldoAwal,
+                    providerAccount = current.selectedProviderId?.let { id ->
                         ProviderCatalog.getById(id)?.name
                     },
                     accountType = TypeAccount.valueOf(current.typeAccount.uppercase()),
@@ -95,4 +97,7 @@ class AddEditInfoAccountViewModel @Inject constructor(
         }
     }
 
+    companion object {
+        private val TAG = AddEditInfoAccountViewModel::class.java.simpleName
+    }
 }

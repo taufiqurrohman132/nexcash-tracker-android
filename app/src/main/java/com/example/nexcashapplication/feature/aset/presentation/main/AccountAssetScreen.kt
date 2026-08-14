@@ -42,7 +42,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,6 +52,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -57,9 +60,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.extension.toFormatCurrencyVisibility
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiGroupModel
@@ -89,8 +94,10 @@ fun AccountAssetScreen(
                     Route.AccountRoute.AddEditTypeAccount,
                 )
 
-                AccountAssetEffect.NavigateToAllBankAccounts -> {}
-                is AccountAssetEffect.NavigateToInvestmentDetail -> TODO()
+                is AccountAssetEffect.NavigateToAllAccounts -> {
+
+                }
+
                 is AccountAssetEffect.ShowError -> {
                     Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
                 }
@@ -164,28 +171,36 @@ fun AccountAssetContent(
                             .padding(padding)
                             .padding(horizontal = 16.dp),
                 ) {
-                    TotalBalanceCard(
-                        totalBalance = state.totalBalance,
-                        isVisible = state.isBalanceVisible,
-                        monthlyChangePercent = state.monthlyChangePercent,
-                        activeAssetCount = state.activeAssetCount,
-                        onToggleVisibility = { onEvent(AccountAssetEvent.OnToggleBalanceVisibility) },
-                    )
+
 
                     LazyColumn {
+
+                        item {
+                            TotalBalanceCard(
+                                totalBalance = state.totalBalance,
+                                isVisible = state.isBalanceVisible,
+                                monthlyChangePercent = state.monthlyChangePercent,
+                                activeAssetCount = state.activeAssetCount,
+                                onToggleVisibility = { onEvent(AccountAssetEvent.OnToggleBalanceVisibility) },
+                            )
+                        }
                         state.bankAccounts.forEach { group ->
                             stickyHeader(key = group.nameGroup) {
-                                FormField(
-                                    title = group.nameGroup,
-                                    icon = Icons.Outlined.AccountBalanceWallet,
-                                    actionText = if (group.listAccount.size > 4) "Lihat Semua"
-                                    else null,
-                                )
+                                Box(
+                                    modifier = Modifier.fillMaxWidth()
+                                            .background(Color.White)
+                                ){
+                                    FormField(
+                                        title = group.nameGroup,
+                                        icon = Icons.Outlined.AccountBalanceWallet,
+                                        actionText = if (group.listAccount.size > 3) "Lihat Semua"
+                                        else null,
+                                    )
+                                }
                             }
                             items(group.listAccount, key = { it.id }) { items ->
                                 AccountRow(
                                     account = items,
-                                    isBalanceVisible = state.isBalanceVisible,
                                     onClick = { onEvent(AccountAssetEvent.OnAccountClick(items.id)) },
                                 )
                             }
@@ -207,6 +222,8 @@ fun TotalBalanceCard(
     onToggleVisibility: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var isTotalSaldoOverflow: Boolean by remember { mutableStateOf(false) }
+
     Box(
         modifier = Modifier
                 .fillMaxWidth()
@@ -243,10 +260,19 @@ fun TotalBalanceCard(
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = if (isVisible) totalBalance.formatCurrency() else "Rp ••••••••",
+                    text = stringResource(
+                        R.string.total_balance_format,
+                        totalBalance.toFormatCurrencyVisibility(isVisible, isTotalSaldoOverflow),
+                    ),
                     color = Color.White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    onTextLayout = { result ->
+                        if (result.hasVisualOverflow) {
+                            isTotalSaldoOverflow = result.hasVisualOverflow
+                        }
+                    },
                 )
 
                 IconCircular(
@@ -333,7 +359,6 @@ private fun SectionHeader(
 @Composable
 private fun AccountRow(
     account: AccountUiModel,
-    isBalanceVisible: Boolean,
     onClick: () -> Unit,
 ) {
 
@@ -344,9 +369,9 @@ private fun AccountRow(
                 .height(IntrinsicSize.Min)
                 .shadow(
                     elevation = 4.dp,
-                    shape = RoundedCornerShape(8.dp),
-                    ambientColor = Color.Black.copy(alpha = 0.2f),
-                    spotColor = Color.Black.copy(alpha = 0.2f),
+                    shape = RoundedCornerShape(12.dp),
+                    ambientColor = Color.Black.copy(alpha = 0.5f),
+                    spotColor = Color.Black.copy(alpha = 0.5f),
                 )
                 .clip(RoundedCornerShape(16.dp))
                 .background(

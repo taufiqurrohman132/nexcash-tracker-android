@@ -10,5 +10,6 @@ data class AccountModel(
     val currentBalance: Long = 0,
     val isActive: Boolean = true,
     val deletedAt: Long? = null,
+    val lastUpdateAt: Long = 0L,
 )
 

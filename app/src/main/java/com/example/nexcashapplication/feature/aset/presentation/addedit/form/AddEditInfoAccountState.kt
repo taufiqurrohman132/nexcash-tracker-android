@@ -7,7 +7,7 @@ import com.example.nexcashapplication.feature.aset.presentation.addedit.form.mod
 data class AddEditInfoAccountState(
     val namaAset: String = "",
     val typeAccount: String = "",        // locked, dikirim dari screen sebelumnya
-    val saldoAwal: String = "",           // simpan sebagai String mentah
+    val saldoAwal: Long = 0L,           // simpan sebagai String mentah
     val providers: List<AccountProviderUiModel> = emptyList(),
     val selectedProviderId: String? = null,
     val isSaving: Boolean = false,

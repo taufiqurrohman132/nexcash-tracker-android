@@ -15,6 +15,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
@@ -59,14 +60,15 @@ fun FormField(
                 )
             }
 
-            actionText?.let {
-                TextButton(onClick = { onActionClick() }) {
-                    Text(
-                        text = actionText,
-                        color = PrimaryCyan
-                    )
-                }
-
+            TextButton(
+                onClick = { if (actionText != null) onActionClick() },
+                enabled = actionText != null,
+                modifier = Modifier.alpha(if (actionText != null) 1f else 0f)
+            ) {
+                Text(
+                    text = actionText ?: "",
+                    color = PrimaryCyan
+                )
             }
         }
         content()
