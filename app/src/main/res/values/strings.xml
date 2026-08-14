@@ -9,7 +9,7 @@
     <string name="account_type_savings">Tabungan</string>
     <string name="account_type_prepaid_card">Kartu Prabayar</string>
     <string name="account_type_investment">Investasi</string>
-    <string name="account_type_mines_account">Rekening Mines</string>
+    <string name="account_type_e_wallet">E Wallet</string>
     <string name="account_type_loan">Pinjaman</string>
     <string name="account_type_insurance">Asuransi</string>
     <string name="account_type_other">Lainnya</string>

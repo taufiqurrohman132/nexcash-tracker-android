@@ -1,9 +1,8 @@
 package com.example.nexcashapplication.feature.aset.presentation.addedit.typeoption
 
 import androidx.compose.runtime.Immutable
+import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.aset.presentation.addedit.typeoption.model.TypeAccountItem
-import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
-import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
 
 @Immutable
 data class AddEditTypeAccountState(

@@ -2,13 +2,13 @@ package com.example.nexcashapplication.feature.aset.presentation.addedit.typeopt
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderItem
-import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
+import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
+import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderUiModel
 
 // presentation/model/TypeAccountItem.kt
 data class TypeAccountItem(
     val type: TypeAccount,
     val icon: ImageVector,
     val iconColor: Color,
-    val listProviders: List<AccountProviderItem> = emptyList(), // diisi belakangan, bukan di mapper
+    val listProviders: List<AccountProviderUiModel> = emptyList(), // diisi belakangan, bukan di mapper
 )

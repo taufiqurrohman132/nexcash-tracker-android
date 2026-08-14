@@ -429,7 +429,6 @@ private val dummyState = DetailAccountState(
     accountLabel = "Tabungan",
     balance = 12_450_000L,
     bankName = "Bank Central Asia",
-    accountNumber = "1234567890",
     recentTransactions = dummyTransactions,
     showDeleteConfirmation = false,
 )

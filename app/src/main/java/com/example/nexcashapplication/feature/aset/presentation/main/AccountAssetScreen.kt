@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.aset.presentation.main
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,9 +61,9 @@ import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiGroupModel
 import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
-import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.TextTertiary
 import kotlinx.coroutines.flow.collectLatest
@@ -74,6 +76,7 @@ fun AccountAssetScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -88,7 +91,9 @@ fun AccountAssetScreen(
 
                 AccountAssetEffect.NavigateToAllBankAccounts -> {}
                 is AccountAssetEffect.NavigateToInvestmentDetail -> TODO()
-                is AccountAssetEffect.ShowError -> TODO()
+                is AccountAssetEffect.ShowError -> {
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -414,7 +419,6 @@ val dummyAccounts = listOf(
         id = "acc-001",
         name = "Dompet Utama",
         provider = "Cash",
-        maskedNumber = "****",
         balance = 2_500_000L,
         iconUrl = null,
     ),
@@ -422,7 +426,6 @@ val dummyAccounts = listOf(
         id = "acc-002",
         name = "BCA Tabungan",
         provider = "BCA",
-        maskedNumber = "**** **** **** 1234",
         balance = 15_750_000L,
         iconUrl = "https://example.com/bca.png",
     ),
@@ -430,7 +433,6 @@ val dummyAccounts = listOf(
         id = "acc-003",
         name = "GoPay",
         provider = "Gojek",
-        maskedNumber = "**** 5678",
         balance = 350_000L,
         iconUrl = "https://example.com/gopay.png",
     ),
@@ -438,7 +440,6 @@ val dummyAccounts = listOf(
         id = "acc-004",
         name = "OVO",
         provider = "OVO",
-        maskedNumber = "**** 9012",
         balance = 125_000L,
         iconUrl = "https://example.com/ovo.png",
     ),
@@ -446,7 +447,6 @@ val dummyAccounts = listOf(
         id = "acc-005",
         name = "Mandiri Syariah",
         provider = "BSI",
-        maskedNumber = "**** **** **** 3456",
         balance = 8_000_000L,
         iconUrl = null,
     ),
@@ -471,14 +471,12 @@ private fun AccountAssetContentLoadedPreview() {
                             id = "1",
                             name = "BCA Utama",
                             provider = "BCA",
-                            maskedNumber = "•••• 4521",
                             balance = 8_500_000L,
                         ),
                         AccountUiModel(
                             id = "2",
                             name = "Mandiri Tabungan",
                             provider = "Mandiri",
-                            maskedNumber = "•••• 7788",
                             balance = 3_200_000L,
                         ),
                     ),
@@ -490,14 +488,12 @@ private fun AccountAssetContentLoadedPreview() {
                             id = "3",
                             name = "BCA Utama",
                             provider = "BCA",
-                            maskedNumber = "•••• 4521",
                             balance = 8_500_000L,
                         ),
                         AccountUiModel(
                             id = "4",
                             name = "Mandiri Tabungan",
                             provider = "Mandiri",
-                            maskedNumber = "•••• 7788",
                             balance = 3_200_000L,
                         ),
                     ),
@@ -509,7 +505,6 @@ private fun AccountAssetContentLoadedPreview() {
                     id = "3",
                     name = "GoPay",
                     provider = "GoPay",
-                    maskedNumber = "0812xxxxxxx",
                     balance = 450_000L,
                 ),
             ),

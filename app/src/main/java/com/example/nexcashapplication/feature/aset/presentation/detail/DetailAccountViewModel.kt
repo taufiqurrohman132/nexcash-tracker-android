@@ -30,6 +30,7 @@ class DetailAccountViewModel @Inject constructor(
                     sendEffect(DetailAccountEffect.NavigateBack)
                 }
             }
+
             DetailAccountEvent.OnConfirmDelete -> TODO()
             DetailAccountEvent.OnDismissDeleteDialog -> TODO()
             DetailAccountEvent.OnHapusAsetClick -> TODO()
@@ -52,7 +53,6 @@ class DetailAccountViewModel @Inject constructor(
                         assetName = account.name,
                         bankName = account.accountType.toString(),
                         accountLabel = "",
-                        accountNumber = account.accountNumber ?: "",
                         balance = account.currentBalance,
 //                        recentTransactions = account.recentTransactions,
                         // summary.xxx dipakai di mana?

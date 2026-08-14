@@ -10,7 +10,6 @@ data class DetailAccountState(
     val assetName: String = "",
     val bankName: String = "",
     val accountLabel: String = "", // e.g. "Tabungan"
-    val accountNumber: String = "",
     val balance: Long = 0L,
     val recentTransactions: List<TransactionItemUi> = emptyList(),
     val showDeleteConfirmation: Boolean = false,

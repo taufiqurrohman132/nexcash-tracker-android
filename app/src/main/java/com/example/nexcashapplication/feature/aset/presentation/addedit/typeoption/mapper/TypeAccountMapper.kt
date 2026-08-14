@@ -12,8 +12,8 @@ import androidx.compose.material.icons.outlined.RequestQuote
 import androidx.compose.material.icons.outlined.Savings
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.ui.graphics.Color
+import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.aset.presentation.addedit.typeoption.model.TypeAccountItem
-import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 // presentation/mapper/TypeAccountMapper.kt
@@ -60,7 +60,7 @@ fun TypeAccount.toUiItem(): TypeAccountItem = when (this) {
         iconColor = Color.Blue,
     )
 
-    TypeAccount.MINES_ACCOUNT -> TypeAccountItem(
+    TypeAccount.EWALLET -> TypeAccountItem(
         type = this,
         icon = Icons.Outlined.AccountBalanceWallet,
         iconColor = Color.Yellow,

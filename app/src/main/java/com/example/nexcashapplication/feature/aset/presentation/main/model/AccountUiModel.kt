@@ -8,7 +8,6 @@ data class AccountUiModel(
     val id: String,
     val name: String,
     val provider: String,
-    val maskedNumber: String,
     val balance: Long,
     val iconUrl: String? = null,
 )

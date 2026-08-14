@@ -1,7 +1,10 @@
 package com.example.nexcashapplication.feature.aset.presentation.addedit.form
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,8 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -41,8 +46,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,6 +58,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconRounded
+import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
+import com.example.nexcashapplication.feature.aset.presentation.addedit.form.catalog.ProviderCatalog
+import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderUiModel
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -69,7 +80,15 @@ fun AddEditInfoAccountScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
-                AddEditInfoAccountEffect.AssetSavedNavigateHome -> TODO()
+                AddEditInfoAccountEffect.AssetSavedNavigateMain -> {
+                    navController.navigate(Route.AccountRoute.Main) {
+                        popUpTo(Route.AccountRoute.Main) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                }
+
                 AddEditInfoAccountEffect.NavigateBack -> navController.popBackStack()
                 AddEditInfoAccountEffect.NavigateToProviderList -> TODO()
                 is AddEditInfoAccountEffect.ShowError -> TODO()
@@ -125,7 +144,8 @@ fun AddEditAccountContent(
                 Column(
                     modifier = Modifier
                             .padding(padding)
-                            .padding(horizontal = 16.dp),
+                            .padding(horizontal = 16.dp)
+                            .verticalScroll(rememberScrollState()),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
                     LangkahTerakhirBanner()
@@ -141,6 +161,34 @@ fun AddEditAccountContent(
                         },
                         error = state.namaAsetError,
                     )
+
+                    FormField(
+                        title = "Pilih Provider (Opsional)",
+                        icon = Icons.Outlined.AccountBalanceWallet,
+                    ) {
+                        if (state.providers.isEmpty()) {
+                            Text(
+                                "Tidak tersedia",
+                                modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(16.dp),
+                                textAlign = TextAlign.Center,
+                                color = TextSecondary,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontStyle = FontStyle.Italic,
+                            )
+                        } else {
+                            ProviderGrid(
+                                modifier = Modifier.padding(top = 8.dp),
+                                providers = state.providers,
+                                selectedProviderId = state.selectedProviderId,
+                                onProviderSelected = {
+                                    onEvent(AddEditInfoAccountEvent.ProviderSelected(it))
+                                },
+                            )
+                        }
+                    }
+
                 }
 
             }
@@ -148,6 +196,32 @@ fun AddEditAccountContent(
     }
 }
 
+@Composable
+fun ProviderGrid(
+    modifier: Modifier = Modifier,
+    providers: List<AccountProviderUiModel>,
+    selectedProviderId: String?,
+    onProviderSelected: (String) -> Unit,
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        providers.chunked(2).forEach { rowItems ->
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                rowItems.forEach { provider ->
+                    ProviderGridItem(
+                        name = provider.name,
+                        isSelected = provider.id == selectedProviderId,
+                        onSelect = { onProviderSelected(provider.id) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                if (rowItems.size == 1) Spacer(modifier = Modifier.weight(1f))
+            }
+        }
+    }
+}
 
 @Composable
 private fun SimpanAsetButton(
@@ -287,6 +361,34 @@ fun FormFieldEdit(
     }
 }
 
+@Composable
+fun ProviderGridItem(
+    name: String,
+    onSelect: () -> Unit,
+    isSelected: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    Box(
+        modifier = modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .border(
+                    width = 2.dp,
+                    color = if (isSelected) PrimaryCyan else BorderGray,
+                    shape = RoundedCornerShape(16.dp),
+                )
+                .clickable { onSelect() }
+                .padding(20.dp),
+    ) {
+        Text(
+            name,
+            color = if (isSelected) PrimaryCyan else BorderGray,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleMedium,
+        )
+    }
+}
+
 
 @Composable
 private fun LangkahTerakhirBanner() {
@@ -343,7 +445,9 @@ private fun FormFieldEditPreview() {
 private fun AddEditAccountContentPreview() {
     NexCashApplicationTheme {
         AddEditAccountContent(
-            state = AddEditInfoAccountState(),
+            state = AddEditInfoAccountState(
+                providers = ProviderCatalog.getByType(TypeAccount.BANK),
+            ),
             onEvent = { },
             snackbarHostState = remember { SnackbarHostState() },
         )

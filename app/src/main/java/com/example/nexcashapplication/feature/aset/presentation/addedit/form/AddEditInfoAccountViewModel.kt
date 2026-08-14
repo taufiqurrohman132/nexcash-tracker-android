@@ -6,8 +6,9 @@ import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.domain.model.AccountModel
+import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.aset.domain.usecase.SaveAccontUseCase
-import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
+import com.example.nexcashapplication.feature.aset.presentation.addedit.form.catalog.ProviderCatalog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class AddEditInfoAccountViewModel @Inject constructor(
     private val saveAssetUseCase: SaveAccontUseCase,
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddEditInfoAccountState, AddEditInfoAccountEvent, AddEditInfoAccountEffect>(
     initialState = AddEditInfoAccountState(),
 ) {
@@ -24,7 +25,10 @@ class AddEditInfoAccountViewModel @Inject constructor(
 
     init {
         updateState {
-            it.copy(typeAccount = typeAccount.name)
+            it.copy(
+                typeAccount = typeAccount.name,
+                providers = ProviderCatalog.getByType(typeAccount)
+            )
         }
     }
 
@@ -73,12 +77,14 @@ class AddEditInfoAccountViewModel @Inject constructor(
                 account = AccountModel(
                     name = current.namaAset,
                     currentBalance = current.saldoAwal.toLong(),
-                    providerAccount = current.providers.find { it.id == current.selectedProviderId },
+                    providerAccount = current.selectedProviderId?.let{ id ->
+                        ProviderCatalog.getById(id)?.name
+                    },
                     accountType = TypeAccount.valueOf(current.typeAccount.uppercase()),
                     isActive = true,
                 ),
             ).onSuccess {
-//                sendEffect(AddEditInfoAccountEffect.AssetSavedNavigateHome)
+                sendEffect(AddEditInfoAccountEffect.AssetSavedNavigateMain)
             }.onFailure { throwable ->
                 sendEffect(
                     AddEditInfoAccountEffect.ShowError(

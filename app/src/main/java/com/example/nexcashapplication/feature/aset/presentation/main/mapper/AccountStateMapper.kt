@@ -7,8 +7,7 @@ import com.example.nexcashapplication.feature.aset.presentation.main.model.Accou
 fun AccountModel.toAccountUiModel() = AccountUiModel(
     id = id,
     name = name,
-    provider = providerAccount?.name ?: "",
-    maskedNumber = accountNumber ?: "",
+    provider = providerAccount ?: "",
     balance = currentBalance,
     iconUrl = "",
 )
@@ -18,3 +17,4 @@ fun List<AccountModel>.toAccountUiModelList(): List<AccountUiGroupModel> = group
 }.map { (type, accounts) ->
     AccountUiGroupModel(type.name, accounts.map { it.toAccountUiModel() })
 }
+

@@ -1,6 +1,6 @@
 package com.example.nexcashapplication.feature.aset.presentation.addedit.typeoption
 
-import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
+import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 
 sealed interface AddEditTypeAccountEvent {
     data object OnNextClick : AddEditTypeAccountEvent

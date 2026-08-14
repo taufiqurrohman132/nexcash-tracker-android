@@ -50,8 +50,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.aset.presentation.addedit.typeoption.model.TypeAccountItem
-import com.example.nexcashapplication.feature.aset.presentation.main.model.TypeAccount
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import kotlinx.coroutines.flow.collectLatest
 
@@ -252,6 +252,7 @@ fun AssetTypeCard(
                 modifier = Modifier
                         .size(48.dp)
                         .clip(CircleShape)
+                        .background(Color.White)
                         .background(type.iconColor.copy(alpha = 0.1f)),
                 contentAlignment = Alignment.Center,
             ) {
