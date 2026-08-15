@@ -67,6 +67,7 @@ import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.extension.toFormatCurrencyVisibility
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
+import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderUiModel
 import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiGroupModel
 import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -408,7 +409,7 @@ private fun AccountRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(account.name, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                 Text(
-                    account.provider,
+                    account.provider?.name ?: "Undefined",
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -439,43 +440,6 @@ private fun AccountRow(
 // ---------------------------------------------------------------------------
 
 
-val dummyAccounts = listOf(
-    AccountUiModel(
-        id = "acc-001",
-        name = "Dompet Utama",
-        provider = "Cash",
-        balance = 2_500_000L,
-        iconUrl = null,
-    ),
-    AccountUiModel(
-        id = "acc-002",
-        name = "BCA Tabungan",
-        provider = "BCA",
-        balance = 15_750_000L,
-        iconUrl = "https://example.com/bca.png",
-    ),
-    AccountUiModel(
-        id = "acc-003",
-        name = "GoPay",
-        provider = "Gojek",
-        balance = 350_000L,
-        iconUrl = "https://example.com/gopay.png",
-    ),
-    AccountUiModel(
-        id = "acc-004",
-        name = "OVO",
-        provider = "OVO",
-        balance = 125_000L,
-        iconUrl = "https://example.com/ovo.png",
-    ),
-    AccountUiModel(
-        id = "acc-005",
-        name = "Mandiri Syariah",
-        provider = "BSI",
-        balance = 8_000_000L,
-        iconUrl = null,
-    ),
-)
 
 @Preview(showBackground = true, name = "Content - Loaded")
 @Composable
@@ -495,13 +459,14 @@ private fun AccountAssetContentLoadedPreview() {
                         AccountUiModel(
                             id = "1",
                             name = "BCA Utama",
-                            provider = "BCA",
+                            provider = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
                             balance = 8_500_000L,
                         ),
                         AccountUiModel(
                             id = "2",
                             name = "Mandiri Tabungan",
-                            provider = "Mandiri",
+                            provider = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+
                             balance = 3_200_000L,
                         ),
                     ),
@@ -512,13 +477,15 @@ private fun AccountAssetContentLoadedPreview() {
                         AccountUiModel(
                             id = "3",
                             name = "BCA Utama",
-                            provider = "BCA",
+                            provider = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+
                             balance = 8_500_000L,
                         ),
                         AccountUiModel(
                             id = "4",
                             name = "Mandiri Tabungan",
-                            provider = "Mandiri",
+                            provider = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+
                             balance = 3_200_000L,
                         ),
                     ),
@@ -529,7 +496,8 @@ private fun AccountAssetContentLoadedPreview() {
                 AccountUiModel(
                     id = "3",
                     name = "GoPay",
-                    provider = "GoPay",
+                    provider = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+
                     balance = 450_000L,
                 ),
             ),

@@ -38,4 +38,8 @@ class FakeAccountRepositoryImpl @Inject constructor() : AccountRepository {
     override suspend fun updateAccount(account: AccountModel) {
         TODO("Not yet implemented")
     }
+
+    override suspend fun deleteAccount(accountId: String) {
+        TODO("Not yet implemented")
+    }
 }

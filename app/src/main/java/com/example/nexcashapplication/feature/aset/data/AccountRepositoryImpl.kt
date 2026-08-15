@@ -43,4 +43,8 @@ class AccountRepositoryImpl @Inject constructor(
         dao.updateAccount(account.toEntity())
     }
 
+    override suspend fun deleteAccount(accountId: String) {
+        dao.deleteAccountRow(accountId)
+    }
+
 }

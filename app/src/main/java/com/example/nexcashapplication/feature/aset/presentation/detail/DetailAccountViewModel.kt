@@ -7,6 +7,8 @@ import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.domain.usecase.DeleteAccountUseCase
 import com.example.nexcashapplication.feature.aset.domain.usecase.GetAccountDetailUseCase
+import com.example.nexcashapplication.feature.aset.domain.usecase.ValidationDeleteAccountUseCase
+import com.example.nexcashapplication.feature.aset.presentation.addedit.form.catalog.ProviderCatalog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
@@ -14,6 +16,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class DetailAccountViewModel @Inject constructor(
     private val deleteAccountUseCase: DeleteAccountUseCase,
+    private val validationDeleteAccountUseCase: ValidationDeleteAccountUseCase,
     private val getAccountDetailUseCase: GetAccountDetailUseCase,
     savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<DetailAccountState, DetailAccountEvent, DetailAccountEffect>(initialState = DetailAccountState()) {
@@ -34,8 +37,10 @@ class DetailAccountViewModel @Inject constructor(
             }
 
             DetailAccountEvent.OnConfirmDelete -> {
-
-
+                viewModelScope.launch {
+                    deleteAccountUseCase(accountId)
+                    sendEffect(DetailAccountEffect.NavigateBackAfterDelete)
+                }
             }
 
             DetailAccountEvent.OnDismissDeleteDialog -> {
@@ -44,7 +49,7 @@ class DetailAccountViewModel @Inject constructor(
 
             DetailAccountEvent.OnDeleteAccountClick -> {
                 viewModelScope.launch {
-                    deleteAccountUseCase(accountId).collect { decision ->
+                    validationDeleteAccountUseCase(accountId).collect { decision ->
                         updateState {
                             it.copy(
                                 deleteDialogDesision = decision,
@@ -71,11 +76,10 @@ class DetailAccountViewModel @Inject constructor(
                         isLoading = false,
                         assetId = account.id,
                         assetName = account.name,
-                        bankName = account.accountType.toString(),
-                        accountLabel = "",
+                        typeAccount = account.accountType,
+                        providers = account.providerAccount,
                         balance = account.currentBalance,
 //                        recentTransactions = account.recentTransactions,
-                        // summary.xxx dipakai di mana?
                     )
                 }
             }

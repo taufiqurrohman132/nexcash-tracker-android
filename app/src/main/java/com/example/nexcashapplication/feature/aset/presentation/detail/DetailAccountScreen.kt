@@ -22,7 +22,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -54,6 +53,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -65,6 +65,9 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.domain.model.TransactionItemUi
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
+import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderUiModel
+import com.example.nexcashapplication.feature.aset.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.feature.aset.presentation.shared.component.DeleteAccountDialog
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.collectLatest
@@ -82,7 +85,10 @@ fun DetailAccountScreen(
         viewModel.effect.collectLatest { effect ->
             when (effect) {
                 DetailAccountEffect.NavigateBack -> navController.popBackStack()
-                DetailAccountEffect.NavigateBackAfterDelete -> TODO()
+                DetailAccountEffect.NavigateBackAfterDelete -> {
+                    navController.popBackStack()
+                }
+
                 is DetailAccountEffect.NavigateToAddTransaction -> TODO()
                 is DetailAccountEffect.NavigateToAllTransactions -> TODO()
                 is DetailAccountEffect.NavigateToAssetSettings -> TODO()
@@ -116,7 +122,7 @@ fun DetailAssetContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Detail Account",
+                        text = state.assetName,
                         fontSize = 17.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -124,16 +130,6 @@ fun DetailAssetContent(
                 navigationIcon = {
                     IconButton(onClick = { onEvent(DetailAccountEvent.OnBackClick) }) {
                         Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Kembali")
-                    }
-                },
-                actions = {
-                    Row {
-                        IconButton(onClick = { onEvent(DetailAccountEvent.OnEditAccountClick) }) {
-                            Icon(Icons.Default.Edit, contentDescription = "Edit")
-                        }
-                        IconButton(onClick = { onEvent(DetailAccountEvent.OnDeleteAccountClick) }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete")
-                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
@@ -382,21 +378,34 @@ fun BalanceCard(
             AssistChip(
                 onClick = {},
                 shape = CircleShape,
-                label = { Text(state.accountLabel, fontSize = 12.sp) },
-                colors = AssistChipDefaults.assistChipColors(containerColor = Color.White),
+                label = {
+                    Text(
+                        stringResource(state.typeAccount.labelResId),
+                        fontSize = 12.sp,
+                        color = Color.White,
+                    )
+                },
+                colors = AssistChipDefaults.assistChipColors(
+                    containerColor = PrimaryCyan.copy(alpha = 0.4f),
+                ),
+                border = AssistChipDefaults.assistChipBorder(
+                    enabled = true,
+                    borderColor = PrimaryCyan,
+                    borderWidth = 1.dp,
+                ),
                 modifier = Modifier.height(28.dp), // paksa lebih pendek dari minimum touch target
             )
         }
         Spacer(Modifier.height(6.dp))
         Text(
-            text = state.balance.formatCurrency(),
+            text = stringResource(R.string.total_balance_format, state.balance.formatCurrency()),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1A2B2E),
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            text = "${state.bankName} • ${state.assetName}",
+            text = "${state.typeAccount.name} • ${state.providers?.name}",
             fontSize = 12.sp,
             color = Color(0xFF5B6B70),
         )
@@ -442,9 +451,9 @@ private val dummyTransactions = listOf(
 private val dummyState = DetailAccountState(
     isLoading = false,
     assetName = "BCA Utama",
-    accountLabel = "Tabungan",
+    typeAccount = TypeAccount.OTHER,
     balance = 12_450_000L,
-    bankName = "Bank Central Asia",
+    providers = AccountProviderUiModel("kd", "SEABANK", TypeAccount.DEBIT_CARD, Color.Red),
     recentTransactions = dummyTransactions,
     showDeleteConfirmation = false,
 )

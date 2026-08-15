@@ -80,7 +80,7 @@ class AddEditInfoAccountViewModel @Inject constructor(
                     name = current.namaAset,
                     currentBalance = current.saldoAwal,
                     providerAccount = current.selectedProviderId?.let { id ->
-                        ProviderCatalog.getById(id)?.name
+                        ProviderCatalog.getById(id)
                     },
                     accountType = TypeAccount.valueOf(current.typeAccount.uppercase()),
                     isActive = true,

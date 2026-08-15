@@ -20,8 +20,8 @@ data class AccountEntity(
     @ColumnInfo(name = "name")
     val name: String,
 
-    @ColumnInfo(name = "provider")
-    val provider: String? = null,
+    @ColumnInfo(name = "provider_id")
+    val providerId: String? = null,
 
     @ColumnInfo(name = "current_balance")
     val currentBalance: Long = 0L,

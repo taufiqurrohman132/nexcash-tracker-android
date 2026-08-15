@@ -1,8 +1,10 @@
 package com.example.nexcashapplication.feature.aset.data.dummy
 
+import androidx.compose.ui.graphics.Color
 import com.example.nexcashapplication.core.datasource.local.result.MonthlySummaryAccountResult
 import com.example.nexcashapplication.feature.aset.domain.model.AccountModel
 import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
+import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderUiModel
 
 // data/dummy/DummyData.kt
 object DummyData {
@@ -21,7 +23,7 @@ object DummyData {
             id = "acc-002",
             accountType = TypeAccount.BANK,
             name = "BCA Tabungan",
-            providerAccount = "BCA",
+            providerAccount = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
             currentBalance = 15_750_000L,
             isActive = true,
             deletedAt = null,
@@ -30,7 +32,8 @@ object DummyData {
             id = "acc-003",
             accountType = TypeAccount.PREPAID_CARD,
             name = "GoPay",
-            providerAccount = "BIBBIT",
+            providerAccount = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+
             currentBalance = 350_000L,
             isActive = true,
             deletedAt = null,
@@ -39,7 +42,8 @@ object DummyData {
             id = "acc-004",
             accountType = TypeAccount.BANK,
             name = "OVO",
-            providerAccount = "BIBBIT",
+            providerAccount = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+
 
             currentBalance = 125_000L,
             isActive = true,
@@ -49,7 +53,8 @@ object DummyData {
             id = "acc-005",
             accountType = TypeAccount.BANK,
             name = "BSI Syariah",
-            providerAccount = "BIBBIT",
+            providerAccount = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+
             currentBalance = 8_000_000L,
             isActive = true,
             deletedAt = null,
@@ -58,7 +63,8 @@ object DummyData {
             id = "acc-006",
             accountType = TypeAccount.INSURANCE,
             name = "BCA Credit Card",
-            providerAccount = "BIBBIT",
+            providerAccount = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+
             currentBalance = -2_300_000L, // minus = hutang kartu kredit
             isActive = true,
             deletedAt = null,
@@ -67,7 +73,8 @@ object DummyData {
             id = "acc-007",
             accountType = TypeAccount.INVESTMENT,
             name = "Bibit Reksa Dana",
-            providerAccount = "BIBBIT",
+            providerAccount = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+
             currentBalance = 5_200_000L,
             isActive = true,
             deletedAt = null,
@@ -76,7 +83,8 @@ object DummyData {
             id = "acc-008",
             accountType = TypeAccount.BANK,
             name = "Mandiri Lama",
-            providerAccount = "BIBBIT",
+            providerAccount = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+
             currentBalance = 0L,
             isActive = false,
             deletedAt = System.currentTimeMillis(), // sudah dihapus/nonaktif

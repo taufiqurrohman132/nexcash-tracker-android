@@ -1,6 +1,5 @@
 package com.example.nexcashapplication.core.datasource.local.dao
 
-import android.accounts.Account
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -39,7 +38,6 @@ interface AccountDao {
     @Query("SELECT * FROM accounts WHERE id = :accountId")
     fun getAccountById(accountId: String): Flow<AccountEntity>
 
-
     // Tambah account baru
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertAccount(account: AccountEntity)
@@ -47,5 +45,9 @@ interface AccountDao {
     // Edit account (nama, ikon, warna)
     @Update
     suspend fun updateAccount(account: AccountEntity)
+
+    // delete
+    @Query("DELETE FROM accounts WHERE id = :accountId ")
+    suspend fun deleteAccountRow(accountId: String)
 
 }
