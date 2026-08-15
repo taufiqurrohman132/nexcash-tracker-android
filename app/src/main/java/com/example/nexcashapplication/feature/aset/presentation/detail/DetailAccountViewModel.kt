@@ -8,7 +8,6 @@ import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.domain.usecase.DeleteAccountUseCase
 import com.example.nexcashapplication.feature.aset.domain.usecase.GetAccountDetailUseCase
 import com.example.nexcashapplication.feature.aset.domain.usecase.ValidationDeleteAccountUseCase
-import com.example.nexcashapplication.feature.aset.presentation.addedit.form.catalog.ProviderCatalog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
@@ -38,8 +37,10 @@ class DetailAccountViewModel @Inject constructor(
 
             DetailAccountEvent.OnConfirmDelete -> {
                 viewModelScope.launch {
-                    deleteAccountUseCase(accountId)
-                    sendEffect(DetailAccountEffect.NavigateBackAfterDelete)
+                    if (accountId != null) {
+                        deleteAccountUseCase(accountId)
+                        sendEffect(DetailAccountEffect.NavigateBackAfterDelete)
+                    }
                 }
             }
 
@@ -49,27 +50,52 @@ class DetailAccountViewModel @Inject constructor(
 
             DetailAccountEvent.OnDeleteAccountClick -> {
                 viewModelScope.launch {
+                    if (accountId == null) {
+//                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                        return@launch
+                    }
+
                     validationDeleteAccountUseCase(accountId).collect { decision ->
-                        updateState {
-                            it.copy(
-                                deleteDialogDesision = decision,
-                            )
-                        }
+                        updateState { it.copy(deleteDialogDesision = decision) }
                     }
                 }
             }
 
-            DetailAccountEvent.OnLihatSemuaClick -> TODO()
+            DetailAccountEvent.OnLihatSemuaClick -> {
+
+            }
+
             DetailAccountEvent.OnSettingsClick -> TODO()
-            is DetailAccountEvent.OnTransactionClick -> TODO()
-            DetailAccountEvent.OnTransaksiClick -> TODO()
+            is DetailAccountEvent.OnTransactionClick -> {
+
+            }
+
+            DetailAccountEvent.OnTransaksiClick -> {
+
+            }
+
             DetailAccountEvent.OnTransferClick -> TODO()
-            DetailAccountEvent.OnEditAccountClick -> TODO()
+            DetailAccountEvent.OnEditAccountClick -> {
+
+
+                viewModelScope.launch {
+                    if (accountId == null) {
+//                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                        return@launch
+                    }
+
+                    sendEffect(DetailAccountEffect.NavigateToEditAssetName(assetId = accountId))
+                }
+            }
         }
     }
 
     private fun observerDetailAccount() {
         viewModelScope.launch {
+            if (accountId == null) {
+//                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                return@launch
+            }
             getAccountDetailUseCase(accountId = accountId).collect { account ->
                 updateState {
                     it.copy(

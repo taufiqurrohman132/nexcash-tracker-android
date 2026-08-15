@@ -8,7 +8,9 @@ import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.domain.model.AccountModel
 import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
+import com.example.nexcashapplication.feature.aset.domain.usecase.GetAccountDetailUseCase
 import com.example.nexcashapplication.feature.aset.domain.usecase.SaveAccontUseCase
+import com.example.nexcashapplication.feature.aset.domain.usecase.UpdateAccontUseCase
 import com.example.nexcashapplication.feature.aset.presentation.addedit.form.catalog.ProviderCatalog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -16,21 +18,19 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class AddEditInfoAccountViewModel @Inject constructor(
+    private val updateAssetUseCase: UpdateAccontUseCase,
     private val saveAssetUseCase: SaveAccontUseCase,
+    private val getAccountDetailUseCase: GetAccountDetailUseCase,
     savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddEditInfoAccountState, AddEditInfoAccountEvent, AddEditInfoAccountEffect>(
     initialState = AddEditInfoAccountState(),
 ) {
     private val route: Route.AccountRoute.AddEditInfo = savedStateHandle.toRoute()
-    private val typeAccount = route.typeAccount
+    private val typeAccount = route.typeAccount ?: TypeAccount.OTHER
+    private val accountId: String? = route.accountId
 
     init {
-        updateState {
-            it.copy(
-                typeAccount = typeAccount.name,
-                providers = ProviderCatalog.getByType(typeAccount),
-            )
-        }
+        observerDetailAccount(accountId, typeAccount)
     }
 
     override fun onEvent(event: AddEditInfoAccountEvent) {
@@ -59,11 +59,11 @@ class AddEditInfoAccountViewModel @Inject constructor(
                 it.copy(saldoAwal = event.value)
             }
 
-            AddEditInfoAccountEvent.SimpanClicked -> handleSimpan()
+            AddEditInfoAccountEvent.SimpanClicked -> handleSaveOrUpdate()
         }
     }
 
-    private fun handleSimpan() {
+    private fun handleSaveOrUpdate() {
         val current = state.value
 
         if (current.namaAset.isBlank()) {
@@ -72,27 +72,78 @@ class AddEditInfoAccountViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            updateState { it.copy(isSaving = true) }
 
             Log.d(TAG, "handleSimpan: saldo awal = ${current.saldoAwal}")
-            saveAssetUseCase(
+            if (current.isEditMode) {
+                updateAssetUseCase(
+                    account = AccountModel(
+                        id = current.accountId,
+                        name = current.namaAset,
+                        currentBalance = current.saldoAwal,
+                        providerAccount = current.selectedProviderId?.let { id ->
+                            ProviderCatalog.getById(id)
+                        },
+                        accountType = current.typeAccount,
+                        isActive = true,
+                    ),
+                ).onSuccess {
+                    sendEffect(AddEditInfoAccountEffect.NavigateBack)
+                    updateState { it.copy(isSaving = true) }
+                }.onFailure { throwable ->
+                    sendEffect(
+                        AddEditInfoAccountEffect.ShowError(
+                            throwable.message ?: "Gagal menyimpan aset",
+                        ),
+                    )
+                }
+            } else saveAssetUseCase(
                 account = AccountModel(
                     name = current.namaAset,
                     currentBalance = current.saldoAwal,
                     providerAccount = current.selectedProviderId?.let { id ->
                         ProviderCatalog.getById(id)
                     },
-                    accountType = TypeAccount.valueOf(current.typeAccount.uppercase()),
+                    accountType = current.typeAccount,
                     isActive = true,
                 ),
             ).onSuccess {
                 sendEffect(AddEditInfoAccountEffect.AssetSavedNavigateMain)
+                updateState { it.copy(isSaving = true) }
             }.onFailure { throwable ->
                 sendEffect(
                     AddEditInfoAccountEffect.ShowError(
                         throwable.message ?: "Gagal menyimpan aset",
                     ),
                 )
+            }
+        }
+    }
+
+    private fun observerDetailAccount(id: String?, type: TypeAccount) {
+        viewModelScope.launch {
+            if (id != null) {
+                getAccountDetailUseCase(accountId = id).collect { account ->
+                    updateState {
+                        it.copy(
+                            accountId = account.id,
+                            namaAset = account.name,
+                            typeAccount = account.accountType,
+                            providers = ProviderCatalog.getByType(account.accountType),
+                            selectedProviderId = account.providerAccount?.id,
+                            saldoAwal = account.currentBalance,
+                            initialNamaAset = account.name,
+                            initialSaldoAwal = account.currentBalance,
+                            initialSelectedProviderId = account.providerAccount?.id,
+                        )
+                    }
+                }
+            } else {
+                updateState {
+                    it.copy(
+                        typeAccount = typeAccount,
+                        providers = ProviderCatalog.getByType(type),
+                    )
+                }
             }
         }
     }

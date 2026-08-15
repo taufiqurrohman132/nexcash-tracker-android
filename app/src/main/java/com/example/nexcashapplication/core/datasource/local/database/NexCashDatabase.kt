@@ -45,7 +45,7 @@ import com.example.nexcashapplication.core.datasource.local.model.TransactionEnt
         NotificationPreferenceEntity::class
     ],
     version = 1,
-    exportSchema = false
+    exportSchema = false,
 )
 @TypeConverters(Converters::class)
 abstract class NexCashDatabase : RoomDatabase() {

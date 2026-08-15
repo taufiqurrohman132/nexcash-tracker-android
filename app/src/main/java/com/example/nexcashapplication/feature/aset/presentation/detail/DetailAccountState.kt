@@ -8,7 +8,7 @@ import com.example.nexcashapplication.feature.aset.presentation.addedit.form.mod
 
 @Immutable
 data class DetailAccountState(
-    val assetId: String = "",
+    val assetId: String? = null,
     val isLoading: Boolean = false,
     val assetName: String = "",
     val typeAccount: TypeAccount = TypeAccount.OTHER,

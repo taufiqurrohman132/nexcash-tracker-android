@@ -65,6 +65,7 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.domain.model.TransactionItemUi
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderUiModel
 import com.example.nexcashapplication.feature.aset.presentation.main.mapper.labelResId
@@ -92,7 +93,9 @@ fun DetailAccountScreen(
                 is DetailAccountEffect.NavigateToAddTransaction -> TODO()
                 is DetailAccountEffect.NavigateToAllTransactions -> TODO()
                 is DetailAccountEffect.NavigateToAssetSettings -> TODO()
-                is DetailAccountEffect.NavigateToEditAssetName -> TODO()
+                is DetailAccountEffect.NavigateToEditAssetName -> navController.navigate(
+                    Route.AccountRoute.AddEditInfo(accountId = effect.assetId)
+                )
                 is DetailAccountEffect.NavigateToTransactionDetail -> TODO()
                 is DetailAccountEffect.NavigateToTransfer -> TODO()
                 is DetailAccountEffect.ShowSnackbar -> TODO()

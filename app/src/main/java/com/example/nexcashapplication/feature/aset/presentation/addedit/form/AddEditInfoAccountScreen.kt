@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.aset.presentation.addedit.form
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -47,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,6 +66,7 @@ import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.aset.presentation.addedit.form.catalog.ProviderCatalog
 import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderUiModel
+import com.example.nexcashapplication.feature.aset.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -137,6 +140,7 @@ fun AddEditAccountContent(
             SimpanAsetButton(
                 enabled = state.isSaveEnabled,
                 isLoading = state.isSaving,
+                isEditMode = state.isEditMode,
                 onClick = { onEvent(AddEditInfoAccountEvent.SimpanClicked) },
             )
         },
@@ -154,7 +158,7 @@ fun AddEditAccountContent(
                     FormFieldEdit(
                         asetName = state.namaAset,
                         saldoAwal = state.saldoAwal.formatCurrency(),
-                        typeAccountName = state.typeAccount,
+                        typeAccountName = stringResource(state.typeAccount.labelResId),
                         onAsetNameChange = {
                             onEvent(AddEditInfoAccountEvent.NamaAsetChanged(it))
                         },
@@ -226,6 +230,7 @@ fun ProviderGrid(
 
 @Composable
 private fun SimpanAsetButton(
+    isEditMode: Boolean,
     enabled: Boolean,
     isLoading: Boolean,
     onClick: () -> Unit,
@@ -251,12 +256,17 @@ private fun SimpanAsetButton(
                     strokeWidth = 2.dp,
                 )
             } else {
-                Text(
-                    "Simpan Aset",
-                    color = Color.White,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp,
-                )
+                AnimatedContent(
+                    targetState = isEditMode,
+                    label = "saveButtonText",
+                ) { editMode ->
+                    Text(
+                        if (editMode) "Simpan Perubahan" else "Simpan Aset",
+                        color = Color.White,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
+                    )
+                }
                 Spacer(Modifier.width(6.dp))
                 Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.White)
             }

@@ -7,7 +7,7 @@ import com.example.nexcashapplication.feature.aset.presentation.addedit.form.cat
 import java.util.UUID
 
 fun AccountModel.toEntity() = AccountEntity(
-    id = id.ifBlank { UUID.randomUUID().toString() },
+    id = id ?: UUID.randomUUID().toString(),
     name = name,
     accountType = accountType.name.lowercase(),
     providerId = providerAccount?.id,

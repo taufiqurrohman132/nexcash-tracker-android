@@ -4,7 +4,7 @@ import com.example.nexcashapplication.feature.aset.presentation.addedit.form.mod
 
 data class AccountModel(
 
-    val id: String = "",
+    val id: String? = null,
     // contoh: cash, bank, ewallet, credit_card, investment
     val accountType: TypeAccount,
     val name: String,

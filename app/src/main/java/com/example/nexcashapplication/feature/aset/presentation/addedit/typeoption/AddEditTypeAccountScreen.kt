@@ -70,7 +70,7 @@ fun AddEditTypeAccountScreen(
                 AddEditTypeAccountEffect.NavigateBack -> navController.popBackStack()
                 is AddEditTypeAccountEffect.NavigateToAddEditInfoAccount -> {
                     navController.navigate(
-                        Route.AccountRoute.AddEditInfo(effect.typeAccount),
+                        Route.AccountRoute.AddEditInfo(typeAccount = effect.typeAccount),
                     )
                 }
 

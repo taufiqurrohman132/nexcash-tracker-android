@@ -6,7 +6,7 @@ import com.example.nexcashapplication.feature.aset.presentation.addedit.form.mod
 
 @Immutable
 data class AccountUiModel(
-    val id: String,
+    val id: String? = null,
     val name: String,
     val provider: AccountProviderUiModel?,
     val balance: Long,

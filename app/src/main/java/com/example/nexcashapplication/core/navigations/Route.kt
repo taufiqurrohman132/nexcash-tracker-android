@@ -30,13 +30,16 @@ sealed interface Route {
         data object Main : AccountRoute
 
         @Serializable
-        data class Detail(val accountId: String) : AccountRoute
+        data class Detail(val accountId: String?) : AccountRoute
 
         @Serializable
         data object AddEditTypeAccount : AccountRoute
 
         @Serializable
-        data class AddEditInfo(val typeAccount: TypeAccount) : AccountRoute
+        data class AddEditInfo(
+            val accountId: String? = null,
+            val typeAccount: TypeAccount? = null,
+        ) : AccountRoute
     }
 
     @Serializable

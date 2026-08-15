@@ -126,7 +126,13 @@ fun AccountAssetContent(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Akun & Aset", fontWeight = FontWeight.Bold) },
+                title = {
+                    Text(
+                        text = "Account",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
                 actions = {
                     IconButton(
                         modifier = Modifier.padding(horizontal = 8.dp),
@@ -188,9 +194,10 @@ fun AccountAssetContent(
                         state.bankAccounts.forEach { group ->
                             stickyHeader(key = group.nameGroup) {
                                 Box(
-                                    modifier = Modifier.fillMaxWidth()
-                                            .background(Color.White)
-                                ){
+                                    modifier = Modifier
+                                            .fillMaxWidth()
+                                            .background(Color.White),
+                                ) {
                                     FormField(
                                         title = group.nameGroup,
                                         icon = Icons.Outlined.AccountBalanceWallet,
@@ -199,7 +206,7 @@ fun AccountAssetContent(
                                     )
                                 }
                             }
-                            items(group.listAccount, key = { it.id }) { items ->
+                            items(group.listAccount, key = { it.id ?: "" }) { items ->
                                 AccountRow(
                                     account = items,
                                     onClick = { onEvent(AccountAssetEvent.OnAccountClick(items.id)) },
@@ -440,7 +447,6 @@ private fun AccountRow(
 // ---------------------------------------------------------------------------
 
 
-
 @Preview(showBackground = true, name = "Content - Loaded")
 @Composable
 private fun AccountAssetContentLoadedPreview() {
@@ -459,13 +465,23 @@ private fun AccountAssetContentLoadedPreview() {
                         AccountUiModel(
                             id = "1",
                             name = "BCA Utama",
-                            provider = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+                            provider = AccountProviderUiModel(
+                                "kad",
+                                "BCA",
+                                TypeAccount.BANK,
+                                Color.Red,
+                            ),
                             balance = 8_500_000L,
                         ),
                         AccountUiModel(
                             id = "2",
                             name = "Mandiri Tabungan",
-                            provider = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+                            provider = AccountProviderUiModel(
+                                "kad",
+                                "BCA",
+                                TypeAccount.BANK,
+                                Color.Red,
+                            ),
 
                             balance = 3_200_000L,
                         ),
@@ -477,14 +493,24 @@ private fun AccountAssetContentLoadedPreview() {
                         AccountUiModel(
                             id = "3",
                             name = "BCA Utama",
-                            provider = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+                            provider = AccountProviderUiModel(
+                                "kad",
+                                "BCA",
+                                TypeAccount.BANK,
+                                Color.Red,
+                            ),
 
                             balance = 8_500_000L,
                         ),
                         AccountUiModel(
                             id = "4",
                             name = "Mandiri Tabungan",
-                            provider = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+                            provider = AccountProviderUiModel(
+                                "kad",
+                                "BCA",
+                                TypeAccount.BANK,
+                                Color.Red,
+                            ),
 
                             balance = 3_200_000L,
                         ),
@@ -496,7 +522,7 @@ private fun AccountAssetContentLoadedPreview() {
                 AccountUiModel(
                     id = "3",
                     name = "GoPay",
-                    provider = AccountProviderUiModel("kad" , "BCA", TypeAccount.BANK, Color.Red),
+                    provider = AccountProviderUiModel("kad", "BCA", TypeAccount.BANK, Color.Red),
 
                     balance = 450_000L,
                 ),
