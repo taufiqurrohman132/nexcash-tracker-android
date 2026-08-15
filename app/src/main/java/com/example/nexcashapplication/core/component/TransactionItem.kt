@@ -31,7 +31,7 @@ import com.example.nexcashapplication.ui.theme.TextSecondary
 @Composable
 fun TransactionItem(
     transaction: TransactionItemUi,
-    onClick: (id: Int) -> Unit
+    onClick: (id: String) -> Unit
 ) {
 
     ListItem(

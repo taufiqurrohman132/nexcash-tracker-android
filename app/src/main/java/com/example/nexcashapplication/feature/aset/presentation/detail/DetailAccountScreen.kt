@@ -1,12 +1,12 @@
 package com.example.nexcashapplication.feature.aset.presentation.detail
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +20,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
@@ -30,13 +29,13 @@ import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -52,7 +51,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -63,6 +61,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
+import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUi
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
@@ -70,6 +69,7 @@ import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderUiModel
 import com.example.nexcashapplication.feature.aset.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.feature.aset.presentation.shared.component.DeleteAccountDialog
+import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.collectLatest
 
@@ -94,9 +94,13 @@ fun DetailAccountScreen(
                 is DetailAccountEffect.NavigateToAllTransactions -> TODO()
                 is DetailAccountEffect.NavigateToAssetSettings -> TODO()
                 is DetailAccountEffect.NavigateToEditAssetName -> navController.navigate(
-                    Route.AccountRoute.AddEditInfo(accountId = effect.assetId)
+                    Route.AccountRoute.AddEditInfo(accountId = effect.assetId),
                 )
-                is DetailAccountEffect.NavigateToTransactionDetail -> TODO()
+
+                is DetailAccountEffect.NavigateToTransactionDetail -> {
+
+                }
+
                 is DetailAccountEffect.NavigateToTransfer -> TODO()
                 is DetailAccountEffect.ShowSnackbar -> TODO()
             }
@@ -181,7 +185,12 @@ fun DetailAssetContent(
                         icon = Icons.Default.Replay,
                         actionText = "Lihat Semua",
                     ) {
-                        RecentTransactionsSection(state.recentTransactions, onEvent)
+                        RecentTransactionsSection(
+                            transactions = state.recentTransactions,
+                            onItemClick = { id ->
+                                onEvent(DetailAccountEvent.OnTransactionClick(id))
+                            },
+                        )
                     }
                     Spacer(Modifier.height(24.dp))
                     AssetSettingsSection(onEvent)
@@ -269,94 +278,54 @@ private fun SettingsRow(
 @Composable
 private fun RecentTransactionsSection(
     transactions: List<TransactionItemUi>,
-    onEvent: (DetailAccountEvent) -> Unit,
+    onItemClick: (String) -> Unit,
 ) {
 
-    Column(
+    Card(
+        shape = RoundedCornerShape(16.dp),
         modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .border(1.dp, Color(0xFFEFEFEF), RoundedCornerShape(16.dp)),
+                .border(
+                    width = 1.dp,
+                    color = BorderGray,
+                    shape = RoundedCornerShape(16.dp),
+                ),
     ) {
-        transactions.forEachIndexed { index, tx ->
-            TransactionRow(tx) { onEvent(DetailAccountEvent.OnTransactionClick(tx.id)) }
-            if (index != transactions.lastIndex) {
-                HorizontalDivider(color = Color(0xFFF0F0F0))
-            }
-        }
-    }
+        transactions.take(5).forEachIndexed { index, transaction ->
+            TransactionItem(
+                transaction = transaction,
+                onClick = { id ->
+                    onItemClick(id)
+                },
+            )
 
-}
-
-
-@Composable
-private fun TransactionRow(tx: TransactionItemUi, onClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-                .fillMaxWidth()
-                .clickable(onClick = onClick)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier
-                        .size(38.dp)
-                        .clip(CircleShape)
-                        .background(if (tx.amount >= 0) Color(0xFFE1F7EE) else Color(0xFFFCE8EC)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    painterResource(tx.iconRes),
-                    contentDescription = null,
-                    modifier = Modifier.size(18.dp),
+            if (index != transactions.take(5).lastIndex) {
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = BorderGray,
                 )
             }
-            Spacer(Modifier.width(12.dp))
-            Column {
-                Text(tx.title, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                Text(tx.time, fontSize = 11.sp, color = Color(0xFF999999))
-            }
         }
-        Text(
-            text = (if (tx.amount >= 0) "+ " else "- ") + tx.amount.formatCurrency(),
-            fontSize = 13.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = if (tx.amount >= 0) Color(0xFF1FA971) else Color(0xFFE6455B),
-        )
     }
-}
 
+}
 
 @Composable
 private fun ActionButtons(onEvent: (DetailAccountEvent) -> Unit) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        Button(
-            onClick = { onEvent(DetailAccountEvent.OnTransaksiClick) },
-            modifier = Modifier.weight(1f),
-            shape = RoundedCornerShape(14.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF29C5E0)),
-        ) {
-            Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.width(6.dp))
-            Text("Transaksi")
-        }
-        OutlinedButton(
-            onClick = { onEvent(DetailAccountEvent.OnTransferClick) },
-            modifier = Modifier.weight(1f),
-            shape = RoundedCornerShape(14.dp),
-            border = BorderStroke(1.dp, Color(0xFF29C5E0)),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF29C5E0)),
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.Send,
-                contentDescription = null,
-                modifier = Modifier.size(16.dp),
-            )
-            Spacer(Modifier.width(6.dp))
-            Text("Transfer")
-        }
+    Button(
+        onClick = { onEvent(DetailAccountEvent.OnAddTransactionClick) },
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        contentPadding = PaddingValues(14.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF29C5E0)),
+    ) {
+        Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+        Spacer(Modifier.width(6.dp))
+        Text(
+            "Transaksi",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+        )
     }
 }
 
@@ -385,15 +354,15 @@ fun BalanceCard(
                     Text(
                         stringResource(state.typeAccount.labelResId),
                         fontSize = 12.sp,
-                        color = Color.White,
+                        color = PrimaryCyan,
                     )
                 },
                 colors = AssistChipDefaults.assistChipColors(
-                    containerColor = PrimaryCyan.copy(alpha = 0.4f),
+                    containerColor = PrimaryCyan.copy(alpha = 0.1f),
                 ),
                 border = AssistChipDefaults.assistChipBorder(
                     enabled = true,
-                    borderColor = PrimaryCyan,
+                    borderColor = PrimaryCyan.copy(alpha = 0.5f),
                     borderWidth = 1.dp,
                 ),
                 modifier = Modifier.height(28.dp), // paksa lebih pendek dari minimum touch target

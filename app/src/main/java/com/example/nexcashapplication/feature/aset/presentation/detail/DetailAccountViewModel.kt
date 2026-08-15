@@ -67,10 +67,12 @@ class DetailAccountViewModel @Inject constructor(
 
             DetailAccountEvent.OnSettingsClick -> TODO()
             is DetailAccountEvent.OnTransactionClick -> {
-
+                viewModelScope.launch {
+                    sendEffect(DetailAccountEffect.NavigateToTransactionDetail(event.transactionId))
+                }
             }
 
-            DetailAccountEvent.OnTransaksiClick -> {
+            DetailAccountEvent.OnAddTransactionClick -> {
 
             }
 
