@@ -20,11 +20,19 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
@@ -62,7 +70,7 @@ import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.TransactionItem
-import com.example.nexcashapplication.core.domain.model.TransactionItemUi
+import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
@@ -277,7 +285,7 @@ private fun SettingsRow(
 
 @Composable
 private fun RecentTransactionsSection(
-    transactions: List<TransactionItemUi>,
+    transactions: List<TransactionItemUiModel>,
     onItemClick: (String) -> Unit,
 ) {
 
@@ -386,37 +394,86 @@ fun BalanceCard(
 }
 
 // AssetDetailScreenPreview.kt
-
-private val dummyTransactions = listOf(
-    TransactionItemUi(
-        id = "1L",
+val dummyTransactions = listOf(
+    TransactionItemUiModel(
+        id = "1",
         title = "Gaji Bulanan",
-        time = "05 Agu 2026",
-        amount = 5_000_000L,
-        iconRes = R.drawable.transaction, // ganti sama drawable asli project kamu
-        subtitle = "kdlkfldkf",
+        time = "08:00",
+        amount = 8_500_000,
         isIncome = true,
-        category = "income",
+        category = "Gaji",
+        account = "BCA",
+        icon = Icons.Default.AccountBalanceWallet,
     ),
-    TransactionItemUi(
-        id = "1L",
-        title = "Gaji Bulanan",
-        time = "05 Agu 2026",
-        amount = 5_000_000L,
-        iconRes = R.drawable.transaction, // ganti sama drawable asli project kamu
-        subtitle = "kdlkfldkf",
-        isIncome = true,
-        category = "income",
+    TransactionItemUiModel(
+        id = "2",
+        title = "Makan Siang",
+        time = "12:30",
+        amount = 35_000,
+        isIncome = false,
+        category = "Makanan & Minuman",
+        account = "Cash",
+        icon = Icons.Default.Restaurant,
     ),
-    TransactionItemUi(
-        id = "1L",
-        title = "Gaji Bulanan",
-        time = "05 Agu 2026",
-        amount = 5_000_000L,
-        iconRes = R.drawable.transaction, // ganti sama drawable asli project kamu
-        subtitle = "kdlkfldkf",
+    TransactionItemUiModel(
+        id = "3",
+        title = "Langganan Netflix",
+        time = "10:15",
+        amount = 54_000,
+        isIncome = false,
+        category = "Hiburan",
+        account = "Gopay",
+        icon = Icons.Default.Movie,
+    ),
+    TransactionItemUiModel(
+        id = "4",
+        title = "Bensin Motor",
+        time = "07:45",
+        amount = 25_000,
+        isIncome = false,
+        category = "Transportasi",
+        account = "Cash",
+        icon = Icons.Default.LocationOn,
+    ),
+    TransactionItemUiModel(
+        id = "5",
+        title = "Freelance Project",
+        time = "16:20",
+        amount = 1_200_000,
         isIncome = true,
-        category = "income",
+        category = "Freelance",
+        account = "BCA",
+        icon = Icons.Default.Work,
+    ),
+    TransactionItemUiModel(
+        id = "6",
+        title = "Belanja Bulanan",
+        time = "19:00",
+        amount = 450_000,
+        isIncome = false,
+        category = "Belanja",
+        account = "Gopay",
+        icon = Icons.Default.ShoppingCart,
+    ),
+    TransactionItemUiModel(
+        id = "7",
+        title = "Tagihan Listrik",
+        time = "09:10",
+        amount = 180_000,
+        isIncome = false,
+        category = "Tagihan",
+        account = "BCA",
+        icon = Icons.Default.Bolt,
+    ),
+    TransactionItemUiModel(
+        id = "8",
+        title = "Transfer dari Teman",
+        time = "14:05",
+        amount = 200_000,
+        isIncome = true,
+        category = "Tanpa Kategori",
+        account = "Akun Dihapus",
+        icon = Icons.Default.Category,
     ),
 )
 

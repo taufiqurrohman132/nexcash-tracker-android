@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.engage.core)
 
     // room
     ksp("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.0")
@@ -105,6 +106,9 @@ dependencies {
     // chart
     implementation(libs.vico.compose)
     implementation(libs.vico.compose.m3)
+
+    // date
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

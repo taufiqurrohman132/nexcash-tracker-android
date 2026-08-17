@@ -1,16 +1,16 @@
 package com.example.nexcashapplication.feature.dashboard.presentation.state
 
-import com.example.nexcashapplication.core.domain.model.TransactionItemUi
+import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 
-data class DashboardState (
+data class DashboardState(
     val userName: String = "Budi",
     val totalBalance: Long = 14560200,
     val income: Long = 12500000,
     val expense: Long = 3245000,
     val remainingBudget: Long = 1755000,
     val budgetUsedPercentage: Float = 0.65f,
-    val transactions: List<TransactionItemUi> = emptyList(),
-    val isBalanceVisible: Boolean = true
+    val transactions: List<TransactionItemUiModel> = emptyList(),
+    val isBalanceVisible: Boolean = true,
 )
 //
 //data class TransactionUi(

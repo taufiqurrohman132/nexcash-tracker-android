@@ -1,89 +1,30 @@
 package com.example.nexcashapplication.feature.transaction.presentation.main
 
 import androidx.lifecycle.viewModelScope
-import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
-import com.example.nexcashapplication.core.domain.model.TransactionItemUi
+import com.example.nexcashapplication.feature.transaction.domain.usecase.GetAllCategoryUsecase
+import com.example.nexcashapplication.feature.transaction.domain.usecase.GetMonthlySummaryUseCase
+import com.example.nexcashapplication.feature.transaction.domain.usecase.GetTransactionsWithDetailsByMonthUseCase
+import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModelList
 import com.example.nexcashapplication.feature.transaction.presentation.navigation.TransactionNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class TransactionViewModel @Inject constructor() : 
-    BaseViewModel<TransactionState, TransactionEvent, TransactionNavigationEvent>(
-        TransactionState(
-            searchQuery = "Makan",
-            caategoryList = listOf(
-                "Semua",
-                "Food",
-                "Transport",
-                "Shopping",
-                "Salary"
-            ),
-            selectedCategory = "Semua",
+class TransactionViewModel @Inject constructor(
+    private val getTransactionsWithDetailsByMonthUseCase: GetTransactionsWithDetailsByMonthUseCase,
+    private val getMonthlySummaryUseCase: GetMonthlySummaryUseCase,
+    private val getAllCategoryUsecase: GetAllCategoryUsecase,
+) : BaseViewModel<TransactionState, TransactionEvent, TransactionNavigationEvent>(
+        TransactionState()
+) {
 
-            todayTotal = 150_000,
-            weekTotal = 1_250_000,
-            remainingBudget = 3_750_000,
-
-            groupedTransactions = mapOf(
-                "Hari Ini" to listOf(
-                    TransactionItemUi(
-                        id = "1",
-                        title = "Makan Siang",
-                        subtitle = "GoPay",
-                        time = "12:30",
-                        amount = 35_000,
-                        isIncome = false,
-                        category = "Food",
-                        iconRes = R.drawable.eye_show
-                    ),
-                    TransactionItemUi(
-                        id = "2",
-                        title = "Isi Bensin",
-                        subtitle = "OVO",
-                        time = "17:15",
-                        amount = 50_000,
-                        isIncome = false,
-                        category = "Transport",
-                        iconRes = R.drawable.transfer
-                    )
-                ),
-
-                "Kemarin" to listOf(
-                    TransactionItemUi(
-                        id = "3",
-                        title = "Gaji Bulanan",
-                        subtitle = "BCA",
-                        time = "08:00",
-                        amount = 5_000_000,
-                        isIncome = true,
-                        category = "Salary",
-                        iconRes = R.drawable.transaction
-                    ),
-                    TransactionItemUi(
-                        id = "4",
-                        title = "Belanja Bulanan",
-                        subtitle = "ShopeePay",
-                        time = "19:20",
-                        amount = 250_000,
-                        isIncome = false,
-                        category = "Shopping",
-                        iconRes = R.drawable.scan
-                    )
-                )
-            ),
-
-            expandedGroups = setOf(
-                "Hari Ini",
-                "Kemarin"
-            ),
-
-            isLoading = false,
-            errorMessage = null
-        )
-    ) {
+    init {
+        observerData()
+    }
 
     override fun onEvent(event: TransactionEvent) {
         when (event) {
@@ -107,7 +48,7 @@ class TransactionViewModel @Inject constructor() :
                             current - event.groupLabel
                         } else {
                             current + event.groupLabel
-                        }
+                        },
                     )
                 }
             }
@@ -115,7 +56,7 @@ class TransactionViewModel @Inject constructor() :
             is TransactionEvent.OnCategorySelected -> {
                 updateState {
                     it.copy(
-                        selectedCategory = event.category
+                        selectedCategory = event.category,
                     )
                 }
             }
@@ -129,7 +70,28 @@ class TransactionViewModel @Inject constructor() :
                     sendEffect(TransactionNavigationEvent.NavigateToAddTransaction)
                 }
             }
-
         }
+    }
+
+    private fun observerData() {
+        combine(
+            getTransactionsWithDetailsByMonthUseCase(yearMonth = "2023-10"),
+            getMonthlySummaryUseCase(yearMonth = "2023-10"),
+            getAllCategoryUsecase(),
+        ) { transactionWithDetails, summary, category ->
+
+
+            updateState { transactionState ->
+                transactionState.copy(
+                    todayTotal = summary.totalSaldo,
+                    weekTotal = summary.totalSaldo,
+                    remainingBudget = summary.totalSaldo,
+                    caategoryList = category.map { it?.name ?: "Semua" },
+                    groupedTransactions = transactionWithDetails.toItemUiModelList(),
+                )
+            }
+
+        }.launchIn(viewModelScope)
+
     }
 }

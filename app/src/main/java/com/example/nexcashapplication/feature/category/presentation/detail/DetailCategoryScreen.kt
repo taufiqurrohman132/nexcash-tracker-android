@@ -18,11 +18,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material.icons.filled.Restaurant
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,7 +63,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.TransactionItem
-import com.example.nexcashapplication.core.domain.model.TransactionItemUi
+import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
@@ -75,87 +83,86 @@ import com.patrykandpatrick.vico.compose.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 
-
 val dummyTransactions = listOf(
-    TransactionItemUi(
+    TransactionItemUiModel(
         id = "1",
         title = "Gaji Bulanan",
-        subtitle = "BCA",
-        time = "09:00",
-        amount = 5_000_000,
+        time = "08:00",
+        amount = 8_500_000,
         isIncome = true,
         category = "Gaji",
-        iconRes = R.drawable.ic_media_ff,
+        account = "BCA",
+        icon = Icons.Default.AccountBalanceWallet,
     ),
-    TransactionItemUi(
+    TransactionItemUiModel(
         id = "2",
         title = "Makan Siang",
-        subtitle = "GoPay",
         time = "12:30",
         amount = 35_000,
         isIncome = false,
-        category = "Makanan",
-        iconRes = R.drawable.ic_lock_lock,
+        category = "Makanan & Minuman",
+        account = "Cash",
+        icon = Icons.Default.Restaurant,
     ),
-    TransactionItemUi(
+    TransactionItemUiModel(
         id = "3",
-        title = "Beli Buku",
-        subtitle = "OVO",
-        time = "14:15",
-        amount = 120_000,
+        title = "Langganan Netflix",
+        time = "10:15",
+        amount = 54_000,
         isIncome = false,
-        category = "Pendidikan",
-        iconRes = R.drawable.ic_dialog_map,
+        category = "Hiburan",
+        account = "Gopay",
+        icon = Icons.Default.Movie,
     ),
-    TransactionItemUi(
+    TransactionItemUiModel(
         id = "4",
-        title = "Bonus Freelance",
-        subtitle = "Mandiri",
-        time = "16:45",
-        amount = 750_000,
-        isIncome = true,
-        category = "Freelance",
-        iconRes = R.drawable.ic_dialog_map,
-    ),
-    TransactionItemUi(
-        id = "5",
-        title = "Ngopi di Kedai",
-        subtitle = "Dana",
-        time = "17:20",
+        title = "Bensin Motor",
+        time = "07:45",
         amount = 25_000,
         isIncome = false,
-        category = "Kopi & Snack",
-        iconRes = R.drawable.ic_lock_silent_mode_off,
+        category = "Transportasi",
+        account = "Cash",
+        icon = Icons.Default.LocalGasStation,
     ),
-    TransactionItemUi(
+    TransactionItemUiModel(
+        id = "5",
+        title = "Freelance Project",
+        time = "16:20",
+        amount = 1_200_000,
+        isIncome = true,
+        category = "Freelance",
+        account = "BCA",
+        icon = Icons.Default.Work,
+    ),
+    TransactionItemUiModel(
         id = "6",
-        title = "Bayar Listrik",
-        subtitle = "BCA",
+        title = "Belanja Bulanan",
         time = "19:00",
-        amount = 250_000,
-        isIncome = false,
-        category = "Tagihan",
-        iconRes = R.drawable.ic_input_get,
-    ),
-    TransactionItemUi(
-        id = "7",
-        title = "Beli Baju",
-        subtitle = "ShopeePay",
-        time = "20:10",
-        amount = 180_000,
+        amount = 450_000,
         isIncome = false,
         category = "Belanja",
-        iconRes = R.drawable.ic_input_delete,
+        account = "Gopay",
+        icon = Icons.Default.ShoppingCart,
     ),
-    TransactionItemUi(
+    TransactionItemUiModel(
+        id = "7",
+        title = "Tagihan Listrik",
+        time = "09:10",
+        amount = 180_000,
+        isIncome = false,
+        category = "Tagihan",
+        account = "BCA",
+        icon = Icons.Default.Bolt,
+    ),
+    TransactionItemUiModel(
         id = "8",
         title = "Transfer dari Teman",
-        subtitle = "BRI",
-        time = "21:30",
-        amount = 100_000,
+        time = "14:05",
+        amount = 200_000,
         isIncome = true,
-        category = "Transfer",
-        iconRes = R.drawable.ic_input_get,
+        category = "Tanpa Kategori",
+        account = "Akun Dihapus",
+        icon = Icons.Default.Category,
     ),
 )
 
@@ -318,7 +325,7 @@ fun DetailCategoryContent(
 
 @Composable
 fun TransactionListCard(
-    transactions: List<TransactionItemUi>,
+    transactions: List<TransactionItemUiModel>,
     onLoadMoreClick: () -> Unit,
 ) {
     Card(

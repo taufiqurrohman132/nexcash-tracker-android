@@ -3,12 +3,11 @@ package com.example.nexcashapplication.core.datasource.local.mapper
 import com.example.nexcashapplication.core.datasource.local.result.MonthlySummaryResult
 import com.example.nexcashapplication.feature.dashboard.domain.model.MonthlySummary
 
-fun MonthlySummaryResult.toDomain(bulan: Int, tahun: Int): MonthlySummary {
+fun MonthlySummaryResult.toDomain(yearMonth: String): MonthlySummary {
     return MonthlySummary(
         totalPemasukan = this.totalPemasukan,
         totalPengeluaran = this.totalPengeluaran,
         totalSaldo = this.totalSaldo,
-        bulan = bulan,
-        tahun = tahun
+        yearMonth = yearMonth,
     )
 }

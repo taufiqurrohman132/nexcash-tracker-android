@@ -5,8 +5,10 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
+import com.example.nexcashapplication.core.datasource.local.model.TransactionWithDetailsEntity
 import com.example.nexcashapplication.core.datasource.local.result.CategoryExpenseResult
 import com.example.nexcashapplication.core.datasource.local.result.MonthlySummaryResult
 import kotlinx.coroutines.flow.Flow
@@ -24,6 +26,28 @@ interface TransactionDao {
     )
     fun getRecentTransactions(limit: Int = 20): Flow<List<TransactionEntity>>
 
+    @Query(
+        """
+        SELECT * FROM transactions 
+        WHERE strftime('%Y-%m', transaction_date / 1000, 'unixepoch') = :yearMonth
+        ORDER BY transaction_date DESC
+    """,
+    )
+    fun getTransactionsByMonth(yearMonth: String): Flow<List<TransactionEntity>>
+
+    // baru — khusus buat nampilin list dengan detail akun/kategori
+    @Transaction
+    @Query("SELECT * FROM transactions WHERE deleted_at IS NULL ORDER BY transaction_date DESC")
+    fun getAllTransactionWithDetails(): Flow<List<TransactionWithDetailsEntity>>
+
+    @Transaction
+    @Query("""
+        SELECT * FROM transactions 
+WHERE deleted_at IS NULL AND strftime('%Y-%m', transaction_date / 1000, 'unixepoch') = :yearMonth 
+ORDER BY transaction_date DESC
+        """)
+    fun getAllTransactionWithDetailsByMonth(yearMonth: String): Flow<List<TransactionWithDetailsEntity>>
+
     // dashboard: total bulan ini
     @Query(
         """
@@ -33,11 +57,10 @@ interface TransactionDao {
         COALESCE(SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END), 0) 
         - COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS totalSaldo
     FROM transactions
-    WHERE strftime('%m', transaction_date/1000, 'unixepoch') = :month
-    AND strftime('%Y', transaction_date/1000, 'unixepoch') = :year
+    WHERE strftime('%Y-%m', transaction_date/1000, 'unixepoch') = :yearMonth
 """,
     )
-    fun getMonthlySummary(month: String, year: String): Flow<MonthlySummaryResult>
+    fun getMonthlySummary(yearMonth: String): Flow<MonthlySummaryResult>
 
 
     // Dashboard: total pengeluaran per kategori (untuk widget anggaran)

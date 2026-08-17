@@ -1,11 +1,15 @@
 package com.example.nexcashapplication.feature.transaction.domain.model
 
+import kotlinx.datetime.Instant
+
+
 data class Transaction(
     val id: String,
+    val title: String,
     val amount: Long,
     val categoryId: String?,
-    val note: String,
-    val timestamp: Long,
+    val description: String?,
+    val dateTime: Instant,
     val isIncome: Boolean,
-    val accountId: String
+    val accountId: String?,
 )

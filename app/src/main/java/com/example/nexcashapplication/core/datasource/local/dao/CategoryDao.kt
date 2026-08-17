@@ -50,6 +50,9 @@ interface CategoryDao {
     @Query("SELECT * FROM categories WHERE id = :id")
     fun getCategoryById(id: String): Flow<CategoryEntity?>
 
+    @Query("SELECT * FROM categories")
+    fun getAllCategories(): Flow<List<CategoryEntity?>>
+
     // Ambil subkategori dari kategori induk
     @Query(
         """

@@ -4,6 +4,5 @@ data class MonthlySummary(
     val totalPemasukan: Long,
     val totalPengeluaran: Long,
     val totalSaldo: Long,
-    val bulan: Int,
-    val tahun: Int
+    val yearMonth: String,
 )

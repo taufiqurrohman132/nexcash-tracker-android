@@ -15,6 +15,9 @@ import com.example.nexcashapplication.feature.category.presentation.delete.Delet
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryScreen
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.DashboardScreen
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.AddTransactionScreen
+import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionScreen
+import com.example.nexcashapplication.feature.transaction.presentation.ui.DetailTransactionScreen
 
 @Composable
 fun NavigationStack(
@@ -31,9 +34,16 @@ fun NavigationStack(
             DashboardScreen()
         }
 
-        composable<Route.TransactionRoute.Detail> { entry ->
-            val args = entry.toRoute<Route.TransactionRoute.Detail>()
-            // TransactionDetailScreen(transactionId = args.transactionId)
+        composable<Route.TransactionRoute.Detail> {
+            DetailTransactionScreen()
+        }
+
+        composable<Route.TransactionRoute.AddNew> {
+            AddTransactionScreen()
+        }
+
+        composable<Route.TransactionRoute.Main> {
+            TransactionScreen()
         }
 
         composable<Route.CategoryRoute.Detail> { entry ->
@@ -59,9 +69,7 @@ fun NavigationStack(
             )
         }
 
-        composable<Route.TransactionRoute.AddNew> {
-//             TransactionAddNewScreen()
-        }
+
 
         composable<Route.AccountRoute.Main> {
             AccountAssetScreen(navController = navController)

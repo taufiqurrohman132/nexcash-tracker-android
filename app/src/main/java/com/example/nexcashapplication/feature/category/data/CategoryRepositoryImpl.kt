@@ -21,9 +21,9 @@ class CategoryRepositoryImpl @Inject constructor(
         return dao.getCategoryById(id).map { it?.toDomain() }
     }
 
-//    override suspend fun getAllCategory(): Flow<List<Category?>> {
-//        retur
-//    }
+    override fun getAllCategory(): Flow<List<Category?>> {
+        return dao.getAllCategories().map { list -> list.map { it?.toDomain() } }
+    }
 
     override fun searchCategories(
         query: String,

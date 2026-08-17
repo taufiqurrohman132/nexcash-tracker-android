@@ -1,6 +1,6 @@
 package com.example.nexcashapplication.feature.transaction.presentation.detail
 
-import com.example.nexcashapplication.core.domain.model.TransactionItemUi
+import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 
 data class DetailTransactionState(
     val searchQuery: String = "",
@@ -12,10 +12,10 @@ data class DetailTransactionState(
     val weekTotal: Long = 0L,
     val remainingBudget: Long = 0L,
 
-    val groupedTransactions: Map<String, List<TransactionItemUi>> = emptyMap(),
+    val groupedTransactions: Map<String, List<TransactionItemUiModel>> = emptyMap(),
     val expandedGroups: Set<String> = emptySet(), // group yang sedang expand
 
     // Loading & error
     val isLoading: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
 )

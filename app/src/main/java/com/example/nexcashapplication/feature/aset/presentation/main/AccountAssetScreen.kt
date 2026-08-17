@@ -206,7 +206,12 @@ fun AccountAssetContent(
                                     )
                                 }
                             }
-                            items(group.listAccount, key = { it.id ?: "" }) { items ->
+                            items(
+                                group.listAccount,
+                                key = {
+                                    it.id ?: "${group.nameGroup}_${it.name}_${it.provider}"
+                                },
+                            ) { items ->
                                 AccountRow(
                                     account = items,
                                     onClick = { onEvent(AccountAssetEvent.OnAccountClick(items.id)) },
