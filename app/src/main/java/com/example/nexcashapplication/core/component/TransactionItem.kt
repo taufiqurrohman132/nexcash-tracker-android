@@ -57,7 +57,7 @@ fun TransactionItem(
         },
         headlineContent = {
             Text(
-                text = transaction.title,
+                text = transaction.name,
                 fontWeight = FontWeight.Bold,
             )
         },
@@ -106,7 +106,7 @@ private fun TransactionItemPreview() {
     TransactionItem(
         TransactionItemUiModel(
             id = "1",
-            title = "Transfer Gaji",
+            name = "Transfer Gaji",
             time = "23 okt, 10:45",
             amount = 5_000_000,
             isIncome = true,

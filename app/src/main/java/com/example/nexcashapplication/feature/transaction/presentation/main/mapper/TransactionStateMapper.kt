@@ -17,7 +17,7 @@ import kotlinx.datetime.toLocalDateTime
 
 fun TransactionWithDetails.toItemUiModel() = TransactionItemUiModel(
     id = transaction.id,
-    title = transaction.title,
+    name = transaction.title,
     time = transaction.dateTime.toEpochMilliseconds().toString(),
     amount = transaction.amount,
     isIncome = transaction.isIncome,

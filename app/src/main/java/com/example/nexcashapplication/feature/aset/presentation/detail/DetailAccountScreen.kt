@@ -397,7 +397,7 @@ fun BalanceCard(
 val dummyTransactions = listOf(
     TransactionItemUiModel(
         id = "1",
-        title = "Gaji Bulanan",
+        name = "Gaji Bulanan",
         time = "08:00",
         amount = 8_500_000,
         isIncome = true,
@@ -407,7 +407,7 @@ val dummyTransactions = listOf(
     ),
     TransactionItemUiModel(
         id = "2",
-        title = "Makan Siang",
+        name = "Makan Siang",
         time = "12:30",
         amount = 35_000,
         isIncome = false,
@@ -417,7 +417,7 @@ val dummyTransactions = listOf(
     ),
     TransactionItemUiModel(
         id = "3",
-        title = "Langganan Netflix",
+        name = "Langganan Netflix",
         time = "10:15",
         amount = 54_000,
         isIncome = false,
@@ -427,7 +427,7 @@ val dummyTransactions = listOf(
     ),
     TransactionItemUiModel(
         id = "4",
-        title = "Bensin Motor",
+        name = "Bensin Motor",
         time = "07:45",
         amount = 25_000,
         isIncome = false,
@@ -437,7 +437,7 @@ val dummyTransactions = listOf(
     ),
     TransactionItemUiModel(
         id = "5",
-        title = "Freelance Project",
+        name = "Freelance Project",
         time = "16:20",
         amount = 1_200_000,
         isIncome = true,
@@ -447,7 +447,7 @@ val dummyTransactions = listOf(
     ),
     TransactionItemUiModel(
         id = "6",
-        title = "Belanja Bulanan",
+        name = "Belanja Bulanan",
         time = "19:00",
         amount = 450_000,
         isIncome = false,
@@ -457,7 +457,7 @@ val dummyTransactions = listOf(
     ),
     TransactionItemUiModel(
         id = "7",
-        title = "Tagihan Listrik",
+        name = "Tagihan Listrik",
         time = "09:10",
         amount = 180_000,
         isIncome = false,
@@ -467,7 +467,7 @@ val dummyTransactions = listOf(
     ),
     TransactionItemUiModel(
         id = "8",
-        title = "Transfer dari Teman",
+        name = "Transfer dari Teman",
         time = "14:05",
         amount = 200_000,
         isIncome = true,

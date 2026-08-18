@@ -431,7 +431,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
         listTransaction = listOf(
             TransactionItemUiModel(
                 id = "trx_1",
-                title = "Gaji Bulanan",
+                name = "Gaji Bulanan",
                 time = "08:00",
                 amount = 5_000_000L,
                 isIncome = true,
@@ -441,7 +441,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
             ),
             TransactionItemUiModel(
                 id = "trx_2",
-                title = "Makan Siang Warteg",
+                name = "Makan Siang Warteg",
                 time = "12:30",
                 amount = 25_000L,
                 isIncome = false,
@@ -451,7 +451,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
             ),
             TransactionItemUiModel(
                 id = "trx_3",
-                title = "Bensin Motor",
+                name = "Bensin Motor",
                 time = "14:15",
                 amount = 50_000L,
                 isIncome = false,
@@ -461,7 +461,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
             ),
             TransactionItemUiModel(
                 id = "trx_4",
-                title = "Beli Baju",
+                name = "Beli Baju",
                 time = "16:45",
                 amount = 275_000L,
                 isIncome = false,
@@ -471,7 +471,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
             ),
             TransactionItemUiModel(
                 id = "trx_5",
-                title = "Tagihan Listrik",
+                name = "Tagihan Listrik",
                 time = "19:00",
                 amount = 400_000L,
                 isIncome = false,
@@ -492,7 +492,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
         listTransaction = listOf(
             TransactionItemUiModel(
                 id = "trx_6",
-                title = "Nonton Bioskop",
+                name = "Nonton Bioskop",
                 time = "20:00",
                 amount = 100_000L,
                 isIncome = false,
@@ -502,7 +502,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
             ),
             TransactionItemUiModel(
                 id = "trx_7",
-                title = "Beli Obat",
+                name = "Beli Obat",
                 time = "10:20",
                 amount = 80_000L,
                 isIncome = false,
