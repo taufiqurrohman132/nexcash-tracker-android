@@ -5,6 +5,7 @@ import com.example.nexcashapplication.core.datasource.local.mapper.toDomain
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
 import com.example.nexcashapplication.feature.dashboard.domain.model.MonthlySummary
 import com.example.nexcashapplication.feature.transaction.data.mapper.toDomain
+import com.example.nexcashapplication.feature.transaction.data.mapper.toEntity
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
 import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
@@ -41,7 +42,11 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun insertTransaction(transaction: Transaction) {
-        TODO("Not yet implemented")
+        dao.insertTransaction(transaction.toEntity())
+    }
+
+    override suspend fun updateTransaction(transaction: Transaction) {
+        dao.updateTransaction(transaction.toEntity())
     }
 
     override suspend fun deleteTransaction(id: String) {

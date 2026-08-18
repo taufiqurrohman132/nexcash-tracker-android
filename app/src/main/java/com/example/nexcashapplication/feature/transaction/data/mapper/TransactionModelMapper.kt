@@ -2,6 +2,7 @@ package com.example.nexcashapplication.feature.transaction.data.mapper
 
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
+import java.util.UUID
 import kotlin.time.Instant
 
 fun TransactionEntity.toDomain() = Transaction(
@@ -16,7 +17,7 @@ fun TransactionEntity.toDomain() = Transaction(
 )
 
 fun Transaction.toEntity() = TransactionEntity(
-    id = id,
+    id = id ?: UUID.randomUUID().toString(),
     amount = amount,
     title = title,
     categoryId = categoryId,

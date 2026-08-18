@@ -87,8 +87,6 @@ import com.example.nexcashapplication.ui.theme.TextTertiary
 
 @Composable
 fun AddCategoryScreen(
-    categoryId: String,
-    parentId: String?,
     viewModel: AddCategoryViewModel = hiltViewModel(),
     navController: NavHostController,
 ) {

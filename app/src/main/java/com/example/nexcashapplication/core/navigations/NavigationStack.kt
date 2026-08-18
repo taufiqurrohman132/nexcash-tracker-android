@@ -5,7 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.example.nexcashapplication.feature.aset.presentation.addedit.form.AddEditInfoAccountScreen
 import com.example.nexcashapplication.feature.aset.presentation.addedit.typeoption.AddEditTypeAccountScreen
 import com.example.nexcashapplication.feature.aset.presentation.detail.DetailAccountScreen
@@ -15,7 +14,7 @@ import com.example.nexcashapplication.feature.category.presentation.delete.Delet
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryScreen
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.DashboardScreen
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.AddTransactionScreen
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.AddEditTransactionScreen
 import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionScreen
 import com.example.nexcashapplication.feature.transaction.presentation.ui.DetailTransactionScreen
 
@@ -39,31 +38,27 @@ fun NavigationStack(
         }
 
         composable<Route.TransactionRoute.AddNew> {
-            AddTransactionScreen()
+            AddEditTransactionScreen(
+                navController = navController,
+            )
         }
 
         composable<Route.TransactionRoute.Main> {
             TransactionScreen()
         }
 
-        composable<Route.CategoryRoute.Detail> { entry ->
-            val args = entry.toRoute<Route.CategoryRoute.Detail>()
+        composable<Route.CategoryRoute.Detail> {
             DetailCategoryScreen(
-                categoryId = args.categoryId,
                 navController = navController,
             )
         }
 
-        composable<Route.CategoryRoute.AddNew> { entry ->
-            val args = entry.toRoute<Route.CategoryRoute.AddNew>()
+        composable<Route.CategoryRoute.AddNew> {
             AddCategoryScreen(
-                categoryId = args.categoryId,
-                parentId = args.parentId,
                 navController = navController,
             )
         }
-        composable<Route.CategoryRoute.Delete> { entry ->
-            val args = entry.toRoute<Route.CategoryRoute.Delete>()
+        composable<Route.CategoryRoute.Delete> {
             DeleteCategoryScreen(
                 navController = navController,
             )

@@ -4,16 +4,54 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.outlined.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.AccountBox
+import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.LocationOn
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,30 +64,54 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import com.example.nexcashapplication.core.component.FormField
+import com.example.nexcashapplication.core.component.IconCircular
+import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
+import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
-fun AddTransactionScreen(
+fun AddEditTransactionScreen(
     modifier: Modifier = Modifier,
-    viewModel: AddTransactionViewModel = hiltViewModel()
+    viewModel: AddEditTransactionViewModel = hiltViewModel(),
+    navController: NavHostController,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    AddTransactionContent(
+    LaunchedEffect(Unit) {
+        viewModel.effect.collectLatest { effect ->
+            when (effect) {
+                is AddEditTransactionEffect.NavigateBack -> {
+                    // Navigate back
+                    navController.popBackStack()
+                }
+
+                AddEditTransactionEffect.NavigateToAddEditCategory -> {
+
+                }
+
+                is AddEditTransactionEffect.ShowSnackbar -> {
+
+                }
+            }
+        }
+    }
+    AddEditTransactionContent(
         state = state,
         onEvent = viewModel::onEvent,
-        modifier = modifier
+        modifier = modifier,
     )
 
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTransactionContent(
-    state: AddTransactionState,
-    onEvent: (AddTransactionEvent) -> Unit,
-    modifier: Modifier
+fun AddEditTransactionContent(
+    state: AddEditTransactionState,
+    onEvent: (AddEditTransactionEvent) -> Unit,
+    modifier: Modifier,
 ) {
     var detailExpanded by remember { mutableStateOf(false) }
     val accent = PrimaryCyan // light blue, matching the design
@@ -59,7 +121,7 @@ fun AddTransactionContent(
             CenterAlignedTopAppBar(
                 title = { Text("Add Transaction", fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
-                    IconButton(onClick = { onEvent(AddTransactionEvent.OnBackClick) }) {
+                    IconButton(onClick = { onEvent(AddEditTransactionEvent.OnBackClick) }) {
                         Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
@@ -67,7 +129,7 @@ fun AddTransactionContent(
                     IconButton(onClick = { /* notifications */ }) {
                         Icon(Icons.Outlined.Notifications, contentDescription = "Notifications")
                     }
-                }
+                },
             )
         },
         bottomBar = {
@@ -75,39 +137,39 @@ fun AddTransactionContent(
             Surface(shadowElevation = 8.dp) {
                 Box(modifier = Modifier.padding(16.dp)) {
                     Button(
-                        onClick = { onEvent(AddTransactionEvent.OnSaveClick) },
+                        onClick = { onEvent(AddEditTransactionEvent.OnSaveClick) },
                         enabled = state.isValid,
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
+                                .fillMaxWidth()
+                                .height(52.dp),
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = accent,
-                            disabledContainerColor = accent.copy(alpha = 0.35f)
-                        )
+                            disabledContainerColor = accent.copy(alpha = 0.35f),
+                        ),
                     ) {
                         Text(
                             "Save Transaction",
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = Color.Black,
                         )
                     }
                 }
             }
-        }
+        },
     ) { innerPadding ->
         Column(
             modifier = Modifier
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
+                    .padding(innerPadding)
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 20.dp),
         ) {
             Spacer(Modifier.height(12.dp))
 
             // ---- Segmented toggle Expense / Income ----
             SegmentedTypeToggle(
                 selected = state.type,
-                onSelect = { onEvent(AddTransactionEvent.OnTypeChange(it)) }
+                onSelect = { onEvent(AddEditTransactionEvent.OnTypeChange(it)) },
             )
 
             Spacer(Modifier.height(16.dp))
@@ -116,7 +178,7 @@ fun AddTransactionContent(
             AmountCard(
                 type = state.type,
                 amountDisplay = state.amountDisplay,
-                onClick = { onEvent(AddTransactionEvent.OnAmountClick) }
+                onClick = { onEvent(AddEditTransactionEvent.OnAmountClick) },
             )
 
             Spacer(Modifier.height(20.dp))
@@ -128,7 +190,7 @@ fun AddTransactionContent(
                         CompactSelector(
                             icon = Icons.Outlined.Call,
                             text = state.date,
-                            onClick = { onEvent(AddTransactionEvent.OnDateClick) }
+                            onClick = { onEvent(AddEditTransactionEvent.OnDateClick) },
                         )
                     }
                 }
@@ -138,10 +200,28 @@ fun AddTransactionContent(
                         CompactSelector(
                             icon = Icons.Outlined.Notifications,
                             text = state.time,
-                            onClick = { onEvent(AddTransactionEvent.OnTimeClick) }
+                            onClick = { onEvent(AddEditTransactionEvent.OnTimeClick) },
                         )
                     }
                 }
+            }
+
+            FormField(
+                title = "Nama",
+            ) {
+                OutlinedTextField(
+                    value = state.nameTransaction,
+                    onValueChange = { onEvent(AddEditTransactionEvent.OnNameTransactionChange(it)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    placeholder = { Text("Nama Transaksi") },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = PrimaryCyan,
+                        unfocusedBorderColor = BorderGray,
+                    ),
+
+                    )
             }
 
             Spacer(Modifier.height(16.dp))
@@ -153,7 +233,7 @@ fun AddTransactionContent(
                 iconBg = Color(0xFFDDF4FF),
                 title = state.category ?: "Select Category",
                 subtitle = "e.g. Food, Transportation...",
-                onClick = { onEvent(AddTransactionEvent.OnCategoryClick) }
+                onClick = { onEvent(AddEditTransactionEvent.OnCategoryClick) },
             )
 
             Spacer(Modifier.height(16.dp))
@@ -165,7 +245,7 @@ fun AddTransactionContent(
                 iconBg = Color(0xFFEDE7FF),
                 title = state.account ?: "Select Account",
                 subtitle = "Cash, Bank BCA, E-Wallet...",
-                onClick = { onEvent(AddTransactionEvent.OnAccountClick) }
+                onClick = { onEvent(AddEditTransactionEvent.OnAccountClick) },
             )
 
 //            Spacer(Modifier.height(20.dp))
@@ -191,18 +271,18 @@ fun AddTransactionContent(
             SectionLabel("Note")
             OutlinedTextField(
                 value = state.note,
-                onValueChange = { onEvent(AddTransactionEvent.OnNoteChange(it)) },
+                onValueChange = { onEvent(AddEditTransactionEvent.OnNoteChange(it)) },
                 placeholder = { Text("Add a note here...") },
                 leadingIcon = {
                     Icon(
                         Icons.Outlined.FavoriteBorder,
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 },
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp),
-                shape = RoundedCornerShape(14.dp)
+                        .fillMaxWidth()
+                        .height(100.dp),
+                shape = RoundedCornerShape(14.dp),
             )
 
             Spacer(Modifier.height(16.dp))
@@ -210,32 +290,34 @@ fun AddTransactionContent(
             SectionLabel("Attachment")
             AttachmentBox(
                 fileName = state.attachmentName,
-                onClick = { onEvent(AddTransactionEvent.OnAttachmentClick) })
+                onClick = { onEvent(AddEditTransactionEvent.OnAttachmentClick) },
+            )
 
             Spacer(Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         Icons.Default.LocationOn,
                         contentDescription = null,
                         tint = accent,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
                         "Recurring Transaction",
                         fontWeight = FontWeight.Medium,
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
                     )
                 }
                 Switch(
                     checked = state.isRecurring,
-                    onCheckedChange = { onEvent(AddTransactionEvent.OnRecurringChange(it)) })
+                    onCheckedChange = { onEvent(AddEditTransactionEvent.OnRecurringChange(it)) },
+                )
             }
 
             Spacer(Modifier.height(24.dp))
@@ -246,13 +328,13 @@ fun AddTransactionContent(
 @Composable
 private fun SegmentedTypeToggle(
     selected: TransactionType,
-    onSelect: (TransactionType) -> Unit
+    onSelect: (TransactionType) -> Unit,
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(Color(0xFFF0F0F0), RoundedCornerShape(14.dp))
-            .padding(4.dp)
+                .fillMaxWidth()
+                .background(Color(0xFFF0F0F0), RoundedCornerShape(14.dp))
+                .padding(4.dp),
     ) {
         ToggleChip(
             label = "Expense",
@@ -260,7 +342,7 @@ private fun SegmentedTypeToggle(
             selected = selected == TransactionType.EXPENSE,
             selectedColor = Color(0xFFE8433D),
             modifier = Modifier.weight(1f),
-            onClick = { onSelect(TransactionType.EXPENSE) }
+            onClick = { onSelect(TransactionType.EXPENSE) },
         )
         Spacer(Modifier.width(4.dp))
         ToggleChip(
@@ -269,7 +351,7 @@ private fun SegmentedTypeToggle(
             selected = selected == TransactionType.INCOME,
             selectedColor = PrimaryCyan,
             modifier = Modifier.weight(1f),
-            onClick = { onSelect(TransactionType.INCOME) }
+            onClick = { onSelect(TransactionType.INCOME) },
         )
     }
 }
@@ -281,32 +363,32 @@ private fun ToggleChip(
     selected: Boolean,
     selectedColor: Color,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Surface(
         modifier = modifier
-            .clip(RoundedCornerShape(11.dp))
-            .clickable { onClick() },
+                .clip(RoundedCornerShape(11.dp))
+                .clickable { onClick() },
         color = if (selected) Color.White else Color.Transparent,
-        shadowElevation = if (selected) 2.dp else 0.dp
+        shadowElevation = if (selected) 2.dp else 0.dp,
     ) {
         Row(
             modifier = Modifier.padding(vertical = 10.dp),
             horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 icon,
                 contentDescription = null,
                 tint = if (selected) selectedColor else Color.Gray,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(16.dp),
             )
             Spacer(Modifier.width(6.dp))
             Text(
                 label,
                 color = if (selected) selectedColor else Color.Gray,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 13.sp
+                fontSize = 13.sp,
             )
         }
     }
@@ -316,23 +398,23 @@ private fun ToggleChip(
 private fun AmountCard(
     type: TransactionType,
     amountDisplay: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFFF7F7F8))
-            .clickable { onClick() }
-            .padding(vertical = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .background(Color(0xFFF7F7F8))
+                .clickable { onClick() }
+                .padding(vertical = 20.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = if (type == TransactionType.EXPENSE) "AMOUNT (OUT)" else "AMOUNT (IN)",
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold,
             color = Color.Gray,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
         )
         Spacer(Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.Bottom) {
@@ -349,7 +431,7 @@ private fun SectionLabel(text: String) {
         text,
         fontSize = 13.sp,
         fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(bottom = 8.dp)
+        modifier = Modifier.padding(bottom = 8.dp),
     )
 }
 
@@ -359,32 +441,30 @@ private fun SelectorRow(
     iconBg: Color,
     title: String,
     subtitle: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .border(BorderStroke(1.dp, Color(0xFFE6E6E6)), RoundedCornerShape(14.dp))
-            .clickable { onClick() }
-            .padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .border(BorderStroke(1.dp, BorderGray), RoundedCornerShape(14.dp))
+                .clickable { onClick() }
+                .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(CircleShape)
-                .background(iconBg),
-            contentAlignment = Alignment.Center
-        ) {
-            Icon(icon, contentDescription = null, tint = Color(0xFF17C3E8))
-        }
+
+        IconCircular(
+            icon = icon,
+            iconColor = PrimaryCyan,
+            backgroundColor = iconBg,
+            iconToCountainerRatio = 2,
+        )
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
             Text(subtitle, fontSize = 12.sp, color = Color.Gray)
         }
-        Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = Color.LightGray)
+        Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = BorderGray)
     }
 }
 
@@ -392,16 +472,16 @@ private fun SelectorRow(
 private fun CompactSelector(
     icon: ImageVector,
     text: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .border(BorderStroke(1.dp, Color(0xFFE6E6E6)), RoundedCornerShape(12.dp))
-            .clickable { onClick() }
-            .padding(horizontal = 12.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
+                .border(BorderStroke(1.dp, Color(0xFFE6E6E6)), RoundedCornerShape(12.dp))
+                .clickable { onClick() }
+                .padding(horizontal = 12.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color.Gray)
         Spacer(Modifier.width(8.dp))
@@ -413,23 +493,23 @@ private fun CompactSelector(
 private fun AttachmentBox(fileName: String?, onClick: () -> Unit) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(14.dp))
-            .border(
-                BorderStroke(1.5.dp, Color(0xFFD0D0D0)),
-                RoundedCornerShape(14.dp)
-            ) // TODO: switch to a dashed border via Modifier.drawBehind + PathEffect for an exact match with the design
-            .clickable { onClick() }
-            .padding(vertical = 24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(14.dp))
+                .border(
+                    BorderStroke(1.5.dp, Color(0xFFD0D0D0)),
+                    RoundedCornerShape(14.dp),
+                ) // TODO: switch to a dashed border via Modifier.drawBehind + PathEffect for an exact match with the design
+                .clickable { onClick() }
+                .padding(vertical = 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Box(
             modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(Color.White)
-                .border(BorderStroke(1.dp, Color(0xFFE6E6E6)), CircleShape),
-            contentAlignment = Alignment.Center
+                    .size(48.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .border(BorderStroke(1.dp, Color(0xFFE6E6E6)), CircleShape),
+            contentAlignment = Alignment.Center,
         ) {
             Icon(Icons.Outlined.ShoppingCart, contentDescription = null, tint = Color.DarkGray)
         }
@@ -437,7 +517,7 @@ private fun AttachmentBox(fileName: String?, onClick: () -> Unit) {
         Text(
             fileName ?: "Take a photo or choose a file",
             fontSize = 13.sp,
-            fontWeight = FontWeight.Medium
+            fontWeight = FontWeight.Medium,
         )
         Spacer(Modifier.height(4.dp))
         Text("JPG, PNG OR PDF (MAX. 5MB)", fontSize = 10.sp, color = Color.Gray)
@@ -448,22 +528,22 @@ private fun AttachmentBox(fileName: String?, onClick: () -> Unit) {
 private fun ExpandableDetailHeader(expanded: Boolean, onToggle: () -> Unit) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .clickable { onToggle() }
-            .padding(vertical = 4.dp),
+                .fillMaxWidth()
+                .clickable { onToggle() }
+                .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween,
     ) {
         Text(
             "More Details (optional)",
             fontWeight = FontWeight.SemiBold,
             fontSize = 13.sp,
-            color = Color(0xFF17C3E8)
+            color = Color(0xFF17C3E8),
         )
         Icon(
             imageVector = if (expanded) Icons.Default.Email else Icons.Default.MoreVert,
             contentDescription = null,
-            tint = Color(0xFF17C3E8)
+            tint = Color(0xFF17C3E8),
         )
     }
 }
@@ -472,7 +552,11 @@ private fun ExpandableDetailHeader(expanded: Boolean, onToggle: () -> Unit) {
 @Composable
 private fun AddTransactionPreview() {
     MaterialTheme {
-        AddTransactionScreen()
+        AddEditTransactionContent(
+            state = AddEditTransactionState(),
+            onEvent = {},
+            modifier = Modifier.fillMaxSize(),
+        )
     }
 }
 

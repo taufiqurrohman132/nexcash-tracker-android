@@ -167,7 +167,6 @@ val dummyTransactions = listOf(
 
 @Composable
 fun DetailCategoryScreen(
-    categoryId: String,
     viewModel: DetailCategoryViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
     navController: NavHostController,

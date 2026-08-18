@@ -21,5 +21,6 @@ interface TransactionRepository {
     fun getCountTransactionsByAccount(accountId: String): Flow<Int>
 
     suspend fun insertTransaction(transaction: Transaction)
+    suspend fun updateTransaction(transaction: Transaction)
     suspend fun deleteTransaction(id: String)
 }
