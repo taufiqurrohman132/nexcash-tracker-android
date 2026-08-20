@@ -6,21 +6,34 @@ import com.example.nexcashapplication.feature.transaction.domain.usecase.GetAllC
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetMonthlySummaryUseCase
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetTransactionsWithDetailsByMonthUseCase
 import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModelList
-import com.example.nexcashapplication.feature.transaction.presentation.navigation.TransactionNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
+import kotlin.time.Clock
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
     private val getTransactionsWithDetailsByMonthUseCase: GetTransactionsWithDetailsByMonthUseCase,
     private val getMonthlySummaryUseCase: GetMonthlySummaryUseCase,
     private val getAllCategoryUsecase: GetAllCategoryUsecase,
-) : BaseViewModel<TransactionState, TransactionEvent, TransactionNavigationEvent>(
-        TransactionState()
+) : BaseViewModel<TransactionState, TransactionEvent, TransactionEffect>(
+    TransactionState(),
 ) {
+
+    // State untuk bulan yang sedang dipilih
+    private val _selectedYearMonth = MutableStateFlow(
+        Clock.System.now()
+                .toLocalDateTime(TimeZone.currentSystemDefault())
+                .let { "%04d-%02d".format(it.year, it.monthNumber) },
+    )
 
     init {
         observerData()
@@ -33,11 +46,20 @@ class TransactionViewModel @Inject constructor(
             }
 
             is TransactionEvent.OnTransactionClick -> {
-
+                viewModelScope.launch {
+                    if (event.transactionId == null) {
+                        sendEffect(TransactionEffect.ShowSnackbar("Transaksi tidak tersedia"))
+                    } else
+                        sendEffect(TransactionEffect.NavigateToDetail(event.transactionId))
+                }
             }
 
             is TransactionEvent.OnSearchClear -> {
-
+                updateState {
+                    it.copy(
+                        searchQuery = "",
+                    )
+                }
             }
 
             is TransactionEvent.OnGroupToggle -> {
@@ -62,36 +84,45 @@ class TransactionViewModel @Inject constructor(
             }
 
             is TransactionEvent.OnSearchQueryChange -> {
-
+                updateState {
+                    it.copy(
+                        searchQuery = event.query,
+                    )
+                }
             }
 
             is TransactionEvent.OnAddTransactionClick -> {
                 viewModelScope.launch {
-                    sendEffect(TransactionNavigationEvent.NavigateToAddTransaction)
+                    sendEffect(TransactionEffect.NavigateToAddTransaction)
                 }
             }
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun observerData() {
-        combine(
-            getTransactionsWithDetailsByMonthUseCase(yearMonth = "2023-10"),
-            getMonthlySummaryUseCase(yearMonth = "2023-10"),
-            getAllCategoryUsecase(),
-        ) { transactionWithDetails, summary, category ->
+        _selectedYearMonth.flatMapLatest { yearMonth ->
+            combine(
+                getTransactionsWithDetailsByMonthUseCase(yearMonth = yearMonth),
+                getMonthlySummaryUseCase(yearMonth = yearMonth),
+                getAllCategoryUsecase(),
+            ) { transactionWithDetails, summary, category ->
 
 
-            updateState { transactionState ->
-                transactionState.copy(
-                    todayTotal = summary.totalSaldo,
-                    weekTotal = summary.totalSaldo,
-                    remainingBudget = summary.totalSaldo,
-                    caategoryList = category.map { it?.name ?: "Semua" },
-                    groupedTransactions = transactionWithDetails.toItemUiModelList(),
-                )
+                updateState { transactionState ->
+                    transactionState.copy(
+                        todayTotal = summary.totalSaldo,
+                        weekTotal = summary.totalSaldo,
+                        remainingBudget = summary.totalSaldo,
+                        caategoryList = category.map { it?.name ?: "Semua" },
+                        groupedTransactions = transactionWithDetails.toItemUiModelList(),
+                    )
+                }
+
             }
-
-        }.launchIn(viewModelScope)
+        }
+                .onEach { /* update state */ }
+                .launchIn(viewModelScope)
 
     }
 }

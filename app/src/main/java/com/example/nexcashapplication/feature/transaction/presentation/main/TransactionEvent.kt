@@ -12,7 +12,7 @@ sealed interface TransactionEvent {
     data class OnGroupToggle(val groupLabel: String) : TransactionEvent
 
     // Item transaksi diklik (ke detail)
-    data class OnTransactionClick(val transactionId: String) : TransactionEvent
+    data class OnTransactionClick(val transactionId: String?) : TransactionEvent
 
     // Floating
     data object OnAddTransactionClick : TransactionEvent

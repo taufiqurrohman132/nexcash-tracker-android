@@ -1,6 +1,6 @@
 package com.example.nexcashapplication.di
 
-import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
+import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
 import com.example.nexcashapplication.feature.category.domain.usecase.DeleteCategoryUseCase
 import com.example.nexcashapplication.feature.category.domain.usecase.GetCategoryByIdUseCase
@@ -19,7 +19,7 @@ object UseCaseModule {
     fun provideCategoryUseCases(repository: CategoryRepository): CategoryUseCases {
         return CategoryUseCases(
             getCategoryById = GetCategoryByIdUseCase(repository),
-            deleteCategory = DeleteCategoryUseCase(repository)
+            deleteCategory = DeleteCategoryUseCase(repository),
         )
     }
 }

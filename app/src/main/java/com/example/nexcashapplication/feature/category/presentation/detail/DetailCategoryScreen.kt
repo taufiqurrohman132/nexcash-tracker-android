@@ -181,17 +181,31 @@ fun DetailCategoryScreen(
                     AddNew(categoryId = "", parentId = effect.parentId),
                 )
 
-                is DetailCategoryEffect.NavigateToAddTransaction -> TODO()
-                is DetailCategoryEffect.NavigateToAllSubCategories -> TODO()
+                is DetailCategoryEffect.NavigateToAddTransaction -> {
+                    navController.navigate(Route.TransactionRoute.AddNew)
+                }
+                is DetailCategoryEffect.NavigateToAllSubCategories -> {
+                    // Navigate to all subcategories if you have a screen for it
+                }
                 is DetailCategoryEffect.NavigateToEditCategory -> navController.navigate(
                     AddNew(effect.categoryId),
                 )
 
-                is DetailCategoryEffect.NavigateToSubCategoryDetail -> TODO()
-                is DetailCategoryEffect.NavigateToSubCategoryManagement -> TODO()
-                is DetailCategoryEffect.NavigateToTransactionDetail -> TODO()
-                DetailCategoryEffect.ShowMenuBottomSheet -> TODO()
-                is DetailCategoryEffect.ShowSnackbar -> TODO()
+                is DetailCategoryEffect.NavigateToSubCategoryDetail -> navController.navigate(
+                    Route.CategoryRoute.Detail(effect.subCategoryId)
+                )
+                is DetailCategoryEffect.NavigateToSubCategoryManagement -> {
+                    // Navigate to management
+                }
+                is DetailCategoryEffect.NavigateToTransactionDetail -> navController.navigate(
+                    Route.TransactionRoute.Detail(effect.transactionId)
+                )
+                DetailCategoryEffect.ShowMenuBottomSheet -> {
+                    // Show sheet
+                }
+                is DetailCategoryEffect.ShowSnackbar -> {
+                    // Show snackbar
+                }
                 is DetailCategoryEffect.NavigateToDeleteCategory -> navController.navigate(
                     Route.CategoryRoute.Delete(
                         categoryId = effect.categoryId,
@@ -279,9 +293,9 @@ fun DetailCategoryContent(
             Spacer(Modifier.height(4.dp)) // pengganti contentPadding top
 
             BudgetSummaryCard(
-                totalBudget = state.category?.totalBudget?.formatCurrency() ?: "",
-                used = state.category?.usedBudget?.formatCurrency() ?: "",
-                remaining = state.category?.remainingBudget?.formatCurrency() ?: "",
+                totalBudget = state.category?.totalBudget?.formatCurrency() ?: "0",
+                used = state.category?.usedBudget?.formatCurrency() ?: "0",
+                remaining = state.category?.remainingBudget?.formatCurrency() ?: "0",
                 usedPersentage = state.category?.usedPercentage ?: 0,
             )
 
@@ -294,25 +308,26 @@ fun DetailCategoryContent(
             WeeklyTrendChart()
 
             FormField(
-                title = "SubCategory",
+                title = "Sub Kategori",
                 actionText = "Lihat Semua",
-                onActionClick = { },
+                onActionClick = { onEvent(DetailCategoryEvent.OnSeeAllSubCategoryClick) },
             )
 
             SubcategoryGrid(
                 subcategories = state.subCategories,
-                onSubcategoryClick = { },
+                onSubcategoryClick = { id -> onEvent(DetailCategoryEvent.OnSubCategoryClick(id)) },
             )
 
             FormField(
                 title = "Transaksi Terakhir",
                 icon = Icons.Default.Replay,
                 actionText = "Lihat Semua",
+                onActionClick = { onEvent(DetailCategoryEvent.OnLoadMoreTransactionsClick) }
             )
 
             TransactionListCard(
                 transactions = state.recentTransactions,
-                onLoadMoreClick = { },
+                onItemClick = { id -> onEvent(DetailCategoryEvent.OnTransactionClick(id)) }
             )
 
             Spacer(Modifier.height(16.dp)) // pengganti contentPadding bottom
@@ -324,7 +339,7 @@ fun DetailCategoryContent(
 @Composable
 fun TransactionListCard(
     transactions: List<TransactionItemUiModel>,
-    onLoadMoreClick: () -> Unit,
+    onItemClick: (String) -> Unit,
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -334,14 +349,19 @@ fun TransactionListCard(
     ) {
         Column(modifier = Modifier.padding(vertical = 4.dp)) {
             transactions.forEachIndexed { index, transactionUi ->
-                TransactionItem(transactionUi) {}
-                HorizontalDivider(
-                    modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                    color = BorderGray,
-                    thickness = 1.dp,
+                TransactionItem(
+                    transaction = transactionUi,
+                    onClick = { onItemClick(transactionUi.id ?: "") }
                 )
+                if (index < transactions.lastIndex) {
+                    HorizontalDivider(
+                        modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp),
+                        color = BorderGray,
+                        thickness = 1.dp,
+                    )
+                }
             }
         }
     }
@@ -377,7 +397,7 @@ fun SubcategoryGrid(
 @Composable
 fun SubcategoryCard(subcategory: CategoryDetail, modifier: Modifier, onClick: () -> Unit) {
     Card(
-        onClick = { },
+        onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -499,7 +519,7 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
                     Text(
                         text = "Terpakai: ",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.White,
+                        color = Color.White.copy(alpha = 0.8f),
                     )
                     Text(
                         text = used,
@@ -514,13 +534,13 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
                     Text(
                         text = "Sisa: ",
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF6B7280),
+                        color = Color.White.copy(alpha = 0.8f),
                     )
                     Text(
                         text = remaining,
                         style = MaterialTheme.typography.bodySmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color(0xFF6366F1),
+                        color = Color.White,
                     )
                 }
 
@@ -529,65 +549,24 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
             Spacer(modifier = Modifier.height(8.dp))
 
             LinearProgressIndicator(
-                progress = { usedPersentage / 100f },
+                progress = { (usedPersentage / 100f).coerceIn(0f, 1f) },
                 modifier = Modifier
                         .fillMaxWidth()
                         .height(6.dp)
                         .clip(RoundedCornerShape(50)),
-                color = Color(0xFF6366F1),
-                trackColor = Color(0xFFC7CCF5),
+                color = Color.White,
+                trackColor = Color.White.copy(alpha = 0.3f),
             )
         }
     }
 }
 
-@Composable
-fun CategoryDetailTopBar(
-    categoryName: String,
-    categoryIcon: ImageVector,
-    onBackClick: () -> Unit,
-    onMenuClick: () -> Unit,
-) {
-    Row(
-        modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        IconButton(
-            onClick = {
+// Remove the unused dummyTransactions list from here if it's already defined or redundant.
+// It seems it was used for the preview. I will keep it but remove the duplicate if any.
+// Actually, it's defined at the top of the file.
 
-            },
-        ) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-        }
-
-        Icon(
-            imageVector = categoryIcon,
-            contentDescription = null,
-            tint = PrimaryCyan,
-            modifier = Modifier
-                    .padding(start = 4.dp, end = 8.dp)
-                    .size(20.dp),
-        )
-
-        Text(
-            text = categoryName,
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold,
-            modifier = Modifier.weight(1f),
-        )
-
-        IconButton(
-            onClick = {
-
-            },
-        ) {
-            Icon(Icons.Default.MoreVert, contentDescription = "Menu")
-        }
-    }
-
-}
+// Also clean up DetailCategoryTopBar if it's truly not used.
+// DetailCategoryContent uses TopAppBar.
 
 @Composable
 fun WeeklyTrendChart(

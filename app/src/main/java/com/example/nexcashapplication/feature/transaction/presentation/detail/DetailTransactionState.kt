@@ -1,9 +1,9 @@
 package com.example.nexcashapplication.feature.transaction.presentation.detail
 
 import androidx.compose.ui.graphics.Color
+import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.aset.domain.model.AccountModel
-import com.example.nexcashapplication.feature.category.domain.model.Category
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.feature.transaction.presentation.detail.model.AttachmentUiModel
 import kotlin.time.Clock

@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import com.example.nexcashapplication.core.datasource.local.model.CategoryAndSubcategoryEntity
 import com.example.nexcashapplication.core.datasource.local.model.CategoryEntity
 import com.example.nexcashapplication.core.datasource.local.result.CategoryNameResult
 import kotlinx.coroutines.flow.Flow
@@ -80,6 +81,13 @@ interface CategoryDao {
         """,
     )
     suspend fun getParentCategoriesNameByType(type: String): List<CategoryNameResult>
+
+    @Query(
+        """
+            SELECT * FROM categories ORDER BY name ASC
+        """,
+    )
+    suspend fun getCategoriesAndSubCategories(): List<CategoryAndSubcategoryEntity>
 
     // CRUD ────────────────────────────────────────────
 

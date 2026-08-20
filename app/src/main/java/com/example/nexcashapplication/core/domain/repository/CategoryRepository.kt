@@ -1,6 +1,7 @@
-package com.example.nexcashapplication.feature.category.domain.repository
+package com.example.nexcashapplication.core.domain.repository
 
-import com.example.nexcashapplication.feature.category.domain.model.Category
+import com.example.nexcashapplication.core.domain.model.Category
+import com.example.nexcashapplication.core.domain.model.CategoryAndSubcategory
 import com.example.nexcashapplication.feature.category.domain.model.CategoryDeleteResolution
 import com.example.nexcashapplication.feature.category.domain.model.CategoryName
 import kotlinx.coroutines.flow.Flow
@@ -15,6 +16,7 @@ interface CategoryRepository {
     fun getSubCategories(parentId: String): Flow<List<Category>>  // ← ini yang kurang
     suspend fun getParentCategories(): List<Category>  // ← ini yang kurang
     suspend fun getParentCategoriesNameByType(type: String): List<CategoryName>  // ← ini yang kurang
+    suspend fun getCategoriesAndSubCategories(): List<CategoryAndSubcategory>
 
     suspend fun insertCategory(category: Category)
     suspend fun updateCategory(category: Category)

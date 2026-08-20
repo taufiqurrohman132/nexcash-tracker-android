@@ -2,13 +2,23 @@ package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.domain.repository.CategoryRepository
+import com.example.nexcashapplication.feature.aset.domain.repository.AccountRepository
+import com.example.nexcashapplication.feature.aset.presentation.main.mapper.toAccountUiModel
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
-import jakarta.inject.Inject
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.mapper.toUIModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import kotlin.time.Instant
 
+@HiltViewModel
 class AddEditTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
+    private val categoryRepository: CategoryRepository,
+    private val accountRepository: AccountRepository,
 ) : BaseViewModel<AddEditTransactionState, AddEditTransactionEvent, AddEditTransactionEffect>(
     initialState = AddEditTransactionState(),
 ) {
@@ -16,12 +26,13 @@ class AddEditTransactionViewModel @Inject constructor(
 
     override fun onEvent(event: AddEditTransactionEvent) {
         when (event) {
-            is AddEditTransactionEvent.OnAmountClick -> {
-
-            }
 
             is AddEditTransactionEvent.OnTimeClick -> {
-
+                updateState {
+                    it.copy(
+                        showTimePicker = !it.showTimePicker,
+                    )
+                }
             }
 
             is AddEditTransactionEvent.OnSaveClick -> {
@@ -29,13 +40,63 @@ class AddEditTransactionViewModel @Inject constructor(
             }
 
             is AddEditTransactionEvent.OnAccountClick -> {
+                val willShow = !state.value.showAccountBottomSheet
+                updateState {
+                    it.copy(
+                        showAccountBottomSheet = willShow,
+                    )
+                }
+
+                if (willShow && state.value.availableAccounts.isEmpty()) {
+                    viewModelScope.launch {
+                        runCatching {
+                            accountRepository.getAllAccounts().first()
+                        }.onSuccess { result ->
+                            updateState {
+                                it.copy(
+                                    availableAccounts = result.map { it.toAccountUiModel() },
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            is AddEditTransactionEvent.OnAccountSelected -> {
+                updateState {
+                    it.copy(
+                        selectedAccountId = event.account.id,
+                        showAccountBottomSheet = false,
+                    )
+                }
             }
 
             is AddEditTransactionEvent.OnCategoryClick -> {
+                val willShow = !state.value.showCategoryBottomSheet
+
+                updateState {
+                    it.copy(
+                        showCategoryBottomSheet = willShow,
+                    )
+                }
+
+                if (willShow && state.value.availableCategories.isEmpty()) {
+                    viewModelScope.launch {
+                        runCatching {
+                            categoryRepository.getCategoriesAndSubCategories()
+                        }.onSuccess { result ->
+                            updateState {
+                                it.copy(
+                                    availableCategories = result.map { model -> model.toUIModel() },
+                                )
+                            }
+                        }
+                    }
+                }
             }
 
             is AddEditTransactionEvent.OnAttachmentClick -> {
-
+                // Implement attachment logic
             }
 
             is AddEditTransactionEvent.OnBackClick -> {
@@ -45,15 +106,23 @@ class AddEditTransactionViewModel @Inject constructor(
             }
 
             is AddEditTransactionEvent.OnDateClick -> {
-
+                updateState {
+                    it.copy(
+                        showDatePicker = !it.showDatePicker,
+                    )
+                }
             }
 
             is AddEditTransactionEvent.OnNoteChange -> {
-
+                updateState {
+                    it.copy(note = event.note)
+                }
             }
 
             is AddEditTransactionEvent.OnRecurringChange -> {
-
+                updateState {
+                    it.copy(isRecurring = event.isRecurring)
+                }
             }
 
             is AddEditTransactionEvent.OnTypeChange -> {
@@ -63,24 +132,70 @@ class AddEditTransactionViewModel @Inject constructor(
             }
 
             is AddEditTransactionEvent.OnNameTransactionChange -> {
-
+                updateState {
+                    it.copy(
+                        nameTransaction = event.name,
+                    )
+                }
             }
+
+            is AddEditTransactionEvent.OnAmountChange -> {
+                updateState {
+                    it.copy(
+                        amount = event.amount.toLongOrNull() ?: 0,
+                    )
+                }
+            }
+
+            is AddEditTransactionEvent.OnDateChange -> {
+                updateState {
+                    it.copy(
+                        transactionAt = Instant.fromEpochMilliseconds(event.date),
+                    )
+                }
+            }
+
+            is AddEditTransactionEvent.OnTimeChange -> {
+                updateState {
+                    it.copy(
+                        transactionAt = event.time,
+                    )
+                }
+            }
+
+            is AddEditTransactionEvent.OnCategorySelected -> {
+                val categoryId = event.category.id
+                val parentCategory = state.value.availableCategories.find { it.categoriItem.id == categoryId }
+                val hasSubCategories = parentCategory?.subCategoriesItem?.isNotEmpty() == true
+
+                updateState {
+                    it.copy(
+                        selectedCategoryId = categoryId,
+                        showCategoryBottomSheet = hasSubCategories,
+                    )
+                }
+            }
+
         }
     }
 
     private fun handleSave() {
+        if (!state.value.isValid) return
+
         viewModelScope.launch {
             val currentState = state.value
 
             val transaction = Transaction(
                 title = currentState.nameTransaction,
-                amount = currentState.amountDisplay,
-                categoryId = currentState.category,
+                amount = currentState.amount,
+                categoryId = currentState.selectedCategoryId,
                 description = currentState.note,
                 isIncome = currentState.type == TransactionType.INCOME,
-                accountId = currentState.account,
+                accountId = currentState.selectedAccountId ?: "",
+                dateTime = currentState.transactionAt,
             )
             transactionRepository.insertTransaction(transaction)
+            sendEffect(AddEditTransactionEffect.NavigateBack)
         }
     }
 }

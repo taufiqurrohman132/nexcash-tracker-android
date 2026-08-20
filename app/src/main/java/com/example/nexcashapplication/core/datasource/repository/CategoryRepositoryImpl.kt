@@ -1,21 +1,21 @@
-package com.example.nexcashapplication.feature.category.data
+package com.example.nexcashapplication.core.datasource.repository
 
 import androidx.room.withTransaction
 import com.example.nexcashapplication.core.datasource.local.dao.CategoryDao
 import com.example.nexcashapplication.core.datasource.local.database.NexCashDatabase
-import com.example.nexcashapplication.feature.category.data.mapper.toDomain
-import com.example.nexcashapplication.feature.category.data.mapper.toEntity
-import com.example.nexcashapplication.feature.category.domain.model.Category
+import com.example.nexcashapplication.core.datasource.local.mapper.*
+import com.example.nexcashapplication.core.domain.model.Category
+import com.example.nexcashapplication.core.domain.model.CategoryAndSubcategory
+import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.feature.category.domain.model.CategoryDeleteResolution
 import com.example.nexcashapplication.feature.category.domain.model.CategoryName
-import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class CategoryRepositoryImpl @Inject constructor(
-    val dao: CategoryDao,
-    val db: NexCashDatabase,
+    private val dao: CategoryDao,
+    private val db: NexCashDatabase,
 ) : CategoryRepository {
     override fun getCategoryById(id: String): Flow<Category?> {
         return dao.getCategoryById(id).map { it?.toDomain() }
@@ -56,6 +56,10 @@ class CategoryRepositoryImpl @Inject constructor(
 
     override suspend fun getParentCategoriesNameByType(type: String): List<CategoryName> {
         return dao.getParentCategoriesNameByType(type).map { list -> list.toDomain() }
+    }
+
+    override suspend fun getCategoriesAndSubCategories(): List<CategoryAndSubcategory> {
+        return dao.getCategoriesAndSubCategories().map { list -> list.toDomain() }
     }
 
     override suspend fun insertCategory(category: Category) {

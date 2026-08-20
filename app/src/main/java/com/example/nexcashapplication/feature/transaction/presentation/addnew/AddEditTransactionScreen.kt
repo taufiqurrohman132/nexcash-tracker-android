@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,21 +19,25 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Output
 import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.AccountBox
-import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material.icons.outlined.Category
+import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -40,12 +45,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -57,7 +64,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextRange
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -67,6 +78,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
+import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
+import com.example.nexcashapplication.feature.common.components.AppTimePickerDialog
+import com.example.nexcashapplication.feature.common.transformation.ThousandSeparatorTransformation
+import com.example.nexcashapplication.feature.common.utils.DateTimeFormatter
+import com.example.nexcashapplication.feature.common.utils.formatDate
+import com.example.nexcashapplication.feature.common.utils.formatTime
+import com.example.nexcashapplication.feature.common.utils.hour
+import com.example.nexcashapplication.feature.common.utils.minute
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.components.AccountBottomSheetContent
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.components.CategoryBottomSheetContent
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.collectLatest
@@ -115,6 +136,7 @@ fun AddEditTransactionContent(
 ) {
     var detailExpanded by remember { mutableStateOf(false) }
     val accent = PrimaryCyan // light blue, matching the design
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
     Scaffold(
         topBar = {
@@ -175,31 +197,36 @@ fun AddEditTransactionContent(
             Spacer(Modifier.height(16.dp))
 
             // ---- Amount (required field #1) ----
-            AmountCard(
+            EditableAmountCard(
                 type = state.type,
-                amountDisplay = state.amountDisplay,
-                onClick = { onEvent(AddEditTransactionEvent.OnAmountClick) },
+                rawAmount = state.amount.toString(),
+                onAmountChange = {
+                    onEvent(AddEditTransactionEvent.OnAmountChange(it))
+                },
             )
 
-            Spacer(Modifier.height(20.dp))
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Box(modifier = Modifier.weight(1f)) {
-                    Column {
-                        SectionLabel("Date")
+                    FormField(
+                        title = "Date",
+                    ) {
                         CompactSelector(
-                            icon = Icons.Outlined.Call,
-                            text = state.date,
+                            icon = Icons.Outlined.DateRange,
+                            text = state.transactionAt.formatDate(),
+                            isActive = state.showDatePicker,
                             onClick = { onEvent(AddEditTransactionEvent.OnDateClick) },
                         )
                     }
                 }
                 Box(modifier = Modifier.weight(1f)) {
-                    Column {
-                        SectionLabel("Time")
+                    FormField(
+                        title = "Time",
+                    ) {
                         CompactSelector(
-                            icon = Icons.Outlined.Notifications,
-                            text = state.time,
+                            icon = Icons.Outlined.Timer,
+                            isActive = state.showTimePicker,
+                            text = state.transactionAt.formatTime(),
                             onClick = { onEvent(AddEditTransactionEvent.OnTimeClick) },
                         )
                     }
@@ -224,74 +251,66 @@ fun AddEditTransactionContent(
                     )
             }
 
-            Spacer(Modifier.height(16.dp))
 
             // ---- Category (required field #2) ----
-            SectionLabel("Category")
-            SelectorRow(
-                icon = Icons.Outlined.LocationOn,
-                iconBg = Color(0xFFDDF4FF),
-                title = state.category ?: "Select Category",
-                subtitle = "e.g. Food, Transportation...",
-                onClick = { onEvent(AddEditTransactionEvent.OnCategoryClick) },
-            )
+            FormField(
+                "Category",
+            ) {
+                SelectorRow(
+                    icon = state.selectedCategory?.icon?.icon ?: Icons.Outlined.Category,
+                    iconBg = state.selectedCategory?.iconColor?.copy(alpha = 0.2f) ?: Color(0xFFDDF4FF),
+                    title = state.selectedCategory?.name ?: "Select Category",
+                    subtitle = "e.g. Food, Transportation...",
+                    onClick = { onEvent(AddEditTransactionEvent.OnCategoryClick) },
+                )
+            }
 
-            Spacer(Modifier.height(16.dp))
 
             // ---- Funding Source / Account (required field #3) ----
-            SectionLabel("Funding Source")
-            SelectorRow(
-                icon = Icons.Outlined.AccountBox,
-                iconBg = Color(0xFFEDE7FF),
-                title = state.account ?: "Select Account",
-                subtitle = "Cash, Bank BCA, E-Wallet...",
-                onClick = { onEvent(AddEditTransactionEvent.OnAccountClick) },
-            )
-
-//            Spacer(Modifier.height(20.dp))
-
-            // ---- Optional detail section, collapsed by default ----
-//            ExpandableDetailHeader(
-//                expanded = detailExpanded,
-//                onToggle = { detailExpanded = !detailExpanded }
-//            )
-
-//            AnimatedVisibility(
-//                visible = detailExpanded,
-//                enter = expandVertically(),
-//                exit = shrinkVertically()
-//            ) {
-//
-//            }
-
-            Spacer(Modifier.height(16.dp))
+            FormField(
+                "Funding Source",
+            ) {
+                SelectorRow(
+                    icon = Icons.Outlined.AccountBalanceWallet,
+                    iconBg = state.selectedAccount?.provider?.color?.copy(alpha = 0.2f) ?: Color(0xFFEDE7FF),
+                    title = state.selectedAccount?.name ?: "Select Account",
+                    subtitle = state.selectedAccount?.provider?.name ?: "Cash, Bank BCA, E-Wallet...",
+                    onClick = { onEvent(AddEditTransactionEvent.OnAccountClick) },
+                )
+            }
 
 
 
-            SectionLabel("Note")
-            OutlinedTextField(
-                value = state.note,
-                onValueChange = { onEvent(AddEditTransactionEvent.OnNoteChange(it)) },
-                placeholder = { Text("Add a note here...") },
-                leadingIcon = {
-                    Icon(
-                        Icons.Outlined.FavoriteBorder,
-                        contentDescription = null,
-                    )
-                },
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .height(100.dp),
-                shape = RoundedCornerShape(14.dp),
-            )
 
-            Spacer(Modifier.height(16.dp))
+            FormField(
+                "Note",
+            ) {
+                OutlinedTextField(
+                    value = state.note,
+                    onValueChange = { onEvent(AddEditTransactionEvent.OnNoteChange(it)) },
+                    placeholder = { Text("Add a note here...") },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Outlined.FavoriteBorder,
+                            contentDescription = null,
+                        )
+                    },
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .height(100.dp),
+                    shape = RoundedCornerShape(14.dp),
+                )
+            }
 
-            SectionLabel("Attachment")
-            AttachmentBox(
-                fileName = state.attachmentName,
-                onClick = { onEvent(AddEditTransactionEvent.OnAttachmentClick) },
-            )
+
+            FormField(
+                "Attachment",
+            ) {
+                AttachmentBox(
+                    fileName = state.attachmentName,
+                    onClick = { onEvent(AddEditTransactionEvent.OnAttachmentClick) },
+                )
+            }
 
             Spacer(Modifier.height(16.dp))
 
@@ -322,6 +341,77 @@ fun AddEditTransactionContent(
 
             Spacer(Modifier.height(24.dp))
         }
+
+
+        // dialog
+        if (state.showDatePicker) {
+            // DatePickerDialog
+            AppDatePickerDialog(
+                initialDateMillis = state.transactionAt.toEpochMilliseconds(),
+                onDateSelected = {
+                    onEvent(AddEditTransactionEvent.OnDateChange(it))
+                },
+                onDismiss = {
+                    onEvent(AddEditTransactionEvent.OnDateClick)
+                },
+            )
+        }
+        if (state.showTimePicker) {
+            // TimePickerDialog
+            AppTimePickerDialog(
+                initialHour = state.transactionAt.hour(),
+                initialMinute = state.transactionAt.minute(),
+                onTimeSelected = { hour, minute ->
+                    onEvent(
+                        AddEditTransactionEvent.OnTimeChange(
+                            DateTimeFormatter.timeToInstant(
+                                hour,
+                                minute,
+                            ),
+                        ),
+                    )
+                },
+                onDismiss = {
+                    onEvent(AddEditTransactionEvent.OnTimeClick)
+                },
+            )
+        }
+
+        // sheet
+        if (state.showCategoryBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    onEvent(AddEditTransactionEvent.OnCategoryClick)
+                },
+                sheetState = sheetState,
+            ) {
+                CategoryBottomSheetContent(
+                    parentCategories = state.availableCategories.map { it.categoriItem },
+                    subCategories = state.subCategories,
+                    selectedParentId = state.selectedCategoryId,
+                    onCategorySelected = {
+                        onEvent(AddEditTransactionEvent.OnCategorySelected(it))
+                    },
+                )
+            }
+        }
+
+        if (state.showAccountBottomSheet) {
+            ModalBottomSheet(
+                onDismissRequest = {
+                    onEvent(AddEditTransactionEvent.OnAccountClick)
+                },
+                sheetState = sheetState,
+            ) {
+                AccountBottomSheetContent(
+                    accounts = state.availableAccounts,
+                    selectedAccountId = state.selectedAccountId,
+                    onAccountSelected = { account ->
+                        onEvent(AddEditTransactionEvent.OnAccountSelected(account))
+                    },
+                )
+            }
+        }
     }
 }
 
@@ -333,12 +423,12 @@ private fun SegmentedTypeToggle(
     Row(
         modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF0F0F0), RoundedCornerShape(14.dp))
-                .padding(4.dp),
+                .background(Color(0xFFF0F0F0), RoundedCornerShape(20.dp))
+                .padding(2.dp),
     ) {
         ToggleChip(
             label = "Expense",
-            icon = Icons.Default.Done,
+            icon = Icons.Default.Output,
             selected = selected == TransactionType.EXPENSE,
             selectedColor = Color(0xFFE8433D),
             modifier = Modifier.weight(1f),
@@ -367,13 +457,13 @@ private fun ToggleChip(
 ) {
     Surface(
         modifier = modifier
-                .clip(RoundedCornerShape(11.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .clickable { onClick() },
         color = if (selected) Color.White else Color.Transparent,
         shadowElevation = if (selected) 2.dp else 0.dp,
     ) {
         Row(
-            modifier = Modifier.padding(vertical = 10.dp),
+            modifier = Modifier.padding(vertical = 12.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -395,43 +485,52 @@ private fun ToggleChip(
 }
 
 @Composable
-private fun AmountCard(
+fun EditableAmountCard(
     type: TransactionType,
-    amountDisplay: String,
-    onClick: () -> Unit,
+    rawAmount: String,
+    onAmountChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFFF7F7F8))
-                .clickable { onClick() }
-                .padding(vertical = 20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = if (type == TransactionType.EXPENSE) "AMOUNT (OUT)" else "AMOUNT (IN)",
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Gray,
-            textAlign = TextAlign.Center,
-        )
-        Spacer(Modifier.height(8.dp))
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text("Rp", fontSize = 18.sp, color = Color.DarkGray, fontWeight = FontWeight.Medium)
-            Spacer(Modifier.width(8.dp))
-            Text(amountDisplay, fontSize = 32.sp, fontWeight = FontWeight.Bold)
-        }
+    var amountField by remember {
+        mutableStateOf(TextFieldValue(rawAmount, selection = TextRange(rawAmount.length)))
     }
-}
 
-@Composable
-private fun SectionLabel(text: String) {
-    Text(
-        text,
-        fontSize = 13.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(bottom = 8.dp),
+    OutlinedTextField(
+        value = amountField,
+        onValueChange = { new ->
+            val digitsOnly = new.text.filter { it.isDigit() }
+            if (digitsOnly.length > 12) return@OutlinedTextField
+
+            val normalized = digitsOnly.trimStart('0').ifEmpty { "0" }
+
+            amountField = TextFieldValue(
+                text = normalized,
+                selection = TextRange(normalized.length), // selalu ke akhir
+            )
+            onAmountChange(normalized)
+        },
+        modifier = modifier.fillMaxWidth(),
+        singleLine = true,
+        shape = RoundedCornerShape(16.dp),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        visualTransformation = ThousandSeparatorTransformation(),
+        textStyle = TextStyle(
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+        ),
+        label = {
+            Text(
+                text = if (type == TransactionType.EXPENSE) "AMOUNT (OUT)" else "AMOUNT (IN)",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        },
+        prefix = { Text("Rp", fontSize = 18.sp, fontWeight = FontWeight.Medium) },
+        colors = OutlinedTextFieldDefaults.colors(
+            unfocusedBorderColor = BorderGray,
+            focusedBorderColor = PrimaryCyan,
+        ),
     )
 }
 
@@ -447,7 +546,7 @@ private fun SelectorRow(
         modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .border(BorderStroke(1.dp, BorderGray), RoundedCornerShape(14.dp))
+                .border(BorderStroke(1.dp, BorderGray), RoundedCornerShape(16.dp))
                 .clickable { onClick() }
                 .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -472,20 +571,28 @@ private fun SelectorRow(
 private fun CompactSelector(
     icon: ImageVector,
     text: String,
+    isActive: Boolean = false,   // kontrol manual, misal true saat dialog kebuka
     onClick: () -> Unit,
 ) {
+    val borderColor = if (isActive) PrimaryCyan else Color(0xFFE6E6E6)
+    val boderWidth = if (isActive) 2.dp else 1.dp
+
     Row(
         modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .border(BorderStroke(1.dp, Color(0xFFE6E6E6)), RoundedCornerShape(12.dp))
-                .clickable { onClick() }
-                .padding(horizontal = 12.dp, vertical = 12.dp),
+                .height(50.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .border(BorderStroke(boderWidth, borderColor), RoundedCornerShape(16.dp))
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                ) { onClick() }
+                .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color.Gray)
         Spacer(Modifier.width(8.dp))
-        Text(text, fontSize = 13.sp)
+        Text(text)
     }
 }
 

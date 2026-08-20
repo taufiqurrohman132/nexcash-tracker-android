@@ -1,6 +1,6 @@
 package com.example.nexcashapplication.feature.category.presentation.mapper
 
-import com.example.nexcashapplication.feature.category.domain.model.Category
+import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryDetail
 
@@ -8,7 +8,7 @@ import com.example.nexcashapplication.feature.category.presentation.detail.model
 fun Category.toUiModel(): CategoryDetail = CategoryDetail(
     id = id,
     name = name,
-    icon = CategoryIcons.fromId(id = icon),  // mapping enum -> resource
+    icon = CategoryIcons.fromId(id = iconId),  // mapping enum -> resource
     totalBudget = budget,
     usedBudget = used,
     typeCategory = type,

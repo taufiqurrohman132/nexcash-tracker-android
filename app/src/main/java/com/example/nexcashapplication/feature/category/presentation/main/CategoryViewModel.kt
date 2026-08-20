@@ -1,9 +1,8 @@
 package com.example.nexcashapplication.feature.category.presentation.main
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect.NavigateToDetail
 import com.example.nexcashapplication.feature.category.presentation.mapper.toCategoryItemList
@@ -22,7 +21,7 @@ import kotlin.time.Duration.Companion.milliseconds
 @HiltViewModel
 class CategoryViewModel @Inject constructor(
     private val categoryUseCases: CategoryUseCases,
-    private val categoryRepository: com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository,
+    private val categoryRepository: CategoryRepository,
 ) : BaseViewModel<CategoryState, CategoryEvent, CategoryEffect>(CategoryState()) {
 
     init {
@@ -65,7 +64,10 @@ class CategoryViewModel @Inject constructor(
             }
 
             is CategoryEvent.OnPageChanged -> {
-                val type = com.example.nexcashapplication.core.domain.model.TypeCategory.entries.getOrNull(event.index) ?: com.example.nexcashapplication.core.domain.model.TypeCategory.EXPENSE
+                val type =
+                    com.example.nexcashapplication.core.domain.model.TypeCategory.entries.getOrNull(
+                        event.index,
+                    ) ?: com.example.nexcashapplication.core.domain.model.TypeCategory.EXPENSE
                 updateState { it.copy(selectedTabCategory = type) }
             }
         }
@@ -74,17 +76,17 @@ class CategoryViewModel @Inject constructor(
     private fun observeCategories() {
         viewModelScope.launch {
             categoryRepository.getExpenseCategories()
-                .map { it.toCategoryItemList() }
-                .collect { items ->
-                    updateState { it.copy(expenseList = items, isLoading = false) }
-                }
+                    .map { it.toCategoryItemList() }
+                    .collect { items ->
+                        updateState { it.copy(expenseList = items, isLoading = false) }
+                    }
         }
         viewModelScope.launch {
             categoryRepository.getIncomeCategories()
-                .map { it.toCategoryItemList() }
-                .collect { items ->
-                    updateState { it.copy(incomeList = items, isLoading = false) }
-                }
+                    .map { it.toCategoryItemList() }
+                    .collect { items ->
+                        updateState { it.copy(incomeList = items, isLoading = false) }
+                    }
         }
     }
 
@@ -92,23 +94,23 @@ class CategoryViewModel @Inject constructor(
     private fun observeSearch() {
         viewModelScope.launch {
             state.map { it.searchQuery to it.selectedTabCategory }
-                .distinctUntilChanged()
-                .debounce(300.milliseconds)
-                .flatMapLatest { (query, tab) ->
-                    if (query.isBlank()) {
-                        flowOf(emptyList())
-                    } else {
-                        categoryRepository.searchCategories(query, tab.name.lowercase())
+                    .distinctUntilChanged()
+                    .debounce(300.milliseconds)
+                    .flatMapLatest { (query, tab) ->
+                        if (query.isBlank()) {
+                            flowOf(emptyList())
+                        } else {
+                            categoryRepository.searchCategories(query, tab.name.lowercase())
+                        }
                     }
-                }
-                .map { it.toCategoryItemList() }
-                .collect { result ->
-                    updateState {
-                        it.copy(
-                            categorySearchList = result,
-                        )
+                    .map { it.toCategoryItemList() }
+                    .collect { result ->
+                        updateState {
+                            it.copy(
+                                categorySearchList = result,
+                            )
+                        }
                     }
-                }
         }
     }
 }

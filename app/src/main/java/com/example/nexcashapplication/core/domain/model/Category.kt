@@ -1,6 +1,5 @@
-package com.example.nexcashapplication.feature.category.domain.model
+package com.example.nexcashapplication.core.domain.model
 
-import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.category.presentation.addnew.model.BudgetPeriod
 
 data class Category(
@@ -8,7 +7,7 @@ data class Category(
     val parentId: String? = null,
     val name: String,
     val type: TypeCategory,
-    val icon: String,
+    val iconId: String,
     val color: String,
     val used: Long,
     val budget: Long,

@@ -1,7 +1,9 @@
 package com.example.nexcashapplication.feature.transaction.presentation.main
 
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Directions
 import androidx.compose.material.icons.filled.Fastfood
@@ -30,6 +33,7 @@ import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.ShoppingBag
+import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
@@ -52,6 +56,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -60,15 +65,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionHeaderUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionUiGroupModel
-import com.example.nexcashapplication.feature.transaction.presentation.navigation.TransactionNavigationEvent
 import com.example.nexcashapplication.ui.theme.AccentTealGreen
 import com.example.nexcashapplication.ui.theme.BackgroundLight
 import com.example.nexcashapplication.ui.theme.BorderGray
@@ -77,21 +84,28 @@ import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.SuccessGreen
 import com.example.nexcashapplication.ui.theme.TextTertiary
 import com.example.nexcashapplication.ui.theme.WarningAmber
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun TransactionScreen(
     modifier: Modifier = Modifier,
     viewModel: TransactionViewModel = hiltViewModel(),
-    onNavigateToAddTransaction: () -> Unit = {},
-    onNavigateToDetail: (String) -> Unit = {},
+    navController: NavHostController
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { event ->
             when (event) {
-                is TransactionNavigationEvent.NavigateToAddTransaction -> onNavigateToAddTransaction()
-                is TransactionNavigationEvent.NavigateToDetail -> onNavigateToDetail(event.transactionId)
+                is TransactionEffect.NavigateToAddTransaction -> navController.navigate(
+                    Route.TransactionRoute.AddNew
+                )
+                is TransactionEffect.NavigateToDetail -> navController.navigate(
+                    Route.TransactionRoute.Detail(event.transactionId)
+                )
+                is TransactionEffect.ShowSnackbar -> {
+
+                }
             }
         }
     }
@@ -135,9 +149,9 @@ fun TransactionContent(
                 actions = {
                     IconButton(
                         modifier = Modifier.padding(horizontal = 8.dp),
-                        onClick = { onEvent(TransactionEvent.OnTransactionClick("")) },
+                        onClick = { /* Navigate to Account screen if needed */ },
                     ) {
-                        Icon(Icons.Filled.Add, contentDescription = "Tambah akun")
+                        Icon(Icons.Outlined.AccountBalanceWallet, contentDescription = "Tambah akun")
                     }
                 },
             )
@@ -246,28 +260,31 @@ fun TransactionContent(
                     }
                 }
                 state.groupedTransactions.forEach { uiGroupModel ->
+                    val isExpanded = state.expandedGroups.contains(uiGroupModel.header.title)
+
                     stickyHeader(key = uiGroupModel.header.id) {
                         TransactionGroupHeader(
                             label = uiGroupModel.header.title,
                             count = uiGroupModel.listTransaction.size,
                             total = uiGroupModel.header.totalAmount,
-                            isExpanded = state.expandedGroups.contains(uiGroupModel.header.title),
+                            isExpanded = isExpanded,
                             onToggle = { onEvent(TransactionEvent.OnGroupToggle(uiGroupModel.header.title)) },
                         )
                     }
-                    items(
-                        uiGroupModel.listTransaction,
-                        key = { it.id },
-                    ) { item ->
 
-                        Column {
-                            TransactionItem(
-                                transaction = item,
-                                onClick = { onEvent(TransactionEvent.OnTransactionClick(item.id)) },
-                            )
-                            HorizontalDivider(color = BorderGray)
+                    if (isExpanded) {
+                        items(
+                            uiGroupModel.listTransaction,
+                            key = { it.id ?: it.hashCode() },
+                        ) { item ->
+                            Column {
+                                TransactionItem(
+                                    transaction = item,
+                                    onClick = { onEvent(TransactionEvent.OnTransactionClick(item.id)) },
+                                )
+                                HorizontalDivider(color = BorderGray)
+                            }
                         }
-
                     }
                 }
 
@@ -287,34 +304,32 @@ fun TransactionGroupHeader(
     isExpanded: Boolean,
     onToggle: () -> Unit,
 ) {
+    val rotationState by animateFloatAsState(targetValue = if (isExpanded) 180f else 0f)
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.White)
+                .clickable { onToggle() },
     ) {
         Row(
             modifier = Modifier
                     .fillMaxWidth()
-//                .shadow(
-//                    elevation = 12.dp,
-//                    spotColor = Color.Black,
-//                    ambientColor = Color.Black,
-//
-//                    )
-                    .background(Color.White)
                     .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = label,
                 style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
             )
 
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(12.dp))
 
             Box(
                 modifier = Modifier
                         .background(
-                            color = BorderGray,
+                            color = BorderGray.copy(alpha = 0.5f),
                             shape = RoundedCornerShape(50.dp),
                         )
                         .padding(horizontal = 8.dp, vertical = 2.dp),
@@ -322,28 +337,27 @@ fun TransactionGroupHeader(
                 Text(
                     text = "$count",
                     style = MaterialTheme.typography.bodySmall,
+                    color = TextTertiary,
                 )
             }
             Spacer(Modifier.weight(1f))
 
+            val isPositive = total >= 0
             Text(
-                text = if (true)
-                    "+ Rp ${total.formatCurrency()}"
-                else
-                    "- Rp ${total.formatCurrency()}",
-                color = if (true) AccentTealGreen else Color.Red,
+                text = "${if (isPositive) "+" else "-"} Rp ${Math.abs(total).formatCurrency()}",
+                color = if (isPositive) AccentTealGreen else Color.Red,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
             )
 
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
-                modifier = Modifier.padding(start = 4.dp),
+                modifier = Modifier
+                        .padding(start = 4.dp)
+                        .rotate(rotationState),
                 tint = TextTertiary,
                 contentDescription = null,
             )
-
-
         }
         Box(
             modifier = Modifier
@@ -352,7 +366,7 @@ fun TransactionGroupHeader(
                     .background(
                         Brush.verticalGradient(
                             colors = listOf(
-                                Color.Black.copy(alpha = 0.08f),
+                                Color.Black.copy(alpha = 0.05f),
                                 Color.Transparent,
                             ),
                         ),
@@ -524,6 +538,7 @@ private fun TransactionScreenPreview() {
                 caategoryList = categoryList,
                 selectedCategory = "Semua",
                 groupedTransactions = groupedTransactions,
+                expandedGroups = setOf(groupedTransactions[0].header.title)
             ),
             onEvent = {},
         )

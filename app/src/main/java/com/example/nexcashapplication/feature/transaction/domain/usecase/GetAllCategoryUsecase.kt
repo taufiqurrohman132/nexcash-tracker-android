@@ -1,6 +1,6 @@
 package com.example.nexcashapplication.feature.transaction.domain.usecase
 
-import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
+import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import javax.inject.Inject
 
 class GetAllCategoryUsecase @Inject constructor(

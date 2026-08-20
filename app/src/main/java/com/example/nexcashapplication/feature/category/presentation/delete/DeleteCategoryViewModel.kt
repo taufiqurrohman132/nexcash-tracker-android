@@ -4,9 +4,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.domain.model.CategoryDeleteResolution
-import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
 import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
 import com.example.nexcashapplication.feature.category.presentation.delete.model.DeleteOption
 import com.example.nexcashapplication.feature.category.presentation.mapper.toCategoryDeleteItemList
@@ -19,7 +19,9 @@ class DeleteCategoryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val categoryRepository: CategoryRepository,
     private val categoryUseCases: CategoryUseCases,
-) : BaseViewModel<DeleteCategoryState, DeleteCategoryEvent, DeleteCategoryEffect>(DeleteCategoryState()) {
+) : BaseViewModel<DeleteCategoryState, DeleteCategoryEvent, DeleteCategoryEffect>(
+    DeleteCategoryState(),
+) {
     private val route: Route.CategoryRoute.Delete = savedStateHandle.toRoute()
     private val categoryId = route.categoryId
     private val typeCategory = route.typeCategory
@@ -36,9 +38,10 @@ class DeleteCategoryViewModel @Inject constructor(
 
                 categoryUseCases.getCategoryById(categoryId).collect { data ->
                     val listCategories =
-                        categoryRepository.getParentCategoriesNameByType(typeCategory.name.lowercase())
-                            .filter { it.id != data?.id }
-                            .toCategoryDeleteItemList()
+                        categoryRepository
+                                .getParentCategoriesNameByType(typeCategory.name.lowercase())
+                                .filter { it.id != data?.id }
+                                .toCategoryDeleteItemList()
 
                     updateState {
                         it.copy(

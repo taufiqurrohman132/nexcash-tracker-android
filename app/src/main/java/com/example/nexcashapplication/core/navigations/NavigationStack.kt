@@ -44,7 +44,9 @@ fun NavigationStack(
         }
 
         composable<Route.TransactionRoute.Main> {
-            TransactionScreen()
+            TransactionScreen(
+                navController = navController,
+            )
         }
 
         composable<Route.CategoryRoute.Detail> {

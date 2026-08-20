@@ -1,10 +1,10 @@
 package com.example.nexcashapplication.feature.category.presentation.mapper
 
 import androidx.compose.ui.graphics.Color
+import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.extension.toColor
 import com.example.nexcashapplication.core.extension.toHex
-import com.example.nexcashapplication.feature.category.domain.model.Category
 import com.example.nexcashapplication.feature.category.presentation.addnew.AddCategoryState
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 
@@ -16,7 +16,7 @@ fun AddCategoryState.toDomain(id: String, parentId: String? = null): Category {
         parentId = parentId,
         name = name,
         type = typeCategory,
-        icon = selectedIcon?.id.orEmpty(),
+        iconId = selectedIcon?.id.orEmpty(),
         color = selectedColor.toHex(),
         used = 0L,
         budget = budgetLimit ?: 0L,
@@ -37,7 +37,7 @@ fun Category.toUiState(
         id = id,
         name = name,
         typeCategory = type,
-        selectedIcon = CategoryIcons.fromId(id = icon),
+        selectedIcon = CategoryIcons.fromId(id = iconId),
         selectedColor = color.toColor(),
         recentIcons = recentIcons,
         recentColors = recentColors,

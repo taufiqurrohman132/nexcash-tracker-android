@@ -1,10 +1,12 @@
 package com.example.nexcashapplication.core.datasource.local.model
 
 import androidx.room.ColumnInfo
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import java.util.UUID
 
 @Entity(
@@ -62,4 +64,14 @@ data class CategoryEntity(
 
     @ColumnInfo(name = "deleted_at")
     val deletedAt: Long? = null,
+)
+
+data class CategoryAndSubcategoryEntity(
+    @Embedded
+    val category: CategoryEntity,
+    @Relation(
+        parentColumn = "id",
+        entityColumn = "parent_id",
+    )
+    val subCategories: List<CategoryEntity>,
 )

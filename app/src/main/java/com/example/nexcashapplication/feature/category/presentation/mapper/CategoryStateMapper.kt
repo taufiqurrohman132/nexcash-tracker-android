@@ -1,7 +1,7 @@
 package com.example.nexcashapplication.feature.category.presentation.mapper
 
+import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.extension.toColor
-import com.example.nexcashapplication.feature.category.domain.model.Category
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryItem
 
@@ -10,7 +10,7 @@ fun Category.toCategoryItem(): CategoryItem {
         id = id, // lihat catatan soal id di bawah
         nama = name,
         tipe = type,
-        icon = CategoryIcons.fromId(id = icon),
+        icon = CategoryIcons.fromId(id = iconId),
         iconColor = color.toColor(),
         terpakai = used,
         budget = budget,

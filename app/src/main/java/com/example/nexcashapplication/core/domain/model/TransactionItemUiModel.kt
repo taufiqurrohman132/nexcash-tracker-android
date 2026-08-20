@@ -3,7 +3,7 @@ package com.example.nexcashapplication.core.domain.model
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class TransactionItemUiModel(
-    val id: String,
+    val id: String?,
     val name: String,
     val time: String,       // "10:45"
     val amount: Long,

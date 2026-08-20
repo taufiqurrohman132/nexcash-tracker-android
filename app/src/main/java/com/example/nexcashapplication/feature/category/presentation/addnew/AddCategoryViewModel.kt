@@ -5,13 +5,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.datasource.local.datastore.PreferencesKeys
+import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.PreferencesRepository
 import com.example.nexcashapplication.core.extension.moveToFront
 import com.example.nexcashapplication.core.extension.toColor
 import com.example.nexcashapplication.core.extension.toHex
 import com.example.nexcashapplication.core.navigations.Route
-import com.example.nexcashapplication.feature.category.domain.repository.CategoryRepository
+import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect
 import com.example.nexcashapplication.feature.category.presentation.mapper.toDomain
@@ -24,15 +26,12 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import javax.inject.Inject
 
-import com.example.nexcashapplication.core.common.BaseViewModel
-import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
-
 @HiltViewModel
 class AddCategoryViewModel @Inject constructor(
     private val repository: CategoryRepository,
     private val preferencesRepository: PreferencesRepository,
     private val categoryUseCases: CategoryUseCases,
-    savedStateHandle: SavedStateHandle
+    savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddCategoryState, AddCategoryEvent, CategoryEffect>(AddCategoryState()) {
 
     private val route: Route.CategoryRoute.AddNew = savedStateHandle.toRoute()
@@ -50,7 +49,7 @@ class AddCategoryViewModel @Inject constructor(
                                         parentCategory = ParentCategoryUi(
                                             id = detailCategory.id,
                                             name = detailCategory.name,
-                                            icon = CategoryIcons.fromId(detailCategory.icon),
+                                            icon = CategoryIcons.fromId(detailCategory.iconId),
                                             color = detailCategory.color.toColor(),
                                         ),
                                     )
