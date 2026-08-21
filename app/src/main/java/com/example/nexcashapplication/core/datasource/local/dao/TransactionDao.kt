@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.example.nexcashapplication.core.datasource.local.model.CategoryEntity
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
 import com.example.nexcashapplication.core.datasource.local.model.TransactionWithDetailsEntity
 import com.example.nexcashapplication.core.datasource.local.result.CategoryExpenseResult
@@ -48,6 +49,14 @@ ORDER BY transaction_date DESC
         """)
     fun getAllTransactionWithDetailsByMonth(yearMonth: String): Flow<List<TransactionWithDetailsEntity>>
 
+    @Transaction
+    @Query(
+        """
+            SELECT * FROM transactions WHERE id = :id
+        """
+    )
+    fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetailsEntity>
+
     // dashboard: total bulan ini
     @Query(
         """
@@ -83,6 +92,17 @@ ORDER BY transaction_date DESC
         """,
     )
     fun getCountTransactionsByAccount(accountId: String): Flow<Int>
+
+
+    // Search transaksi (search bar di list)
+    @Query(
+        """
+        SELECT * FROM transactions 
+        WHERE title LIKE '%' || :query || '%' COLLATE NOCASE
+    """,
+    )
+    fun searchTransactions(query: String): Flow<List<TransactionWithDetailsEntity>>
+
 
     // Insert transaksi baru (dari FAB +)
     @Insert(onConflict = OnConflictStrategy.REPLACE)

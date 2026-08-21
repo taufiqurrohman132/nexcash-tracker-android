@@ -30,11 +30,9 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Output
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
-import androidx.compose.material.icons.outlined.AccountBox
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.LocationOn
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.ShoppingCart
 import androidx.compose.material.icons.outlined.Timer
@@ -81,7 +79,7 @@ import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
 import com.example.nexcashapplication.feature.common.components.AppTimePickerDialog
 import com.example.nexcashapplication.feature.common.transformation.ThousandSeparatorTransformation
-import com.example.nexcashapplication.feature.common.utils.DateTimeFormatter
+import com.example.nexcashapplication.feature.common.utils.TimeParser
 import com.example.nexcashapplication.feature.common.utils.formatDate
 import com.example.nexcashapplication.feature.common.utils.formatTime
 import com.example.nexcashapplication.feature.common.utils.hour
@@ -258,7 +256,9 @@ fun AddEditTransactionContent(
             ) {
                 SelectorRow(
                     icon = state.selectedCategory?.icon?.icon ?: Icons.Outlined.Category,
-                    iconBg = state.selectedCategory?.iconColor?.copy(alpha = 0.2f) ?: Color(0xFFDDF4FF),
+                    iconBg = state.selectedCategory?.iconColor?.copy(alpha = 0.2f) ?: Color(
+                        0xFFDDF4FF,
+                    ),
                     title = state.selectedCategory?.name ?: "Select Category",
                     subtitle = "e.g. Food, Transportation...",
                     onClick = { onEvent(AddEditTransactionEvent.OnCategoryClick) },
@@ -272,9 +272,12 @@ fun AddEditTransactionContent(
             ) {
                 SelectorRow(
                     icon = Icons.Outlined.AccountBalanceWallet,
-                    iconBg = state.selectedAccount?.provider?.color?.copy(alpha = 0.2f) ?: Color(0xFFEDE7FF),
+                    iconBg = state.selectedAccount?.provider?.color?.copy(alpha = 0.2f) ?: Color(
+                        0xFFEDE7FF,
+                    ),
                     title = state.selectedAccount?.name ?: "Select Account",
-                    subtitle = state.selectedAccount?.provider?.name ?: "Cash, Bank BCA, E-Wallet...",
+                    subtitle = state.selectedAccount?.provider?.name
+                        ?: "Cash, Bank BCA, E-Wallet...",
                     onClick = { onEvent(AddEditTransactionEvent.OnAccountClick) },
                 )
             }
@@ -364,7 +367,7 @@ fun AddEditTransactionContent(
                 onTimeSelected = { hour, minute ->
                     onEvent(
                         AddEditTransactionEvent.OnTimeChange(
-                            DateTimeFormatter.timeToInstant(
+                            TimeParser.timeToInstant(
                                 hour,
                                 minute,
                             ),
@@ -493,6 +496,12 @@ fun EditableAmountCard(
 ) {
     var amountField by remember {
         mutableStateOf(TextFieldValue(rawAmount, selection = TextRange(rawAmount.length)))
+    }
+
+    LaunchedEffect(rawAmount) {
+        if (rawAmount != amountField.text) {
+            amountField = TextFieldValue(rawAmount, selection = TextRange(rawAmount.length))
+        }
     }
 
     OutlinedTextField(

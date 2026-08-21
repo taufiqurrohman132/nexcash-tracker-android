@@ -10,7 +10,7 @@ import kotlin.time.Clock
 import kotlin.time.Instant
 
 data class DetailTransactionState(
-    val transactionId: String = "",
+    val transactionId: String? = null,
     val name: String = "",           // "Gojek - Transportasi"
     val amount: Long = 0L,
     val type: TransactionType = TransactionType.EXPENSE,   // INCOME / EXPENSE — dari domain enum, bukan dihardcode di sini

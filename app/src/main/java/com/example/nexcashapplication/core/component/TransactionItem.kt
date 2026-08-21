@@ -2,6 +2,8 @@ package com.example.nexcashapplication.core.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -14,42 +16,48 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.ui.theme.AccentTealGreen
 import com.example.nexcashapplication.ui.theme.BorderGray
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.TextSecondary
 
 @Composable
 fun TransactionItem(
     transaction: TransactionItemUiModel,
-    onClick: (id: String) -> Unit,
+    onClick: (id: String?) -> Unit,
 ) {
 
     ListItem(
+        modifier = Modifier
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = ripple(),
+                    onClick = { onClick(transaction.id) },
+                ),
         leadingContent = {
             Box(
                 modifier = Modifier
                         .background(
-                            color = PrimaryCyan.copy(alpha = 0.1f),
+                            color = transaction.iconColor.copy(alpha = 0.1f),
                             shape = CircleShape,
                         )
                         .size(50.dp),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.insights),
-                    tint = PrimaryCyan,
+                    imageVector = transaction.icon,
+                    tint = transaction.iconColor,
                     contentDescription = null,
                     modifier = Modifier.size(24.dp),
                 )
@@ -72,11 +80,11 @@ fun TransactionItem(
                 horizontalAlignment = Alignment.End,
             ) {
                 Text(
-                    text = if (transaction.isIncome)
+                    text = if (transaction.typeTransaction == TransactionType.INCOME)
                         "+ Rp ${transaction.amount.formatCurrency()}"
                     else
                         "- Rp ${transaction.amount.formatCurrency()}",
-                    color = if (transaction.isIncome) AccentTealGreen else Color.Red,
+                    color = if (transaction.typeTransaction == TransactionType.INCOME) AccentTealGreen else Color.Red,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -109,10 +117,11 @@ private fun TransactionItemPreview() {
             name = "Transfer Gaji",
             time = "23 okt, 10:45",
             amount = 5_000_000,
-            isIncome = true,
+            typeTransaction = TransactionType.INCOME,
             category = "Salary",
             account = "BCA Finance",
             icon = Icons.Default.Category,
+            iconColor = Color.Black,
         ),
         onClick = {},
     )

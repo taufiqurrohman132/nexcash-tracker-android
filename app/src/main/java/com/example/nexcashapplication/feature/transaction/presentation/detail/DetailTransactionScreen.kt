@@ -22,7 +22,12 @@ import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.AccountBalanceWallet
+import androidx.compose.material.icons.outlined.Category
+import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.DirectionsCar
+import androidx.compose.material.icons.outlined.Label
+import androidx.compose.material.icons.outlined.NoteAlt
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -33,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -40,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,10 +54,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.component.IconRounded
+import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.extension.toColor
+import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.common.utils.formatDate
+import com.example.nexcashapplication.feature.common.utils.formatTime
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.feature.transaction.presentation.detail.DetailTransactionEffect
 import com.example.nexcashapplication.feature.transaction.presentation.detail.DetailTransactionEvent
 import com.example.nexcashapplication.feature.transaction.presentation.detail.DetailTransactionState
 import com.example.nexcashapplication.feature.transaction.presentation.detail.DetailTransactionViewModel
@@ -62,9 +78,30 @@ import com.example.nexcashapplication.ui.theme.TextSecondary
 fun DetailTransactionScreen(
     modifier: Modifier = Modifier,
     viewModel: DetailTransactionViewModel = hiltViewModel(),
+    navController: NavHostController
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when(effect){
+                DetailTransactionEffect.NavigateBack -> {
+                    navController.popBackStack()
+                }
+                is DetailTransactionEffect.NavigateToEdit -> {
+                    navController.navigate(
+                        Route.TransactionRoute.AddEdit(effect.transactionId)
+                    )
+                }
+                is DetailTransactionEffect.ShareTransaction -> TODO()
+                DetailTransactionEffect.ShowDeleteConfirmationDialog -> TODO()
+                is DetailTransactionEffect.ShowSnackbar -> {
+
+                }
+            }
+        }
+    }
+    
     DetailTransactionContent(
         state = state,
         onEvent = viewModel::onEvent,
@@ -91,7 +128,7 @@ fun DetailTransactionContent(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { onEvent(DetailTransactionEvent.EditClicked) }) {
+                    IconButton(onClick = { onEvent(DetailTransactionEvent.OnBackClick) }) {
                         Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Kembali")
                     }
                 },
@@ -116,11 +153,12 @@ fun DetailTransactionContent(
             )
 
             DetailContent(
-                date = "12 Oktober 2023",
-                time = "12:23 WIB",
-                categoryName = "Transportasi",
-                accountName = "BCA Utama",
-                catatan = "catatan",
+                date = state.dateTime.formatDate(),
+                time = state.dateTime.formatTime(),
+                categoryName = state.category?.name ?: "Unknown Category",
+                accountName = state.account?.name ?: "Unknown Account",
+                catatan = state.note ?: "",
+                type = state.type,
             )
 
             LampiranContent(
@@ -145,7 +183,7 @@ fun DetailTransactionContent(
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(18.dp))
                             .border(1.dp, BorderGray, RoundedCornerShape(14.dp))
-                            .clickable(onClick = { onEvent(DetailTransactionEvent.EditClicked) })
+                            .clickable(onClick = { onEvent(DetailTransactionEvent.OnAttachmentClick) })
                             .padding(12.dp),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -213,22 +251,22 @@ fun DetailTransactionContent(
                 ActionButton(
                     icon = Icons.Default.Edit,
                     label = "UBAH",
-                    onClick = { onEvent(DetailTransactionEvent.EditClicked) },
+                    onClick = { onEvent(DetailTransactionEvent.OnEditClick) },
                 )
                 ActionButton(
                     icon = Icons.Default.ContentCopy,
                     label = "SALIN",
-                    onClick = { onEvent(DetailTransactionEvent.EditClicked) },
+                    onClick = { onEvent(DetailTransactionEvent.OnDuplicateClick) },
                 )
                 ActionButton(
                     icon = Icons.Default.Share,
                     label = "BAGIKAN",
-                    onClick = { onEvent(DetailTransactionEvent.ShareClicked) },
+                    onClick = { onEvent(DetailTransactionEvent.OnShareClick) },
                 )
                 ActionButton(
                     icon = Icons.Default.Delete,
                     label = "HAPUS",
-                    onClick = { onEvent(DetailTransactionEvent.DeleteClicked) },
+                    onClick = { onEvent(DetailTransactionEvent.OnDeleteClick) },
                     iconTint = Color(0xFFE94057),
                     labelColor = Color(0xFFE94057),
                     backgroundColor = Color(0xFFFDE9EC),
@@ -273,20 +311,6 @@ private fun ActionButton(
                 .clickable(onClick = onClick)
                 .padding(horizontal = 12.dp, vertical = 6.dp),
     ) {
-//        Box(
-//            modifier = Modifier
-//                    .size(44.dp)
-//                    .clip(CircleShape)
-//                    .background(backgroundColor),
-//            contentAlignment = Alignment.Center,
-//        ) {
-//            Icon(
-//                imageVector = icon,
-//                contentDescription = label,
-//                tint = iconTint,
-//                modifier = Modifier.size(18.dp),
-//            )
-//        }
         IconRounded(
             imageVector = icon,
             iconColor = iconTint,
@@ -308,6 +332,7 @@ private fun ActionButton(
 @Composable
 fun DetailContent(
     modifier: Modifier = Modifier,
+    type: TransactionType,
     date: String,
     time: String,
     categoryName: String,
@@ -318,27 +343,27 @@ fun DetailContent(
         modifier = modifier.padding(horizontal = 16.dp),
     ) {
         DetailContentRow(
-            icon = Icons.Outlined.DirectionsCar,
+            icon = Icons.Outlined.DateRange,
             label = "Tanggal & Waktu",
-            value = "12 Oktober 2023, 12:23 WIB",
+            value = "$date, $time WIB",
         )
         HorizontalDivider(color = BorderGray)
         DetailContentRow(
-            icon = Icons.Outlined.DirectionsCar,
-            label = "Tanggal & Waktu",
-            value = "12 Oktober 2023, 12:23 WIB",
+            icon = Icons.Outlined.Label,
+            label = "Kategori",
+            value = categoryName,
         )
         HorizontalDivider(color = BorderGray)
         DetailContentRow(
-            icon = Icons.Outlined.DirectionsCar,
-            label = "Tanggal & Waktu",
-            value = "12 Oktober 2023, 12:23 WIB",
+            icon = Icons.Outlined.AccountBalanceWallet,
+            label = if (type == TransactionType.EXPENSE) "Sumber Dana" else "Diterima di",
+            value = accountName,
         )
         HorizontalDivider(color = BorderGray)
         DetailContentRow(
-            icon = Icons.Outlined.DirectionsCar,
-            label = "Tanggal & Waktu",
-            value = "12 Oktober 2023, 12:23 WIB",
+            icon = Icons.Outlined.NoteAlt,
+            label = "Catatan",
+            value = catatan,
         )
 
     }
@@ -364,7 +389,7 @@ fun DetailContentRow(
         Column {
             Text(
                 text = label.uppercase(),
-                style = MaterialTheme.typography.titleSmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondary,
             )
             Text(
@@ -397,17 +422,17 @@ fun HeaderContent(
             icon = icon,
             iconColor = iconColor,
             backgroundColor = iconColor.copy(alpha = 0.1f),
-            size = 48.dp,
+            size = 68.dp,
             iconToCountainerRatio = 2,
         )
-        Spacer(Modifier.height(8.dp))
+        Spacer(Modifier.height(16.dp))
         Text(
             text = "$titleName - $categoryName",
             style = MaterialTheme.typography.bodyMedium,
         )
         Text(
-            text = amount.toString(),
-            style = MaterialTheme.typography.titleLarge,
+            text = stringResource(R.string.total_balance_format, amount.formatCurrency()),
+            style = MaterialTheme.typography.headlineLarge,
             color = amountColor,
             fontWeight = FontWeight.Bold,
         )

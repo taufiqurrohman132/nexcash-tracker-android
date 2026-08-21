@@ -34,10 +34,12 @@ fun NavigationStack(
         }
 
         composable<Route.TransactionRoute.Detail> {
-            DetailTransactionScreen()
+            DetailTransactionScreen(
+                navController = navController,
+            )
         }
 
-        composable<Route.TransactionRoute.AddNew> {
+        composable<Route.TransactionRoute.AddEdit> {
             AddEditTransactionScreen(
                 navController = navController,
             )

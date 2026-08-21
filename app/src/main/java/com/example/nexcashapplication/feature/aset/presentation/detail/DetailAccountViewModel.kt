@@ -68,7 +68,10 @@ class DetailAccountViewModel @Inject constructor(
             DetailAccountEvent.OnSettingsClick -> TODO()
             is DetailAccountEvent.OnTransactionClick -> {
                 viewModelScope.launch {
-                    sendEffect(DetailAccountEffect.NavigateToTransactionDetail(event.transactionId))
+                    if (event.transactionId == null) {
+                        sendEffect(DetailAccountEffect.ShowSnackbar("Transaksi tidak tersedia"))
+                    } else
+                        sendEffect(DetailAccountEffect.NavigateToTransactionDetail(event.transactionId))
                 }
             }
 

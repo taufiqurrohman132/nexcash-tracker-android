@@ -17,8 +17,10 @@ interface TransactionRepository {
     fun getRecentTransactions(limit: Int): Flow<List<TransactionEntity>>
 
     fun getAllTransactions(): Flow<List<Transaction>>
-    fun getTransactionById(id: String): Flow<Transaction?>
+    fun getTransactionById(id: String): Flow<Transaction>
+    fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetails>
     fun getCountTransactionsByAccount(accountId: String): Flow<Int>
+    fun searchTransactions(query: String): Flow<List<TransactionWithDetails>>
 
     suspend fun insertTransaction(transaction: Transaction)
     suspend fun updateTransaction(transaction: Transaction)

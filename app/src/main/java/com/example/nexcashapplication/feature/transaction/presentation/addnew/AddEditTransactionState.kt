@@ -8,6 +8,7 @@ import kotlin.time.Instant
 
 
 data class AddEditTransactionState(
+    val transactionId: String? = null,
     val type: TransactionType = TransactionType.EXPENSE,
     val amount: Long = 0L,
     val nameTransaction: String = "",

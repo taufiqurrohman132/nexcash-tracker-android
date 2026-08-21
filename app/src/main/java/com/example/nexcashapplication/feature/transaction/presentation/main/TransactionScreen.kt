@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Directions
 import androidx.compose.material.icons.filled.Fastfood
@@ -60,13 +59,14 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.component.TransactionItem
@@ -74,6 +74,7 @@ import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionHeaderUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionUiGroupModel
 import com.example.nexcashapplication.ui.theme.AccentTealGreen
@@ -84,13 +85,12 @@ import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.SuccessGreen
 import com.example.nexcashapplication.ui.theme.TextTertiary
 import com.example.nexcashapplication.ui.theme.WarningAmber
-import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun TransactionScreen(
     modifier: Modifier = Modifier,
     viewModel: TransactionViewModel = hiltViewModel(),
-    navController: NavHostController
+    navController: NavHostController,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -98,11 +98,13 @@ fun TransactionScreen(
         viewModel.effect.collect { event ->
             when (event) {
                 is TransactionEffect.NavigateToAddTransaction -> navController.navigate(
-                    Route.TransactionRoute.AddNew
+                    Route.TransactionRoute.AddEdit(),
                 )
+
                 is TransactionEffect.NavigateToDetail -> navController.navigate(
-                    Route.TransactionRoute.Detail(event.transactionId)
+                    Route.TransactionRoute.Detail(event.transactionId),
                 )
+
                 is TransactionEffect.ShowSnackbar -> {
 
                 }
@@ -151,7 +153,10 @@ fun TransactionContent(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         onClick = { /* Navigate to Account screen if needed */ },
                     ) {
-                        Icon(Icons.Outlined.AccountBalanceWallet, contentDescription = "Tambah akun")
+                        Icon(
+                            Icons.Outlined.AccountBalanceWallet,
+                            contentDescription = "Tambah akun",
+                        )
                     }
                 },
             )
@@ -226,67 +231,83 @@ fun TransactionContent(
                         .fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(0.dp),
             ) {
-
-                // sumary card
-                item(key = "summary_card") {
-                    Row(
-                        modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
-                        SummaryCard(
-                            title = "Hari Ini",
-                            amount = state.todayTotal,
-                            modifier = Modifier.weight(1f),
-                            icon = Icons.Default.KeyboardArrowDown,
-                            iconColor = Color.Red,
-                        )
-                        SummaryCard(
-                            title = "Minggu Ini",
-                            amount = state.weekTotal,
-                            modifier = Modifier.weight(1f),
-                            icon = Icons.Default.KeyboardArrowUp,
-                            iconColor = WarningAmber,
-                        )
-                        SummaryCard(
-                            title = "Sisa Budget",
-                            amount = state.remainingBudget,
-                            modifier = Modifier.weight(1f),
-                            iconColor = SuccessGreen,
-                            icon = Icons.Default.QrCodeScanner,
-
+                if (state.searchQuery.isNotBlank()) {
+                    items(
+                        state.trasactionsSearchList,
+                        key = { it.id ?: it.hashCode() },
+                    ) { item ->
+                        Column {
+                            TransactionItem(
+                                transaction = item,
+                                onClick = { onEvent(TransactionEvent.OnTransactionClick(item.id)) },
                             )
+                            HorizontalDivider(color = BorderGray)
+                        }
                     }
-                }
-                state.groupedTransactions.forEach { uiGroupModel ->
-                    val isExpanded = state.expandedGroups.contains(uiGroupModel.header.title)
+                } else {
+                    // sumary card
+                    item(key = "summary_card") {
+                        Row(
+                            modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            SummaryCard(
+                                title = "Hari Ini",
+                                amount = state.todayTotal,
+                                modifier = Modifier.weight(1f),
+                                icon = Icons.Default.KeyboardArrowDown,
+                                iconColor = Color.Red,
+                            )
+                            SummaryCard(
+                                title = "Minggu Ini",
+                                amount = state.weekTotal,
+                                modifier = Modifier.weight(1f),
+                                icon = Icons.Default.KeyboardArrowUp,
+                                iconColor = WarningAmber,
+                            )
+                            SummaryCard(
+                                title = "Sisa Budget",
+                                amount = state.remainingBudget,
+                                modifier = Modifier.weight(1f),
+                                iconColor = SuccessGreen,
+                                icon = Icons.Default.QrCodeScanner,
 
-                    stickyHeader(key = uiGroupModel.header.id) {
-                        TransactionGroupHeader(
-                            label = uiGroupModel.header.title,
-                            count = uiGroupModel.listTransaction.size,
-                            total = uiGroupModel.header.totalAmount,
-                            isExpanded = isExpanded,
-                            onToggle = { onEvent(TransactionEvent.OnGroupToggle(uiGroupModel.header.title)) },
-                        )
-                    }
-
-                    if (isExpanded) {
-                        items(
-                            uiGroupModel.listTransaction,
-                            key = { it.id ?: it.hashCode() },
-                        ) { item ->
-                            Column {
-                                TransactionItem(
-                                    transaction = item,
-                                    onClick = { onEvent(TransactionEvent.OnTransactionClick(item.id)) },
                                 )
-                                HorizontalDivider(color = BorderGray)
+                        }
+                    }
+
+                    state.groupedTransactions.forEach { uiGroupModel ->
+                        val isExpanded = !state.collapsGroups.contains(uiGroupModel.header.title)
+
+                        stickyHeader(key = uiGroupModel.header.id) {
+                            TransactionGroupHeader(
+                                label = uiGroupModel.header.title,
+                                count = uiGroupModel.listTransaction.size,
+                                total = uiGroupModel.header.totalAmount,
+                                isExpanded = isExpanded,
+                                onToggle = { onEvent(TransactionEvent.OnGroupToggle(uiGroupModel.header.title)) },
+                            )
+                        }
+
+                        if (isExpanded) {
+                            items(
+                                uiGroupModel.listTransaction,
+                                key = { it.id ?: it.hashCode() },
+                            ) { item ->
+                                Column {
+                                    TransactionItem(
+                                        transaction = item,
+                                        onClick = { onEvent(TransactionEvent.OnTransactionClick(item.id)) },
+                                    )
+                                    HorizontalDivider(color = BorderGray)
+                                }
                             }
                         }
                     }
                 }
+
 
             }
 
@@ -308,13 +329,13 @@ fun TransactionGroupHeader(
 
     Column(
         modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.White)
-                .clickable { onToggle() },
+                .fillMaxWidth(),
     ) {
         Row(
             modifier = Modifier
                     .fillMaxWidth()
+                    .background(Color.White)
+                    .clickable { onToggle() }
                     .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
@@ -409,7 +430,7 @@ fun SummaryCard(
                 style = MaterialTheme.typography.bodySmall,
             )
             Text(
-                text = amount.formatCompact(),
+                text = stringResource(R.string.total_balance_format, amount.formatCompact()),
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.SemiBold,
             )
@@ -438,7 +459,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
         header = TransactionHeaderUiModel(
             id = "group_1",
             title = "Hari Ini, 17 Agustus 2026",
-            time = 1755388800000L, // epoch millis untuk 17 Agu 2026
+            time = "1755388800000L", // epoch millis untuk 17 Agu 2026
             totalAmount = 4_250_000L, // net (income - expense) grup ini
             isExpanded = true,
         ),
@@ -448,58 +469,67 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 name = "Gaji Bulanan",
                 time = "08:00",
                 amount = 5_000_000L,
-                isIncome = true,
+                typeTransaction = TransactionType.INCOME,
                 category = "Gaji",
                 account = "Bank BCA",
                 icon = Icons.Default.AttachMoney,
+                iconColor = PrimaryCyan,
             ),
             TransactionItemUiModel(
                 id = "trx_2",
                 name = "Makan Siang Warteg",
                 time = "12:30",
                 amount = 25_000L,
-                isIncome = false,
+                typeTransaction = TransactionType.INCOME,
                 category = "Makanan & Minuman",
                 account = "Cash",
                 icon = Icons.Default.Fastfood,
-            ),
+                iconColor = PrimaryCyan,
+
+                ),
             TransactionItemUiModel(
                 id = "trx_3",
                 name = "Bensin Motor",
                 time = "14:15",
                 amount = 50_000L,
-                isIncome = false,
+                typeTransaction = TransactionType.INCOME,
                 category = "Transportasi",
                 account = "Cash",
                 icon = Icons.Default.Directions,
-            ),
+                iconColor = PrimaryCyan,
+
+                ),
             TransactionItemUiModel(
                 id = "trx_4",
                 name = "Beli Baju",
                 time = "16:45",
                 amount = 275_000L,
-                isIncome = false,
+                typeTransaction = TransactionType.INCOME,
                 category = "Belanja",
                 account = "Bank BCA",
                 icon = Icons.Default.ShoppingBag,
-            ),
+                iconColor = PrimaryCyan,
+
+                ),
             TransactionItemUiModel(
                 id = "trx_5",
                 name = "Tagihan Listrik",
                 time = "19:00",
                 amount = 400_000L,
-                isIncome = false,
+                typeTransaction = TransactionType.INCOME,
                 category = "Tagihan",
                 account = "Bank BCA",
                 icon = Icons.Default.Receipt,
-            ),
+                iconColor = PrimaryCyan,
+
+                ),
         ),
     ),
     TransactionUiGroupModel(
         header = TransactionHeaderUiModel(
             id = "group_2",
             title = "Kemarin, 16 Agustus 2026",
-            time = 1755302400000L, // epoch millis untuk 16 Agu 2026
+            time = "1755302400000L", // epoch millis untuk 16 Agu 2026
             totalAmount = -180_000L,
             isExpanded = false,
         ),
@@ -509,21 +539,25 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 name = "Nonton Bioskop",
                 time = "20:00",
                 amount = 100_000L,
-                isIncome = false,
+                typeTransaction = TransactionType.INCOME,
                 category = "Hiburan",
                 account = "Cash",
                 icon = Icons.Default.Movie,
-            ),
+                iconColor = PrimaryCyan,
+
+                ),
             TransactionItemUiModel(
                 id = "trx_7",
                 name = "Beli Obat",
                 time = "10:20",
                 amount = 80_000L,
-                isIncome = false,
+                typeTransaction = TransactionType.INCOME,
                 category = "Kesehatan",
                 account = "Cash",
                 icon = Icons.Default.LocalHospital,
-            ),
+                iconColor = PrimaryCyan,
+
+                ),
         ),
     ),
 )
@@ -538,7 +572,7 @@ private fun TransactionScreenPreview() {
                 caategoryList = categoryList,
                 selectedCategory = "Semua",
                 groupedTransactions = groupedTransactions,
-                expandedGroups = setOf(groupedTransactions[0].header.title)
+                collapsGroups = setOf(groupedTransactions[0].header.title),
             ),
             onEvent = {},
         )

@@ -77,6 +77,7 @@ import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.aset.presentation.addedit.form.model.AccountProviderUiModel
 import com.example.nexcashapplication.feature.aset.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.feature.aset.presentation.shared.component.DeleteAccountDialog
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.collectLatest
@@ -286,7 +287,7 @@ private fun SettingsRow(
 @Composable
 private fun RecentTransactionsSection(
     transactions: List<TransactionItemUiModel>,
-    onItemClick: (String) -> Unit,
+    onItemClick: (String?) -> Unit,
 ) {
 
     Card(
@@ -400,80 +401,88 @@ val dummyTransactions = listOf(
         name = "Gaji Bulanan",
         time = "08:00",
         amount = 8_500_000,
-        isIncome = true,
+        typeTransaction = TransactionType.INCOME,
         category = "Gaji",
         account = "BCA",
         icon = Icons.Default.AccountBalanceWallet,
+        iconColor = Color.Black,
     ),
     TransactionItemUiModel(
         id = "2",
         name = "Makan Siang",
         time = "12:30",
         amount = 35_000,
-        isIncome = false,
+        typeTransaction = TransactionType.INCOME,
         category = "Makanan & Minuman",
         account = "Cash",
         icon = Icons.Default.Restaurant,
+        iconColor = Color.Black,
     ),
     TransactionItemUiModel(
         id = "3",
         name = "Langganan Netflix",
         time = "10:15",
         amount = 54_000,
-        isIncome = false,
+        typeTransaction = TransactionType.INCOME,
         category = "Hiburan",
         account = "Gopay",
         icon = Icons.Default.Movie,
+        iconColor = Color.Black,
     ),
     TransactionItemUiModel(
         id = "4",
         name = "Bensin Motor",
         time = "07:45",
         amount = 25_000,
-        isIncome = false,
+        typeTransaction = TransactionType.INCOME,
         category = "Transportasi",
         account = "Cash",
         icon = Icons.Default.LocationOn,
+        iconColor = Color.Black,
     ),
     TransactionItemUiModel(
         id = "5",
         name = "Freelance Project",
         time = "16:20",
         amount = 1_200_000,
-        isIncome = true,
+        typeTransaction = TransactionType.INCOME,
         category = "Freelance",
         account = "BCA",
         icon = Icons.Default.Work,
+        iconColor = Color.Black,
     ),
     TransactionItemUiModel(
         id = "6",
         name = "Belanja Bulanan",
         time = "19:00",
         amount = 450_000,
-        isIncome = false,
+        typeTransaction = TransactionType.INCOME,
         category = "Belanja",
         account = "Gopay",
         icon = Icons.Default.ShoppingCart,
+        iconColor = Color.Black,
     ),
     TransactionItemUiModel(
         id = "7",
         name = "Tagihan Listrik",
         time = "09:10",
         amount = 180_000,
-        isIncome = false,
+        typeTransaction = TransactionType.INCOME,
         category = "Tagihan",
         account = "BCA",
         icon = Icons.Default.Bolt,
+        iconColor = Color.Black,
     ),
     TransactionItemUiModel(
         id = "8",
         name = "Transfer dari Teman",
         time = "14:05",
         amount = 200_000,
-        isIncome = true,
+        typeTransaction = TransactionType.INCOME,
         category = "Tanpa Kategori",
         account = "Akun Dihapus",
         icon = Icons.Default.Category,
+        iconColor = Color.Black,
     ),
 )
 

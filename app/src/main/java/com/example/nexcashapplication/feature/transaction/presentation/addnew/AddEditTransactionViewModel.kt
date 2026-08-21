@@ -1,12 +1,16 @@
 package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
+import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.aset.domain.repository.AccountRepository
 import com.example.nexcashapplication.feature.aset.presentation.main.mapper.toAccountUiModel
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.mapper.toAddEditTransactionState
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.mapper.toUIModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
@@ -19,9 +23,16 @@ class AddEditTransactionViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
     private val accountRepository: AccountRepository,
+    savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddEditTransactionState, AddEditTransactionEvent, AddEditTransactionEffect>(
     initialState = AddEditTransactionState(),
 ) {
+    private val route: Route.TransactionRoute.AddEdit = savedStateHandle.toRoute()
+    private val transactionId = route.transactionId
+
+    init {
+        observeTransaction(transactionId)
+    }
 
 
     override fun onEvent(event: AddEditTransactionEvent) {
@@ -49,15 +60,7 @@ class AddEditTransactionViewModel @Inject constructor(
 
                 if (willShow && state.value.availableAccounts.isEmpty()) {
                     viewModelScope.launch {
-                        runCatching {
-                            accountRepository.getAllAccounts().first()
-                        }.onSuccess { result ->
-                            updateState {
-                                it.copy(
-                                    availableAccounts = result.map { it.toAccountUiModel() },
-                                )
-                            }
-                        }
+                        ensureAccountsLoaded()
                     }
                 }
             }
@@ -80,17 +83,9 @@ class AddEditTransactionViewModel @Inject constructor(
                     )
                 }
 
-                if (willShow && state.value.availableCategories.isEmpty()) {
+                if (willShow) {
                     viewModelScope.launch {
-                        runCatching {
-                            categoryRepository.getCategoriesAndSubCategories()
-                        }.onSuccess { result ->
-                            updateState {
-                                it.copy(
-                                    availableCategories = result.map { model -> model.toUIModel() },
-                                )
-                            }
-                        }
+                        ensureCategoriesLoaded()
                     }
                 }
             }
@@ -165,7 +160,8 @@ class AddEditTransactionViewModel @Inject constructor(
 
             is AddEditTransactionEvent.OnCategorySelected -> {
                 val categoryId = event.category.id
-                val parentCategory = state.value.availableCategories.find { it.categoriItem.id == categoryId }
+                val parentCategory =
+                    state.value.availableCategories.find { it.categoriItem.id == categoryId }
                 val hasSubCategories = parentCategory?.subCategoriesItem?.isNotEmpty() == true
 
                 updateState {
@@ -186,16 +182,74 @@ class AddEditTransactionViewModel @Inject constructor(
             val currentState = state.value
 
             val transaction = Transaction(
+                id = currentState.transactionId, // sesuaikan strategi ID-mu
                 title = currentState.nameTransaction,
                 amount = currentState.amount,
                 categoryId = currentState.selectedCategoryId,
                 description = currentState.note,
-                isIncome = currentState.type == TransactionType.INCOME,
+                typeTransaction = currentState.type,
                 accountId = currentState.selectedAccountId ?: "",
                 dateTime = currentState.transactionAt,
             )
-            transactionRepository.insertTransaction(transaction)
+
+            if (currentState.transactionId != null) {
+                transactionRepository.updateTransaction(transaction)
+            } else {
+                transactionRepository.insertTransaction(transaction)
+            }
+
             sendEffect(AddEditTransactionEffect.NavigateBack)
+        }
+    }
+
+    private fun observeTransaction(id: String?) {
+        viewModelScope.launch {
+            if (id != null) {
+                launch {
+                    ensureCategoriesLoaded()
+                }
+                launch {
+                    ensureAccountsLoaded()
+                }
+
+                transactionRepository.getTransactionWithDetailsById(id).collect { transaction ->
+                    updateState { current ->
+                        transaction.toAddEditTransactionState(
+                            availableCategories = current.availableCategories,
+                            availableAccounts = current.availableAccounts,
+                        ).copy(
+                            showDatePicker = current.showDatePicker,
+                            showTimePicker = current.showTimePicker,
+                            showCategoryBottomSheet = current.showCategoryBottomSheet,
+                            showAccountBottomSheet = current.showAccountBottomSheet,
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun ensureCategoriesLoaded() {
+        if (state.value.availableCategories.isNotEmpty()) return
+
+        runCatching {
+            categoryRepository.getCategoriesAndSubCategories()
+        }.onSuccess { result ->
+            updateState {
+                it.copy(availableCategories = result.map { model -> model.toUIModel() })
+            }
+        }
+    }
+
+    private suspend fun ensureAccountsLoaded() {
+        if (state.value.availableAccounts.isNotEmpty()) return
+
+        runCatching {
+            accountRepository.getAllAccounts().first()
+        }.onSuccess { result ->
+            updateState {
+                it.copy(availableAccounts = result.map { it.toAccountUiModel() })
+            }
         }
     }
 }

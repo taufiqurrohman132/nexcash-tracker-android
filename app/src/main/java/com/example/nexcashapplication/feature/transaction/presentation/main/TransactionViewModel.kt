@@ -2,28 +2,36 @@ package com.example.nexcashapplication.feature.transaction.presentation.main
 
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetAllCategoryUsecase
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetMonthlySummaryUseCase
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetTransactionsWithDetailsByMonthUseCase
+import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModelList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
 import kotlin.time.Clock
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
     private val getTransactionsWithDetailsByMonthUseCase: GetTransactionsWithDetailsByMonthUseCase,
     private val getMonthlySummaryUseCase: GetMonthlySummaryUseCase,
     private val getAllCategoryUsecase: GetAllCategoryUsecase,
+    private val transactionRepository: TransactionRepository,
 ) : BaseViewModel<TransactionState, TransactionEvent, TransactionEffect>(
     TransactionState(),
 ) {
@@ -37,6 +45,7 @@ class TransactionViewModel @Inject constructor(
 
     init {
         observerData()
+        observerSearch()
     }
 
     override fun onEvent(event: TransactionEvent) {
@@ -63,10 +72,10 @@ class TransactionViewModel @Inject constructor(
             }
 
             is TransactionEvent.OnGroupToggle -> {
-                val current = state.value.expandedGroups
+                val current = state.value.collapsGroups
                 updateState {
                     it.copy(
-                        expandedGroups = if (current.contains(event.groupLabel)) {
+                        collapsGroups = if (current.contains(event.groupLabel)) {
                             current - event.groupLabel
                         } else {
                             current + event.groupLabel
@@ -124,5 +133,29 @@ class TransactionViewModel @Inject constructor(
                 .onEach { /* update state */ }
                 .launchIn(viewModelScope)
 
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun observerSearch() {
+        viewModelScope.launch {
+            state.map { it.searchQuery }
+                    .distinctUntilChanged()
+                    .debounce(300.milliseconds)
+                    .flatMapLatest { query ->
+                        if (query.isBlank()) {
+                            flowOf(emptyList())
+                        } else {
+                            transactionRepository.searchTransactions(query)
+                        }
+                    }
+                    .map { list -> list.map { it.toItemUiModel() }}
+                    .collect { result ->
+                        updateState {
+                            it.copy(
+                                trasactionsSearchList = result
+                            )
+                        }
+                    }
+        }
     }
 }

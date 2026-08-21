@@ -20,12 +20,20 @@ class TransactionRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun getTransactionById(id: String): Flow<Transaction?> {
+    override fun getTransactionById(id: String): Flow<Transaction> {
         TODO("Not yet implemented")
+    }
+
+    override fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetails> {
+        return dao.getTransactionWithDetailsById(id).map { it.toDomain() }
     }
 
     override fun getCountTransactionsByAccount(accountId: String): Flow<Int> {
         return dao.getCountTransactionsByAccount(accountId)
+    }
+
+    override fun searchTransactions(query: String): Flow<List<TransactionWithDetails>> {
+        return dao.searchTransactions(query).map { list -> list.map { it.toDomain() } }
     }
 
     override fun getTransactionsByMonth(yearMonth: String): Flow<List<Transaction>> {
