@@ -11,18 +11,23 @@ interface TransactionRepository {
         yearMonth: String,
     ): Flow<MonthlySummary>  // saldo, pemasukan, pengeluaran
 
-    fun getTransactionsByMonth(yearMonth: String): Flow<List<Transaction>>
-    fun getTransactionsWithDetailsByMonth(yearMonth: String): Flow<List<TransactionWithDetails>>
+    fun getObserverTransactionsByMonth(yearMonth: String): Flow<List<Transaction>>
+    fun getObserverTransactionsWithDetailsByMonth(
+        yearMonth: String,
+        categoryFilter: String?,
+    ): Flow<List<TransactionWithDetails>>
 
     fun getRecentTransactions(limit: Int): Flow<List<TransactionEntity>>
 
     fun getAllTransactions(): Flow<List<Transaction>>
     fun getTransactionById(id: String): Flow<Transaction>
-    fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetails>
+    fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetails?>
     fun getCountTransactionsByAccount(accountId: String): Flow<Int>
+    suspend fun getTransactionByIdOnce(id: String): TransactionEntity?
+
     fun searchTransactions(query: String): Flow<List<TransactionWithDetails>>
 
     suspend fun insertTransaction(transaction: Transaction)
     suspend fun updateTransaction(transaction: Transaction)
-    suspend fun deleteTransaction(id: String)
+    suspend fun deleteTransaction(transactionId: String)
 }

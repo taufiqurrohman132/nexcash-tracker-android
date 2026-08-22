@@ -4,6 +4,7 @@ import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.extension.toColor
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryItem
+import com.example.nexcashapplication.feature.transaction.presentation.main.model.CategoryNameItemUiModel
 
 fun Category.toCategoryItem(): CategoryItem {
     return CategoryItem(
@@ -18,3 +19,8 @@ fun Category.toCategoryItem(): CategoryItem {
 }
 
 fun List<Category>.toCategoryItemList(): List<CategoryItem> = map { it.toCategoryItem() }
+
+fun Category.toCategoryNameItemUiModel() = CategoryNameItemUiModel(
+    id = id,
+    nameCategory = name
+)

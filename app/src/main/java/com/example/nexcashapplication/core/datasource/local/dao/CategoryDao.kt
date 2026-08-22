@@ -95,6 +95,9 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertCategory(category: CategoryEntity)
 
+    @Query("UPDATE categories SET used_balance = used_balance + :delta WHERE id = :categoryId")
+    suspend fun adjustUsedBalance(categoryId: String, delta: Long)
+
     // Edit kategori (nama, ikon, warna)
     @Update
     suspend fun updateCategory(category: CategoryEntity)

@@ -6,7 +6,7 @@ sealed interface TransactionEvent {
     data object OnSearchClear : TransactionEvent
 
     // Filter kategori
-    data class OnCategorySelected(val category: String) : TransactionEvent
+    data class OnCategorySelected(val categoryId: String?) : TransactionEvent
 
     // Group transaksi (expand/collapse chevron)
     data class OnGroupToggle(val groupLabel: String) : TransactionEvent

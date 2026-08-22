@@ -1,12 +1,13 @@
 package com.example.nexcashapplication.feature.transaction.presentation.main
 
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
+import com.example.nexcashapplication.feature.transaction.presentation.main.model.CategoryNameItemUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionUiGroupModel
 
 data class TransactionState(
     val searchQuery: String = "",
-    val caategoryList: List<String> = emptyList(),
-    val selectedCategory: String = "Semua",
+    val categoryList: List<CategoryNameItemUiModel?> = emptyList(),
+    val selectedCategoryId: String? = null,
 
     // summary card
     val todayTotal: Long = 0L,

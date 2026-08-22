@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
@@ -192,6 +193,7 @@ class AddEditTransactionViewModel @Inject constructor(
                 dateTime = currentState.transactionAt,
             )
 
+            Log.d("transaciton", "handleSave: transaciton id = ${currentState.transactionId}")
             if (currentState.transactionId != null) {
                 transactionRepository.updateTransaction(transaction)
             } else {
@@ -213,16 +215,19 @@ class AddEditTransactionViewModel @Inject constructor(
                 }
 
                 transactionRepository.getTransactionWithDetailsById(id).collect { transaction ->
-                    updateState { current ->
-                        transaction.toAddEditTransactionState(
-                            availableCategories = current.availableCategories,
-                            availableAccounts = current.availableAccounts,
-                        ).copy(
-                            showDatePicker = current.showDatePicker,
-                            showTimePicker = current.showTimePicker,
-                            showCategoryBottomSheet = current.showCategoryBottomSheet,
-                            showAccountBottomSheet = current.showAccountBottomSheet,
-                        )
+                    // sementara pakai let
+                    transaction?.let {
+                        updateState { current ->
+                            transaction.toAddEditTransactionState(
+                                availableCategories = current.availableCategories,
+                                availableAccounts = current.availableAccounts,
+                            ).copy(
+                                showDatePicker = current.showDatePicker,
+                                showTimePicker = current.showTimePicker,
+                                showCategoryBottomSheet = current.showCategoryBottomSheet,
+                                showAccountBottomSheet = current.showAccountBottomSheet,
+                            )
+                        }
                     }
                 }
             }

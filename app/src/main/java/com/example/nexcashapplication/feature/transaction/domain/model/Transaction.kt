@@ -14,4 +14,15 @@ data class Transaction(
     val dateTime: Instant = Clock.System.now(),
     val typeTransaction: TransactionType,
     val accountId: String?,
-)
+) {
+    fun applyAmount(): Long {
+        return when (typeTransaction) {
+            TransactionType.INCOME -> amount
+            TransactionType.EXPENSE -> -amount
+        }
+    }
+
+    fun reverseAmount(): Long {
+        return -applyAmount()
+    }
+}

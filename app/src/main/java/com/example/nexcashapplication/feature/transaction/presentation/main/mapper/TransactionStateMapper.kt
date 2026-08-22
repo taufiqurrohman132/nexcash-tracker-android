@@ -57,3 +57,5 @@ fun List<TransactionWithDetails>.toItemUiModelList(): List<TransactionUiGroupMod
         },
     )
 }
+
+

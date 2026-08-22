@@ -75,6 +75,7 @@ import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.feature.transaction.presentation.main.model.CategoryNameItemUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionHeaderUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionUiGroupModel
 import com.example.nexcashapplication.ui.theme.AccentTealGreen
@@ -212,11 +213,11 @@ fun TransactionContent(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(state.caategoryList, key = { it }) { category ->
+                items(state.categoryList, key = { it?.id ?: null.hashCode() }) { category ->
                     FilterChip(
-                        selected = state.selectedCategory == category,
-                        onClick = { onEvent(TransactionEvent.OnCategorySelected(category = category)) },
-                        label = { Text(category) },
+                        selected = state.selectedCategoryId == category?.id,
+                        onClick = { onEvent(TransactionEvent.OnCategorySelected(categoryId = category?.id)) },
+                        label = { Text(category?.nameCategory ?: "") },
                         colors = FilterChipDefaults.filterChipColors(
                             selectedLabelColor = Color.White,
                             selectedContainerColor = PrimaryCyan,
@@ -439,18 +440,28 @@ fun SummaryCard(
     }
 }
 
-val categoryList: List<String> = listOf(
-    "Semua",
-    "Makanan & Minuman",
-    "Transportasi",
-    "Belanja",
-    "Tagihan",
-    "Hiburan",
-    "Kesehatan",
-    "Pendidikan",
-    "Gaji",
-    "Investasi",
-    "Lainnya",
+val categoryList: List<CategoryNameItemUiModel> = listOf(
+    CategoryNameItemUiModel(
+        id = "Semua",
+        nameCategory = "Semua",
+    ),
+    CategoryNameItemUiModel(
+        id = "Makanan & Minuman",
+        nameCategory = "Makanan & Minuman",
+    ),
+    CategoryNameItemUiModel(
+        id = "Transportasi",
+        nameCategory = "Transportasi",
+    ),
+    CategoryNameItemUiModel(
+        id = "Belanja",
+        nameCategory = "Belanja",
+    ),
+    CategoryNameItemUiModel(
+        id = "Tagihan",
+        nameCategory = "Tagihan",
+    ),
+
 )
 
 
@@ -569,8 +580,8 @@ private fun TransactionScreenPreview() {
         TransactionContent(
             state = TransactionState(
                 searchQuery = "",
-                caategoryList = categoryList,
-                selectedCategory = "Semua",
+                categoryList = categoryList,
+                selectedCategoryId = "Semua",
                 groupedTransactions = groupedTransactions,
                 collapsGroups = setOf(groupedTransactions[0].header.title),
             ),

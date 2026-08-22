@@ -1,5 +1,7 @@
 package com.example.nexcashapplication.feature.transaction.presentation.detail
 
+import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
+
 sealed interface DetailTransactionEvent {
     data object OnBackClick : DetailTransactionEvent
     data object OnMenuClick : DetailTransactionEvent

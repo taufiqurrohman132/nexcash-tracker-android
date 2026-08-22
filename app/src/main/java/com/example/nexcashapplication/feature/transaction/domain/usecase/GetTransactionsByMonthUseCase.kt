@@ -9,5 +9,5 @@ class GetTransactionsByMonthUseCase @Inject constructor(
     private val repository: TransactionRepository,
 ) {
     operator fun invoke(yearMonth: String): Flow<List<Transaction>> =
-        repository.getTransactionsByMonth(yearMonth)
+        repository.getObserverTransactionsByMonth(yearMonth)
 }

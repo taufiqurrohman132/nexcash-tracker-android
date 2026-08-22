@@ -1,13 +1,11 @@
 package com.example.nexcashapplication.core.datasource.local.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
-import com.example.nexcashapplication.core.datasource.local.model.CategoryEntity
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
 import com.example.nexcashapplication.core.datasource.local.model.TransactionWithDetailsEntity
 import com.example.nexcashapplication.core.datasource.local.result.CategoryExpenseResult
@@ -42,20 +40,26 @@ interface TransactionDao {
     fun getAllTransactionWithDetails(): Flow<List<TransactionWithDetailsEntity>>
 
     @Transaction
-    @Query("""
+    @Query(
+        """
         SELECT * FROM transactions 
 WHERE deleted_at IS NULL AND strftime('%Y-%m', transaction_date / 1000, 'unixepoch') = :yearMonth 
+AND (:categoryFilterId IS NULL OR category_id = :categoryFilterId)
 ORDER BY transaction_date DESC
-        """)
-    fun getAllTransactionWithDetailsByMonth(yearMonth: String): Flow<List<TransactionWithDetailsEntity>>
+        """,
+    )
+    fun getAllTransactionWithDetailsByMonth(
+        yearMonth: String,
+        categoryFilterId: String?,
+    ): Flow<List<TransactionWithDetailsEntity>>
 
     @Transaction
     @Query(
         """
             SELECT * FROM transactions WHERE id = :id
-        """
+        """,
     )
-    fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetailsEntity>
+    fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetailsEntity?>
 
     // dashboard: total bulan ini
     @Query(
@@ -93,6 +97,8 @@ ORDER BY transaction_date DESC
     )
     fun getCountTransactionsByAccount(accountId: String): Flow<Int>
 
+    @Query("SELECT * FROM transactions WHERE id = :id")
+    suspend fun getTransactionByIdOnce(id: String): TransactionEntity?
 
     // Search transaksi (search bar di list)
     @Query(
@@ -113,8 +119,8 @@ ORDER BY transaction_date DESC
     suspend fun updateTransaction(transaction: TransactionEntity)
 
     // Delete transaksi
-    @Delete
-    suspend fun deleteTransaction(transaction: TransactionEntity)
+    @Query("UPDATE transactions SET  deleted_at = :timestamp WHERE id = :id")
+    suspend fun deleteTransaction(id: String, timestamp: Long)
 
 
 }

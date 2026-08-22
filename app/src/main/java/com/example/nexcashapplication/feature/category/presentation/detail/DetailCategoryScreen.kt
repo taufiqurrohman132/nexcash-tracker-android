@@ -66,7 +66,7 @@ import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.core.navigations.Route.CategoryRoute.AddNew
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
-import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryDetail
+import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
@@ -383,7 +383,7 @@ fun TransactionListCard(
 
 @Composable
 fun SubcategoryGrid(
-    subcategories: List<CategoryDetail>,
+    subcategories: List<CategoryUiModel>,
     onSubcategoryClick: (String) -> Unit,
 ) {
     val rows = subcategories.chunked(2)
@@ -409,7 +409,7 @@ fun SubcategoryGrid(
 }
 
 @Composable
-fun SubcategoryCard(subcategory: CategoryDetail, modifier: Modifier, onClick: () -> Unit) {
+fun SubcategoryCard(subcategory: CategoryUiModel, modifier: Modifier, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = modifier,
@@ -627,7 +627,7 @@ private fun DetailCategoryContentPreview() {
         DetailCategoryContent(
             state = DetailCategoryState(
                 isLoading = false,
-                category = CategoryDetail(
+                category = CategoryUiModel(
                     id = "1",
                     name = "Transportasi",
                     icon = CategoryIcons.fromId("5"), // sesuaikan dgn tipe icon kamu
@@ -638,7 +638,7 @@ private fun DetailCategoryContentPreview() {
                     ),
 
                 subCategories = listOf(
-                    CategoryDetail(
+                    CategoryUiModel(
                         id = "sub1",
                         name = "Bensin",
                         icon = CategoryIcons.fromId("5"),
@@ -647,7 +647,7 @@ private fun DetailCategoryContentPreview() {
                         typeCategory = TypeCategory.EXPENSE,
 
                         ),
-                    CategoryDetail(
+                    CategoryUiModel(
                         id = "sub2",
                         name = "Parkir",
                         icon = CategoryIcons.fromId("5"),
@@ -656,7 +656,7 @@ private fun DetailCategoryContentPreview() {
                         typeCategory = TypeCategory.EXPENSE,
 
                         ),
-                    CategoryDetail(
+                    CategoryUiModel(
                         id = "sub3",
                         name = "Ojek Online",
                         icon = CategoryIcons.fromId("5"),
@@ -665,7 +665,7 @@ private fun DetailCategoryContentPreview() {
                         typeCategory = TypeCategory.EXPENSE,
 
                         ),
-                    CategoryDetail(
+                    CategoryUiModel(
                         id = "sub4",
                         name = "Tol & Tiket",
                         icon = CategoryIcons.fromId("5"),

@@ -1,6 +1,11 @@
 package com.example.nexcashapplication.feature.transaction.data
 
+import android.util.Log
+import androidx.room.withTransaction
+import com.example.nexcashapplication.core.datasource.local.dao.AccountDao
+import com.example.nexcashapplication.core.datasource.local.dao.CategoryDao
 import com.example.nexcashapplication.core.datasource.local.dao.TransactionDao
+import com.example.nexcashapplication.core.datasource.local.database.NexCashDatabase
 import com.example.nexcashapplication.core.datasource.local.mapper.toDomain
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
 import com.example.nexcashapplication.feature.dashboard.domain.model.MonthlySummary
@@ -14,7 +19,10 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
-    val dao: TransactionDao,
+    val db: NexCashDatabase,
+    val transactionDao: TransactionDao,
+    val accountDao: AccountDao,
+    val categoryDao: CategoryDao,
 ) : TransactionRepository {
     override fun getAllTransactions(): Flow<List<Transaction>> {
         TODO("Not yet implemented")
@@ -24,51 +32,81 @@ class TransactionRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetails> {
-        return dao.getTransactionWithDetailsById(id).map { it.toDomain() }
+    override fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetails?> {
+        return transactionDao.getTransactionWithDetailsById(id).map { it?.toDomain() }
     }
 
     override fun getCountTransactionsByAccount(accountId: String): Flow<Int> {
-        return dao.getCountTransactionsByAccount(accountId)
+        return transactionDao.getCountTransactionsByAccount(accountId)
     }
 
-    override fun searchTransactions(query: String): Flow<List<TransactionWithDetails>> {
-        return dao.searchTransactions(query).map { list -> list.map { it.toDomain() } }
-    }
-
-    override fun getTransactionsByMonth(yearMonth: String): Flow<List<Transaction>> {
-        return dao.getTransactionsByMonth(
-            yearMonth,
-        ).map { list -> list.map { it.toDomain() } }
-    }
-
-    override fun getTransactionsWithDetailsByMonth(yearMonth: String): Flow<List<TransactionWithDetails>> {
-        return dao.getAllTransactionWithDetailsByMonth(
-            yearMonth,
-        ).map { list -> list.map { it.toDomain() } }
-
-    }
-
-    override suspend fun insertTransaction(transaction: Transaction) {
-        dao.insertTransaction(transaction.toEntity())
-    }
-
-    override suspend fun updateTransaction(transaction: Transaction) {
-        dao.updateTransaction(transaction.toEntity())
-    }
-
-    override suspend fun deleteTransaction(id: String) {
+    override suspend fun getTransactionByIdOnce(id: String): TransactionEntity? {
         TODO("Not yet implemented")
     }
 
+    override fun searchTransactions(query: String): Flow<List<TransactionWithDetails>> {
+        return transactionDao.searchTransactions(query).map { list -> list.map { it.toDomain() } }
+    }
+
+    override fun getObserverTransactionsByMonth(yearMonth: String): Flow<List<Transaction>> {
+        return transactionDao.getTransactionsByMonth(
+            yearMonth,
+        ).map { list -> list.map { it.toDomain() } }
+    }
+
+    override fun getObserverTransactionsWithDetailsByMonth(
+        yearMonth: String,
+        categoryFilter: String?,
+    ): Flow<List<TransactionWithDetails>> {
+        return transactionDao.getAllTransactionWithDetailsByMonth(
+            yearMonth, categoryFilter,
+        ).map { list -> list.map { it.toDomain() } }
+    }
+
+    override suspend fun insertTransaction(transaction: Transaction) {
+        db.withTransaction {
+            categoryDao.adjustUsedBalance(
+                categoryId = transaction.categoryId ?: "",
+                delta = transaction.amount,
+            )
+            Log.d("INSERTTRANS", "insertTransaction: ${transaction.categoryId}")
+
+            accountDao.adjustBalance(
+                accountId = transaction.accountId ?: "",
+                delta = transaction.applyAmount(),
+            )
+
+            transactionDao.insertTransaction(transaction.toEntity())
+        }
+    }
+
+    override suspend fun updateTransaction(transaction: Transaction) {
+        transactionDao.updateTransaction(transaction.toEntity())
+    }
+
+    override suspend fun deleteTransaction(transactionId: String) {
+        db.withTransaction {
+            val transaction = transactionDao.getTransactionByIdOnce(transactionId)?.toDomain()
+                ?: return@withTransaction // udah kehapus / nggak ada, no-op
+
+            // reverse account
+            accountDao.adjustBalance(
+                accountId = transaction.accountId ?: "",
+                delta = transaction.reverseAmount(),
+            )
+
+            transactionDao.deleteTransaction(transactionId, System.currentTimeMillis())
+        }
+    }
+
     override fun getMonthlySummary(yearMonth: String): Flow<MonthlySummary> {
-        return dao.getMonthlySummary(yearMonth).map {
+        return transactionDao.getMonthlySummary(yearMonth).map {
             it.toDomain(yearMonth)
         }
     }
 
     override fun getRecentTransactions(limit: Int): Flow<List<TransactionEntity>> {
-        return dao.getRecentTransactions(10)
+        return transactionDao.getRecentTransactions(10)
     }
 
 }

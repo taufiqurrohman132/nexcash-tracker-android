@@ -5,9 +5,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
-import com.example.nexcashapplication.feature.transaction.presentation.detail.mapper.toDetailTrasactionState
+import com.example.nexcashapplication.feature.transaction.presentation.detail.mapper.toDeleteDialogUiState
+import com.example.nexcashapplication.feature.transaction.presentation.detail.mapper.toDetailTransactionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +27,7 @@ class DetailTransactionViewModel @Inject constructor(
     private val transactionId = route.transactionId
 
     init {
-        loadData()
+        loadTransaction(transactionId)
     }
 
     override fun onEvent(event: DetailTransactionEvent) {
@@ -34,9 +38,26 @@ class DetailTransactionViewModel @Inject constructor(
                     sendEffect(DetailTransactionEffect.NavigateBack)
                 }
             }
-            DetailTransactionEvent.OnDeleteClick -> TODO()
-            DetailTransactionEvent.OnDeleteConfirm -> TODO()
-            DetailTransactionEvent.OnDismissDeleteDialog -> TODO()
+
+            DetailTransactionEvent.OnDeleteClick -> {
+                updateState {
+                    it.copy(
+                        deleteDialogState = it.transaction?.toDeleteDialogUiState(),
+                    )
+                }
+            }
+
+            is DetailTransactionEvent.OnDeleteConfirm -> {
+                handleDeleteTransaction(transactionId)
+            }
+
+            DetailTransactionEvent.OnDismissDeleteDialog -> {
+                updateState {
+                    it.copy(
+                        deleteDialogState = null,
+                    )
+                }
+            }
             DetailTransactionEvent.OnDismissMenu -> TODO()
             DetailTransactionEvent.OnDuplicateClick -> TODO()
             DetailTransactionEvent.OnEditClick -> {
@@ -44,20 +65,36 @@ class DetailTransactionViewModel @Inject constructor(
                     sendEffect(DetailTransactionEffect.NavigateToEdit(transactionId))
                 }
             }
+
             DetailTransactionEvent.OnMenuClick -> TODO()
             DetailTransactionEvent.OnShareClick -> TODO()
         }
     }
 
-    private fun loadData() {
-        viewModelScope.launch {
-            transactionRepository.getTransactionWithDetailsById(transactionId)
-                    .collect { transaction ->
-                        updateState {
-                            transaction.toDetailTrasactionState()
-                        }
+    fun loadTransaction(id: String) {
+        transactionRepository.getTransactionWithDetailsById(id)
+                .onEach { transactionWithDetails ->
+                    if (transactionWithDetails == null) {
+                        // Transaksi udah kehapus — kemungkinan besar karena delete sukses,
+                        // atau race condition lain. Navigate back, bukan crash atau nampilin state kosong.
+                        sendEffect(DetailTransactionEffect.NavigateBack)
+                        return@onEach
                     }
-        }
+                    updateState {
+                        it.copy(
+                            isLoading = false,
+                            transaction = transactionWithDetails.toDetailTransactionUiModel(),
+                        )
+                    }
+                }
+                .launchIn(viewModelScope)
+    }
 
+
+    private fun handleDeleteTransaction(transactionId: String) {
+        viewModelScope.launch {
+            transactionRepository.deleteTransaction(transactionId)
+            sendEffect(DetailTransactionEffect.NavigateBack)
+        }
     }
 }

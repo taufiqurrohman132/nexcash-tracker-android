@@ -7,4 +7,6 @@ data class TransactionWithDetails(
     val transaction: Transaction,
     val account: AccountModel? = null,
     val category: Category? = null,
-)
+) {
+
+}

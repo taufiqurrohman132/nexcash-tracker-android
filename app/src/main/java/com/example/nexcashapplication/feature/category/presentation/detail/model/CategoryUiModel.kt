@@ -3,7 +3,7 @@ package com.example.nexcashapplication.feature.category.presentation.detail.mode
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 
-data class CategoryDetail(
+data class CategoryUiModel(
     val id: String,
     val name: String,
     val icon: CategoryIcon,

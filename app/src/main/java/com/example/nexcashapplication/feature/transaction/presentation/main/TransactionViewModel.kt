@@ -2,6 +2,7 @@ package com.example.nexcashapplication.feature.transaction.presentation.main
 
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.feature.category.presentation.mapper.toCategoryNameItemUiModel
 import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetAllCategoryUsecase
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetMonthlySummaryUseCase
@@ -10,6 +11,7 @@ import com.example.nexcashapplication.feature.transaction.presentation.main.mapp
 import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModelList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
@@ -42,6 +44,8 @@ class TransactionViewModel @Inject constructor(
                 .toLocalDateTime(TimeZone.currentSystemDefault())
                 .let { "%04d-%02d".format(it.year, it.monthNumber) },
     )
+
+    private val _selectedCategoryId = MutableStateFlow<String?>(null)
 
     init {
         observerData()
@@ -87,9 +91,10 @@ class TransactionViewModel @Inject constructor(
             is TransactionEvent.OnCategorySelected -> {
                 updateState {
                     it.copy(
-                        selectedCategory = event.category,
+                        selectedCategoryId = event.categoryId,
                     )
                 }
+                _selectedCategoryId.value = event.categoryId
             }
 
             is TransactionEvent.OnSearchQueryChange -> {
@@ -108,14 +113,26 @@ class TransactionViewModel @Inject constructor(
         }
     }
 
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observerData() {
-        _selectedYearMonth.flatMapLatest { yearMonth ->
+        val currentState = state.value
+
+
+        combine(
+            _selectedYearMonth,
+            _selectedCategoryId,
+        ) { yearMonth, categoryId ->
+            yearMonth to categoryId
+        }.flatMapLatest { (yearMonth, categorySelectedId) ->
             combine(
-                getTransactionsWithDetailsByMonthUseCase(yearMonth = yearMonth),
+                getTransactionsWithDetailsByMonthUseCase(
+                    yearMonth = yearMonth,
+                    categoryFilterId = categorySelectedId,
+                ),
                 getMonthlySummaryUseCase(yearMonth = yearMonth),
                 getAllCategoryUsecase(),
-            ) { transactionWithDetails, summary, category ->
+            ) { transactionWithDetails, summary, categories ->
 
 
                 updateState { transactionState ->
@@ -123,7 +140,7 @@ class TransactionViewModel @Inject constructor(
                         todayTotal = summary.totalSaldo,
                         weekTotal = summary.totalSaldo,
                         remainingBudget = summary.totalSaldo,
-                        caategoryList = category.map { it?.name ?: "Semua" },
+                        categoryList = categories.map { it?.toCategoryNameItemUiModel() },
                         groupedTransactions = transactionWithDetails.toItemUiModelList(),
                     )
                 }
@@ -135,7 +152,7 @@ class TransactionViewModel @Inject constructor(
 
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     private fun observerSearch() {
         viewModelScope.launch {
             state.map { it.searchQuery }
@@ -148,11 +165,11 @@ class TransactionViewModel @Inject constructor(
                             transactionRepository.searchTransactions(query)
                         }
                     }
-                    .map { list -> list.map { it.toItemUiModel() }}
+                    .map { list -> list.map { it.toItemUiModel() } }
                     .collect { result ->
                         updateState {
                             it.copy(
-                                trasactionsSearchList = result
+                                trasactionsSearchList = result,
                             )
                         }
                     }
