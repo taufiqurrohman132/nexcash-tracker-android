@@ -12,6 +12,7 @@ data class AddCategoryState(
     val typeCategory: TypeCategory = TypeCategory.EXPENSE,
     val parentCategory: ParentCategoryUi? = null,
     val selectedColor: Color = PrimaryCyan,
+    val showColorPalletDialog: Boolean = false,
     val recentColors: List<Color> = emptyList(),
     val budgetLimit: Long? = null,
     val selectedIcon: CategoryIcon? = null,

@@ -61,6 +61,7 @@ import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryUiModel
+import com.example.nexcashapplication.feature.common.extentions.toAmountColor
 import com.example.nexcashapplication.feature.common.utils.formatDate
 import com.example.nexcashapplication.feature.common.utils.formatTime
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
@@ -151,7 +152,7 @@ fun DetailTransactionContent(
                 HeaderContent(
                     titleName = state.transaction.name,
                     amount = state.transaction.amount,
-                    amountColor = Color.Green,
+                    amountColor = state.transaction.type.toAmountColor(),
                     iconColor = Color.Black,
                     icon = Icons.Outlined.DirectionsCar,
                     categoryName = state.transaction.category?.name ?: "",
@@ -401,10 +402,12 @@ fun DetailContentRow(
             tint = TextSecondary,
             contentDescription = null,
         )
-        Column {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
             Text(
                 text = label.uppercase(),
-                style = MaterialTheme.typography.bodyMedium,
+                style = MaterialTheme.typography.bodySmall,
                 color = TextSecondary,
             )
             Text(

@@ -294,7 +294,7 @@ fun AddEditTransactionContent(
                     placeholder = { Text("Add a note here...") },
                     leadingIcon = {
                         Icon(
-                            Icons.Outlined.FavoriteBorder,
+                            imageVector = Icons.Outlined.FavoriteBorder,
                             contentDescription = null,
                         )
                     },

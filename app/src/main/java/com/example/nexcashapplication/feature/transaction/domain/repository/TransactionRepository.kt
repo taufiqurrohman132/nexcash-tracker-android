@@ -17,7 +17,7 @@ interface TransactionRepository {
         categoryFilter: String?,
     ): Flow<List<TransactionWithDetails>>
 
-    fun getRecentTransactions(limit: Int): Flow<List<TransactionEntity>>
+    fun getRecentTransactions(limit: Int): Flow<List<TransactionWithDetails>>
 
     fun getAllTransactions(): Flow<List<Transaction>>
     fun getTransactionById(id: String): Flow<Transaction>

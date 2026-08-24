@@ -105,8 +105,8 @@ class TransactionRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getRecentTransactions(limit: Int): Flow<List<TransactionEntity>> {
-        return transactionDao.getRecentTransactions(10)
+    override fun getRecentTransactions(limit: Int): Flow<List<TransactionWithDetails>> {
+        return transactionDao.getRecentTransactions(10).map { list -> list.map { it.toDomain() } }
     }
 
 }

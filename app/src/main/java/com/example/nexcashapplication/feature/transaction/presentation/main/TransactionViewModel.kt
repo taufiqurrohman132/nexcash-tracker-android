@@ -9,6 +9,7 @@ import com.example.nexcashapplication.feature.transaction.domain.usecase.GetMont
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetTransactionsWithDetailsByMonthUseCase
 import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModelList
+import com.example.nexcashapplication.feature.transaction.presentation.main.model.CategoryNameItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -116,8 +117,6 @@ class TransactionViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observerData() {
-        val currentState = state.value
-
 
         combine(
             _selectedYearMonth,

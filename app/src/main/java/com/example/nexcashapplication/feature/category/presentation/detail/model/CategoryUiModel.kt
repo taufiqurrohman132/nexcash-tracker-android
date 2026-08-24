@@ -5,6 +5,7 @@ import com.example.nexcashapplication.core.domain.model.TypeCategory
 
 data class CategoryUiModel(
     val id: String,
+    val parentId: String? = null,
     val name: String,
     val icon: CategoryIcon,
     val totalBudget: Long,

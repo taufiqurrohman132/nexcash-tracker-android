@@ -12,14 +12,24 @@ import com.example.nexcashapplication.feature.category.presentation.detail.Detai
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToDeleteCategory
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToEditCategory
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiModel
+import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
+import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailCategoryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
     private val categoryUseCases: CategoryUseCases,
 ) : BaseViewModel<DetailCategoryState, DetailCategoryEvent, DetailCategoryEffect>(
@@ -31,6 +41,7 @@ class DetailCategoryViewModel @Inject constructor(
 
     init {
         loadDetailCategory(categoryId)
+        handleWeeklyTrendObserver()
     }
 
     override fun onEvent(event: DetailCategoryEvent) {
@@ -62,8 +73,19 @@ class DetailCategoryViewModel @Inject constructor(
             DetailCategoryEvent.OnReminderClick -> TODO()
             DetailCategoryEvent.OnRetryClick -> TODO()
             DetailCategoryEvent.OnSeeAllSubCategoryClick -> TODO()
-            is DetailCategoryEvent.OnSubCategoryClick -> TODO()
-            is DetailCategoryEvent.OnTransactionClick -> TODO()
+            is DetailCategoryEvent.OnSubCategoryClick -> {
+                viewModelScope.launch {
+                    sendEffect(
+                        DetailCategoryEffect.NavigateToSubCategoryDetail(event.subCategoryId),
+                    )
+                }
+            }
+
+            is DetailCategoryEvent.OnTransactionClick -> {
+                viewModelScope.launch {
+                    sendEffect(DetailCategoryEffect.NavigateToTransactionDetail(event.transactionId))
+                }
+            }
             DetailCategoryEvent.OnAddSubCategoryClick -> {
                 viewModelScope.launch {
                     sendEffect(
@@ -92,25 +114,60 @@ class DetailCategoryViewModel @Inject constructor(
                 categoryUseCases.getCategoryById(id = categoryId)
                         .catch { e -> updateState { it.copy(error = e.message) } }
                         .collect { detailCategory ->
-                            updateState {
-                                it.copy(
-                                    category = detailCategory?.toUiModel(),
-                                )
-                            }
+                            updateState { it.copy(category = detailCategory?.toUiModel()) }
                         }
+            } catch (e: Exception) {
+                updateState { it.copy(isLoading = false, error = e.message) }
+            }
+        }
 
-                // subcategory tetap Flow karena mungkin butuh observe realtime
-                // (misal saat nambah/edit/hapus subkategori)
+        viewModelScope.launch {
+            try {
                 categoryRepository.getSubCategories(categoryId)
                         .catch { e -> updateState { it.copy(error = e.message) } }
                         .collect { subCategory ->
-                            updateState {
-                                it.copy(subCategories = subCategory.map { it.toUiModel() })
+                            updateState { categoryState ->
+                                categoryState.copy(subCategories = subCategory.map { it.toUiModel() })
                             }
                         }
             } catch (e: Exception) {
                 updateState { it.copy(isLoading = false, error = e.message) }
             }
+        }
+
+        transactionRepository.getRecentTransactions(5)
+                .onEach { transactionsWithDetail ->
+                    updateState {
+                        it.copy(
+                            recentTransactions = transactionsWithDetail.map { it.toItemUiModel() }
+                        )
+                    }
+                }
+                .launchIn(viewModelScope)
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun handleWeeklyTrendObserver() {
+        viewModelScope.launch {
+            state
+                    .map { it.category?.typeCategory?.name?.lowercase() }
+                    .distinctUntilChanged()
+                    .filterNotNull() // atau handle null case sesuai kebutuhan
+                    .flatMapLatest { typeTransaction ->
+                        categoryRepository.getWeeklyTrend(
+                            typeTransaction = typeTransaction,
+                            categoryId = categoryId,
+                        )
+                    }
+                    .catch { e -> updateState { it.copy(error = e.message) } }
+                    .collect { trend ->
+                        updateState {
+                            it.copy(
+                                weeklyData = trend.data,
+                                weeklyLabels = trend.labels,
+                            )
+                        }
+                    }
         }
     }
 }

@@ -7,6 +7,6 @@ import com.example.nexcashapplication.feature.transaction.presentation.addnew.Tr
 
 @Composable
 fun TransactionType.toAmountColor(): Color = when (this) {
-    TransactionType.INCOME -> MaterialTheme.colorScheme.primary
+    TransactionType.INCOME -> Color.Green
     TransactionType.EXPENSE -> MaterialTheme.colorScheme.error
 }

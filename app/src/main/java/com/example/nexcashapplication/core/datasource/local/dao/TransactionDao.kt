@@ -9,6 +9,7 @@ import androidx.room.Update
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
 import com.example.nexcashapplication.core.datasource.local.model.TransactionWithDetailsEntity
 import com.example.nexcashapplication.core.datasource.local.result.CategoryExpenseResult
+import com.example.nexcashapplication.core.datasource.local.result.DailyTotalResult
 import com.example.nexcashapplication.core.datasource.local.result.MonthlySummaryResult
 import kotlinx.coroutines.flow.Flow
 
@@ -23,7 +24,7 @@ interface TransactionDao {
         LIMIT :limit
     """,
     )
-    fun getRecentTransactions(limit: Int = 20): Flow<List<TransactionEntity>>
+    fun getRecentTransactions(limit: Int = 20): Flow<List<TransactionWithDetailsEntity>>
 
     @Query(
         """
@@ -96,6 +97,27 @@ ORDER BY transaction_date DESC
         """,
     )
     fun getCountTransactionsByAccount(accountId: String): Flow<Int>
+
+    @Query(
+        """
+                SELECT 
+            strftime('%w', datetime(transaction_date / 1000, 'unixepoch', 'localtime')) as dayOfWeek,
+            SUM(amount) as total
+        FROM transactions
+        WHERE transaction_date >= :startDate
+        AND transaction_date <= :endDate
+        AND type = :type
+        AND category_id = :categoryId
+        GROUP BY dayOfWeek
+        ORDER BY dayOfWeek ASC
+        """,
+    )
+    fun getWeeklyTrend(
+        startDate: Long,
+        endDate: Long,
+        type: String? = null,
+        categoryId: String? = null,
+    ): Flow<List<DailyTotalResult>>
 
     @Query("SELECT * FROM transactions WHERE id = :id")
     suspend fun getTransactionByIdOnce(id: String): TransactionEntity?

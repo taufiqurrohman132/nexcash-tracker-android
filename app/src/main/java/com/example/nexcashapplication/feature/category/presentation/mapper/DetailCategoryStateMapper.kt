@@ -7,6 +7,7 @@ import com.example.nexcashapplication.feature.category.presentation.detail.model
 
 fun Category.toUiModel(): CategoryUiModel = CategoryUiModel(
     id = id,
+    parentId = parentId,
     name = name,
     icon = CategoryIcons.fromId(id = iconId),  // mapping enum -> resource
     totalBudget = budget,

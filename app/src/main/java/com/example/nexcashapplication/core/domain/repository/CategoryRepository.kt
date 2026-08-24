@@ -4,6 +4,7 @@ import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.model.CategoryAndSubcategory
 import com.example.nexcashapplication.feature.category.domain.model.CategoryDeleteResolution
 import com.example.nexcashapplication.feature.category.domain.model.CategoryName
+import com.example.nexcashapplication.feature.category.domain.model.WeeklyTrend
 import kotlinx.coroutines.flow.Flow
 
 interface CategoryRepository {
@@ -17,6 +18,7 @@ interface CategoryRepository {
     suspend fun getParentCategories(): List<Category>  // ← ini yang kurang
     suspend fun getParentCategoriesNameByType(type: String): List<CategoryName>  // ← ini yang kurang
     suspend fun getCategoriesAndSubCategories(): List<CategoryAndSubcategory>
+    fun getWeeklyTrend(typeTransaction: String?, categoryId: String?): Flow<WeeklyTrend>
 
     suspend fun insertCategory(category: Category)
     suspend fun updateCategory(category: Category)

@@ -7,7 +7,6 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -24,10 +23,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -41,7 +40,6 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -59,6 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -185,6 +184,7 @@ fun AddCategoryContent(
             ColorSwatchRow(
                 colors = listOf(Color.Red, Color.Green, Color.Blue),
                 selectedColor = state.selectedColor,
+                onAddColorClick = { onEvent(AddCategoryEvent.OnAddColorClicked)},
                 onColorSelected = { onEvent(AddCategoryEvent.OnColorSelected(it)) },
             )
 
@@ -318,7 +318,12 @@ fun ParentCategoryBanner(
 }
 
 @Composable
-fun ColorSwatchRow(colors: List<Color>, selectedColor: Color, onColorSelected: (Color) -> Unit) {
+fun ColorSwatchRow(
+    colors: List<Color>,
+    selectedColor: Color,
+    onAddColorClick: () -> Unit,
+    onColorSelected: (Color) -> Unit,
+) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
@@ -337,47 +342,53 @@ fun ColorSwatchRow(colors: List<Color>, selectedColor: Color, onColorSelected: (
                         .clickable { onColorSelected(color) },
             )
         }
+
+        AddColorButton(
+            onClick = {
+                onAddColorClick()
+            },
+        )
     }
 }
-
-@Composable
-fun IconColorRow(colorIndex: Int, onChangeClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
-                .padding(14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Box(
-            modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(Color.White),
-            contentAlignment = Alignment.Center,
-        ) {
-            Icon(
-                Icons.Default.Share, contentDescription = null,
-            )
-        }
-        Spacer(Modifier.width(12.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = "Ikon & Warna", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-            Text(text = "Sesuaikan tampilan visual", fontSize = 12.sp, color = Color(0xFF999999))
-
-        }
-        OutlinedButton(
-            onClick = onChangeClick,
-            shape = RoundedCornerShape(20.dp),
-            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF6C5CE7)),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-        ) {
-            Text(text = "Ubah", fontSize = 13.sp)
-        }
-    }
-
-}
+//
+//@Composable
+//fun IconColorRow(colorIndex: Int, onChangeClick: () -> Unit) {
+//    Row(
+//        modifier = Modifier
+//                .fillMaxWidth()
+//                .clip(RoundedCornerShape(16.dp))
+//                .background(Color.White)
+//                .padding(14.dp),
+//        verticalAlignment = Alignment.CenterVertically,
+//    ) {
+//        Box(
+//            modifier = Modifier
+//                    .size(44.dp)
+//                    .clip(CircleShape)
+//                    .background(Color.White),
+//            contentAlignment = Alignment.Center,
+//        ) {
+//            Icon(
+//                Icons.Default.Share, contentDescription = null,
+//            )
+//        }
+//        Spacer(Modifier.width(12.dp))
+//        Column(modifier = Modifier.weight(1f)) {
+//            Text(text = "Ikon & Warna", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
+//            Text(text = "Sesuaikan tampilan visual", fontSize = 12.sp, color = Color(0xFF999999))
+//
+//        }
+//        OutlinedButton(
+//            onClick = onChangeClick,
+//            shape = RoundedCornerShape(20.dp),
+//            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF6C5CE7)),
+//            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
+//        ) {
+//            Text(text = "Ubah", fontSize = 13.sp)
+//        }
+//    }
+//
+//}
 
 @Composable
 fun TipeKategoriToggle(
@@ -649,6 +660,13 @@ fun IconPreviewRow(
         }
 
         IconChip(
+            modifier = Modifier.shadow(
+                elevation = 6.dp,
+                shape = RoundedCornerShape(16.dp),
+                clip = false,
+                ambientColor = PrimaryCyan,
+                spotColor = PrimaryCyan,
+            ),
             icon = Icons.Default.GridView,
             isSelected = false,
             onClick = { },
@@ -696,6 +714,44 @@ fun IconChip(
             },
             modifier = Modifier.size(24.dp),
         )
+    }
+}
+
+@Composable
+private fun AddColorButton(onClick: () -> Unit) {
+    val ringColors = listOf(
+        Color(0xFF22C55E), // hijau
+        Color(0xFF06B6D4), // cyan
+        Color(0xFF3B82F6), // biru
+        Color(0xFF8B5CF6), // ungu
+        Color(0xFFEC4899), // pink
+        Color(0xFFF59E0B), // oranye/kuning
+        Color(0xFF22C55E),  // balik ke hijau biar nyambung
+    )
+
+    Box(
+        modifier = Modifier
+                .size(46.dp)
+                .clip(CircleShape)
+                .background(Brush.sweepGradient(ringColors))
+                .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(
+            modifier = Modifier
+                    .matchParentSize() // makin kecil dari parent = makin tebel ring-nya
+                    .padding(6.dp)
+                    .clip(CircleShape)
+                    .background(Color.White),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Tambah warna",
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(20.dp),
+            )
+        }
     }
 }
 

@@ -75,6 +75,7 @@ import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.feature.transaction.presentation.main.component.TransactionEmptyScreen
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.CategoryNameItemUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionHeaderUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionUiGroupModel
@@ -209,11 +210,24 @@ fun TransactionContent(
                     focusedContainerColor = BackgroundLight,
                 ),
             )
+
+            val allLabel = stringResource(R.string.semua) // ← ambil di sini dulu
             LazyRow(
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(state.categoryList, key = { it?.id ?: null.hashCode() }) { category ->
+                items(
+                    items = buildList {
+                        add(
+                            CategoryNameItemUiModel(
+                                id = null,
+                                nameCategory = allLabel,
+                            ),
+                        )
+                        addAll(state.categoryList)
+                    },
+                    key = { it?.id ?: null.hashCode() },
+                ) { category ->
                     FilterChip(
                         selected = state.selectedCategoryId == category?.id,
                         onClick = { onEvent(TransactionEvent.OnCategorySelected(categoryId = category?.id)) },
@@ -279,42 +293,54 @@ fun TransactionContent(
                         }
                     }
 
-                    state.groupedTransactions.forEach { uiGroupModel ->
-                        val isExpanded = !state.collapsGroups.contains(uiGroupModel.header.title)
-
-                        stickyHeader(key = uiGroupModel.header.id) {
-                            TransactionGroupHeader(
-                                label = uiGroupModel.header.title,
-                                count = uiGroupModel.listTransaction.size,
-                                total = uiGroupModel.header.totalAmount,
-                                isExpanded = isExpanded,
-                                onToggle = { onEvent(TransactionEvent.OnGroupToggle(uiGroupModel.header.title)) },
+                    if (state.groupedTransactions.isEmpty()) {
+                        item {
+                            TransactionEmptyScreen(
+                                onAddClick = {
+                                    onEvent(TransactionEvent.OnAddTransactionClick)
+                                },
                             )
                         }
+                    } else {
+                        state.groupedTransactions.forEach { uiGroupModel ->
+                            val isExpanded =
+                                !state.collapsGroups.contains(uiGroupModel.header.title)
 
-                        if (isExpanded) {
-                            items(
-                                uiGroupModel.listTransaction,
-                                key = { it.id ?: it.hashCode() },
-                            ) { item ->
-                                Column {
-                                    TransactionItem(
-                                        transaction = item,
-                                        onClick = { onEvent(TransactionEvent.OnTransactionClick(item.id)) },
-                                    )
-                                    HorizontalDivider(color = BorderGray)
+                            stickyHeader(key = uiGroupModel.header.id) {
+                                TransactionGroupHeader(
+                                    label = uiGroupModel.header.title,
+                                    count = uiGroupModel.listTransaction.size,
+                                    total = uiGroupModel.header.totalAmount,
+                                    isExpanded = isExpanded,
+                                    onToggle = { onEvent(TransactionEvent.OnGroupToggle(uiGroupModel.header.title)) },
+                                )
+                            }
+
+                            if (isExpanded) {
+                                items(
+                                    uiGroupModel.listTransaction,
+                                    key = { it.id ?: it.hashCode() },
+                                ) { item ->
+                                    Column {
+                                        TransactionItem(
+                                            transaction = item,
+                                            onClick = {
+                                                onEvent(
+                                                    TransactionEvent.OnTransactionClick(
+                                                        item.id,
+                                                    ),
+                                                )
+                                            },
+                                        )
+                                        HorizontalDivider(color = BorderGray)
+                                    }
                                 }
                             }
                         }
                     }
                 }
-
-
             }
-
         }
-
-
     }
 }
 
@@ -462,7 +488,7 @@ val categoryList: List<CategoryNameItemUiModel> = listOf(
         nameCategory = "Tagihan",
     ),
 
-)
+    )
 
 
 val groupedTransactions: List<TransactionUiGroupModel> = listOf(

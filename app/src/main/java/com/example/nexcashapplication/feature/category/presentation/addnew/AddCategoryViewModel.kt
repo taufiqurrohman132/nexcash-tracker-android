@@ -135,6 +135,12 @@ class AddCategoryViewModel @Inject constructor(
                     it.copy(typeCategory = event.type)
                 }
             }
+
+            AddCategoryEvent.OnAddColorClicked -> {
+                updateState {
+                    it.copy(showColorPalletDialog = true)
+                }
+            }
         }
 
     }

@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
@@ -27,6 +28,7 @@ fun IconRounded(
     iconColor: Color = Color.Black,
     backgroundColor: Color = Color.White,
     size: Dp = 40.dp,
+    shape: Shape = RoundedCornerShape(8.dp),
     imageVector: ImageVector,
 ) {
 
@@ -34,7 +36,7 @@ fun IconRounded(
         modifier = modifier
                 .background(
                     color = backgroundColor,
-                    shape = RoundedCornerShape(8.dp)
+                    shape = shape
                 )
                 .size(size),
         contentAlignment = Alignment.Center

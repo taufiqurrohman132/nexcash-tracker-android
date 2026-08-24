@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -62,6 +64,7 @@ import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.core.navigations.Route.CategoryRoute.AddNew
@@ -76,10 +79,19 @@ import com.example.nexcashapplication.ui.theme.TextTertiary
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisGuidelineComponent
 import com.patrykandpatrick.vico.compose.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianLayerRangeProvider
+import com.patrykandpatrick.vico.compose.cartesian.data.CartesianValueFormatter
 import com.patrykandpatrick.vico.compose.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.marker.rememberDefaultCartesianMarker
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.compose.common.Fill
+import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
 
 val dummyTransactions = listOf(
     TransactionItemUiModel(
@@ -284,15 +296,17 @@ fun DetailCategoryContent(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onEvent(DetailCategoryEvent.OnAddSubCategoryClick) },
-                containerColor = PrimaryCyan,
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    tint = Color.White,
-                    contentDescription = "Add Sub Category",
-                )
+            if (state.category?.parentId == null) {
+                FloatingActionButton(
+                    onClick = { onEvent(DetailCategoryEvent.OnAddSubCategoryClick) },
+                    containerColor = PrimaryCyan,
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        tint = Color.White,
+                        contentDescription = "Add Sub Category",
+                    )
+                }
             }
         },
     ) { padding ->
@@ -319,18 +333,29 @@ fun DetailCategoryContent(
                 onActionClick = { },
             )
 
-            WeeklyTrendChart()
-
-            FormField(
-                title = "Sub Kategori",
-                actionText = "Lihat Semua",
-                onActionClick = { onEvent(DetailCategoryEvent.OnSeeAllSubCategoryClick) },
+            WeeklyTrendChart(
+                data = state.weeklyData,
+                labels = state.weeklyLabels,
             )
 
-            SubcategoryGrid(
-                subcategories = state.subCategories,
-                onSubcategoryClick = { id -> onEvent(DetailCategoryEvent.OnSubCategoryClick(id)) },
-            )
+            if (state.category?.parentId == null) {
+                FormField(
+                    title = "Sub Kategori",
+                    actionText = "Lihat Semua",
+                    onActionClick = { onEvent(DetailCategoryEvent.OnSeeAllSubCategoryClick) },
+                ) {
+                    SubcategoryGrid(
+                        subcategories = state.subCategories,
+                        onSubcategoryClick = { id ->
+                            onEvent(
+                                DetailCategoryEvent.OnSubCategoryClick(
+                                    id,
+                                ),
+                            )
+                        },
+                    )
+                }
+            }
 
             FormField(
                 title = "Transaksi Terakhir",
@@ -582,6 +607,17 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
 // Also clean up DetailCategoryTopBar if it's truly not used.
 // DetailCategoryContent uses TopAppBar.
 
+private val RangeProvider = CartesianLayerRangeProvider.auto()
+private val CurrencyFormatter = CartesianValueFormatter { _, value, _ ->
+    value.toLong().formatCompact()
+}
+private val MarkerValueFormatter = DefaultCartesianMarker.ValueFormatter { _, targets ->
+    targets.joinToString { target ->
+        // ganti `target.y` sesuai properti asli, aku belum yakin nama field-nya di versi kamu
+        target.x.toLong().formatCompact()
+    }
+}
+
 @Composable
 fun WeeklyTrendChart(
     modifier: Modifier = Modifier,
@@ -592,27 +628,73 @@ fun WeeklyTrendChart(
 
     LaunchedEffect(data) {
         modelProducer.runTransaction {
-            lineSeries { series(data) }
+            lineSeries {
+                series(x = data.indices.toList(), y = data)
+            }
         }
     }
     Card(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+                .fillMaxWidth()
+                .height(220.dp),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         border = BorderStroke(1.dp, BorderGray),
     ) {
         CartesianChartHost(
             modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .fillMaxHeight()
+                    .padding(8.dp),
             chart = rememberCartesianChart(
-                rememberLineCartesianLayer(), startAxis = VerticalAxis.rememberStart(),
+                rememberLineCartesianLayer(
+                    lineProvider =
+                        LineCartesianLayer.LineProvider.series(
+                            LineCartesianLayer.rememberLine(
+                                fill = LineCartesianLayer.LineFill.single(Fill(PrimaryCyan)),
+                                areaFill =
+                                    LineCartesianLayer.AreaFill.single(
+                                        Fill(
+                                            Brush.verticalGradient(
+                                                listOf(
+                                                    PrimaryCyan.copy(alpha = 0.4f),
+                                                    Color.Transparent,
+                                                ),
+                                            ),
+                                        ),
+                                    ),
+                                interpolator = LineCartesianLayer.Interpolator.catmullRom(),
+                            ),
+                        ),
+                    rangeProvider = RangeProvider,
+                ),
+
+                startAxis = VerticalAxis.rememberStart(
+                    label = rememberTextComponent(
+                        style = TextStyle(color = TextTertiary), // sesuaikan token warnamu
+                    ),
+                    guideline = rememberAxisGuidelineComponent(
+                        fill = Fill(color = BorderGray),
+                    ),
+                    valueFormatter = CurrencyFormatter,
+                ),
                 bottomAxis = HorizontalAxis.rememberBottom(
+                    label = rememberTextComponent(
+                        style = TextStyle(color = TextTertiary), // sesuaikan token warnamu
+                    ),
+                    guideline = rememberAxisGuidelineComponent(
+                        fill = Fill(color = BorderGray),
+                    ),
                     valueFormatter = { _, value, _ ->
                         labels.getOrElse(value.toInt()) { "" }
                     },
                 ),
+                marker = rememberDefaultCartesianMarker(
+                    label = rememberTextComponent(style = TextStyle(color = PrimaryCyan)), // sesuaikan token warnamu
+                    valueFormatter = MarkerValueFormatter,
+
+                    ),
             ),
             modelProducer = modelProducer,
         )
