@@ -197,7 +197,7 @@ fun DetailCategoryScreen(
             when (effect) {
                 DetailCategoryEffect.NavigateBack -> navController.popBackStack()
                 is DetailCategoryEffect.NavigateToAddSubCategory -> navController.navigate(
-                    AddNew(categoryId = "", parentId = effect.parentId),
+                    AddNew( parentId = effect.parentId),
                 )
 
                 is DetailCategoryEffect.NavigateToAddTransaction -> {
@@ -265,7 +265,7 @@ fun DetailCategoryContent(
                             Icon(
                                 imageVector = it,
                                 contentDescription = null,
-                                tint = PrimaryCyan,
+                                tint = state.category.color,
                                 modifier = Modifier
                                         .padding(end = 8.dp)
                                         .size(20.dp),
@@ -338,7 +338,7 @@ fun DetailCategoryContent(
                 labels = state.weeklyLabels,
             )
 
-            if (state.category?.parentId == null) {
+            if (state.category?.parentId == null && state.subCategories.isNotEmpty()) {
                 FormField(
                     title = "Sub Kategori",
                     actionText = "Lihat Semua",
@@ -716,7 +716,7 @@ private fun DetailCategoryContentPreview() {
                     totalBudget = 1_500_000,
                     usedBudget = 1_050_000,
                     typeCategory = TypeCategory.EXPENSE,
-
+                    color = PrimaryCyan
                     ),
 
                 subCategories = listOf(
@@ -727,6 +727,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 450_000,
                         usedBudget = 270_000,
                         typeCategory = TypeCategory.EXPENSE,
+                        color = PrimaryCyan
 
                         ),
                     CategoryUiModel(
@@ -736,6 +737,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 120_000,
                         usedBudget = 48_000,
                         typeCategory = TypeCategory.EXPENSE,
+                        color = PrimaryCyan
 
                         ),
                     CategoryUiModel(
@@ -745,6 +747,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 380_000,
                         usedBudget = 323_000,
                         typeCategory = TypeCategory.EXPENSE,
+                        color = PrimaryCyan
 
                         ),
                     CategoryUiModel(
@@ -754,6 +757,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 100_000,
                         usedBudget = 25_000,
                         typeCategory = TypeCategory.EXPENSE,
+                        color = PrimaryCyan
 
                         ),
                 ),

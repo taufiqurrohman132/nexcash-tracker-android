@@ -79,6 +79,7 @@ import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.addnew.model.BudgetPeriod
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.AmountOutlinedTextField
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -585,8 +586,8 @@ fun CategoryDropdownField(
 
 @Composable
 fun RencanaAnggaranCard(
-    budgetLimit: Long?,
-    onBudgetLimitChange: (Long?) -> Unit,
+    budgetLimit: Long,
+    onBudgetLimitChange: (String) -> Unit,
     selectedPeriod: BudgetPeriod,
     onPeriodChange: (BudgetPeriod) -> Unit,
     modifier: Modifier = Modifier,
@@ -626,30 +627,18 @@ fun RencanaAnggaranCard(
             fontWeight = FontWeight.Normal,
             textColor = TextSecondary,
         ) {
-            OutlinedTextField(
-                value = budgetLimit?.formatCurrency() ?: "",
-                onValueChange = { newValue ->
-                    // filter hanya angka
-                    val filtered = newValue.filter { it.isDigit() }
-                    onBudgetLimitChange(filtered.toLongOrNull())
+            AmountOutlinedTextField(
+                modifier = Modifier.height(50.dp),
+                rawAmount = budgetLimit.toString(),
+                onAmountChange = { newValue ->
+                    onBudgetLimitChange(newValue)
                 },
-                leadingIcon = { },
-                placeholder = { },
-                singleLine = true,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Number,
-                ),
-                shape = RoundedCornerShape(16.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryCyan,
-                    unfocusedBorderColor = BorderGray,
-                ),
-                modifier = Modifier
-                        .height(
-                            50.dp,
-                        )
-                        .fillMaxWidth(),
+                textStyle = MaterialTheme.typography.bodyMedium,
+                prefix = {
+                    Text("Rp ")
+                }
             )
+
         }
 
         BudgetPeriodSelector(
@@ -956,7 +945,7 @@ private fun AddCategoryContentNoBudgetPreview() {
                 name = "Hiburan",
                 typeCategory = TypeCategory.EXPENSE,
                 selectedColor = Color(0xFFF59E0B),
-                budgetLimit = null,
+                budgetLimit = 0L,
             ),
             onEvent = {},
         )

@@ -1,6 +1,6 @@
 package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
-import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
+import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.TransactionCategoryAndSubModel
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.TransactionCategoryItemModel
 import kotlin.time.Clock

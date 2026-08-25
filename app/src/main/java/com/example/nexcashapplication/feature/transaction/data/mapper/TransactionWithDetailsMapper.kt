@@ -2,7 +2,7 @@ package com.example.nexcashapplication.feature.transaction.data.mapper
 
 import com.example.nexcashapplication.core.datasource.local.mapper.toDomain
 import com.example.nexcashapplication.core.datasource.local.model.TransactionWithDetailsEntity
-import com.example.nexcashapplication.feature.aset.data.mapper.toDomain
+import com.example.nexcashapplication.feature.account.data.mapper.toDomain
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
 
 fun TransactionWithDetailsEntity.toDomain() = TransactionWithDetails(

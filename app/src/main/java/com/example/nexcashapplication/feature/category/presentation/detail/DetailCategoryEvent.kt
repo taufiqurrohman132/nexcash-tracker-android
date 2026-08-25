@@ -10,8 +10,8 @@ sealed interface DetailCategoryEvent {
     data object OnManageSubCategoryClick : DetailCategoryEvent
     data object OnReminderClick : DetailCategoryEvent
     data object OnSeeAllSubCategoryClick : DetailCategoryEvent
-    data class OnSubCategoryClick(val subCategoryId: String) : DetailCategoryEvent
-    data class OnTransactionClick(val transactionId: String) : DetailCategoryEvent
+    data class OnSubCategoryClick(val subCategoryId: String? = null) : DetailCategoryEvent
+    data class OnTransactionClick(val transactionId: String? = null) : DetailCategoryEvent
     data object OnLoadMoreTransactionsClick : DetailCategoryEvent
     data object OnFabAddClick : DetailCategoryEvent
     data object OnRetryClick : DetailCategoryEvent

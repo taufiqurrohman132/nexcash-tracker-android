@@ -1,7 +1,7 @@
 package com.example.nexcashapplication.feature.transaction.presentation.detail.model
 
 import com.example.nexcashapplication.core.extension.formatCurrency
-import com.example.nexcashapplication.feature.aset.presentation.main.model.AccountUiModel
+import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
 import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlin.time.Instant

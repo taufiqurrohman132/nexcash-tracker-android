@@ -195,12 +195,26 @@ fun AddEditTransactionContent(
             Spacer(Modifier.height(16.dp))
 
             // ---- Amount (required field #1) ----
-            EditableAmountCard(
-                type = state.type,
+            AmountOutlinedTextField(
                 rawAmount = state.amount.toString(),
                 onAmountChange = {
                     onEvent(AddEditTransactionEvent.OnAmountChange(it))
                 },
+                label = {
+                    Text(
+                        text = if (state.type == TransactionType.EXPENSE) "AMOUNT (OUT)" else "AMOUNT (IN)",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
+                prefix = {
+                    Text("Rp", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                },
+                textStyle = TextStyle(
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                ),
             )
 
 
@@ -488,10 +502,12 @@ private fun ToggleChip(
 }
 
 @Composable
-fun EditableAmountCard(
-    type: TransactionType,
+fun AmountOutlinedTextField(
     rawAmount: String,
     onAmountChange: (String) -> Unit,
+    textStyle: TextStyle,
+    label: @Composable (() -> Unit)? = null,
+    prefix: @Composable (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     var amountField by remember {
@@ -523,19 +539,9 @@ fun EditableAmountCard(
         shape = RoundedCornerShape(16.dp),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         visualTransformation = ThousandSeparatorTransformation(),
-        textStyle = TextStyle(
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-        ),
-        label = {
-            Text(
-                text = if (type == TransactionType.EXPENSE) "AMOUNT (OUT)" else "AMOUNT (IN)",
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-            )
-        },
-        prefix = { Text("Rp", fontSize = 18.sp, fontWeight = FontWeight.Medium) },
+        textStyle = textStyle,
+        label = label,
+        prefix = prefix,
         colors = OutlinedTextFieldDefaults.colors(
             unfocusedBorderColor = BorderGray,
             focusedBorderColor = PrimaryCyan,

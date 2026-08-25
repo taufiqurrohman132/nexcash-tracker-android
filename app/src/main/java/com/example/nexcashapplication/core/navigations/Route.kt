@@ -1,7 +1,7 @@
 package com.example.nexcashapplication.core.navigations
 
 import com.example.nexcashapplication.core.domain.model.TypeCategory
-import com.example.nexcashapplication.feature.aset.domain.model.TypeAccount
+import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import kotlinx.serialization.Serializable
 
 @Serializable

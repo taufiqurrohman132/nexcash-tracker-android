@@ -4,8 +4,8 @@ import com.example.nexcashapplication.core.datasource.repository.CategoryReposit
 import com.example.nexcashapplication.core.datasource.repository.PreferencesRepositoryImpl
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.PreferencesRepository
-import com.example.nexcashapplication.feature.aset.data.AccountRepositoryImpl
-import com.example.nexcashapplication.feature.aset.domain.repository.AccountRepository
+import com.example.nexcashapplication.feature.account.data.AccountRepositoryImpl
+import com.example.nexcashapplication.feature.account.domain.repository.AccountRepository
 import com.example.nexcashapplication.feature.transaction.data.TransactionRepositoryImpl
 import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
 import dagger.Binds

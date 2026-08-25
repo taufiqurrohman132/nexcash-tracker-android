@@ -8,7 +8,7 @@ import com.example.nexcashapplication.feature.category.presentation.addnew.model
 sealed class AddCategoryEvent {
     // Input Teks
     data class OnNameChanged(val name: String) : AddCategoryEvent()
-    data class OnBudgetChanged(val amount: Long?) : AddCategoryEvent()
+    data class OnBudgetChanged(val amount: String) : AddCategoryEvent()
     data class OnNotesChanged(val notes: String) : AddCategoryEvent()
 
     // Pilihan Dropdown & Opsi

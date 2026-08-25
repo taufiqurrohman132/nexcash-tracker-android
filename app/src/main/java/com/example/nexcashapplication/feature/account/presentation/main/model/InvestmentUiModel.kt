@@ -1,0 +1,12 @@
+package com.example.nexcashapplication.feature.account.presentation.main.model
+
+import androidx.compose.runtime.Immutable
+
+@Immutable
+data class InvestmentUiModel(
+    val id: String,
+    val name: String,
+    val currentValue: Long,
+    val changePercent: Double,
+//    val icon: InvestmentIcon,
+)

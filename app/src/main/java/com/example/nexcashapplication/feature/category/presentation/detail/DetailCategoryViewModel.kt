@@ -76,14 +76,24 @@ class DetailCategoryViewModel @Inject constructor(
             is DetailCategoryEvent.OnSubCategoryClick -> {
                 viewModelScope.launch {
                     sendEffect(
-                        DetailCategoryEffect.NavigateToSubCategoryDetail(event.subCategoryId),
+                        if (event.subCategoryId != null){
+                            DetailCategoryEffect.NavigateToSubCategoryDetail(event.subCategoryId)
+                        }else{
+                            DetailCategoryEffect.ShowSnackbar("Sub Category ID is null")
+                        },
                     )
                 }
             }
 
             is DetailCategoryEvent.OnTransactionClick -> {
                 viewModelScope.launch {
-                    sendEffect(DetailCategoryEffect.NavigateToTransactionDetail(event.transactionId))
+                    sendEffect(
+                        if (event.transactionId != null) {
+                            DetailCategoryEffect.NavigateToTransactionDetail(event.transactionId)
+                        }else{
+                            DetailCategoryEffect.ShowSnackbar("Transaction ID is null")
+                        }
+                    )
                 }
             }
             DetailCategoryEvent.OnAddSubCategoryClick -> {

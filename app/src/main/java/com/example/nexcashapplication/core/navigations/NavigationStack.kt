@@ -5,10 +5,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.nexcashapplication.feature.aset.presentation.addedit.form.AddEditInfoAccountScreen
-import com.example.nexcashapplication.feature.aset.presentation.addedit.typeoption.AddEditTypeAccountScreen
-import com.example.nexcashapplication.feature.aset.presentation.detail.DetailAccountScreen
-import com.example.nexcashapplication.feature.aset.presentation.main.AccountAssetScreen
+import com.example.nexcashapplication.feature.account.presentation.addedit.form.AddEditInfoAccountScreen
+import com.example.nexcashapplication.feature.account.presentation.addedit.typeoption.AddEditTypeAccountScreen
+import com.example.nexcashapplication.feature.account.presentation.detail.DetailAccountScreen
+import com.example.nexcashapplication.feature.account.presentation.main.AccountAssetScreen
 import com.example.nexcashapplication.feature.category.presentation.addnew.AddCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.delete.DeleteCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryScreen

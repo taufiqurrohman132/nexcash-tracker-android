@@ -14,7 +14,7 @@ data class AddCategoryState(
     val selectedColor: Color = PrimaryCyan,
     val showColorPalletDialog: Boolean = false,
     val recentColors: List<Color> = emptyList(),
-    val budgetLimit: Long? = null,
+    val budgetLimit: Long = 0L,
     val selectedIcon: CategoryIcon? = null,
     val recentIcons: List<CategoryIcon> = emptyList(),
     val selectedPeriod: BudgetPeriod = BudgetPeriod.BULANAN,

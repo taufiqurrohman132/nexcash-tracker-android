@@ -1,9 +1,8 @@
 package com.example.nexcashapplication.feature.transaction.presentation.detail.mapper
 
 import com.example.nexcashapplication.core.extension.formatCurrency
-import com.example.nexcashapplication.feature.aset.presentation.main.mapper.toAccountUiModel
+import com.example.nexcashapplication.feature.account.presentation.main.mapper.toAccountUiModel
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiModel
-import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.feature.transaction.presentation.detail.model.DetailTransactionUiModel

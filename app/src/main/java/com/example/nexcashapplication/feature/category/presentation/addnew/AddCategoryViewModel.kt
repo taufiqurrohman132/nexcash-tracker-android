@@ -103,7 +103,7 @@ class AddCategoryViewModel @Inject constructor(
 
             is AddCategoryEvent.OnBudgetChanged -> {
                 updateState {
-                    it.copy(budgetLimit = event.amount)
+                    it.copy(budgetLimit = event.amount.toLongOrNull() ?: 0L)
                 }
             }
 
@@ -164,20 +164,25 @@ class AddCategoryViewModel @Inject constructor(
     }
 
     fun loadCategory(id: String?) {
+        Log.d(TAG, "loadCategory: category id = $id")
         viewModelScope.launch {
             val recentColorsSnapshot = getRecentColorsSnapshot() //.take(4)
             Log.d(TAG, "loadCategory: awal recent color = $recentColorsSnapshot")
 
             try {
+                // edit mode
                 if (id != null) {
                     categoryUseCases.getCategoryById(id = id)
                             .collect { detailCategory ->
                                 if (detailCategory != null) {
                                     Log.d(TAG, "loadCategory: recent color = $recentColorsSnapshot")
+                                    val newState =
+                                        detailCategory.toUiState(recentColors = recentColorsSnapshot)
                                     updateState {
-                                        detailCategory.toUiState(
+                                        newState.copy(
                                             recentColors = recentColorsSnapshot.moveToFront(
-                                                color = it.selectedColor,
+                                                color = newState.selectedColor, // sudah termasuk logic default dari toUiState()
+                                                maxSize = 4,
                                             ),
                                         )
                                     }

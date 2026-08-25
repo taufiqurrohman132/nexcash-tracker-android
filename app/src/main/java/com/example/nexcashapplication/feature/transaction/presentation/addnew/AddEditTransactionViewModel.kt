@@ -7,8 +7,8 @@ import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.navigations.Route
-import com.example.nexcashapplication.feature.aset.domain.repository.AccountRepository
-import com.example.nexcashapplication.feature.aset.presentation.main.mapper.toAccountUiModel
+import com.example.nexcashapplication.feature.account.domain.repository.AccountRepository
+import com.example.nexcashapplication.feature.account.presentation.main.mapper.toAccountUiModel
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.mapper.toAddEditTransactionState
