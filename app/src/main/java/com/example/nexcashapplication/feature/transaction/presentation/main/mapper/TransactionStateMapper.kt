@@ -2,11 +2,10 @@ package com.example.nexcashapplication.feature.transaction.presentation.main.map
 
 import androidx.compose.ui.graphics.Color
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
-import com.example.nexcashapplication.core.extension.toColor
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
+import com.example.nexcashapplication.feature.common.extentions.toColor
 import com.example.nexcashapplication.feature.common.utils.formatDate
 import com.example.nexcashapplication.feature.common.utils.formatTime
-import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionHeaderUiModel
@@ -18,7 +17,6 @@ import kotlinx.datetime.toLocalDateTime
 //
 //private val timeFormatter = DateTimeFormatter.ofPattern("dd MMM, HH:mm")
 //        .withZone(ZoneId.systemDefault())
-
 
 
 fun TransactionWithDetails.toItemUiModel() = TransactionItemUiModel(

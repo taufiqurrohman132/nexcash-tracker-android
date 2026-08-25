@@ -1,9 +1,9 @@
 package com.example.nexcashapplication.feature.category.presentation.mapper
 
-import com.example.nexcashapplication.core.extension.toColor
 import com.example.nexcashapplication.feature.category.domain.model.CategoryName
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.delete.model.CategoryDeleteItemUI
+import com.example.nexcashapplication.feature.common.extentions.toColor
 
 
 fun CategoryName.toDeleteUiModel(): CategoryDeleteItemUI = CategoryDeleteItemUI(

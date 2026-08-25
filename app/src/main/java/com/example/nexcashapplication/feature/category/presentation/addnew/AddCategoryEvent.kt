@@ -21,9 +21,11 @@ sealed class AddCategoryEvent {
     data class OnColorSelected(val color: Color) : AddCategoryEvent()
     data class OnChangeIcon(val icon: CategoryIcon) : AddCategoryEvent() // Tombol "Ubah"
     object OnAddColorClicked : AddCategoryEvent()
+    object OnColorPickerDismiss : AddCategoryEvent()
 
     // Aksi Navigasi & Tombol Utama
     object OnSaveClicked : AddCategoryEvent() // Tombol "Simpan" & "Selesaikan Pembuatan"
     object OnCancelClicked : AddCategoryEvent() // Tombol "Batal & Kembali"
     object OnBackClicked : AddCategoryEvent() // Tombol "<"
+
 }

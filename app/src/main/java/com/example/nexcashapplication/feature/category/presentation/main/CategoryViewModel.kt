@@ -43,7 +43,7 @@ class CategoryViewModel @Inject constructor(
 
             is CategoryEvent.OnAddKategoriClick -> {
                 viewModelScope.launch {
-                    sendEffect(CategoryEffect.NavigateToAddCategory(categoryId = ""))
+                    sendEffect(CategoryEffect.NavigateToAddCategory())
                 }
             }
 

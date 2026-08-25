@@ -54,6 +54,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -66,6 +67,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -82,6 +84,8 @@ import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.TextSecondary
 import com.example.nexcashapplication.ui.theme.TextTertiary
+import io.mhssn.colorpicker.ColorPickerDialog
+import io.mhssn.colorpicker.ColorPickerType
 
 
 @Composable
@@ -103,7 +107,7 @@ fun AddCategoryScreen(
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun AddCategoryContent(
     state: AddCategoryState,
@@ -182,9 +186,9 @@ fun AddCategoryContent(
 
 
             ColorSwatchRow(
-                colors = listOf(Color.Red, Color.Green, Color.Blue),
+                colors = state.recentColors,
                 selectedColor = state.selectedColor,
-                onAddColorClick = { onEvent(AddCategoryEvent.OnAddColorClicked)},
+                onAddColorClick = { onEvent(AddCategoryEvent.OnAddColorClicked) },
                 onColorSelected = { onEvent(AddCategoryEvent.OnColorSelected(it)) },
             )
 
@@ -271,9 +275,76 @@ fun AddCategoryContent(
 
         }
 
+        // color picker
+        ColorPickerDialog(
+            show = state.showColorPalletDialog,
+            type = ColorPickerType.Ring(
+                ringWidth = 10.dp,
+                previewRadius = 80.dp,
+                showDarknessBar = false,
+                showLightnessBar = false,
+                showAlphaBar = false,
+                showColorPreview = true,
+            ),
+            properties = DialogProperties(),
+            onDismissRequest = {
+                onEvent(AddCategoryEvent.OnColorPickerDismiss)
+            },
+            onPickedColor = {
+                onEvent(AddCategoryEvent.OnColorSelected(it))
+            },
+
+            )
+
     }
 
 }
+
+//
+//@Composable
+//fun ColorPickerDialog(
+//    onDismiss: () -> Unit,
+//    onColorPicked: (Color) -> Unit,
+//    modifier: Modifier = Modifier,
+//) {
+//    val red by remember { mutableFloatStateOf(128f) }
+//    val green by remember { mutableFloatStateOf(128f) }
+//    val blue by remember { mutableFloatStateOf(128f) }
+//
+//    val previewColor = Color(red / 255f, green / 255f, blue / 255f)
+//
+//    AlertDialog(
+//        onDismissRequest = onDismiss,
+//        title = {
+//            Text("Pilih Warna")
+//        },
+//        text = {
+//            Column(
+//                verticalArrangement = Arrangement.spacedBy(12.dp),
+//            ) {
+//                Box(
+//                    modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(60.dp)
+//                            .clip(RoundedCornerShape(12.dp))
+//                            .background(previewColor),
+//                )
+//
+//                ColorSlider("R", red, Color.Red) { red = it }
+//                ColorSlider("G", green, Color.Green) { green = it }
+//                ColorSlider("B", blue, Color.Blue) { blue = it }
+//
+//            }
+//        },
+//        confirmButton = {
+//            TextButton(onClick = { onColorPicked(previewColor) }) { Text("Pilih") }
+//        },
+//        dismissButton = {
+//            TextButton(onClick = onDismiss) { Text("Batal") }
+//        },
+//
+//        )
+//}
 
 @Composable
 fun ParentCategoryBanner(

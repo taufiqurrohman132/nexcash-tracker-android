@@ -110,6 +110,9 @@ dependencies {
     // date
     implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.8.0")
 
+    // color picker
+    implementation("io.mhssn:colorpicker:1.0.0")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

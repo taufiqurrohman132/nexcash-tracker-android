@@ -9,15 +9,16 @@ import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.datasource.local.datastore.PreferencesKeys
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.PreferencesRepository
-import com.example.nexcashapplication.core.extension.moveToFront
-import com.example.nexcashapplication.core.extension.toColor
-import com.example.nexcashapplication.core.extension.toHex
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect
 import com.example.nexcashapplication.feature.category.presentation.mapper.toDomain
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiState
+import com.example.nexcashapplication.feature.common.extentions.moveToFront
+import com.example.nexcashapplication.feature.common.extentions.sortedColor
+import com.example.nexcashapplication.feature.common.extentions.toColor
+import com.example.nexcashapplication.feature.common.extentions.toHex
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -25,6 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class AddCategoryViewModel @Inject constructor(
@@ -59,9 +61,8 @@ class AddCategoryViewModel @Inject constructor(
 
             }
         }
-        if (categoryId.isNotBlank()) {
-            loadCategory(categoryId)
-        }
+        loadCategory(categoryId)
+
     }
 
     override fun onEvent(event: AddCategoryEvent) {
@@ -113,9 +114,20 @@ class AddCategoryViewModel @Inject constructor(
             }
 
             is AddCategoryEvent.OnColorSelected -> {
-                updateState {
-                    it.copy(selectedColor = event.color)
+                val recentColors = state.value.recentColors.sortedColor(event.color, 4)
+
+
+                updateState { addCategoryState ->
+                    addCategoryState.copy(
+                        selectedColor = event.color,
+                        recentColors = recentColors,
+                    )
                 }
+
+                viewModelScope.launch {
+                    saveRecentColors(recentColors.map { it.toHex() })
+                }
+
             }
 
             is AddCategoryEvent.OnNotesChanged -> {
@@ -141,31 +153,53 @@ class AddCategoryViewModel @Inject constructor(
                     it.copy(showColorPalletDialog = true)
                 }
             }
+
+            AddCategoryEvent.OnColorPickerDismiss -> {
+                updateState {
+                    it.copy(showColorPalletDialog = false)
+                }
+            }
         }
 
     }
 
-    fun loadCategory(id: String) {
+    fun loadCategory(id: String?) {
         viewModelScope.launch {
+            val recentColorsSnapshot = getRecentColorsSnapshot() //.take(4)
+            Log.d(TAG, "loadCategory: awal recent color = $recentColorsSnapshot")
+
             try {
-                categoryUseCases.getCategoryById(id = categoryId)
-                        .collect { detailCategory ->
-                            if (detailCategory != null) {
-                                val recentColorsSnapshot = getRecentColorsSnapshot()
-                                updateState {
-                                    detailCategory.toUiState(
-                                        recentColors = recentColorsSnapshot.moveToFront(
-                                            color = it.selectedColor,
-                                        ),
-                                    )
+                if (id != null) {
+                    categoryUseCases.getCategoryById(id = id)
+                            .collect { detailCategory ->
+                                if (detailCategory != null) {
+                                    Log.d(TAG, "loadCategory: recent color = $recentColorsSnapshot")
+                                    updateState {
+                                        detailCategory.toUiState(
+                                            recentColors = recentColorsSnapshot.moveToFront(
+                                                color = it.selectedColor,
+                                            ),
+                                        )
+                                    }
                                 }
                             }
-                        }
+                } else {
+                    Log.d(TAG, "loadCategory: recent color else = $recentColorsSnapshot")
+                    updateState {
+                        val newState = it.copy(recentColors = recentColorsSnapshot)
+                        Log.d(TAG, "loadCategory: state after copy = ${newState.recentColors}")
+                        newState
+                    }
+                }
+            } catch (e: CancellationException) {
+                Log.e(TAG, "loadCategory: $e")
+                throw e // WAJIB rethrow, jangan ditelen
             } catch (e: Exception) {
                 Log.e(TAG, "loadCategory: $e")
             }
         }
     }
+
 
     fun saveOrUpdate() {
         val currentState = state.value
@@ -181,9 +215,7 @@ class AddCategoryViewModel @Inject constructor(
             try {
                 // simpan
                 val category = currentState.toDomain(id = currentState.id, parentId = parentId)
-                val recentColors = currentState.recentColors.map { it.toHex() }
 
-                saveRecentColors(recentColors)
                 Log.d(TAG, "saveOrUpdate: state id : ${currentState.id}")
                 if (currentState.id.isBlank()) {
                     repository.insertCategory(category)

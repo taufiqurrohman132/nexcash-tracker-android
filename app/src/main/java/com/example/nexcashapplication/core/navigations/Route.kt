@@ -66,7 +66,8 @@ sealed interface Route {
         data class Detail(val categoryId: String) : CategoryRoute
 
         @Serializable
-        data class AddNew(val categoryId: String, val parentId: String? = null) : CategoryRoute
+        data class AddNew(val categoryId: String? = null, val parentId: String? = null) :
+            CategoryRoute
 
         @Serializable
         data class Delete(
