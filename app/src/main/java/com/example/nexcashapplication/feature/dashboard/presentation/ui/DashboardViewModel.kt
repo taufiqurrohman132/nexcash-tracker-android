@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.dashboard.presentation.viewmodel
+package com.example.nexcashapplication.feature.dashboard.presentation.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalanceWallet
@@ -10,25 +10,44 @@ import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Shop
 import androidx.compose.material.icons.filled.Work
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
 import com.example.nexcashapplication.feature.dashboard.presentation.state.DashboardState
+import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DashboardViewModel @Inject constructor() :
-    BaseViewModel<DashboardState, DashboardEvent, Unit>(
-        DashboardState(
-            transactions = sampleTransactions(),
-        ),
-    ) {
+class DashboardViewModel @Inject constructor(
+    private val transactionRepository: TransactionRepository,
+) : BaseViewModel<DashboardState, DashboardEvent, DashboardEffect>(
+    DashboardState(),
+) {
+
+    init {
+        loadData()
+    }
 
     override fun onEvent(event: DashboardEvent) {
         when (event) {
-            DashboardEvent.ToggleBalanceVisibility -> {
+            DashboardEvent.OnAddTransactionClick -> TODO()
+            DashboardEvent.OnLainnyaClick -> TODO()
+            DashboardEvent.OnLihatDetailBudgetClick -> TODO()
+            DashboardEvent.OnNotificationClick -> TODO()
+            DashboardEvent.OnProfileClick -> TODO()
+            DashboardEvent.OnRefresh -> TODO()
+            DashboardEvent.OnScanClick -> TODO()
+            DashboardEvent.OnScreenLoad -> TODO()
+            DashboardEvent.OnSemuaTransaksiClick -> TODO()
+            DashboardEvent.OnTagihanClick -> TODO()
+            DashboardEvent.OnToggleBalanceVisibility -> {
                 updateState {
                     it.copy(
                         isBalanceVisible = !it.isBalanceVisible,
@@ -36,8 +55,30 @@ class DashboardViewModel @Inject constructor() :
                 }
             }
 
-            else -> Unit
+            is DashboardEvent.OnTransactionClick -> {
+                viewModelScope.launch {
+                    sendEffect(
+                        DashboardEffect.NavigateToTransactionDetail(
+                            transactionId = event.transactionId,
+                        ),
+                    )
+                }
+            }
+
+            DashboardEvent.OnTransferClick -> TODO()
         }
+    }
+
+    fun loadData() {
+        transactionRepository.getRecentTransactions(5)
+                .onEach { transactionsWithDetail ->
+                    updateState { dashboardState ->
+                        dashboardState.copy(
+                            transactions = transactionsWithDetail.map { it.toItemUiModel() },
+                        )
+                    }
+                }
+                .launchIn(viewModelScope)
     }
 
     companion object {

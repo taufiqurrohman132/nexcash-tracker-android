@@ -27,7 +27,7 @@ data class BudgetEntity(
 
 
     @ColumnInfo(name = "category_id")
-    val categoryId: Long,
+    val categoryId: String,
 
     @ColumnInfo(name = "period_year")
     val periodYear: Short,

@@ -46,7 +46,7 @@ fun SummaryChip(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.15f)
+            containerColor = Color.White.copy(alpha = 0.1f)
         ),
         shape = RoundedCornerShape(16.dp)
     ) {

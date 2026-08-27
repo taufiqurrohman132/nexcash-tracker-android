@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.dashboard.presentation.ui.components
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,9 +27,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +38,6 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.SecondaryDeepPurple
 
 
 @Composable
@@ -45,51 +46,70 @@ fun BalanceCard(
     income: Long,
     expense: Long,
     isVisible: Boolean,
-    onEyeClick: () -> Unit
+    onEyeClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     var isTotalSaldoOverflow by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(16.dp),
+        modifier = modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .shadow(
+                    elevation = 12.dp,
+                    shape = RoundedCornerShape(24.dp),
+                    ambientColor = PrimaryCyan.copy(alpha = 0.35f),
+                    spotColor = PrimaryCyan.copy(alpha = 0.35f)
+                ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 0.dp   // dimatiin, shadow udah dihandle Modifier.shadow()
+        ),
+        shape = RoundedCornerShape(24.dp),
     ) {
 
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.linearGradient(
-                        colors = listOf(
-                            PrimaryCyan,
-                            PrimaryCyan,
-                            SecondaryDeepPurple
-                        ),
-                        start = Offset(0f, 0f),
-                        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-                    )
-                )
+                    .fillMaxWidth(),
+//                .background(
+//                    brush = Brush.linearGradient(
+//                        colors = listOf(
+//                            PrimaryCyan,
+//                            PrimaryCyan,
+//                            SecondaryDeepPurple
+//                        ),
+//                        start = Offset(0f, 0f),
+//                        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
+//                    )
+
+//                )
         ) {
+            Image(
+                painter = painterResource(R.drawable.bg_balance_card),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                        .matchParentSize(),
+            )
+
             Column(
-                modifier = Modifier.padding(24.dp)
+                modifier = Modifier.padding(24.dp),
             ) {
 
                 Text(
                     text = "Total Saldo Anda",
-                    color = Color.White
+                    color = Color.White,
                 )
 
                 Spacer(
-                    modifier = Modifier.height(8.dp)
+                    modifier = Modifier.height(8.dp),
                 )
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         modifier = Modifier
-                            .weight(1f),
+                                .weight(1f),
                         text = if (!isVisible) {
                             "Rp ••••••••"
                         } else if (isTotalSaldoOverflow) {
@@ -106,34 +126,34 @@ fun BalanceCard(
                             if (result.hasVisualOverflow) {
                                 isTotalSaldoOverflow = result.hasVisualOverflow
                             }
-                        }
+                        },
                     )
 
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Box(
                         modifier = Modifier
-                            .size(40.dp)
-                            .background(
-                                color = Color.White.copy(0.2f),
-                                shape = CircleShape
-                            )
-                            .clip(CircleShape)
-                            .clickable { onEyeClick() },
+                                .size(40.dp)
+                                .background(
+                                    color = Color.White.copy(0.2f),
+                                    shape = CircleShape,
+                                )
+                                .clip(CircleShape)
+                                .clickable { onEyeClick() },
                         contentAlignment = Alignment.Center,
 
-                    ) {
+                        ) {
                         Icon(
                             painter = painterResource(R.drawable.eye_show),
                             contentDescription = null,
                             tint = Color.White,
-                            modifier = Modifier.size(20.dp)
+                            modifier = Modifier.size(20.dp),
                         )
                     }
                 }
 
                 Spacer(
-                    modifier = Modifier.height(20.dp)
+                    modifier = Modifier.height(20.dp),
                 )
 
                 Row {
@@ -147,7 +167,7 @@ fun BalanceCard(
                     )
 
                     Spacer(
-                        modifier = Modifier.width(12.dp)
+                        modifier = Modifier.width(12.dp),
                     )
 
                     SummaryChip(
@@ -171,6 +191,6 @@ fun BalanceCardPreview(modifier: Modifier = Modifier) {
         4040,
         5050,
         true,
-        {}
+        {},
     )
 }

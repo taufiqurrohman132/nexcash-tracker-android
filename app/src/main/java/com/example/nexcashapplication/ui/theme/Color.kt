@@ -7,10 +7,10 @@ import androidx.compose.ui.graphics.Color
 // Primary / Brand
 // ===============================
 val SecondaryIndigoPurple = Color(0xFF7C6FE0)
-val PrimaryCyan = Color(0xFF00C2FF)
-val SecondaryDeepPurple = Color(0xFF7E57C2)
+val PrimaryCyan = Color(0xFF0040FF)
+val SecondaryDeepPurple = Color(0xFF001147)
 
-val LightCyan = Color(0xFFEBFBFF)
+val LightCyan = Color(0xFFEBEFFF)
 val LightPurpleLavender = Color(0xFFE8E6F7)
 
 // ===============================
