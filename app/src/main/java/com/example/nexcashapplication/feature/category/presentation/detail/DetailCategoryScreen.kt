@@ -30,6 +30,9 @@ import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Work
+import androidx.compose.material.icons.outlined.Description
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -51,8 +54,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -197,7 +202,7 @@ fun DetailCategoryScreen(
             when (effect) {
                 DetailCategoryEffect.NavigateBack -> navController.popBackStack()
                 is DetailCategoryEffect.NavigateToAddSubCategory -> navController.navigate(
-                    AddNew( parentId = effect.parentId),
+                    AddNew(parentId = effect.parentId),
                 )
 
                 is DetailCategoryEffect.NavigateToAddTransaction -> {
@@ -326,16 +331,12 @@ fun DetailCategoryContent(
                 remaining = state.category?.remainingBudget?.formatCurrency() ?: "0",
                 usedPersentage = state.category?.usedPercentage ?: 0,
             )
+            Spacer(Modifier.height(16.dp))
 
-            FormField(
-                title = "Tren Pengeluaran",
-                actionText = "7 Hari Terakhir",
-                onActionClick = { },
-            )
-
-            WeeklyTrendChart(
-                data = state.weeklyData,
-                labels = state.weeklyLabels,
+            QuickActionsRow(
+                onEditBudgetClick = { onEvent(DetailCategoryEvent.OnEditBudgetClick) },
+                onSetNotificationClick = { onEvent(DetailCategoryEvent.OnSetNotificationClick) },
+                onAddNoteClick = { onEvent(DetailCategoryEvent.OnAddNoteClick) },
             )
 
             if (state.category?.parentId == null && state.subCategories.isNotEmpty()) {
@@ -356,6 +357,19 @@ fun DetailCategoryContent(
                     )
                 }
             }
+
+            FormField(
+                title = "Tren Pengeluaran",
+                actionText = "7 Hari Terakhir",
+                onActionClick = { },
+            ){
+                WeeklyTrendChart(
+                    data = state.weeklyData,
+                    labels = state.weeklyLabels,
+                )
+            }
+
+
 
             FormField(
                 title = "Transaksi Terakhir",
@@ -702,6 +716,78 @@ fun WeeklyTrendChart(
 
 }
 
+@Composable
+fun QuickActionsRow(
+    onEditBudgetClick: () -> Unit,
+    onSetNotificationClick: () -> Unit,
+    onAddNoteClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        QuickActionItem(
+            icon = Icons.Outlined.Edit,
+            label = "Edit Budget",
+            onClick = onEditBudgetClick,
+            modifier = Modifier.weight(1f)
+        )
+        QuickActionItem(
+            icon = Icons.Outlined.Notifications,
+            label = "Set Notification",
+            onClick = onSetNotificationClick,
+            modifier = Modifier.weight(1f)
+        )
+        QuickActionItem(
+            icon = Icons.Outlined.Description,
+            label = "Add Note",
+            onClick = onAddNoteClick,
+            modifier = Modifier.weight(1f)
+        )
+    }
+}
+
+@Composable
+private fun QuickActionItem(
+    icon: ImageVector,
+    label: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        onClick = onClick,
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        border = BorderStroke(1.dp, Color(0xFFE5E7EB)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp, horizontal = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                tint = PrimaryCyan,
+                modifier = Modifier.size(22.dp)
+            )
+            Text(
+                text = label,
+                fontSize = 13.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color(0xFF1F2937),
+                textAlign = TextAlign.Center,
+                maxLines = 1
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 private fun DetailCategoryContentPreview() {
@@ -716,8 +802,8 @@ private fun DetailCategoryContentPreview() {
                     totalBudget = 1_500_000,
                     usedBudget = 1_050_000,
                     typeCategory = TypeCategory.EXPENSE,
-                    color = PrimaryCyan
-                    ),
+                    color = PrimaryCyan,
+                ),
 
                 subCategories = listOf(
                     CategoryUiModel(
@@ -727,7 +813,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 450_000,
                         usedBudget = 270_000,
                         typeCategory = TypeCategory.EXPENSE,
-                        color = PrimaryCyan
+                        color = PrimaryCyan,
 
                         ),
                     CategoryUiModel(
@@ -737,7 +823,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 120_000,
                         usedBudget = 48_000,
                         typeCategory = TypeCategory.EXPENSE,
-                        color = PrimaryCyan
+                        color = PrimaryCyan,
 
                         ),
                     CategoryUiModel(
@@ -747,7 +833,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 380_000,
                         usedBudget = 323_000,
                         typeCategory = TypeCategory.EXPENSE,
-                        color = PrimaryCyan
+                        color = PrimaryCyan,
 
                         ),
                     CategoryUiModel(
@@ -757,7 +843,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 100_000,
                         usedBudget = 25_000,
                         typeCategory = TypeCategory.EXPENSE,
-                        color = PrimaryCyan
+                        color = PrimaryCyan,
 
                         ),
                 ),

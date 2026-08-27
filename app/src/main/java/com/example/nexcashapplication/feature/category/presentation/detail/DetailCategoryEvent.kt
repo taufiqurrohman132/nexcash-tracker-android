@@ -15,4 +15,7 @@ sealed interface DetailCategoryEvent {
     data object OnLoadMoreTransactionsClick : DetailCategoryEvent
     data object OnFabAddClick : DetailCategoryEvent
     data object OnRetryClick : DetailCategoryEvent
+    object OnEditBudgetClick : DetailCategoryEvent
+    object OnSetNotificationClick : DetailCategoryEvent
+    object OnAddNoteClick : DetailCategoryEvent
 }
