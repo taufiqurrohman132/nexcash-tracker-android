@@ -11,6 +11,9 @@ import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUs
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToAddSubCategory
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToDeleteCategory
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToEditCategory
+import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToSubCategoryDetail
+import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToTransactionDetail
+import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.ShowSnackbar
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiModel
 import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModel
@@ -76,10 +79,10 @@ class DetailCategoryViewModel @Inject constructor(
             is DetailCategoryEvent.OnSubCategoryClick -> {
                 viewModelScope.launch {
                     sendEffect(
-                        if (event.subCategoryId != null){
-                            DetailCategoryEffect.NavigateToSubCategoryDetail(event.subCategoryId)
-                        }else{
-                            DetailCategoryEffect.ShowSnackbar("Sub Category ID is null")
+                        if (event.subCategoryId != null) {
+                            NavigateToSubCategoryDetail(event.subCategoryId)
+                        } else {
+                            ShowSnackbar("Sub Category ID is null")
                         },
                     )
                 }
@@ -89,13 +92,14 @@ class DetailCategoryViewModel @Inject constructor(
                 viewModelScope.launch {
                     sendEffect(
                         if (event.transactionId != null) {
-                            DetailCategoryEffect.NavigateToTransactionDetail(event.transactionId)
-                        }else{
-                            DetailCategoryEffect.ShowSnackbar("Transaction ID is null")
-                        }
+                            NavigateToTransactionDetail(event.transactionId)
+                        } else {
+                            ShowSnackbar("Transaction ID is null")
+                        },
                     )
                 }
             }
+
             DetailCategoryEvent.OnAddSubCategoryClick -> {
                 viewModelScope.launch {
                     sendEffect(
@@ -115,6 +119,10 @@ class DetailCategoryViewModel @Inject constructor(
                     ),
                 )
             }
+
+            DetailCategoryEvent.OnAddNoteClick -> TODO()
+            DetailCategoryEvent.OnEditBudgetClick -> TODO()
+            DetailCategoryEvent.OnSetNotificationClick -> TODO()
         }
     }
 
@@ -149,7 +157,7 @@ class DetailCategoryViewModel @Inject constructor(
                 .onEach { transactionsWithDetail ->
                     updateState {
                         it.copy(
-                            recentTransactions = transactionsWithDetail.map { it.toItemUiModel() }
+                            recentTransactions = transactionsWithDetail.map { it.toItemUiModel() },
                         )
                     }
                 }

@@ -10,37 +10,48 @@ import com.example.nexcashapplication.core.datasource.local.model.BudgetEntity
 import com.example.nexcashapplication.core.datasource.local.result.CategoryExpenseResult
 import com.example.nexcashapplication.core.datasource.local.result.DailyExpenseResult
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface BudgetDao {
 
-    // Dashboard widget: sisa anggaran bulan ini
-    // LIST SCREEN ─────────────────────────────────────
+    @Query("SELECT * FROM budgets WHERE id = :id")
+    suspend fun getById(id: String): BudgetEntity?
 
-    // Semua budget bulan ini (untuk progress bar di list)
-    @Query("""
+    @Query("SELECT * FROM budgets WHERE category_id = :categoryId")
+    fun getByCategory(categoryId: String): Flow<List<BudgetEntity>>
+
+    // budget yang "aktif" pada tanggal tertentu:
+    // start_date <= date DAN (end_date IS NULL ATAU end_date >= date)
+    @Query(
+        """
         SELECT * FROM budgets 
-        WHERE period_month = :month AND period_year = :year
-    """)
-    fun getBudgetsByMonth(month: Int, year: Int): Flow<List<BudgetEntity>>
+        WHERE start_date <= :date 
+        AND (end_date IS NULL OR end_date >= :date)
+    """,
+    )
+    fun getActiveBudgets(date: LocalDate): Flow<List<BudgetEntity>>
 
-    // DETAIL ANGGARAN ─────────────────────────────────
-
-    // Budget spesifik per kategori + bulan
-    @Query("""
+    @Query(
+        """
         SELECT * FROM budgets 
-        WHERE category_id = :categoryId 
-        AND period_month = :month AND period_year = :year
+        WHERE category_id = :categoryId
+        AND start_date <= :date 
+        AND (end_date IS NULL OR end_date >= :date)
         LIMIT 1
-    """)
-    fun getBudgetByCategory(
-        categoryId: String,
-        month: Int,
-        year: Int
-    ): Flow<BudgetEntity?>
+    """,
+    )
+    suspend fun getActiveBudgetForCategory(categoryId: String, date: LocalDate): BudgetEntity?
+
+    @Query("SELECT * FROM budgets WHERE recurrence_type = :type")
+    fun getByRecurrenceType(type: String): Flow<List<BudgetEntity>>
+
+    @Query("DELETE FROM budgets WHERE id = :id")
+    suspend fun deleteById(id: String)
 
     // Total pengeluaran harian dalam bulan (untuk grafik tren)
-    @Query("""
+    @Query(
+        """
         SELECT 
             strftime('%d', transaction_date/1000, 'unixepoch') as day,
             SUM(amount) as total
@@ -51,15 +62,17 @@ interface BudgetDao {
         AND strftime('%Y', transaction_date/1000, 'unixepoch') = :year
         GROUP BY day
         ORDER BY day ASC
-    """)
+    """,
+    )
     fun getDailyExpenseByCategory(
         categoryId: String,
         month: String,
-        year: String
+        year: String,
     ): Flow<List<DailyExpenseResult>>
 
     // Pengeluaran per subkategori (rincian sub-kategori)
-    @Query("""
+    @Query(
+        """
         SELECT 
             t.category_id,
             SUM(t.amount) as total
@@ -70,11 +83,12 @@ interface BudgetDao {
         AND strftime('%m', t.transaction_date/1000, 'unixepoch') = :month
         AND strftime('%Y', t.transaction_date/1000, 'unixepoch') = :year
         GROUP BY t.category_id
-    """)
+    """,
+    )
     fun getExpenseBySubCategory(
         parentCategoryId: String,
         month: String,
-        year: String
+        year: String,
     ): Flow<List<CategoryExpenseResult>>
 
     // CRUD ────────────────────────────────────────────
@@ -90,7 +104,6 @@ interface BudgetDao {
     // Hapus anggaran
     @Delete
     suspend fun deleteBudget(budget: BudgetEntity)
-
 
 
 }

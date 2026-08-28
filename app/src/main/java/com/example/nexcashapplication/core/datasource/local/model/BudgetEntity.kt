@@ -14,7 +14,7 @@ import java.util.UUID
             entity = CategoryEntity::class,
             parentColumns = ["id"],
             childColumns = ["category_id"],
-            onDelete = ForeignKey.CASCADE,
+            onDelete = ForeignKey.RESTRICT,
         )
     ],
     indices = [Index(value = ["category_id"])],
@@ -25,17 +25,19 @@ data class BudgetEntity(
     @PrimaryKey
     val id: String = UUID.randomUUID().toString(),
 
-
     @ColumnInfo(name = "category_id")
     val categoryId: String,
 
-    @ColumnInfo(name = "period_year")
-    val periodYear: Short,
+    // definisi periode dasar
+    @ColumnInfo(name = "start_date")
+    val startDate: Long,       // epoch millis, tanggal mulai berlaku
 
-    // 1 - 12
-    @ColumnInfo(name = "period_month")
-    val periodMonth: Short,
+    @ColumnInfo(name = "end_date")
+    val endDate: Long?,        // null = berlaku terus (recurring tanpa batas)
 
     @ColumnInfo(name = "amount")
-    val amount: Double,
+    val amount: Long,
+
+    @ColumnInfo(name = "recurrence_type")
+    val recurrenceType: String,
 )

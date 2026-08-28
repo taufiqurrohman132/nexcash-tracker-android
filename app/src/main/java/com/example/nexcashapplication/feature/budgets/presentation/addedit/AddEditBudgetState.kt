@@ -1,13 +1,13 @@
 package com.example.nexcashapplication.feature.budgets.presentation.addedit
 
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import java.time.LocalDate
 
 
-enum class PeriodeTipe { BULANAN, MINGGUAN, CUSTOM }
-
 data class AddEditBudgetState(
-    val budgetId: Long = 0L,
+    val budgetId: String? = null,
+    val categoryId: String? = null,
     val kategoriNama: String = "",
     val kategoriIkon: String? = null,
 
@@ -15,8 +15,9 @@ data class AddEditBudgetState(
     val batasBaruInput: String = "",
     val batasBaruParsed: Long = 0L,
 
-    val periodeTipe: PeriodeTipe = PeriodeTipe.BULANAN,
-    val tanggalMulai: LocalDate? = null,
+    val showDateDialog: Boolean = false,
+    val periodeTipe: RecurrenceType = RecurrenceType.MONTHLY,
+    val tanggalMulai: LocalDate = LocalDate.now(),
     val tanggalBerakhir: LocalDate? = null,
     val isTanggalEditable: Boolean = false, // true hanya saat CUSTOM
 
