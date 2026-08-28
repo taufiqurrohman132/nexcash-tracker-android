@@ -12,7 +12,6 @@ data class AddEditBudgetState(
     val kategoriIkon: String? = null,
 
     val batasSebelumnya: Long = 0L,
-    val batasBaruInput: String = "",
     val batasBaruParsed: Long = 0L,
 
     val showDateDialog: Boolean = false,

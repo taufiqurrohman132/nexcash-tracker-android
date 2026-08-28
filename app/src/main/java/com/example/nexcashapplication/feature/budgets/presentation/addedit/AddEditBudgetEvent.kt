@@ -12,6 +12,7 @@ sealed interface AddEditBudgetEvent {
     data class TanggalMulaiClicked(val initialDate: LocalDate) : AddEditBudgetEvent
     data class TanggalBerakhirClicked(val initialDate: LocalDate) : AddEditBudgetEvent
     data class BerulangToggled(val enabled: Boolean) : AddEditBudgetEvent
+    data object TanggalDismissClicked : AddEditBudgetEvent
     data object SimpanClicked : AddEditBudgetEvent
     data object BatalClicked : AddEditBudgetEvent
     data object ErrorShown : AddEditBudgetEvent

@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.core.datasource.repository
 
+import com.example.nexcashapplication.core.common.toEpochMillis
 import com.example.nexcashapplication.core.datasource.local.dao.BudgetDao
 import com.example.nexcashapplication.core.datasource.local.database.NexCashDatabase
 import com.example.nexcashapplication.core.datasource.local.mapper.toDomain
@@ -32,7 +33,7 @@ class BudgetRepositoryImpl @Inject constructor(
         categoryId: String,
         date: LocalDate,
     ): Budget? {
-        return budgetDao.getActiveBudgetForCategory(categoryId, date)?.toDomain()
+        return budgetDao.getActiveBudgetForCategory(categoryId, date.toEpochMillis())?.toDomain()
     }
 
     override fun getByRecurrenceType(type: String): Flow<List<Budget>> {

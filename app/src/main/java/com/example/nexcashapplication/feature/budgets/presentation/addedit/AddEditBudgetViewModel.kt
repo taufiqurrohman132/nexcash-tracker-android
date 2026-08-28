@@ -2,9 +2,11 @@ package com.example.nexcashapplication.feature.budgets.presentation.addedit
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
+import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.budgets.domain.usecase.GetBudgetPeriodUseCase
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -16,6 +18,13 @@ class AddEditBudgetViewModel @Inject constructor(
 ) : BaseViewModel<AddEditBudgetState, AddEditBudgetEvent, AddEditBudgetEffect>(
     AddEditBudgetState(),
 ) {
+    private val route: Route.BudgetRoute.AddEdit = savedStateHandle.toRoute()
+    private val budgetId = route.budgetId
+
+    init {
+        loadData()
+    }
+
     override fun onEvent(event: AddEditBudgetEvent) {
         when (event) {
             AddEditBudgetEvent.BatalClicked -> {
@@ -80,6 +89,14 @@ class AddEditBudgetViewModel @Inject constructor(
                     )
                 }
             }
+
+            AddEditBudgetEvent.TanggalDismissClicked -> {
+                updateState {
+                    it.copy(
+                        showDateDialog = false,
+                    )
+                }
+            }
         }
     }
 
@@ -91,24 +108,47 @@ class AddEditBudgetViewModel @Inject constructor(
             currentState.tanggalBerakhir,
         )
 
+
         viewModelScope.launch {
             if (currentState.categoryId != null) {
-                budgetRepository.insertBudget(
-                    Budget(
-                        categoryId = currentState.categoryId,
-                        startDate = startDate,
-                        endDate = endDate,
-                        amount = currentState.batasBaruParsed,
-                        recurrenceType = currentState.periodeTipe,
-                    ),
+                val budget = Budget(
+                    categoryId = currentState.categoryId,
+                    startDate = startDate,
+                    endDate = endDate,
+                    amount = currentState.batasBaruParsed,
+                    recurrenceType = currentState.periodeTipe,
                 )
+
+                if (budgetId != null) {
+                    budgetRepository.insertBudget(
+                        budget,
+                    )
+                } else {
+                    budgetRepository.updateBudget(budget)
+                }
             }
             sendEffect(AddEditBudgetEffect.NavigateBack)
         }
     }
 
     private fun loadData() {
+        viewModelScope.launch {
+            if (budgetId != null) {
+                val budget = budgetRepository.getById(budgetId)
 
+                if (budget != null) {
+                    updateState {
+                        it.copy(
+                            categoryId = budget.categoryId,
+                            periodeTipe = budget.recurrenceType,
+                            tanggalMulai = budget.startDate,
+                            tanggalBerakhir = budget.endDate,
+                            batasBaruParsed = budget.amount,
+                        )
+                    }
+                }
+            }
+        }
     }
 
 

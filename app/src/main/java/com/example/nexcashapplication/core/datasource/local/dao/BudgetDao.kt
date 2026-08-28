@@ -26,22 +26,22 @@ interface BudgetDao {
     @Query(
         """
         SELECT * FROM budgets 
-        WHERE start_date <= :date 
-        AND (end_date IS NULL OR end_date >= :date)
+        WHERE start_date <= :dateEpoch 
+        AND (end_date IS NULL OR end_date >= :dateEpoch)
     """,
     )
-    fun getActiveBudgets(date: LocalDate): Flow<List<BudgetEntity>>
+    fun getActiveBudgets(dateEpoch: Long): Flow<List<BudgetEntity>>
 
     @Query(
         """
         SELECT * FROM budgets 
         WHERE category_id = :categoryId
-        AND start_date <= :date 
-        AND (end_date IS NULL OR end_date >= :date)
+        AND start_date <= :dateEpoch 
+        AND (end_date IS NULL OR end_date >= :dateEpoch)
         LIMIT 1
     """,
     )
-    suspend fun getActiveBudgetForCategory(categoryId: String, date: LocalDate): BudgetEntity?
+    suspend fun getActiveBudgetForCategory(categoryId: String, dateEpoch: Long): BudgetEntity?
 
     @Query("SELECT * FROM budgets WHERE recurrence_type = :type")
     fun getByRecurrenceType(type: String): Flow<List<BudgetEntity>>
