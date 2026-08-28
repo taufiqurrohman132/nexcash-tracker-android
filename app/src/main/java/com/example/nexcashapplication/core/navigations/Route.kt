@@ -77,4 +77,17 @@ sealed interface Route {
         ) : CategoryRoute
     }
 
+    @Serializable
+    sealed interface BudgetRoute : Route {
+        @Serializable
+        data object Main : BudgetRoute
+
+        @Serializable
+        data class Detail(val budgetId: String) : BudgetRoute
+
+        @Serializable
+        data class AddEdit(val budgetId: String? = null) : BudgetRoute
+    }
+
+
 }
