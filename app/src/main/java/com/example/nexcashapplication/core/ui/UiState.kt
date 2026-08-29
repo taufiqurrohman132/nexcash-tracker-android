@@ -1,6 +1,6 @@
-package com.example.nexcashapplication.core.common
+package com.example.nexcashapplication.core.ui
 
-sealed class UiState<out T : Any?> {
+sealed class UiState<out T> {
 
     data object Loading : UiState<Nothing>()
 
@@ -8,3 +8,6 @@ sealed class UiState<out T : Any?> {
 
     data class Error(val errorMessage: String) : UiState<Nothing>()
 }
+
+val <T> UiState<T>.dataOrNull: T?
+    get() = (this as? UiState.Success)?.data

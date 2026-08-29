@@ -200,27 +200,27 @@ fun AddCategoryContent(
                 onIconClick = { onEvent(AddCategoryEvent.OnChangeIcon(it)) },
             )
 
-            // Rencana Anggaran
-            RencanaAnggaranCard(
-                budgetLimit = state.budgetLimit,
-                onBudgetLimitChange = {
-                    onEvent(AddCategoryEvent.OnBudgetChanged(it))
-                },
-                selectedPeriod = state.selectedPeriod,
-                onPeriodChange = { period ->
-                    onEvent(AddCategoryEvent.OnPeriodSelected(period))
-                },
-            )
+//            // Rencana Anggaran
+//            RencanaAnggaranCard(
+//                budgetLimit = state.budgetLimit,
+//                onBudgetLimitChange = {
+//                    onEvent(AddCategoryEvent.OnBudgetChanged(it))
+//                },
+//                selectedPeriod = state.selectedPeriod,
+//                onPeriodChange = { period ->
+//                    onEvent(AddCategoryEvent.OnPeriodSelected(period))
+//                },
+//            )
 
-            // rekening default
-            FormField("Rekening Default") {
-                CategoryDropdownField(
-                    value = state.defaultAccount,
-                    isPlaceHolder = false,
-                    options = listOf("Aset", "Bank", "Investasi"),
-                    onOptionSelected = { onEvent(AddCategoryEvent.OnAccountSelected(it)) },
-                )
-            }
+//            // rekening default
+//            FormField("Rekening Default") {
+//                CategoryDropdownField(
+//                    value = state.defaultAccount,
+//                    isPlaceHolder = false,
+//                    options = listOf("Aset", "Bank", "Investasi"),
+//                    onOptionSelected = { onEvent(AddCategoryEvent.OnAccountSelected(it)) },
+//                )
+//            }
 
             FormField("Catatan Tambahan") {
                 OutlinedTextField(
@@ -534,55 +534,6 @@ fun ToggleOption(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CategoryDropdownField(
-    value: String,
-    isPlaceHolder: Boolean,
-    options: List<String>,
-    onOptionSelected: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    var expanded by remember { mutableStateOf(false) }
-
-    ExposedDropdownMenuBox(
-        modifier = modifier,
-        expanded = expanded,
-        onExpandedChange = { expanded = it },
-    ) {
-        OutlinedTextField(
-            value = value,
-            onValueChange = { },
-            readOnly = true,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = PrimaryCyan,
-                unfocusedBorderColor = BorderGray,
-            ),
-            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            shape = RoundedCornerShape(16.dp),
-            modifier = Modifier
-                    .fillMaxWidth()
-                    .menuAnchor(),
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            shadowElevation = 8.dp,
-            shape = RoundedCornerShape(16.dp),
-            onDismissRequest = { expanded = false },
-        ) {
-            options.forEach { options ->
-                DropdownMenuItem(
-                    text = { Text(options) },
-                    onClick = {
-                        onOptionSelected(options)
-                        expanded = false
-                    },
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun RencanaAnggaranCard(
@@ -641,10 +592,10 @@ fun RencanaAnggaranCard(
 
         }
 
-        BudgetPeriodSelector(
-            selected = selectedPeriod,
-            onSelectedChange = { onPeriodChange(it) },
-        )
+//        BudgetPeriodSelector(
+//            selected = selectedPeriod,
+//            onSelectedChange = { onPeriodChange(it) },
+//        )
     }
 }
 
@@ -721,7 +672,7 @@ fun IconPreviewRow(
 
         IconChip(
             modifier = Modifier.shadow(
-                elevation = 6.dp,
+                elevation = 16.dp,
                 shape = RoundedCornerShape(16.dp),
                 clip = false,
                 ambientColor = PrimaryCyan,

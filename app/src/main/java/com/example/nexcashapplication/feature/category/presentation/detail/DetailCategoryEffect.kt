@@ -5,6 +5,7 @@ import com.example.nexcashapplication.core.domain.model.TypeCategory
 sealed interface DetailCategoryEffect {
     data object NavigateBack : DetailCategoryEffect
     data class NavigateToEditCategory(val categoryId: String) : DetailCategoryEffect
+    data class NavigateToEditBudget(val budgetId: String?  = null) : DetailCategoryEffect
     data class NavigateToDeleteCategory(val categoryId: String, val typeCategory: TypeCategory) : DetailCategoryEffect
     data class NavigateToAddTransaction(val categoryId: String) : DetailCategoryEffect
     data class NavigateToAddSubCategory(val parentId: String) : DetailCategoryEffect

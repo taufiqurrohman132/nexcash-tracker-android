@@ -8,9 +8,11 @@ import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.budgets.domain.usecase.GetBudgetPeriodUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class AddEditBudgetViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val budgetRepository: BudgetRepository,

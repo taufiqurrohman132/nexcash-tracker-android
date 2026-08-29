@@ -1,7 +1,9 @@
 package com.example.nexcashapplication.di
 
+import com.example.nexcashapplication.core.datasource.repository.BudgetRepositoryImpl
 import com.example.nexcashapplication.core.datasource.repository.CategoryRepositoryImpl
 import com.example.nexcashapplication.core.datasource.repository.PreferencesRepositoryImpl
+import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.PreferencesRepository
 import com.example.nexcashapplication.feature.account.data.AccountRepositoryImpl
@@ -29,6 +31,12 @@ abstract class RepositoryModule {
     abstract fun bindTrasactionsRepository(
         impl: TransactionRepositoryImpl,
     ): TransactionRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindBudgetRepository(
+        impl: BudgetRepositoryImpl,
+    ): BudgetRepository
 
     @Binds
     @Singleton

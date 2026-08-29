@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.outlined.Description
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -73,8 +74,11 @@ import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.core.navigations.Route.CategoryRoute.AddNew
+import com.example.nexcashapplication.core.navigations.Route.CategoryRoute.Delete
+import com.example.nexcashapplication.core.ui.dataOrNull
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryUiModel
+import com.example.nexcashapplication.feature.category.presentation.detail.model.DetailCategoryUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
@@ -238,17 +242,23 @@ fun DetailCategoryScreen(
                 }
 
                 is DetailCategoryEffect.NavigateToDeleteCategory -> navController.navigate(
-                    Route.CategoryRoute.Delete(
+                    Delete(
                         categoryId = effect.categoryId,
                         typeCategory = effect.typeCategory,
                     ),
                 )
+
+                is DetailCategoryEffect.NavigateToEditBudget -> {
+                    navController.navigate(
+                        Route.BudgetRoute.AddEdit(),
+                    )
+                }
             }
         }
     }
 
     DetailCategoryContent(
-        state = state,
+        state = state.dataState.dataOrNull ?: DetailCategoryUiModel(null),
         onEvent = viewModel::onEvent,
     )
 
@@ -257,7 +267,7 @@ fun DetailCategoryScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailCategoryContent(
-    state: DetailCategoryState,
+    state: DetailCategoryUiModel,
     onEvent: (DetailCategoryEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -362,7 +372,7 @@ fun DetailCategoryContent(
                 title = "Tren Pengeluaran",
                 actionText = "7 Hari Terakhir",
                 onActionClick = { },
-            ){
+            ) {
                 WeeklyTrendChart(
                     data = state.weeklyData,
                     labels = state.weeklyLabels,
@@ -634,9 +644,51 @@ private val MarkerValueFormatter = DefaultCartesianMarker.ValueFormatter { _, ta
 
 @Composable
 fun WeeklyTrendChart(
+    data: List<Float>,
+    labels: List<String>,
     modifier: Modifier = Modifier,
-    data: List<Float> = listOf(300f, 350f, 280f, 450f, 550f, 850f, 650f),
-    labels: List<String> = listOf("Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"),
+) {
+    Card(
+        modifier = modifier
+                .fillMaxWidth()
+                .height(220.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = BorderStroke(1.dp, BorderGray),
+    ) {
+        if (data.isEmpty() || labels.isEmpty()) {
+            WeeklyTrendEmptyState(modifier = Modifier.fillMaxSize())
+        } else {
+            WeeklyTrendChartContent(data = data, labels = labels)
+        }
+    }
+}
+
+@Composable
+private fun WeeklyTrendEmptyState(modifier: Modifier = Modifier) {
+    Box(modifier = modifier.padding(16.dp), contentAlignment = Alignment.Center) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Icon(
+                imageVector = Icons.Outlined.ShowChart,
+                contentDescription = null,
+                tint = TextTertiary,
+                modifier = Modifier.size(32.dp),
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "Belum ada data transaksi minggu ini",
+                style = MaterialTheme.typography.bodySmall,
+                color = TextTertiary,
+            )
+        }
+    }
+}
+
+@Composable
+private fun WeeklyTrendChartContent(
+    data: List<Float>,
+    labels: List<String>,
 ) {
     val modelProducer = remember { CartesianChartModelProducer() }
 
@@ -647,73 +699,46 @@ fun WeeklyTrendChart(
             }
         }
     }
-    Card(
-        modifier = modifier
+
+    CartesianChartHost(
+        modifier = Modifier
                 .fillMaxWidth()
-                .height(220.dp),
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = BorderStroke(1.dp, BorderGray),
-    ) {
-        CartesianChartHost(
-            modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(8.dp),
-            chart = rememberCartesianChart(
-                rememberLineCartesianLayer(
-                    lineProvider =
-                        LineCartesianLayer.LineProvider.series(
-                            LineCartesianLayer.rememberLine(
-                                fill = LineCartesianLayer.LineFill.single(Fill(PrimaryCyan)),
-                                areaFill =
-                                    LineCartesianLayer.AreaFill.single(
-                                        Fill(
-                                            Brush.verticalGradient(
-                                                listOf(
-                                                    PrimaryCyan.copy(alpha = 0.4f),
-                                                    Color.Transparent,
-                                                ),
-                                            ),
-                                        ),
-                                    ),
-                                interpolator = LineCartesianLayer.Interpolator.catmullRom(),
+                .fillMaxHeight()
+                .padding(8.dp),
+        chart = rememberCartesianChart(
+            rememberLineCartesianLayer(
+                lineProvider = LineCartesianLayer.LineProvider.series(
+                    LineCartesianLayer.rememberLine(
+                        fill = LineCartesianLayer.LineFill.single(Fill(PrimaryCyan)),
+                        areaFill = LineCartesianLayer.AreaFill.single(
+                            Fill(
+                                Brush.verticalGradient(
+                                    listOf(PrimaryCyan.copy(alpha = 0.4f), Color.Transparent),
+                                ),
                             ),
                         ),
-                    rangeProvider = RangeProvider,
+                        interpolator = LineCartesianLayer.Interpolator.catmullRom(),
+                    ),
                 ),
-
-                startAxis = VerticalAxis.rememberStart(
-                    label = rememberTextComponent(
-                        style = TextStyle(color = TextTertiary), // sesuaikan token warnamu
-                    ),
-                    guideline = rememberAxisGuidelineComponent(
-                        fill = Fill(color = BorderGray),
-                    ),
-                    valueFormatter = CurrencyFormatter,
-                ),
-                bottomAxis = HorizontalAxis.rememberBottom(
-                    label = rememberTextComponent(
-                        style = TextStyle(color = TextTertiary), // sesuaikan token warnamu
-                    ),
-                    guideline = rememberAxisGuidelineComponent(
-                        fill = Fill(color = BorderGray),
-                    ),
-                    valueFormatter = { _, value, _ ->
-                        labels.getOrElse(value.toInt()) { "" }
-                    },
-                ),
-                marker = rememberDefaultCartesianMarker(
-                    label = rememberTextComponent(style = TextStyle(color = PrimaryCyan)), // sesuaikan token warnamu
-                    valueFormatter = MarkerValueFormatter,
-
-                    ),
+                rangeProvider = RangeProvider,
             ),
-            modelProducer = modelProducer,
-        )
-    }
-
+            startAxis = VerticalAxis.rememberStart(
+                label = rememberTextComponent(style = TextStyle(color = TextTertiary)),
+                guideline = rememberAxisGuidelineComponent(fill = Fill(color = BorderGray)),
+                valueFormatter = CurrencyFormatter,
+            ),
+            bottomAxis = HorizontalAxis.rememberBottom(
+                label = rememberTextComponent(style = TextStyle(color = TextTertiary)),
+                guideline = rememberAxisGuidelineComponent(fill = Fill(color = BorderGray)),
+                valueFormatter = { _, value, _ -> labels.getOrElse(value.toInt()) { "" } },
+            ),
+            marker = rememberDefaultCartesianMarker(
+                label = rememberTextComponent(style = TextStyle(color = PrimaryCyan)),
+                valueFormatter = MarkerValueFormatter,
+            ),
+        ),
+        modelProducer = modelProducer,
+    )
 }
 
 @Composable
@@ -721,29 +746,29 @@ fun QuickActionsRow(
     onEditBudgetClick: () -> Unit,
     onSetNotificationClick: () -> Unit,
     onAddNoteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         QuickActionItem(
             icon = Icons.Outlined.Edit,
             label = "Edit Budget",
             onClick = onEditBudgetClick,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
         QuickActionItem(
             icon = Icons.Outlined.Notifications,
             label = "Set Notification",
             onClick = onSetNotificationClick,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
         QuickActionItem(
             icon = Icons.Outlined.Description,
             label = "Add Note",
             onClick = onAddNoteClick,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
     }
 }
@@ -753,7 +778,7 @@ private fun QuickActionItem(
     icon: ImageVector,
     label: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Card(
         onClick = onClick,
@@ -761,20 +786,20 @@ private fun QuickActionItem(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White),
         border = BorderStroke(1.dp, Color(0xFFE5E7EB)),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
         Column(
             modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 16.dp, horizontal = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = label,
                 tint = PrimaryCyan,
-                modifier = Modifier.size(22.dp)
+                modifier = Modifier.size(22.dp),
             )
             Text(
                 text = label,
@@ -782,7 +807,7 @@ private fun QuickActionItem(
                 fontWeight = FontWeight.Medium,
                 color = Color(0xFF1F2937),
                 textAlign = TextAlign.Center,
-                maxLines = 1
+                maxLines = 1,
             )
         }
     }
@@ -793,8 +818,7 @@ private fun QuickActionItem(
 private fun DetailCategoryContentPreview() {
     NexCashApplicationTheme {
         DetailCategoryContent(
-            state = DetailCategoryState(
-                isLoading = false,
+            state = DetailCategoryUiModel(
                 category = CategoryUiModel(
                     id = "1",
                     name = "Transportasi",
