@@ -65,10 +65,10 @@ class TransactionRepositoryImpl @Inject constructor(
 
     override suspend fun insertTransaction(transaction: Transaction) {
         db.withTransaction {
-            categoryDao.adjustUsedBalance(
-                categoryId = transaction.categoryId ?: "",
-                delta = transaction.amount,
-            )
+//            categoryDao.adjustUsedBalance(
+//                categoryId = transaction.categoryId ?: "",
+//                delta = transaction.amount,
+//            )
             Log.d("INSERTTRANS", "insertTransaction: ${transaction.categoryId}")
 
             accountDao.adjustBalance(

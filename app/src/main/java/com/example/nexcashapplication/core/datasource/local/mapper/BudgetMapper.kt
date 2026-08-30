@@ -14,6 +14,7 @@ fun BudgetEntity.toDomain() = Budget(
     endDate = endDate?.toLocalDate(),
     amount = amount,
     recurrenceType = RecurrenceType.valueOf(recurrenceType.uppercase()),
+    isRecurring = isRecurring,
 )
 
 fun Budget.toEntity() = BudgetEntity(
@@ -23,5 +24,6 @@ fun Budget.toEntity() = BudgetEntity(
     endDate = endDate?.toEpochMillis(),
     amount = amount,
     recurrenceType = recurrenceType.name.lowercase(),
+    isRecurring = isRecurring,
 )
 

@@ -10,4 +10,5 @@ data class Budget(
     val endDate: LocalDate?,        // null = berlaku terus (recurring tanpa batas)
     val amount: Long,
     val recurrenceType: RecurrenceType,
+    val isRecurring: Boolean,
 )

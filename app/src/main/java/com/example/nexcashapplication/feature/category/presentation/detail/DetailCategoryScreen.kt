@@ -250,7 +250,7 @@ fun DetailCategoryScreen(
 
                 is DetailCategoryEffect.NavigateToEditBudget -> {
                     navController.navigate(
-                        Route.BudgetRoute.AddEdit(),
+                        Route.BudgetRoute.AddEdit(categoryId = effect.categoryId),
                     )
                 }
             }

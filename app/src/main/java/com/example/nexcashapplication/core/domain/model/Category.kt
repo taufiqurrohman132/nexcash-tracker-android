@@ -9,10 +9,6 @@ data class Category(
     val type: TypeCategory,
     val iconId: String,
     val color: String,
-    val used: Long,
-    val budget: Long,
-    val period: BudgetPeriod,        // <- ganti dari String ke enum
-    val defaultAccount: String,
     val note: String = "",
     val isSystem: Boolean = false,
     val deletedAt: Long? = null,

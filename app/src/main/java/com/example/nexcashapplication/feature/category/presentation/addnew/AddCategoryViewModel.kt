@@ -95,17 +95,8 @@ class AddCategoryViewModel @Inject constructor(
                 }
             }
 
-            is AddCategoryEvent.OnAccountSelected -> {
-                updateState {
-                    it.copy(defaultAccount = event.accountId)
-                }
-            }
 
-            is AddCategoryEvent.OnBudgetChanged -> {
-                updateState {
-                    it.copy(budgetLimit = event.amount.toLongOrNull() ?: 0L)
-                }
-            }
+
 
             is AddCategoryEvent.OnChangeIcon -> {
                 updateState {
@@ -136,11 +127,7 @@ class AddCategoryViewModel @Inject constructor(
                 }
             }
 
-            is AddCategoryEvent.OnPeriodSelected -> {
-                updateState {
-                    it.copy(selectedPeriod = event.period)
-                }
-            }
+
 
             is AddCategoryEvent.OnTypeSelected -> {
                 updateState {

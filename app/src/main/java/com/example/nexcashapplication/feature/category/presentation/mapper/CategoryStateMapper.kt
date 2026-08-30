@@ -13,8 +13,8 @@ fun Category.toCategoryItem(): CategoryItem {
         tipe = type,
         icon = CategoryIcons.fromId(id = iconId),
         iconColor = color.toColor(),
-        terpakai = used,
-        budget = budget,
+        terpakai = 0L,
+        budget = 0L
     )
 }
 

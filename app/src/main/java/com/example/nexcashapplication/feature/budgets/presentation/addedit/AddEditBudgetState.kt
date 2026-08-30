@@ -14,10 +14,10 @@ data class AddEditBudgetState(
     val batasSebelumnya: Long = 0L,
     val batasBaruParsed: Long = 0L,
 
-    val showDateDialog: Boolean = false,
+    val activeDateDialog: DateFieldTarget? = null,
     val periodeTipe: RecurrenceType = RecurrenceType.MONTHLY,
     val tanggalMulai: LocalDate = LocalDate.now(),
-    val tanggalBerakhir: LocalDate? = null,
+    val tanggalBerakhir: LocalDate = LocalDate.now().plusDays(1),
     val isTanggalEditable: Boolean = false, // true hanya saat CUSTOM
 
     val isBerulang: Boolean = false,
@@ -36,4 +36,10 @@ data class AddEditBudgetState(
     val previewTeksBerulang: String
         get() = "Sistem akan membuat anggaran $kategoriNama sebesar " +
                 "Rp ${batasBaruParsed.formatCurrency()} secara otomatis pada tanggal 1 setiap bulannya."
+}
+
+// di State
+sealed interface DateFieldTarget {
+    data object TanggalMulai : DateFieldTarget
+    data object TanggalAkhir : DateFieldTarget
 }

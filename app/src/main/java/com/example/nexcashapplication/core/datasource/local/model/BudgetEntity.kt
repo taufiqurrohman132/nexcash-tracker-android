@@ -40,4 +40,7 @@ data class BudgetEntity(
 
     @ColumnInfo(name = "recurrence_type")
     val recurrenceType: String,
+
+    @ColumnInfo(name = "is_recurring")
+    val isRecurring: Boolean = true,
 )

@@ -18,10 +18,6 @@ fun AddCategoryState.toDomain(id: String, parentId: String? = null): Category {
         type = typeCategory,
         iconId = selectedIcon?.id.orEmpty(),
         color = selectedColor.toHex(),
-        used = 0L,
-        budget = budgetLimit ?: 0L,
-        period = selectedPeriod,
-        defaultAccount = defaultAccount,
         note = note,
     )
 }
@@ -41,9 +37,6 @@ fun Category.toUiState(
         selectedColor = color.toColor(),
         recentIcons = recentIcons,
         recentColors = recentColors,
-        budgetLimit = budget,
-        selectedPeriod = period,
-        defaultAccount = defaultAccount,
         note = note,
     )
 }

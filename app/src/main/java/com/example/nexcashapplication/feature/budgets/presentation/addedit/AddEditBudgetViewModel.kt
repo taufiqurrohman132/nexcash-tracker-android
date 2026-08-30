@@ -7,9 +7,11 @@ import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import com.example.nexcashapplication.feature.budgets.domain.usecase.GetBudgetPeriodUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,6 +24,9 @@ class AddEditBudgetViewModel @Inject constructor(
 ) {
     private val route: Route.BudgetRoute.AddEdit = savedStateHandle.toRoute()
     private val budgetId = route.budgetId
+    private val categoryId = route.categoryId
+
+    private val currentStete get() = state.value
 
     init {
         loadData()
@@ -37,12 +42,18 @@ class AddEditBudgetViewModel @Inject constructor(
                 }
             }
 
-            is AddEditBudgetEvent.BatasBaruChanged -> TODO()
+            is AddEditBudgetEvent.BatasBaruChanged -> {
+                updateState {
+                    it.copy(
+                        batasBaruParsed = event.rawInput.toLongOrNull() ?: 0L,
+                    )
+                }
+            }
+
             is AddEditBudgetEvent.BerulangToggled -> {
                 updateState {
                     it.copy(
-                        isBerulang = !event.enabled,
-                        isBerulangToggleEnabled = !event.enabled,
+                        isBerulang = event.enabled,
                     )
                 }
             }
@@ -51,6 +62,7 @@ class AddEditBudgetViewModel @Inject constructor(
             is AddEditBudgetEvent.PeriodeTipeChanged -> updateState {
                 it.copy(
                     periodeTipe = event.tipe,
+                    isBerulangToggleEnabled = event.tipe == RecurrenceType.CUSTOM,
                 )
             }
 
@@ -64,6 +76,7 @@ class AddEditBudgetViewModel @Inject constructor(
                 updateState {
                     it.copy(
                         tanggalBerakhir = event.date,
+                        tanggalMulai = if (event.date <= it.tanggalMulai) event.date.minusDays(1) else it.tanggalMulai,
                     )
                 }
             }
@@ -72,6 +85,9 @@ class AddEditBudgetViewModel @Inject constructor(
                 updateState {
                     it.copy(
                         tanggalMulai = event.date,
+                        tanggalBerakhir = if (event.date >= it.tanggalBerakhir) event.date.plusDays(
+                            1,
+                        ) else it.tanggalBerakhir,
                     )
                 }
             }
@@ -79,7 +95,7 @@ class AddEditBudgetViewModel @Inject constructor(
             is AddEditBudgetEvent.TanggalBerakhirClicked -> {
                 updateState {
                     it.copy(
-                        showDateDialog = true,
+                        activeDateDialog = DateFieldTarget.TanggalAkhir,
                     )
                 }
             }
@@ -87,7 +103,7 @@ class AddEditBudgetViewModel @Inject constructor(
             is AddEditBudgetEvent.TanggalMulaiClicked -> {
                 updateState {
                     it.copy(
-                        showDateDialog = true,
+                        activeDateDialog = DateFieldTarget.TanggalMulai,
                     )
                 }
             }
@@ -95,7 +111,7 @@ class AddEditBudgetViewModel @Inject constructor(
             AddEditBudgetEvent.TanggalDismissClicked -> {
                 updateState {
                     it.copy(
-                        showDateDialog = false,
+                        activeDateDialog = null,
                     )
                 }
             }
@@ -105,29 +121,24 @@ class AddEditBudgetViewModel @Inject constructor(
     private fun handleSave() {
         val currentState = state.value
         val (startDate, endDate) = getBudgetPeriodUseCase(
-            currentState.periodeTipe,
-            currentState.tanggalMulai,
-            currentState.tanggalBerakhir,
+            isRecurring = currentState.isBerulang,
+            type = currentState.periodeTipe,
+            startDate = currentState.tanggalMulai,
+            endDate = currentState.tanggalBerakhir,
         )
 
-
         viewModelScope.launch {
-            if (currentState.categoryId != null) {
+            if (categoryId != null) {
                 val budget = Budget(
-                    categoryId = currentState.categoryId,
+                    categoryId = categoryId,
                     startDate = startDate,
                     endDate = endDate,
                     amount = currentState.batasBaruParsed,
                     recurrenceType = currentState.periodeTipe,
+                    isRecurring = currentState.isBerulang,
                 )
 
-                if (budgetId != null) {
-                    budgetRepository.insertBudget(
-                        budget,
-                    )
-                } else {
-                    budgetRepository.updateBudget(budget)
-                }
+                budgetRepository.insertBudget(budget)
             }
             sendEffect(AddEditBudgetEffect.NavigateBack)
         }
@@ -135,16 +146,16 @@ class AddEditBudgetViewModel @Inject constructor(
 
     private fun loadData() {
         viewModelScope.launch {
-            if (budgetId != null) {
-                val budget = budgetRepository.getById(budgetId)
+            if (categoryId != null) {
+                val today = LocalDate.now()
+                val budget = budgetRepository.getActiveBudgetForCategory(categoryId, today)
 
                 if (budget != null) {
                     updateState {
                         it.copy(
-                            categoryId = budget.categoryId,
                             periodeTipe = budget.recurrenceType,
                             tanggalMulai = budget.startDate,
-                            tanggalBerakhir = budget.endDate,
+                            tanggalBerakhir = budget.endDate ?: budget.startDate, /// sementararaa
                             batasBaruParsed = budget.amount,
                         )
                     }

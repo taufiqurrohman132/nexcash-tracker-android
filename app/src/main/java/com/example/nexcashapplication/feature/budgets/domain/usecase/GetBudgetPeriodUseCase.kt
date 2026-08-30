@@ -8,6 +8,7 @@ import javax.inject.Inject
 
 class GetBudgetPeriodUseCase @Inject constructor() {
     operator fun invoke(
+        isRecurring: Boolean,
         type: RecurrenceType, // WEEKLY / MONTHLY
         startDate: LocalDate,
         endDate: LocalDate?,

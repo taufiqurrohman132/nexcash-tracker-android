@@ -44,18 +44,6 @@ data class CategoryEntity(
     @ColumnInfo(name = "color")
     val color: String,
 
-    @ColumnInfo(name = "used_balance")
-    val usedBalance: Long,
-
-    @ColumnInfo(name = "budget")
-    val budget: Long,
-
-    @ColumnInfo(name = "period")
-    val period: String,
-
-    @ColumnInfo(name = "default_account")
-    val defaultAccount: String,
-
     @ColumnInfo(name = "note")
     val note: String = "",
 

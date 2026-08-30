@@ -11,8 +11,8 @@ fun Category.toUiModel(): CategoryUiModel = CategoryUiModel(
     parentId = parentId,
     name = name,
     icon = CategoryIcons.fromId(id = iconId),  // mapping enum -> resource
-    totalBudget = budget,
-    usedBudget = used,
+    totalBudget = 9L,
+    usedBudget = 29L,
     typeCategory = type,
     color = color.toColor()
 )

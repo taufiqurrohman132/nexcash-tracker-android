@@ -86,7 +86,7 @@ sealed interface Route {
         data class Detail(val budgetId: String) : BudgetRoute
 
         @Serializable
-        data class AddEdit(val budgetId: String? = null) : BudgetRoute
+        data class AddEdit(val budgetId: String? = null, val categoryId: String? = null) : BudgetRoute
     }
 
 

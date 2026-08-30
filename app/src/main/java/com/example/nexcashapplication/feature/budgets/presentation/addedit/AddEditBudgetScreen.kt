@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.budgets.presentation.addedit
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +46,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -52,11 +54,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.common.toEpochMillis
@@ -65,9 +69,12 @@ import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.AmountOutlinedTextField
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
+import com.example.nexcashapplication.ui.theme.TextSecondary
 import java.time.LocalDate
+import java.time.ZoneOffset
 
 @Composable
 fun AddEditBudgetScreen(
@@ -76,6 +83,19 @@ fun AddEditBudgetScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                AddEditBudgetEffect.NavigateBack -> navController.popBackStack()
+                is AddEditBudgetEffect.ShowSnackbar -> {
+
+                }
+
+                AddEditBudgetEffect.ShowDiscardConfirmation -> TODO()
+            }
+        }
+    }
 
     AddEditBudgetContent(
         state = state,
@@ -130,6 +150,7 @@ fun AddEditBudgetContent(
     ) { innerPadding ->
         Column(
             modifier = modifier
+                    .fillMaxSize()
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp),
@@ -139,10 +160,20 @@ fun AddEditBudgetContent(
                 title = "Batas Anggaran Baru",
                 icon = Icons.Outlined.AccountBalanceWallet,
             ) {
-                NewLimitField(
-                    value = state.batasBaruParsed.formatCurrency(),
-                    onValueChange = { onEvent(AddEditBudgetEvent.BatasBaruChanged(it)) },
+                AmountOutlinedTextField(
+                    rawAmount = state.batasBaruParsed.toString(),
+                    onAmountChange = {
+                        onEvent(AddEditBudgetEvent.BatasBaruChanged(it))
+                    },
+                    prefix = {
+                        Text("Rp ", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                    },
+                    textStyle = TextStyle(
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    ),
                 )
+
             }
 
             Spacer(Modifier.height(4.dp))
@@ -171,26 +202,34 @@ fun AddEditBudgetContent(
                 title = "Periode Efektif",
                 icon = Icons.Outlined.CalendarMonth,
             ) {
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    DateField(
-                        label = "MULAI",
-                        date = state.tanggalMulai.toString(),
-                        enabled = state.periodeTipe == RecurrenceType.CUSTOM,
-                        onClick = { onEvent(AddEditBudgetEvent.TanggalMulaiClicked(state.tanggalMulai)) },
-                        modifier = Modifier.weight(1f),
-                    )
-                    DateField(
-                        label = "BERAKHIR",
-                        date = state.tanggalBerakhir.toString(),
-                        enabled = state.periodeTipe == RecurrenceType.CUSTOM,
-                        onClick = {
-                            onEvent(
-                                AddEditBudgetEvent.TanggalBerakhirClicked(
-                                    state.tanggalBerakhir ?: LocalDate.now(),
-                                ),
-                            )
-                        },
-                        modifier = Modifier.weight(1f),
+                Column {
+                    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                        DateField(
+                            label = "MULAI",
+                            date = state.tanggalMulai.toString(),
+                            enabled = state.periodeTipe == RecurrenceType.CUSTOM,
+                            onClick = { onEvent(AddEditBudgetEvent.TanggalMulaiClicked(state.tanggalMulai)) },
+                            modifier = Modifier.weight(1f),
+                        )
+                        DateField(
+                            label = "BERAKHIR",
+                            date = state.tanggalBerakhir.toString(),
+                            enabled = state.periodeTipe == RecurrenceType.CUSTOM,
+                            onClick = {
+                                onEvent(
+                                    AddEditBudgetEvent.TanggalBerakhirClicked(
+                                        state.tanggalBerakhir ?: LocalDate.now(),
+                                    ),
+                                )
+                            },
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+
+                    Text(
+                        text = "Durasi 12 Hari",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary,
                     )
                 }
 
@@ -202,7 +241,6 @@ fun AddEditBudgetContent(
                     )
                 }
 
-                Spacer(Modifier.height(24.dp))
             }
             FormField(
                 title = "Pengaturna Berulang",
@@ -216,11 +254,25 @@ fun AddEditBudgetContent(
             }
         }
 
-        if (state.showDateDialog){
+        // di Composable
+        state.activeDateDialog?.let { target ->
+            val initialDate = when (target) {
+                DateFieldTarget.TanggalMulai -> state.tanggalMulai
+                DateFieldTarget.TanggalAkhir -> state.tanggalBerakhir ?: state.tanggalMulai
+            }
+
             AppDatePickerDialog(
-                initialDateMillis = state.tanggalMulai.toEpochMillis(),
+                initialDateMillis = initialDate.toEpochMillis(zoneId = ZoneOffset.UTC),
                 onDismiss = { onEvent(AddEditBudgetEvent.TanggalDismissClicked) },
-                onDateSelected = { onEvent(AddEditBudgetEvent.TanggalMulaiChanged(it.toLocalDate())) },
+                onDateSelected = { millis ->
+                    val selected = millis.toLocalDate(zoneId = ZoneOffset.UTC)
+                    onEvent(
+                        when (target) {
+                            DateFieldTarget.TanggalMulai -> AddEditBudgetEvent.TanggalMulaiChanged(selected)
+                            DateFieldTarget.TanggalAkhir -> AddEditBudgetEvent.TanggalBerakhirChanged(selected)
+                        }
+                    )
+                },
             )
         }
     }
@@ -340,7 +392,7 @@ private fun RecurringBudgetCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Switch(checked = isRecurring, onCheckedChange = onToggle)
+            Switch(checked = isRecurring, onCheckedChange = { onToggle(it)})
         }
 
         AnimatedVisibility(visible = isRecurring) {

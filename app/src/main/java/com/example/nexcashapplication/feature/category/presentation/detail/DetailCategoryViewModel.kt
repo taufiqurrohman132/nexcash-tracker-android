@@ -24,10 +24,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -131,7 +129,7 @@ class DetailCategoryViewModel @Inject constructor(
             DetailCategoryEvent.OnAddNoteClick -> TODO()
             DetailCategoryEvent.OnEditBudgetClick -> viewModelScope.launch {
                 sendEffect(
-                    DetailCategoryEffect.NavigateToEditBudget(),
+                    DetailCategoryEffect.NavigateToEditBudget(categoryId = categoryId),
                 )
             }
 
@@ -197,14 +195,15 @@ class DetailCategoryViewModel @Inject constructor(
                     }
                     .collect { trend ->
                         updateState { current ->
-                            val existingData = current.dataState.dataOrNull ?: return@updateState current
+                            val existingData =
+                                current.dataState.dataOrNull ?: return@updateState current
                             current.copy(
                                 dataState = UiState.Success(
                                     existingData.copy(
                                         weeklyData = trend.data,
                                         weeklyLabels = trend.labels,
-                                    )
-                                )
+                                    ),
+                                ),
                             )
                         }
                     }
