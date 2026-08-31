@@ -590,7 +590,6 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White,
                     )
-
                 }
 
                 Row {
