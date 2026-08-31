@@ -10,6 +10,7 @@ import com.example.nexcashapplication.core.datasource.local.result.DailyExpenseR
 import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -29,11 +30,20 @@ class BudgetRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    override suspend fun getActiveBudgetForCategory(
+    override fun getActiveBudgetForCategory(
         categoryId: String,
         date: LocalDate,
-    ): Budget? {
-        return budgetDao.getActiveBudgetForCategory(categoryId, date.toEpochMillis())?.toDomain()
+    ): Flow<Budget?> {
+        return budgetDao.getActiveBudgetForCategory(categoryId, date.toEpochMillis())
+                .map { it?.toDomain() }
+    }
+
+    override fun getActiveBudgetsForCategories(
+        categoryIds: List<String>,
+        referenceDate: Long,
+    ): Flow<List<Budget>> {
+        return budgetDao.getActiveBudgetsForCategories(categoryIds, referenceDate)
+                .map { list -> list.map { it.toDomain() } }
     }
 
     override fun getByRecurrenceType(type: String): Flow<List<Budget>> {

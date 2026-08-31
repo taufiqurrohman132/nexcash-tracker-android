@@ -12,11 +12,16 @@ class GetBudgetPeriodUseCase @Inject constructor() {
         type: RecurrenceType, // WEEKLY / MONTHLY
         startDate: LocalDate,
         endDate: LocalDate?,
-    ): Pair<LocalDate, LocalDate?> {
+    ): Pair<LocalDate, LocalDate> {
         return when (type) {
             RecurrenceType.WEEKLY -> getWeeklyPeriodByLocale(startDate)
             RecurrenceType.MONTHLY -> getMonthlyPeriod(startDate)
-            RecurrenceType.CUSTOM -> startDate to endDate
+            RecurrenceType.CUSTOM -> {
+                val periodEnd = endDate
+                    ?: error("CUSTOM budget must have currentPeriodEnd")
+                startDate to periodEnd
+            }
+
         }
     }
 }

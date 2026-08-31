@@ -6,15 +6,15 @@ import com.example.nexcashapplication.feature.category.presentation.main.model.C
 import com.example.nexcashapplication.feature.common.extentions.toColor
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.CategoryNameItemUiModel
 
-fun Category.toCategoryItem(): CategoryItem {
+fun Category.toCategoryItem(usedBudget: Long = 0L, budget: Long = 0L): CategoryItem {
     return CategoryItem(
         id = id, // lihat catatan soal id di bawah
         nama = name,
         tipe = type,
         icon = CategoryIcons.fromId(id = iconId),
         iconColor = color.toColor(),
-        terpakai = 0L,
-        budget = 0L
+        terpakai = usedBudget,
+        budget = budget,
     )
 }
 

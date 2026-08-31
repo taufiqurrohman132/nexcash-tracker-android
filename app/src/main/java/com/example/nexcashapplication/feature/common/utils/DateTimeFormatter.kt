@@ -1,13 +1,13 @@
 package com.example.nexcashapplication.feature.common.utils
 
-import java.time.ZoneId
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter as JavaDateTimeFormatter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
 import kotlin.time.toKotlinInstant
+import java.time.format.DateTimeFormatter as JavaDateTimeFormatter
 
 private val dateFormatter: JavaDateTimeFormatter = JavaDateTimeFormatter.ofPattern("d MMM yyyy")
 private val timeFormatter: JavaDateTimeFormatter = JavaDateTimeFormatter.ofPattern("HH:mm")
@@ -34,6 +34,12 @@ fun Instant.minute(zoneId: ZoneId = ZoneId.systemDefault()): Int =
 // LocalDate gak butuh zoneId sama sekali
 fun LocalDate.formatDate(): String =
     this.toJavaLocalDate().format(dateFormatter)
+
+fun java.time.LocalDate.toStartOfDayMillis(zone: ZoneId = ZoneId.systemDefault()): Long =
+    atStartOfDay(zone).toInstant().toEpochMilli()
+
+fun java.time.LocalDate.toEndOfDayMillis(zone: ZoneId = ZoneId.systemDefault()): Long =
+    atTime(23, 59, 59, 999_999_999).atZone(zone).toInstant().toEpochMilli()
 
 // rename dari object DateTimeFormatter -> hindari tabrakan nama sama java.time.format.DateTimeFormatter
 object TimeParser {

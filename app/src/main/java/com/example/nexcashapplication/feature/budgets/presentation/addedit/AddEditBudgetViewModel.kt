@@ -148,18 +148,20 @@ class AddEditBudgetViewModel @Inject constructor(
         viewModelScope.launch {
             if (categoryId != null) {
                 val today = LocalDate.now()
-                val budget = budgetRepository.getActiveBudgetForCategory(categoryId, today)
-
-                if (budget != null) {
-                    updateState {
-                        it.copy(
-                            periodeTipe = budget.recurrenceType,
-                            tanggalMulai = budget.startDate,
-                            tanggalBerakhir = budget.endDate ?: budget.startDate, /// sementararaa
-                            batasBaruParsed = budget.amount,
-                        )
-                    }
-                }
+                budgetRepository.getActiveBudgetForCategory(categoryId, today)
+                        .collect { activeBudget ->
+                            if (activeBudget != null) {
+                                updateState {
+                                    it.copy(
+                                        periodeTipe = activeBudget.recurrenceType,
+                                        tanggalMulai = activeBudget.startDate,
+                                        tanggalBerakhir = activeBudget.endDate
+                                            ?: activeBudget.startDate, /// sementararaa
+                                        batasBaruParsed = activeBudget.amount,
+                                    )
+                                }
+                            }
+                        }
             }
         }
     }

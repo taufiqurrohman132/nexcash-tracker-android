@@ -63,6 +63,20 @@ class TransactionRepositoryImpl @Inject constructor(
         ).map { list -> list.map { it.toDomain() } }
     }
 
+    override fun getUsedAmountByCategory(
+        categoryId: String,
+        periodStart: Long,
+        periodEnd: Long,
+    ): Flow<Long> {
+        return transactionDao.getUsedAmountByCategory(categoryId, periodStart, periodEnd)
+    }
+
+    override fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<Transaction>> {
+        return transactionDao.getTransactionsForCategories(categoryIds)
+                .map { list -> list.map { it.toDomain() } }
+    }
+
+
     override suspend fun insertTransaction(transaction: Transaction) {
         db.withTransaction {
 //            categoryDao.adjustUsedBalance(

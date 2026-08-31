@@ -10,7 +10,6 @@ import com.example.nexcashapplication.core.datasource.local.model.BudgetEntity
 import com.example.nexcashapplication.core.datasource.local.result.CategoryExpenseResult
 import com.example.nexcashapplication.core.datasource.local.result.DailyExpenseResult
 import kotlinx.coroutines.flow.Flow
-import java.time.LocalDate
 
 @Dao
 interface BudgetDao {
@@ -41,7 +40,23 @@ interface BudgetDao {
         LIMIT 1
     """,
     )
-    suspend fun getActiveBudgetForCategory(categoryId: String, dateEpoch: Long): BudgetEntity?
+    fun getActiveBudgetForCategory(categoryId: String, dateEpoch: Long): Flow<BudgetEntity?>
+
+    @Query(
+        """
+    SELECT * FROM budgets 
+    WHERE category_id IN (:categoryIds)
+    AND start_date <= :referenceDate
+    AND (
+        recurrence_type != 'custom' 
+        OR (recurrence_type = 'custom' AND end_date >= :referenceDate)
+    )
+""",
+    )
+    fun getActiveBudgetsForCategories(
+        categoryIds: List<String>,
+        referenceDate: Long,
+    ): Flow<List<BudgetEntity>>
 
     @Query("SELECT * FROM budgets WHERE recurrence_type = :type")
     fun getByRecurrenceType(type: String): Flow<List<BudgetEntity>>

@@ -1,13 +1,17 @@
 package com.example.nexcashapplication.feature.category.presentation.detail
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.common.toEpochMillis
+import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.core.ui.UiState
 import com.example.nexcashapplication.core.ui.dataOrNull
+import com.example.nexcashapplication.feature.budgets.domain.usecase.GetBudgetPeriodUseCase
 import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToAddSubCategory
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToDeleteCategory
@@ -25,18 +29,23 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailCategoryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val transactionRepository: TransactionRepository,
+    private val budgetRepository: BudgetRepository,
     private val categoryRepository: CategoryRepository,
     private val categoryUseCases: CategoryUseCases,
+    private val getBudgetPeriodUseCase: GetBudgetPeriodUseCase,
 ) : BaseViewModel<DetailCategoryState, DetailCategoryEvent, DetailCategoryEffect>(
     DetailCategoryState(),
 ) {
@@ -137,6 +146,7 @@ class DetailCategoryViewModel @Inject constructor(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun loadDetailCategory(categoryId: String) {
         viewModelScope.launch {
             combine(
@@ -162,6 +172,45 @@ class DetailCategoryViewModel @Inject constructor(
                         }
                     }
         }
+
+        budgetRepository.getActiveBudgetForCategory(categoryId, LocalDate.now())
+                .flatMapLatest { activeBudget ->
+                    if (activeBudget == null) {
+                        flowOf(null to 0L)
+                    } else {
+                        val (periodStart, periodEnd) = getBudgetPeriodUseCase(
+                            isRecurring = activeBudget.isRecurring,
+                            type = activeBudget.recurrenceType,
+                            startDate = activeBudget.startDate,
+                            endDate = activeBudget.endDate,
+                        )
+                        transactionRepository.getUsedAmountByCategory(
+                            categoryId,
+                            periodStart.toEpochMillis(),
+                            periodEnd.toEpochMillis(), //?: LocalDate.now().toEpochMillis(),// sementara
+                        ).map { usedAmount -> activeBudget to usedAmount }
+                    }
+                }.onEach { (budget, usedAmount) ->
+                    updateState { current ->
+                        val existingData =
+                            current.dataState.dataOrNull ?: return@updateState current
+
+                        Log.d(TAG, "loadDetailCategory: exiting data = $existingData")
+                        Log.d(TAG, "loadDetailCategory: bu")
+                        current.copy(
+                            dataState = UiState.Success(
+                                existingData.copy(
+                                    category = existingData.category?.copy(
+                                        totalBudget = budget?.amount ?: 0L,
+                                        usedBudget = usedAmount,
+                                    ),
+                                ),
+                            ),
+                        )
+                    }
+                }
+                .launchIn(viewModelScope)
+
 
         transactionRepository.getRecentTransactions(5)
                 .onEach { transactions ->
@@ -208,5 +257,9 @@ class DetailCategoryViewModel @Inject constructor(
                         }
                     }
         }
+    }
+
+    companion object {
+        private val TAG = DetailCategoryViewModel::class.java.simpleName
     }
 }

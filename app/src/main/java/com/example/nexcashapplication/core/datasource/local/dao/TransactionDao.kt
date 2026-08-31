@@ -62,6 +62,15 @@ ORDER BY transaction_date DESC
     )
     fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetailsEntity?>
 
+    @Query(
+        """
+            SELECT COALESCE(SUM(amount), 0) FROM transactions
+            WHERE category_id = :categoryId
+            AND transaction_date BETWEEN :periodStart AND :periodEnd
+        """,
+    )
+    fun getUsedAmountByCategory(categoryId: String, periodStart: Long, periodEnd: Long): Flow<Long>
+
     // dashboard: total bulan ini
     @Query(
         """
@@ -97,6 +106,9 @@ ORDER BY transaction_date DESC
         """,
     )
     fun getCountTransactionsByAccount(accountId: String): Flow<Int>
+
+    @Query("SELECT * FROM transactions WHERE category_id IN (:categoryIds)")
+    fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<TransactionEntity>>
 
     @Query(
         """

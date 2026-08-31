@@ -11,7 +11,12 @@ interface BudgetRepository {
     suspend fun getById(id: String): Budget?
     fun getByCategory(categoryId: String): Flow<List<Budget>>
     fun getActiveBudgets(date: LocalDate): Flow<List<Budget>>
-    suspend fun getActiveBudgetForCategory(categoryId: String, date: LocalDate): Budget?
+    fun getActiveBudgetForCategory(categoryId: String, date: LocalDate): Flow<Budget?>
+    fun getActiveBudgetsForCategories(
+        categoryIds: List<String>,
+        referenceDate: Long,
+    ): Flow<List<Budget>>
+
     fun getByRecurrenceType(type: String): Flow<List<Budget>>
     suspend fun deleteById(id: String)
     fun getDailyExpenseByCategory(
