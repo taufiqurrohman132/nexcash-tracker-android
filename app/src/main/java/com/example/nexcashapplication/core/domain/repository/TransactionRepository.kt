@@ -1,4 +1,4 @@
-package com.example.nexcashapplication.feature.transaction.domain.repository
+package com.example.nexcashapplication.core.domain.repository
 
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
 import com.example.nexcashapplication.feature.dashboard.domain.model.MonthlySummary

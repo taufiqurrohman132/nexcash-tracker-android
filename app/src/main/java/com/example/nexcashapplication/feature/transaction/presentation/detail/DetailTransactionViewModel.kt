@@ -4,9 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.core.navigations.Route
-import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
-import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.transaction.presentation.detail.mapper.toDeleteDialogUiState
 import com.example.nexcashapplication.feature.transaction.presentation.detail.mapper.toDetailTransactionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,6 +57,7 @@ class DetailTransactionViewModel @Inject constructor(
                     )
                 }
             }
+
             DetailTransactionEvent.OnDismissMenu -> TODO()
             DetailTransactionEvent.OnDuplicateClick -> TODO()
             DetailTransactionEvent.OnEditClick -> {

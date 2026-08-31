@@ -3,13 +3,13 @@ package com.example.nexcashapplication.di
 import com.example.nexcashapplication.core.datasource.repository.BudgetRepositoryImpl
 import com.example.nexcashapplication.core.datasource.repository.CategoryRepositoryImpl
 import com.example.nexcashapplication.core.datasource.repository.PreferencesRepositoryImpl
+import com.example.nexcashapplication.core.datasource.repository.TransactionRepositoryImpl
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.PreferencesRepository
+import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.account.data.AccountRepositoryImpl
 import com.example.nexcashapplication.feature.account.domain.repository.AccountRepository
-import com.example.nexcashapplication.feature.transaction.data.TransactionRepositoryImpl
-import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

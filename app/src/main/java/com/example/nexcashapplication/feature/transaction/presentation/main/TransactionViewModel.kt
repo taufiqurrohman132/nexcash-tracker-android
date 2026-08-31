@@ -2,14 +2,13 @@ package com.example.nexcashapplication.feature.transaction.presentation.main
 
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.category.presentation.mapper.toCategoryNameItemUiModel
-import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetAllCategoryUsecase
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetMonthlySummaryUseCase
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetTransactionsWithDetailsByMonthUseCase
 import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModelList
-import com.example.nexcashapplication.feature.transaction.presentation.main.model.CategoryNameItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview

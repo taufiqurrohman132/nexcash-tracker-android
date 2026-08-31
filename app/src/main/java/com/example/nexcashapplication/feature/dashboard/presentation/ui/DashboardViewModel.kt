@@ -13,9 +13,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
+import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
 import com.example.nexcashapplication.feature.dashboard.presentation.state.DashboardState
-import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel

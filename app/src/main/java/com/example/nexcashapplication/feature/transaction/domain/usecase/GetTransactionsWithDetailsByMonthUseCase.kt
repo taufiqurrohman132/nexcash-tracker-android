@@ -1,7 +1,7 @@
 package com.example.nexcashapplication.feature.transaction.domain.usecase
 
+import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
-import com.example.nexcashapplication.feature.transaction.domain.repository.TransactionRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 
