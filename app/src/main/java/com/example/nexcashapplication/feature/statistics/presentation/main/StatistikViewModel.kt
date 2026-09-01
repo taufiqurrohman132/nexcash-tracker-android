@@ -12,21 +12,24 @@ class StatistikViewModel @Inject constructor(
 ) : BaseViewModel<StatistikState, StatistikEvent, StatistikEffect>(
     StatistikState(),
 ) {
-    private val _selectedPeriod = MutableStateFlow(YearMonth.now())
-    private val _activeTab = MutableStateFlow(AlokasiTab.ALOKASI)
+    private val selectedPeriod = MutableStateFlow(YearMonth.now())
+    private val alokasiMode = MutableStateFlow(AlokasiMode.ALOKASI)
 
 
     override fun onEvent(event: StatistikEvent) {
         when (event) {
-            StatistikEvent.ClickBantuan -> TODO()
-            StatistikEvent.ClickLihatSemuaTarget -> TODO()
-            is StatistikEvent.ClickTargetFinansial -> TODO()
-            StatistikEvent.ClickUbahAlokasi -> TODO()
-            is StatistikEvent.GantiBulan -> TODO()
-            StatistikEvent.LoadData -> TODO()
-            StatistikEvent.Retry -> TODO()
-            is StatistikEvent.SwitchAlokasiTab -> TODO()
+            is StatistikEvent.OnAlokasiTabChange -> TODO()
+            StatistikEvent.OnGantiBulanClick -> TODO()
+            StatistikEvent.OnLihatSemuaTargetClick -> TODO()
+            StatistikEvent.OnModeRencanaToggle -> TODO()
+            is StatistikEvent.OnMonthSelected -> TODO()
+            is StatistikEvent.OnTargetClick -> TODO()
+            StatistikEvent.OnUbahAlokasiClick -> TODO()
         }
+    }
+
+    private fun loadData() {
+        
     }
 
 

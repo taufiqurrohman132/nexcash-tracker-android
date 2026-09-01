@@ -1,12 +1,13 @@
 package com.example.nexcashapplication.feature.statistics.presentation.main
 
+import java.time.YearMonth
+
 sealed interface StatistikEvent {
-    data object LoadData : StatistikEvent
-    data class GantiBulan(val month: Int, val year: Int) : StatistikEvent
-    data class SwitchAlokasiTab(val tab: AlokasiTab) : StatistikEvent
-    data object ClickUbahAlokasi : StatistikEvent
-    data object ClickBantuan : StatistikEvent
-    data class ClickTargetFinansial(val id: Long) : StatistikEvent
-    data object ClickLihatSemuaTarget : StatistikEvent
-    data object Retry : StatistikEvent
+    data object OnGantiBulanClick : StatistikEvent
+    data class OnMonthSelected(val month: YearMonth) : StatistikEvent
+    data class OnAlokasiTabChange(val mode: AlokasiMode) : StatistikEvent
+    data object OnModeRencanaToggle : StatistikEvent
+    data object OnUbahAlokasiClick : StatistikEvent
+    data object OnLihatSemuaTargetClick : StatistikEvent
+    data class OnTargetClick(val id: String) : StatistikEvent
 }
