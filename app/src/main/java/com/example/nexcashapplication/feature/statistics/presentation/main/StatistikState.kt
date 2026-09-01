@@ -1,35 +1,26 @@
 package com.example.nexcashapplication.feature.statistics.presentation.main
 
+import java.time.YearMonth
+
 data class StatistikState(
-    val isLoading: Boolean = true,
-    val selectedMonth: Int = 10,
-    val selectedYear: Int = 2023,
-
-    // Ringkasan atas
+    val isLoading: Boolean = false,
+    val selectedMonth: YearMonth = YearMonth.now(),
     val totalPengeluaran: Long = 0,
-    val totalPengeluaranTrendPercent: Float = 0f, // +12% -> naik = buruk utk pengeluaran
+    val pengeluaranTrendPercent: Float = 0f,
     val sisaAnggaran: Long = 0,
-    val sisaAnggaranStatus: AnggaranStatus = AnggaranStatus.AMAN,
-    val tingkatTabungan: Float = 0f, // 25.5%
-    val tingkatTabunganTrendPercent: Float = 0f, // +2.1%
-
-    // Alokasi Dana
-    val activeAlokasiTab: AlokasiTab = AlokasiTab.ALOKASI,
+    val statusAnggaran: BudgetStatus = BudgetStatus.AMAN,
+    val tingkatTabungan: Float = 0f,
+    val tabunganTrendPercent: Float = 0f,
+    val alokasiDana: List<AlokasiKategoriUi> = emptyList(),
     val totalAlokasi: Long = 0,
-    val alokasiKategori: List<AlokasiKategoriUi> = emptyList(),
-
-    // Insight Pintar (rule-based, bukan AI)
-    val insightBaruCount: Int = 0,
-    val insights: List<InsightUi> = emptyList(),
-
-    // Target Finansial
+    val alokasiMode: AlokasiMode = AlokasiMode.ALOKASI,
+    val isModeRencanaActive: Boolean = false,
     val targetFinansial: List<TargetFinansialUi> = emptyList(),
-
-    val error: String? = null,
+    val aiSummaryQuote: String? = null,
 )
 
-enum class AnggaranStatus { AMAN, WASPADA, OVER }
-enum class AlokasiTab { ALOKASI, REALISASI }
+enum class BudgetStatus { AMAN, WASPADA, OVER }
+enum class AlokasiMode { ALOKASI, REALISASI }
 
 data class AlokasiKategoriUi(
     val kategoriId: Long,
@@ -38,15 +29,6 @@ data class AlokasiKategoriUi(
     val nominal: Long,
     val colorHex: String, // domain tetap String, no Compose dependency
 )
-
-data class InsightUi(
-    val id: String,
-    val judul: String,
-    val deskripsi: String,
-    val iconType: InsightIconType,
-)
-
-enum class InsightIconType { KOPI, MAKAN, BELANJA, LAINNYA }
 
 data class TargetFinansialUi(
     val id: Long,
