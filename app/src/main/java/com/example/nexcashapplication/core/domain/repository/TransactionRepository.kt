@@ -17,6 +17,12 @@ interface TransactionRepository {
         categoryFilter: String?,
     ): Flow<List<TransactionWithDetails>>
 
+    fun getTotalExpenseByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Long>
+    fun getExpenseByCategoryByMonth(
+        startOfMonth: Long,
+        endOfMonth: Long,
+    ): Flow<Map<String, Long>> // categoryId -> total
+
     fun getUsedAmountByCategory(categoryId: String, periodStart: Long, periodEnd: Long): Flow<Long>
     fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<Transaction>>
 

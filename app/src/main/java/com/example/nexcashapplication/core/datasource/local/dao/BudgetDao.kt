@@ -106,6 +106,16 @@ interface BudgetDao {
         year: String,
     ): Flow<List<CategoryExpenseResult>>
 
+    @Query(
+        """
+    SELECT * FROM budgets
+    WHERE start_date <= :monthEnd AND end_date >= :monthStart
+""",
+    )
+    fun getBudgetsForMonth(monthStart: Long, monthEnd: Long): Flow<List<BudgetEntity>>
+
+    @Query("SELECT COALESCE(SUM(`amount`), 0) FROM budgets WHERE start_date <= :monthEnd AND end_date >= :monthStart")
+    fun getTotalBudgetForMonth(monthStart: Long, monthEnd: Long): Flow<Long>
     // CRUD ────────────────────────────────────────────
 
     // Buat anggaran baru

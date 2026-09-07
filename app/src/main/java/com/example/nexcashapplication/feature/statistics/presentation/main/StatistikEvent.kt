@@ -9,5 +9,7 @@ sealed interface StatistikEvent {
     data object OnModeRencanaToggle : StatistikEvent
     data object OnUbahAlokasiClick : StatistikEvent
     data object OnLihatSemuaTargetClick : StatistikEvent
+    object OnMonthPickerDismiss : StatistikEvent
+
     data class OnTargetClick(val id: String) : StatistikEvent
 }

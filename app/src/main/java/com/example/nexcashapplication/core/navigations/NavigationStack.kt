@@ -15,6 +15,7 @@ import com.example.nexcashapplication.feature.category.presentation.delete.Delet
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryScreen
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.DashboardScreen
+import com.example.nexcashapplication.feature.statistics.presentation.main.StatistikScreen
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.AddEditTransactionScreen
 import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionScreen
 import com.example.nexcashapplication.feature.transaction.presentation.ui.DetailTransactionScreen
@@ -78,6 +79,13 @@ fun NavigationStack(
         }
 
 
+        composable<Route.StatisticRoute.Main> {
+            StatistikScreen(
+                navController = navController,
+            )
+        }
+
+
 
         composable<Route.AccountRoute.Main> {
             AccountAssetScreen(navController = navController)
@@ -98,6 +106,9 @@ fun NavigationStack(
 
         composable<Route.SettingsRoute.Main> {
             // SettingsScreen()
+            StatistikScreen(
+                navController = navController,
+            )
         }
 
         composable<Route.CategoryRoute.Main> {

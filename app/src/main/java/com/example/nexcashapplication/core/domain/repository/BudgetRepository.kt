@@ -25,6 +25,9 @@ interface BudgetRepository {
         year: String,
     ): Flow<List<DailyExpenseResult>>
 
+    fun getBudgetsByMonth(monthStart: Long, monthEnd: Long): Flow<List<Budget>>
+    fun getTotalBudgetLimit(monthStart: Long, monthEnd: Long): Flow<Long>
+
     fun getExpenseBySubCategory(
         parentCategoryId: String,
         month: String,

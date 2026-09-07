@@ -85,6 +85,14 @@ ORDER BY transaction_date DESC
     )
     fun getMonthlySummary(yearMonth: String): Flow<MonthlySummaryResult>
 
+    @Query(
+        """
+        SELECT COALESCE(SUM(amount), 0) FROM transactions
+        WHERE type = :type
+        AND strftime('%Y-%m', transaction_date) = :monthYear
+    """,
+    )
+    fun getTotalForMonth(monthYear: String, type: String): Flow<Long>
 
     // Dashboard: total pengeluaran per kategori (untuk widget anggaran)
     @Query(
@@ -133,6 +141,43 @@ ORDER BY transaction_date DESC
 
     @Query("SELECT * FROM transactions WHERE id = :id")
     suspend fun getTransactionByIdOnce(id: String): TransactionEntity?
+
+
+    @Query(
+        """
+        SELECT * FROM transactions 
+        WHERE transaction_date BETWEEN :startOfMonth AND :endOfMonth
+        ORDER BY transaction_date DESC
+    """,
+    )
+    fun getTransactionsInRange(startOfMonth: Long, endOfMonth: Long): Flow<List<TransactionEntity>>
+
+    @Query(
+        """
+        SELECT COALESCE(SUM(amount), 0) FROM transactions
+        WHERE type = 'expense' AND transaction_date BETWEEN :startOfMonth AND :endOfMonth
+    """,
+    )
+    fun getTotalExpenseInRange(startOfMonth: Long, endOfMonth: Long): Flow<Long>
+
+    @Query(
+        """
+        SELECT COALESCE(SUM(amount), 0) FROM transactions
+        WHERE type = 'income' AND transaction_date BETWEEN :startOfMonth AND :endOfMonth
+    """,
+    )
+    fun getTotalIncomeInRange(startOfMonth: Long, endOfMonth: Long): Flow<Double>
+
+    @Query(
+        """
+        SELECT category_id, SUM(amount) as total FROM transactions
+        WHERE type = 'expense' AND transaction_date BETWEEN :startOfMonth AND :endOfMonth
+        GROUP BY category_id
+    """,
+    )
+    fun getExpenseByCategoryInRange(
+        startOfMonth: Long, endOfMonth: Long,
+    ): Flow<List<CategoryExpenseResult>>
 
     // Search transaksi (search bar di list)
     @Query(

@@ -63,6 +63,14 @@ class TransactionRepositoryImpl @Inject constructor(
         ).map { list -> list.map { it.toDomain() } }
     }
 
+    override fun getTotalExpenseByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Long> {
+        return transactionDao.getTotalExpenseInRange(startOfMonth = startOfMonth, endOfMonth = endOfMonth)
+    }
+
+    override fun getExpenseByCategoryByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Map<String, Long>> {
+        TODO("Not yet implemented")
+    }
+
     override fun getUsedAmountByCategory(
         categoryId: String,
         periodStart: Long,

@@ -62,6 +62,15 @@ class BudgetRepositoryImpl @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override fun getBudgetsByMonth(monthStart: Long, monthEnd: Long): Flow<List<Budget>> {
+        return budgetDao.getBudgetsForMonth(monthStart, monthEnd)
+                .map { list -> list.map { it.toDomain() } }
+    }
+
+    override fun getTotalBudgetLimit(monthStart: Long, monthEnd: Long): Flow<Long> {
+        return budgetDao.getTotalBudgetForMonth(monthStart = monthStart, monthEnd = monthEnd)
+    }
+
     override fun getExpenseBySubCategory(
         parentCategoryId: String,
         month: String,
