@@ -10,7 +10,13 @@ class EditPresentageBudgetViewModel @Inject constructor(
 ) {
     override fun onEvent(event: EditPresentageBudgetEvent) {
         when (event) {
-
+            EditPresentageBudgetEvent.OnAddCategoryClick -> TODO()
+            is EditPresentageBudgetEvent.OnAmountInputChange -> TODO()
+            EditPresentageBudgetEvent.OnBackClick -> TODO()
+            is EditPresentageBudgetEvent.OnPeriodClick -> TODO()
+            is EditPresentageBudgetEvent.OnPeriodSelected -> TODO()
+            EditPresentageBudgetEvent.OnSaveClick -> TODO()
+            is EditPresentageBudgetEvent.OnSliderChange -> TODO()
         }
     }
 }
