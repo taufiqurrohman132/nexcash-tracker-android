@@ -19,4 +19,8 @@ class EditPresentageBudgetViewModel @Inject constructor(
             is EditPresentageBudgetEvent.OnSliderChange -> TODO()
         }
     }
+
+    private fun observerData(){
+
+    }
 }
