@@ -26,7 +26,7 @@ interface BudgetDao {
         """
         SELECT * FROM budgets 
         WHERE start_date <= :dateEpoch 
-        AND (end_date IS NULL OR end_date >= :dateEpoch)
+        AND (end_date >= :dateEpoch)
     """,
     )
     fun getActiveBudgets(dateEpoch: Long): Flow<List<BudgetEntity>>
@@ -36,7 +36,7 @@ interface BudgetDao {
         SELECT * FROM budgets 
         WHERE category_id = :categoryId
         AND start_date <= :dateEpoch 
-        AND (end_date IS NULL OR end_date >= :dateEpoch)
+        AND end_date >= :dateEpoch
         LIMIT 1
     """,
     )
@@ -48,8 +48,8 @@ interface BudgetDao {
     WHERE category_id IN (:categoryIds)
     AND start_date <= :referenceDate
     AND (
-        recurrence_type != 'custom' 
-        OR (recurrence_type = 'custom' AND end_date >= :referenceDate)
+        period_type != 'custom' 
+        OR (period_type = 'custom' AND end_date >= :referenceDate)
     )
 """,
     )
@@ -58,8 +58,19 @@ interface BudgetDao {
         referenceDate: Long,
     ): Flow<List<BudgetEntity>>
 
-    @Query("SELECT * FROM budgets WHERE recurrence_type = :type")
+    @Query("SELECT * FROM budgets WHERE period_type = :type")
     fun getByRecurrenceType(type: String): Flow<List<BudgetEntity>>
+
+
+    @Query(
+        """
+            SELECT * FROM budgets
+            WHERE recurring_group_id = :groupId
+            ORDER BY start_date DESC 
+            LIMIT 1
+        """,
+    )
+    suspend fun getLastBudgetInSeries(groupId: String): BudgetEntity? // buat proses generate row baru
 
     @Query("DELETE FROM budgets WHERE id = :id")
     suspend fun deleteById(id: String)
@@ -114,12 +125,12 @@ interface BudgetDao {
     )
     fun getBudgetsForMonth(monthStart: Long, monthEnd: Long): Flow<List<BudgetEntity>>
 
-    @Query(
-        """
-            SELECT SUM(amount) FROM budgets
-        """,
-    )
-    fun getAmmountBudgetForMonth(monthStart: Long, monthEnd: Long): Flow<Long>
+//    @Query(
+//        """
+//            SELECT SUM(amount) FROM budgets
+//        """,
+//    )
+//    fun getAmmountBudgetForMonth(monthStart: Long, monthEnd: Long): Flow<Long>
 
     @Query("SELECT COALESCE(SUM(`amount`), 0) FROM budgets WHERE start_date <= :monthEnd AND end_date >= :monthStart")
     fun getTotalBudgetForMonth(monthStart: Long, monthEnd: Long): Flow<Long>

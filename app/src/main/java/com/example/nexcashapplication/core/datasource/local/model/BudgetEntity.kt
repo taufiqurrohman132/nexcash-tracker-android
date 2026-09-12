@@ -15,9 +15,18 @@ import java.util.UUID
             parentColumns = ["id"],
             childColumns = ["category_id"],
             onDelete = ForeignKey.RESTRICT,
+        ),
+        ForeignKey(
+            entity = BudgetEntity::class,
+            parentColumns = ["id"], childColumns = ["recurringGroupId"],
+            onDelete = ForeignKey.CASCADE,
         )
     ],
-    indices = [Index(value = ["category_id"])],
+    indices = [
+        Index(value = ["category_id"]),
+        Index("recurringGroupId"),
+        Index(value = ["recurringGroupId", "periodStart"], unique = true)
+    ],
 
     )
 data class BudgetEntity(
@@ -33,14 +42,20 @@ data class BudgetEntity(
     val startDate: Long,       // epoch millis, tanggal mulai berlaku
 
     @ColumnInfo(name = "end_date")
-    val endDate: Long?,        // null = berlaku terus (recurring tanpa batas)
+    val endDate: Long,
 
     @ColumnInfo(name = "amount")
     val amount: Long,
 
-    @ColumnInfo(name = "recurrence_type")
-    val recurrenceType: String,
+    @ColumnInfo(name = "recurring_group_id")
+    val recurringGroupId: Long?,
 
     @ColumnInfo(name = "is_recurring")
     val isRecurring: Boolean = true,
+
+    @ColumnInfo(name = "period_type")
+    val periodType: String,
+
+    @ColumnInfo(name = "created_at")
+    val createdAt: Long,
 )
