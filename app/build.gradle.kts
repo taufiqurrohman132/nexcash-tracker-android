@@ -113,7 +113,10 @@ dependencies {
     // color picker
     implementation("io.mhssn:colorpicker:1.0.0")
 
-    testImplementation(libs.junit)
+    testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.3")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -122,4 +125,8 @@ dependencies {
     androidTestImplementation("androidx.navigation:navigation-testing:2.9.8")
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
