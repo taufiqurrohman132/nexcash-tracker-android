@@ -54,6 +54,27 @@ sealed interface Route {
     sealed interface SettingsRoute : Route {
         @Serializable
         data object Main : SettingsRoute
+
+        @Serializable
+        data object EditProfile : SettingsRoute
+
+        @Serializable
+        data object InformasiPribadi : SettingsRoute
+
+        @Serializable
+        data object KeamananAkun : SettingsRoute
+
+        @Serializable
+        data object BahasaMataUang : SettingsRoute
+
+        @Serializable
+        data object TemaWarna : SettingsRoute
+
+        @Serializable
+        data object Notifikasi : SettingsRoute
+
+        @Serializable
+        data object PusatBantuan : SettingsRoute
     }
 
 
