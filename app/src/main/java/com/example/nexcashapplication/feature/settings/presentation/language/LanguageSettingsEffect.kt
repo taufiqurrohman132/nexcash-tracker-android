@@ -4,6 +4,7 @@ import com.example.nexcashapplication.feature.settings.presentation.main.model.S
 
 sealed interface LanguageSettingsEffect {
     data class NavigateTo(val destination: SettingsDestinations) : LanguageSettingsEffect
+    data object NavigateBack : LanguageSettingsEffect
 //    data object NavigateToEditProfile : SettingsEffect
 //    data object ShowLogoutConfirmDialog : SettingsEffect
 //    data object ShowDeleteAccountConfirmDialog : SettingsEffect

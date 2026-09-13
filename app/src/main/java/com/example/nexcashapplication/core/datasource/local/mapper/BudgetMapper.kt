@@ -11,9 +11,9 @@ fun BudgetEntity.toDomain() = Budget(
     id = id,
     categoryId = categoryId,
     startDate = startDate.toLocalDate(),
-    endDate = endDate?.toLocalDate(),
+    endDate = endDate.toLocalDate(),
     amount = amount,
-    recurrenceType = RecurrenceType.valueOf(recurrenceType.uppercase()),
+    recurrenceType = RecurrenceType.valueOf(periodType.uppercase()),
     isRecurring = isRecurring,
 )
 
@@ -21,9 +21,10 @@ fun Budget.toEntity() = BudgetEntity(
     id = id ?: UUID.randomUUID().toString(),
     categoryId = categoryId,
     startDate = startDate.toEpochMillis(),
-    endDate = endDate?.toEpochMillis(),
+    endDate = endDate.toEpochMillis(),
     amount = amount,
-    recurrenceType = recurrenceType.name.lowercase(),
+    periodType = recurrenceType.name.lowercase(),
+    recurringGroupId = null,
     isRecurring = isRecurring,
 )
 

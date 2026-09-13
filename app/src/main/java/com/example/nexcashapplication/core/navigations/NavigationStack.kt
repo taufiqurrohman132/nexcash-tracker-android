@@ -15,6 +15,8 @@ import com.example.nexcashapplication.feature.category.presentation.delete.Delet
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryScreen
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.DashboardScreen
+import com.example.nexcashapplication.feature.settings.presentation.language.LanguageSettingsScreen
+import com.example.nexcashapplication.feature.settings.presentation.main.SettingsScreen
 import com.example.nexcashapplication.feature.statistics.presentation.main.StatistikScreen
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.AddEditTransactionScreen
 import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionScreen
@@ -104,17 +106,41 @@ fun NavigationStack(
             // InsightScreen()
         }
 
-        composable<Route.SettingsRoute.Main> {
-            // SettingsScreen()
-            StatistikScreen(
-                navController = navController,
-            )
-        }
+
 
         composable<Route.CategoryRoute.Main> {
             CategoryScreen(
                 navController = navController,
             )
         }
+
+
+        // SETTINGS
+        composable<Route.SettingsRoute.Main> {
+            // SettingsScreen()
+            SettingsScreen(
+                navController = navController,
+            )
+        }
+        composable<Route.SettingsRoute.Bahasa> {
+            // SettingsScreen()
+            LanguageSettingsScreen(
+                navController = navController,
+            )
+        }
+
+        composable<Route.SettingsRoute.MataUang> {
+            // SettingsScreen()
+//            StatistikScreen(
+//                navController = navController,
+//            )
+        }
+        composable<Route.SettingsRoute.Notifikasi> {
+            // SettingsScreen()
+//            StatistikScreen(
+//                navController = navController,
+//            )
+        }
+
     }
 }

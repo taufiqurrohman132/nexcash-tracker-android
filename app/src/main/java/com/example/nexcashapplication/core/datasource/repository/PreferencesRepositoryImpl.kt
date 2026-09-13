@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import com.example.nexcashapplication.core.domain.repository.PreferencesRepository
+import com.example.nexcashapplication.di.AppDataStore
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -11,7 +12,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 
 class PreferencesRepositoryImpl @Inject constructor(
-    private val dataStore: DataStore<Preferences>,
+    @param:AppDataStore private val dataStore: DataStore<Preferences>,
 ) : PreferencesRepository {
     override fun <T> getList(
         key: Preferences.Key<String>,
@@ -35,6 +36,21 @@ class PreferencesRepositoryImpl @Inject constructor(
     ) {
         dataStore.edit { preferences ->
             preferences[key] = Json.encodeToString(serializer, value)
+        }
+    }
+
+    override fun <T> getPreference(key: Preferences.Key<T>): Flow<T?> {
+        return dataStore.data.map { preferences ->
+            preferences[key]
+        }
+    }
+
+    override suspend fun <T> savePreference(
+        key: Preferences.Key<T>,
+        value: T,
+    ) {
+        dataStore.edit {
+            it[key] = value
         }
     }
 

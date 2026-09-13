@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.settings.presentation.main
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,6 +23,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -35,8 +38,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
+import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.BAHASA_MATA_UANG
+import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.BAHASA
+import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.MATA_UANG
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.NOTIFIKASI
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.PUSAT_BANTUAN
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.TEMA_WARNA
@@ -50,20 +55,39 @@ fun SettingsScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
-    val state = viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is SettingsEffect.NavigateTo -> {
+                    Log.d(TAG, "SettingsScreen: effect ${effect.destination}")
                     when (effect.destination) {
-                        BAHASA_MATA_UANG -> {
+                        TEMA_WARNA -> {
 
                         }
 
-                        TEMA_WARNA -> TODO()
-                        NOTIFIKASI -> TODO()
-                        PUSAT_BANTUAN -> TODO()
+                        NOTIFIKASI -> {
+                            navController.navigate(
+                                Route.SettingsRoute.Notifikasi,
+                            )
+                        }
+
+                        PUSAT_BANTUAN -> {
+
+                        }
+
+                        BAHASA -> {
+                            navController.navigate(
+                                Route.SettingsRoute.Bahasa,
+                            )
+                        }
+
+                        MATA_UANG -> {
+                            navController.navigate(
+                                Route.SettingsRoute.MataUang,
+                            )
+                        }
                     }
                 }
 
@@ -71,6 +95,12 @@ fun SettingsScreen(
             }
         }
     }
+
+    SettingsContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+        modifier = modifier,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -110,7 +140,14 @@ fun SettingsContent(
                     icon = Icons.Outlined.Language,
                     title = "Bahasa",
                     onClick = {
-                        onEvent(SettingsEvent.OnMenuItemClick(SettingsDestinations.BAHASA_MATA_UANG))
+                        onEvent(SettingsEvent.OnMenuItemClick(SettingsDestinations.BAHASA))
+                    },
+                    content = {
+                        Text(
+                            text = state.language,
+                            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+                            color = TextTertiary,
+                        )
                     },
                 )
                 HorizontalDivider(
@@ -164,9 +201,7 @@ fun SettingsItem(
         modifier = modifier
                 .clip(RoundedCornerShape(16.dp))
                 .clickable(
-                    onClick = {
-
-                    },
+                    onClick = onClick,
                 )
                 .padding(vertical = 4.dp),
         leadingContent = {
@@ -192,7 +227,9 @@ fun SettingsItem(
             }
         },
         trailingContent = {
-            Row {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
                 content?.invoke()
 
                 Icon(
@@ -216,3 +253,5 @@ private fun SettingsContentPreview() {
         )
     }
 }
+
+private val TAG = "SettingsScreen"

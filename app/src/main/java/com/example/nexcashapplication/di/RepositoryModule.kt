@@ -10,6 +10,8 @@ import com.example.nexcashapplication.core.domain.repository.PreferencesReposito
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.account.data.AccountRepositoryImpl
 import com.example.nexcashapplication.feature.account.domain.repository.AccountRepository
+import com.example.nexcashapplication.feature.settings.data.SettingsRepositoryImpl
+import com.example.nexcashapplication.feature.settings.domain.repository.SettingsRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -50,5 +52,11 @@ abstract class RepositoryModule {
     abstract fun bindPreferencesRepository(
         impl: PreferencesRepositoryImpl,
     ): PreferencesRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindSettingsRepository(
+        impl: SettingsRepositoryImpl,
+    ): SettingsRepository
 
 }

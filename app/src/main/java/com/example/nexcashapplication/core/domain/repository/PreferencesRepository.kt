@@ -12,4 +12,17 @@ interface PreferencesRepository {
         value: List<T>,
         serializer: KSerializer<List<T>>,
     )
+
+    fun <T> getPreference(
+        key: Preferences.Key<T>,
+//        serializer: KSerializer<T>,
+    ): Flow<T?>
+
+    suspend fun <T> savePreference(
+        key: Preferences.Key<T>,
+        value: T,
+//        serializer: KSerializer<T>,
+    )
+
+
 }

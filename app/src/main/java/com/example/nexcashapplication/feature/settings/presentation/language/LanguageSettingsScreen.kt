@@ -1,19 +1,25 @@
 package com.example.nexcashapplication.feature.settings.presentation.language
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.Language
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Palette
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -22,26 +28,29 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import com.example.nexcashapplication.core.component.FormField
+import com.example.nexcashapplication.core.component.AppButton
+import com.example.nexcashapplication.core.component.AppSearchBar
 import com.example.nexcashapplication.core.component.IconCircular
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.BAHASA_MATA_UANG
+import com.example.nexcashapplication.feature.settings.presentation.language.model.LanguageItemUiModel
+import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.BAHASA
+import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.MATA_UANG
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.NOTIFIKASI
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.PUSAT_BANTUAN
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.TEMA_WARNA
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
+import com.example.nexcashapplication.ui.theme.PrimaryCyan
+import com.example.nexcashapplication.ui.theme.TextSecondary
 import com.example.nexcashapplication.ui.theme.TextTertiary
 
 @Composable
@@ -50,32 +59,37 @@ fun LanguageSettingsScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
-    val state = viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 is LanguageSettingsEffect.NavigateTo -> {
                     when (effect.destination) {
-                        BAHASA_MATA_UANG -> {
-
-                        }
-
                         TEMA_WARNA -> TODO()
                         NOTIFIKASI -> TODO()
                         PUSAT_BANTUAN -> TODO()
+                        BAHASA -> TODO()
+                        MATA_UANG -> TODO()
                     }
                 }
 
                 is LanguageSettingsEffect.ShowSnackbar -> TODO()
+                LanguageSettingsEffect.NavigateBack -> navController.popBackStack()
             }
         }
     }
+
+    LanguageSettingsContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+        modifier = modifier,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsContent(
+fun LanguageSettingsContent(
     state: LanguageSettingsState,
     onEvent: (LanguageSettingsEvent) -> Unit,
     modifier: Modifier = Modifier,
@@ -94,6 +108,19 @@ fun SettingsContent(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.White,
                 ),
+                navigationIcon = {
+                    IconButton(onClick = { onEvent(LanguageSettingsEvent.OnBackClick) }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+            )
+        },
+        bottomBar = {
+            AppButton(
+                title = "Simpan",
+                onClick = { onEvent(LanguageSettingsEvent.OnSaveClick) },
+                modifier = Modifier.padding(16.dp),
+                isEnabled = state.hasChange,
             )
         },
     ) { padding ->
@@ -101,79 +128,89 @@ fun SettingsContent(
             modifier = Modifier
                     .padding(padding)
                     .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            FormField(
-                title = "Preferensi",
-                textColor = TextTertiary,
-            ) {
-                SettingsItem(
-                    icon = Icons.Outlined.Language,
-                    title = "Bahasa",
-                    onClick = {
-                        onEvent(LanguageSettingsEvent.OnMenuItemClick(SettingsDestinations.BAHASA_MATA_UANG))
-                    },
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = BorderGray,
-                )
-                SettingsItem(
-                    icon = Icons.Outlined.Palette,
-                    title = "Tema & Warna",
-                    onClick = {
-                        onEvent(LanguageSettingsEvent.OnMenuItemClick(SettingsDestinations.TEMA_WARNA))
-                    },
-                )
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = BorderGray,
-                )
-                SettingsItem(
-                    icon = Icons.Outlined.Notifications,
-                    title = "Notification",
-                    subtitle = "Saldo, Budget",
-                    onClick = {
-
-                    },
-                )
-            }
-            Text(
-                text = "Versi Aplikasi ${state.appVersion}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 24.dp),
+            AppSearchBar(
+                searchQuery = state.searchQuery,
+                onSearchQueryChange = {
+                    onEvent(LanguageSettingsEvent.OnSearchQueryChange(it))
+                },
+                placeholder = "Cari Bahasa",
+                onSearchClear = {
+                    onEvent(LanguageSettingsEvent.OnSearchClear)
+                },
             )
+
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ){
+                items(
+                    state.listLanguage,
+                    key = { it.id },
+                ) {
+                    LanguageItem(
+                        iconText = it.id.uppercase(),
+                        title = it.name,
+                        onClick = {
+                            onEvent(LanguageSettingsEvent.OnItemClick(it.id))
+                        },
+                        isSelectable = it.id == state.selectedLanguageId,
+                    )
+                }
+
+                item {
+                    Spacer(Modifier.height(16.dp))
+                    InformationCard()
+                }
+            }
+
+
 
         }
     }
 }
 
 @Composable
-fun SettingsItem(
-    icon: ImageVector,
+fun LanguageItem(
+    iconText: String,
     title: String,
     subtitle: String? = null,
+    isSelectable: Boolean = false,
     onClick: () -> Unit,
-    content: @Composable (() -> Unit)? = null,
     modifier: Modifier = Modifier,
 ) {
     ListItem(
         modifier = modifier
                 .clip(RoundedCornerShape(16.dp))
+                .border(
+                    width = if (isSelectable) 2.dp else 1.dp,
+                    color = if (isSelectable) {
+                        PrimaryCyan
+                    } else {
+                        BorderGray
+                    },
+                    shape = RoundedCornerShape(16.dp),
+                )
                 .clickable(
                     onClick = {
-
+                        onClick()
                     },
                 )
                 .padding(vertical = 4.dp),
         leadingContent = {
             IconCircular(
-                icon = icon,
-                iconToCountainerRatio = 2,
-                backgroundColor = BorderGray,
+                iconText = iconText,
+                backgroundColor = if (isSelectable) {
+                    PrimaryCyan
+                } else {
+                    BorderGray
+                },
+                iconColor = if (isSelectable) {
+                    Color.White
+                } else {
+                    TextSecondary
+                },
             )
         },
         headlineContent = {
@@ -192,26 +229,65 @@ fun SettingsItem(
             }
         },
         trailingContent = {
-            Row {
-                content?.invoke()
-
+            if (isSelectable) {
                 Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
+                    imageVector = Icons.Default.CheckCircle,
                     contentDescription = null,
-                    tint = BorderGray,
+                    tint = PrimaryCyan,
                 )
             }
         },
     )
 }
 
+@Composable
+private fun InformationCard(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(16.dp))
+                .border(
+                    1.dp,
+                    BorderGray,
+                    RoundedCornerShape(16.dp),
+                )
+                .background(Color.White)
+                .padding(16.dp),
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Info,
+            contentDescription = null,
+            tint = PrimaryCyan,
+        )
+
+        Text(
+            text = "Bahasa yang Anda pilih akan diterapkan ke seluruh antarmuka aplikasi KeuanganKu untuk memudahkan pengelolaan finansial Anda.",
+            style = MaterialTheme.typography.bodySmall,
+            color = TextSecondary,
+            modifier = Modifier.padding(start = 16.dp),
+        )
+
+    }
+}
+
 
 @Preview
 @Composable
-private fun SettingsContentPreview() {
+private fun LanguageSettingsContentPreview() {
     NexCashApplicationTheme {
-        SettingsContent(
-            state = LanguageSettingsState(),
+        LanguageSettingsContent(
+            state = LanguageSettingsState(
+                listLanguage = listOf(
+                    LanguageItemUiModel(
+                        id = "df",
+                        name = "Indonesia",
+                    ),
+                    LanguageItemUiModel(
+                        id = "en",
+                        name = "English",
+                    ),
+                ),
+            ),
             onEvent = {},
         )
     }

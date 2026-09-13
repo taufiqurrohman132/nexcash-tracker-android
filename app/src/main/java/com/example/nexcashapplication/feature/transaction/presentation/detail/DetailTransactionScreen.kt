@@ -60,7 +60,6 @@ import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
-import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryUiModel
 import com.example.nexcashapplication.feature.common.extentions.toAmountColor
 import com.example.nexcashapplication.feature.common.utils.formatDate
 import com.example.nexcashapplication.feature.common.utils.formatTime
@@ -75,7 +74,6 @@ import com.example.nexcashapplication.feature.transaction.presentation.detail.mo
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.TextSecondary
 import kotlin.time.Clock
-import kotlin.time.Instant
 
 @Composable
 fun DetailTransactionScreen(
@@ -440,7 +438,7 @@ fun HeaderContent(
             icon = icon,
             iconColor = iconColor,
             backgroundColor = iconColor.copy(alpha = 0.1f),
-            size = 68.dp,
+            iconSize = 68.dp,
             iconToCountainerRatio = 2,
         )
         Spacer(Modifier.height(16.dp))

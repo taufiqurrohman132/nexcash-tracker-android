@@ -200,7 +200,7 @@ fun TransactionContent(
                 modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .height(48.dp),
+                        .height(50.dp),
                 shape = RoundedCornerShape(50.dp),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
@@ -449,7 +449,7 @@ fun SummaryCard(
                 icon = icon,
                 iconColor = iconColor,
                 backgroundColor = iconColor.copy(alpha = 0.1f),
-                size = 26.dp,
+                iconSize = 26.dp,
             )
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),

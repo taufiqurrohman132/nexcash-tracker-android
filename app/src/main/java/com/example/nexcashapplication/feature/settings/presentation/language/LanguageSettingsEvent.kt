@@ -4,5 +4,9 @@ import com.example.nexcashapplication.feature.settings.presentation.main.model.S
 
 sealed interface LanguageSettingsEvent {
     data object Refresh : LanguageSettingsEvent
-    data class OnMenuItemClick(val destination: SettingsDestinations) : LanguageSettingsEvent
+    object OnSearchClear : LanguageSettingsEvent
+    object OnBackClick : LanguageSettingsEvent
+    object OnSaveClick : LanguageSettingsEvent
+    data class OnItemClick(val itemId: String) : LanguageSettingsEvent
+    data class OnSearchQueryChange(val query: String) : LanguageSettingsEvent
 }

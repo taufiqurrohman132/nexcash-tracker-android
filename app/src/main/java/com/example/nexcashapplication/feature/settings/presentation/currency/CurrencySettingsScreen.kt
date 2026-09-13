@@ -36,7 +36,7 @@ import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.BAHASA_MATA_UANG
+import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.*
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.NOTIFIKASI
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.PUSAT_BANTUAN
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.TEMA_WARNA
@@ -57,13 +57,13 @@ fun CurrencySettingsScreen(
             when (effect) {
                 is CurrencySettingsEffect.NavigateTo -> {
                     when (effect.destination) {
-                        BAHASA_MATA_UANG -> {
 
-                        }
 
                         TEMA_WARNA -> TODO()
                         NOTIFIKASI -> TODO()
                         PUSAT_BANTUAN -> TODO()
+                        BAHASA -> TODO()
+                        MATA_UANG -> TODO()
                     }
                 }
 
@@ -110,7 +110,7 @@ fun SettingsContent(
                     icon = Icons.Outlined.Language,
                     title = "Bahasa",
                     onClick = {
-                        onEvent(CurrencySettingsEvent.OnMenuItemClick(SettingsDestinations.BAHASA_MATA_UANG))
+                        onEvent(CurrencySettingsEvent.OnMenuItemClick(SettingsDestinations.BAHASA))
                     },
                 )
                 HorizontalDivider(

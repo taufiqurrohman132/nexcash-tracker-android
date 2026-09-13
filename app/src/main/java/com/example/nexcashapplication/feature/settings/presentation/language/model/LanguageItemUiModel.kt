@@ -3,5 +3,4 @@ package com.example.nexcashapplication.feature.settings.presentation.language.mo
 data class LanguageItemUiModel(
     val id: String,
     val name: String,
-    val isSelected: Boolean = false,
 )

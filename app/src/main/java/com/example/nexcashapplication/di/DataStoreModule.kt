@@ -10,7 +10,16 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import jakarta.inject.Qualifier
 import jakarta.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class SettingsDataStore
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AppDataStore
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -18,8 +27,17 @@ object DataStoreModule {
 
     @Provides
     @Singleton
+    @AppDataStore
     fun provideDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
         PreferenceDataStoreFactory.create {
             context.preferencesDataStoreFile("nexcash_preferences")
+        }
+
+    @Provides
+    @Singleton
+    @SettingsDataStore
+    fun provideSettingsDataStore(@ApplicationContext context: Context): DataStore<Preferences> =
+        PreferenceDataStoreFactory.create {
+            context.preferencesDataStoreFile("settings_preferences")
         }
 }

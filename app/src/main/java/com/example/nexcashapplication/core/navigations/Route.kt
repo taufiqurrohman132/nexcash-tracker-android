@@ -65,7 +65,9 @@ sealed interface Route {
         data object KeamananAkun : SettingsRoute
 
         @Serializable
-        data object BahasaMataUang : SettingsRoute
+        data object MataUang : SettingsRoute
+        @Serializable
+        data object Bahasa : SettingsRoute
 
         @Serializable
         data object TemaWarna : SettingsRoute

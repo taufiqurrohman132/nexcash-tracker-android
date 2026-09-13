@@ -18,14 +18,14 @@ import java.util.UUID
         ),
         ForeignKey(
             entity = BudgetEntity::class,
-            parentColumns = ["id"], childColumns = ["recurringGroupId"],
+            parentColumns = ["id"], childColumns = ["recurring_group_id"],
             onDelete = ForeignKey.CASCADE,
         )
     ],
     indices = [
         Index(value = ["category_id"]),
-        Index("recurringGroupId"),
-        Index(value = ["recurringGroupId", "periodStart"], unique = true)
+        Index("recurring_group_id"),
+        Index(value = ["recurring_group_id", "start_date"], unique = true)
     ],
 
     )
@@ -57,5 +57,5 @@ data class BudgetEntity(
     val periodType: String,
 
     @ColumnInfo(name = "created_at")
-    val createdAt: Long,
+    val createdAt: Long = System.currentTimeMillis(),
 )

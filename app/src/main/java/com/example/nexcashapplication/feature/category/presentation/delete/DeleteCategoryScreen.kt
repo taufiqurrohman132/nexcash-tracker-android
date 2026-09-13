@@ -179,7 +179,7 @@ fun DeleteCategoryContent(
                     icon = Icons.Default.Warning,
                     iconColor = Color.Red,
                     backgroundColor = Color.Red.copy(alpha = 0.1f),
-                    size = 72.dp,
+                    iconSize = 72.dp,
                     iconToCountainerRatio = 2,
                 )
 
