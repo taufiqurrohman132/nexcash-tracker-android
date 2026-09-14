@@ -1,10 +1,15 @@
 package com.example.nexcashapplication.feature.settings.presentation.currency
 
+import com.example.nexcashapplication.core.domain.model.AppLanguage
+import com.example.nexcashapplication.feature.settings.presentation.language.model.LanguageItemUiModel
+
 data class CurrencySettingsState(
     val isLoading: Boolean = false,
-    val language: String = "Bahasa (IDR)",
-    val themeColors: List<String> = emptyList(),                 // hex strings, konsisten pola String-for-color kamu
-    val notificationSummary: String = "",                        // "Saldo, Pengingat Budget"
-    val appVersion: String = "",
+    val searchQuery: String = "",
+    val listLanguage: List<LanguageItemUiModel> = emptyList(),
+    val selectedLanguageId: String = AppLanguage.INDONESIA.code,
+    val initialSelectedLanguageId: String = AppLanguage.INDONESIA.code,
     val error: String? = null,
-)
+) {
+    val hasChange: Boolean = selectedLanguageId != initialSelectedLanguageId
+}

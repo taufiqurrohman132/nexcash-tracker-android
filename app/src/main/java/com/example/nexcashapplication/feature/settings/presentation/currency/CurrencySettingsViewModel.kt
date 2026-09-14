@@ -2,13 +2,16 @@ package com.example.nexcashapplication.feature.settings.presentation.currency
 
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.feature.settings.presentation.currency.CurrencySettingsEffect.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class CurrencySettingsViewModel @Inject constructor() :
-    BaseViewModel<CurrencySettingsState, CurrencySettingsEvent, CurrencySettingsEffect>(CurrencySettingsState()) {
+    BaseViewModel<CurrencySettingsState, CurrencySettingsEvent, CurrencySettingsEffect>(
+        CurrencySettingsState(),
+    ) {
 
     override fun onEvent(event: CurrencySettingsEvent) {
         when (event) {
@@ -16,11 +19,16 @@ class CurrencySettingsViewModel @Inject constructor() :
 
             }
 
-            is CurrencySettingsEvent.OnMenuItemClick -> {
+            is CurrencySettingsEvent.OnItemClick -> {
                 viewModelScope.launch {
-                    sendEffect(CurrencySettingsEffect.NavigateTo(event.destination))
+//                    sendEffect(NavigateTo(event.itemId))
                 }
             }
+
+            CurrencySettingsEvent.OnBackClick -> TODO()
+            CurrencySettingsEvent.OnSaveClick -> TODO()
+            CurrencySettingsEvent.OnSearchClear -> TODO()
+            is CurrencySettingsEvent.OnSearchQueryChange -> TODO()
         }
     }
 }

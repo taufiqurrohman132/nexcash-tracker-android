@@ -41,6 +41,7 @@ import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.AppSearchBar
 import com.example.nexcashapplication.core.component.IconCircular
+import com.example.nexcashapplication.feature.settings.presentation.component.LanguageItem
 import com.example.nexcashapplication.feature.settings.presentation.language.model.LanguageItemUiModel
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.BAHASA
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.MATA_UANG
@@ -169,75 +170,6 @@ fun LanguageSettingsContent(
 
         }
     }
-}
-
-@Composable
-fun LanguageItem(
-    iconText: String,
-    title: String,
-    subtitle: String? = null,
-    isSelectable: Boolean = false,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    ListItem(
-        modifier = modifier
-                .clip(RoundedCornerShape(16.dp))
-                .border(
-                    width = if (isSelectable) 2.dp else 1.dp,
-                    color = if (isSelectable) {
-                        PrimaryCyan
-                    } else {
-                        BorderGray
-                    },
-                    shape = RoundedCornerShape(16.dp),
-                )
-                .clickable(
-                    onClick = {
-                        onClick()
-                    },
-                )
-                .padding(vertical = 4.dp),
-        leadingContent = {
-            IconCircular(
-                iconText = iconText,
-                backgroundColor = if (isSelectable) {
-                    PrimaryCyan
-                } else {
-                    BorderGray
-                },
-                iconColor = if (isSelectable) {
-                    Color.White
-                } else {
-                    TextSecondary
-                },
-            )
-        },
-        headlineContent = {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-            )
-        },
-        supportingContent = {
-            if (subtitle != null) {
-                Text(
-                    text = subtitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextTertiary,
-                )
-            }
-        },
-        trailingContent = {
-            if (isSelectable) {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    tint = PrimaryCyan,
-                )
-            }
-        },
-    )
 }
 
 @Composable
