@@ -71,6 +71,7 @@ import com.example.nexcashapplication.feature.account.presentation.addedit.form.
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiGroupModel
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
+import com.example.nexcashapplication.ui.theme.SecondaryDeepPurple
 import com.example.nexcashapplication.ui.theme.TextTertiary
 import kotlinx.coroutines.flow.collectLatest
 
@@ -135,7 +136,7 @@ fun AccountAssetContent(
                 },
                 actions = {
                     IconButton(
-                        modifier = Modifier.padding(horizontal = 8.dp),
+                        modifier = Modifier.padding(horizontal = 16.dp),
                         onClick = { onEvent(AccountAssetEvent.OnAddAccountClick) },
                     ) {
                         Icon(Icons.Filled.Add, contentDescription = "Tambah akun")
@@ -178,8 +179,6 @@ fun AccountAssetContent(
                             .padding(padding)
                             .padding(horizontal = 16.dp),
                 ) {
-
-
                     LazyColumn {
 
                         item {
@@ -242,7 +241,13 @@ fun TotalBalanceCard(
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
                 .background(
-                    Brush.linearGradient(listOf(Color(0xFF29B6F6), Color(0xFF5C6BC0))),
+                    Brush.linearGradient(
+                        listOf(
+                            PrimaryCyan,
+                            SecondaryDeepPurple,
+
+                            ),
+                    ),
                 )
                 .padding(24.dp),
     ) {
@@ -314,7 +319,7 @@ fun TotalBalanceCard(
                         Spacer(Modifier.width(2.dp))
                         Text(
                             "+${monthlyChangePercent}%",
-                            color = Color(0xFFB9F6CA),
+                            color = Color.Green,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )
@@ -428,9 +433,13 @@ private fun AccountRow(
             }
 
             Text(
-                text = account.balance.formatCurrency(),
+                text = stringResource(
+                    R.string.total_balance_format,
+                    account.balance.formatCurrency(),
+                ),
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
+                maxLines = 1,
             )
 
             Spacer(Modifier.width(4.dp))

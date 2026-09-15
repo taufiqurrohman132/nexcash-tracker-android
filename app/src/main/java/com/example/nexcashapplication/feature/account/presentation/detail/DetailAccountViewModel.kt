@@ -8,6 +8,7 @@ import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.usecase.DeleteAccountUseCase
 import com.example.nexcashapplication.feature.account.domain.usecase.GetAccountDetailUseCase
 import com.example.nexcashapplication.feature.account.domain.usecase.ValidationDeleteAccountUseCase
+import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.launch
@@ -51,7 +52,7 @@ class DetailAccountViewModel @Inject constructor(
             DetailAccountEvent.OnDeleteAccountClick -> {
                 viewModelScope.launch {
                     if (accountId == null) {
-//                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
                         return@launch
                     }
 
@@ -62,7 +63,14 @@ class DetailAccountViewModel @Inject constructor(
             }
 
             DetailAccountEvent.OnLihatSemuaClick -> {
+                viewModelScope.launch {
+                    if (accountId == null) {
+                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                        return@launch
+                    }
 
+                    sendEffect(DetailAccountEffect.NavigateToAllTransactions(assetId = accountId))
+                }
             }
 
             DetailAccountEvent.OnSettingsClick -> TODO()
@@ -76,16 +84,25 @@ class DetailAccountViewModel @Inject constructor(
             }
 
             DetailAccountEvent.OnAddTransactionClick -> {
+                viewModelScope.launch {
 
+                    if (accountId == null) {
+                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                        return@launch
+                    }
+
+                    sendEffect(
+                        DetailAccountEffect.NavigateToAddTransaction(assetId = accountId),
+                    )
+                }
             }
 
-            DetailAccountEvent.OnTransferClick -> TODO()
             DetailAccountEvent.OnEditAccountClick -> {
 
 
                 viewModelScope.launch {
                     if (accountId == null) {
-//                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
                         return@launch
                     }
 
@@ -98,19 +115,19 @@ class DetailAccountViewModel @Inject constructor(
     private fun observerDetailAccount() {
         viewModelScope.launch {
             if (accountId == null) {
-//                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
                 return@launch
             }
-            getAccountDetailUseCase(accountId = accountId).collect { account ->
+            getAccountDetailUseCase(accountId = accountId).collect { detailData ->
                 updateState {
                     it.copy(
                         isLoading = false,
-                        assetId = account.id,
-                        assetName = account.name,
-                        typeAccount = account.accountType,
-                        providers = account.providerAccount,
-                        balance = account.currentBalance,
-//                        recentTransactions = account.recentTransactions,
+                        assetId = detailData.account.id,
+                        assetName = detailData.account.name,
+                        typeAccount = detailData.account.accountType,
+                        providers = detailData.account.providerAccount,
+                        balance = detailData.account.currentBalance,
+                        recentTransactions = detailData.recentTransactions.map { transactionWithDetails -> transactionWithDetails.toItemUiModel() },
                     )
                 }
             }

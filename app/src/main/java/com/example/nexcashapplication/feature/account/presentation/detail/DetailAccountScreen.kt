@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.account.presentation.detail
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -59,6 +60,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,11 +70,14 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.core.navigations.Route.AccountRoute.*
+import com.example.nexcashapplication.core.navigations.Route.TransactionRoute.*
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.form.model.AccountProviderUiModel
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.labelResId
@@ -90,6 +95,7 @@ fun DetailAccountScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -99,19 +105,28 @@ fun DetailAccountScreen(
                     navController.popBackStack()
                 }
 
-                is DetailAccountEffect.NavigateToAddTransaction -> TODO()
+                is DetailAccountEffect.NavigateToAddTransaction -> {
+                    navController.navigate(
+                        Route.TransactionRoute.AddEdit,
+                    )
+                }
+
                 is DetailAccountEffect.NavigateToAllTransactions -> TODO()
                 is DetailAccountEffect.NavigateToAssetSettings -> TODO()
                 is DetailAccountEffect.NavigateToEditAssetName -> navController.navigate(
-                    Route.AccountRoute.AddEditInfo(accountId = effect.assetId),
+                    AddEditInfo(accountId = effect.assetId),
                 )
 
                 is DetailAccountEffect.NavigateToTransactionDetail -> {
-
+                    navController.navigate(
+                        Route.TransactionRoute.Detail(effect.transactionId),
+                    )
                 }
 
-                is DetailAccountEffect.NavigateToTransfer -> TODO()
                 is DetailAccountEffect.ShowSnackbar -> TODO()
+                is DetailAccountEffect.ShowToast -> {
+                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -188,7 +203,11 @@ fun DetailAssetContent(
                     Spacer(Modifier.height(16.dp))
                     BalanceCard(state)
                     Spacer(Modifier.height(16.dp))
-                    ActionButtons(onEvent)
+                    AppButton(
+                        title = "Transaksi",
+                        onClick = { onEvent(DetailAccountEvent.OnAddTransactionClick) },
+                        modifier = Modifier.fillMaxWidth(),
+                    )
                     FormField(
                         title = "Transaksi terakhir",
                         icon = Icons.Default.Replay,
@@ -243,9 +262,9 @@ fun AssetSettingsSection(onEvent: (DetailAccountEvent) -> Unit) {
         Spacer(Modifier.height(8.dp))
         SettingsRow(
             icon = Icons.Default.Edit,
-            label = "Ubah Nama Aset",
-            tint = Color(0xFF29C5E0),
-            background = Color(0xFFF3FAFB),
+            label = "Ubah Aset",
+            tint = PrimaryCyan,
+            background = PrimaryCyan.copy(alpha = 0.1f),
             onClick = { onEvent(DetailAccountEvent.OnEditAccountClick) },
         )
         Spacer(Modifier.height(10.dp))
