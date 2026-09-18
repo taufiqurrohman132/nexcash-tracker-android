@@ -14,6 +14,7 @@ import com.example.nexcashapplication.feature.category.presentation.addnew.AddCa
 import com.example.nexcashapplication.feature.category.presentation.delete.DeleteCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryScreen
+import com.example.nexcashapplication.feature.category.presentation.subcategorylist.SubCategoryListScreen
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.DashboardScreen
 import com.example.nexcashapplication.feature.settings.presentation.language.LanguageSettingsScreen
 import com.example.nexcashapplication.feature.settings.presentation.main.SettingsScreen
@@ -55,6 +56,15 @@ fun NavigationStack(
             )
         }
 
+
+        //CATEGORY
+
+        composable<Route.CategoryRoute.Main> {
+            CategoryScreen(
+                navController = navController,
+            )
+        }
+
         composable<Route.CategoryRoute.Detail> {
             DetailCategoryScreen(
                 navController = navController,
@@ -69,6 +79,11 @@ fun NavigationStack(
         composable<Route.CategoryRoute.Delete> {
             DeleteCategoryScreen(
                 navController = navController,
+            )
+        }
+        composable<Route.CategoryRoute.SubCategoryList> {
+            SubCategoryListScreen(
+                navHostController = navController,
             )
         }
 
@@ -89,6 +104,8 @@ fun NavigationStack(
 
 
 
+
+
         composable<Route.AccountRoute.Main> {
             AccountAssetScreen(navController = navController)
         }
@@ -104,14 +121,6 @@ fun NavigationStack(
 
         composable<Route.InsightRoute.Main> {
             // InsightScreen()
-        }
-
-
-
-        composable<Route.CategoryRoute.Main> {
-            CategoryScreen(
-                navController = navController,
-            )
         }
 
 

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -22,6 +23,8 @@ import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocalGasStation
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Movie
@@ -36,6 +39,7 @@ import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -51,6 +55,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -78,8 +83,8 @@ import com.example.nexcashapplication.core.navigations.Route.CategoryRoute.AddNe
 import com.example.nexcashapplication.core.navigations.Route.CategoryRoute.Delete
 import com.example.nexcashapplication.core.ui.dataOrNull
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
-import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryUiModel
 import com.example.nexcashapplication.feature.category.presentation.detail.model.DetailCategoryUiModel
+import com.example.nexcashapplication.feature.category.presentation.shared.model.CategoryUiItemModel
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
@@ -215,7 +220,12 @@ fun DetailCategoryScreen(
                 }
 
                 is DetailCategoryEffect.NavigateToAllSubCategories -> {
-                    // Navigate to all subcategories if you have a screen for it
+                    navController.navigate(
+                        Route.CategoryRoute.SubCategoryList(
+                            effect.categoryId,
+                            effect.categoryName,
+                        ),
+                    )
                 }
 
                 is DetailCategoryEffect.NavigateToEditCategory -> navController.navigate(
@@ -272,7 +282,7 @@ fun DetailCategoryContent(
     onEvent: (DetailCategoryEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val showActionMenu by remember { mutableStateOf(false) }
+    var showActionMenu by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -302,20 +312,43 @@ fun DetailCategoryContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { onEvent(DetailCategoryEvent.OnEditClick) }) {
+                    IconButton(onClick = { showActionMenu = true }) {
                         Icon(Icons.Default.MoreVert, contentDescription = "Menu")
                     }
 
                     DropdownMenu(
                         expanded = showActionMenu,
-
-                        ) { }
+                        onDismissRequest = { showActionMenu = false },
+                        modifier = Modifier.background(Color.White),
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Edit Category") },
+                            leadingIcon = {
+                                Icon(Icons.Default.Edit, contentDescription = null)
+                            },
+                            onClick = {
+                                showActionMenu = false
+                                onEvent(DetailCategoryEvent.OnEditClick)
+                            },
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Hapus Category") },
+                            leadingIcon = {
+                                Icon(Icons.Default.Delete, contentDescription = null)
+                            },
+                            onClick = {
+                                showActionMenu = false
+                                onEvent(DetailCategoryEvent.OnDeleteClick)
+                            },
+                        )
+                    }
                 },
             )
         },
         floatingActionButton = {
             if (state.category?.parentId == null) {
                 ExtendedFloatingActionButton(
+                    shape = CircleShape,
                     onClick = { onEvent(DetailCategoryEvent.OnAddSubCategoryClick) },
                     containerColor = PrimaryCyan,
                     icon = {
@@ -327,7 +360,7 @@ fun DetailCategoryContent(
                     },
                     text = {
                         Text(
-                            text = "Tambah Subkategori",
+                            text = "Subkategori",
                             color = Color.White,
                         )
                     },
@@ -442,7 +475,7 @@ fun TransactionListCard(
 
 @Composable
 fun SubcategoryGrid(
-    subcategories: List<CategoryUiModel>,
+    subcategories: List<CategoryUiItemModel>,
     onSubcategoryClick: (String) -> Unit,
 ) {
     val rows = subcategories.chunked(2)
@@ -468,7 +501,7 @@ fun SubcategoryGrid(
 }
 
 @Composable
-fun SubcategoryCard(subcategory: CategoryUiModel, modifier: Modifier, onClick: () -> Unit) {
+fun SubcategoryCard(subcategory: CategoryUiItemModel, modifier: Modifier, onClick: () -> Unit) {
     Card(
         onClick = onClick,
         modifier = modifier,
@@ -828,7 +861,7 @@ private fun DetailCategoryContentPreview() {
     NexCashApplicationTheme {
         DetailCategoryContent(
             state = DetailCategoryUiModel(
-                category = CategoryUiModel(
+                category = CategoryUiItemModel(
                     id = "1",
                     name = "Transportasi",
                     icon = CategoryIcons.fromId("5"), // sesuaikan dgn tipe icon kamu
@@ -839,7 +872,7 @@ private fun DetailCategoryContentPreview() {
                 ),
 
                 subCategories = listOf(
-                    CategoryUiModel(
+                    CategoryUiItemModel(
                         id = "sub1",
                         name = "Bensin",
                         icon = CategoryIcons.fromId("5"),
@@ -849,7 +882,7 @@ private fun DetailCategoryContentPreview() {
                         color = PrimaryCyan,
 
                         ),
-                    CategoryUiModel(
+                    CategoryUiItemModel(
                         id = "sub2",
                         name = "Parkir",
                         icon = CategoryIcons.fromId("5"),
@@ -859,7 +892,7 @@ private fun DetailCategoryContentPreview() {
                         color = PrimaryCyan,
 
                         ),
-                    CategoryUiModel(
+                    CategoryUiItemModel(
                         id = "sub3",
                         name = "Ojek Online",
                         icon = CategoryIcons.fromId("5"),
@@ -869,7 +902,7 @@ private fun DetailCategoryContentPreview() {
                         color = PrimaryCyan,
 
                         ),
-                    CategoryUiModel(
+                    CategoryUiItemModel(
                         id = "sub4",
                         name = "Tol & Tiket",
                         icon = CategoryIcons.fromId("5"),

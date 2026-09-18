@@ -1,10 +1,10 @@
-package com.example.nexcashapplication.feature.category.presentation.detail.model
+package com.example.nexcashapplication.feature.category.presentation.shared.model
 
 import androidx.compose.ui.graphics.Color
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 
-data class CategoryUiModel(
+data class CategoryUiItemModel(
     val id: String,
     val parentId: String? = null,
     val name: String,

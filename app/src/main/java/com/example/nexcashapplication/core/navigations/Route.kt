@@ -66,6 +66,7 @@ sealed interface Route {
 
         @Serializable
         data object MataUang : SettingsRoute
+
         @Serializable
         data object Bahasa : SettingsRoute
 
@@ -89,6 +90,9 @@ sealed interface Route {
         data class Detail(val categoryId: String) : CategoryRoute
 
         @Serializable
+        data class SubCategoryList(val categoryId: String, val categoryName: String) : CategoryRoute
+
+        @Serializable
         data class AddNew(val categoryId: String? = null, val parentId: String? = null) :
             CategoryRoute
 
@@ -109,7 +113,8 @@ sealed interface Route {
         data class Detail(val budgetId: String) : BudgetRoute
 
         @Serializable
-        data class AddEdit(val budgetId: String? = null, val categoryId: String? = null) : BudgetRoute
+        data class AddEdit(val budgetId: String? = null, val categoryId: String? = null) :
+            BudgetRoute
     }
 
     @Serializable

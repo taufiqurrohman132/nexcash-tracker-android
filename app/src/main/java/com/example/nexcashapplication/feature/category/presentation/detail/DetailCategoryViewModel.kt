@@ -80,13 +80,22 @@ class DetailCategoryViewModel @Inject constructor(
                 }
             }
 
-            DetailCategoryEvent.OnFabAddClick -> TODO()
-            DetailCategoryEvent.OnLoadMoreTransactionsClick -> TODO()
+            DetailCategoryEvent.OnLoadMoreTransactionsClick -> viewModelScope.launch {
+
+            }
             DetailCategoryEvent.OnManageSubCategoryClick -> TODO()
-            DetailCategoryEvent.OnMenuClick -> TODO()
             DetailCategoryEvent.OnReminderClick -> TODO()
             DetailCategoryEvent.OnRetryClick -> TODO()
-            DetailCategoryEvent.OnSeeAllSubCategoryClick -> TODO()
+            DetailCategoryEvent.OnSeeAllSubCategoryClick -> {
+                viewModelScope.launch {
+                    sendEffect(
+                        DetailCategoryEffect.NavigateToAllSubCategories(
+                            categoryId,
+                            state.value.dataState.dataOrNull?.category?.name ?: "",
+                        ),
+                    )
+                }
+            }
             is DetailCategoryEvent.OnSubCategoryClick -> {
                 viewModelScope.launch {
                     sendEffect(
@@ -135,7 +144,12 @@ class DetailCategoryViewModel @Inject constructor(
                 }
             }
 
-            DetailCategoryEvent.OnAddNoteClick -> TODO()
+            DetailCategoryEvent.OnAddNoteClick -> {
+                viewModelScope.launch {
+
+                }
+            }
+
             DetailCategoryEvent.OnEditBudgetClick -> viewModelScope.launch {
                 sendEffect(
                     DetailCategoryEffect.NavigateToEditBudget(categoryId = categoryId),

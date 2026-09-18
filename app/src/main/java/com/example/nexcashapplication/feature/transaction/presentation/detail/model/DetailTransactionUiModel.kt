@@ -2,7 +2,7 @@ package com.example.nexcashapplication.feature.transaction.presentation.detail.m
 
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
-import com.example.nexcashapplication.feature.category.presentation.detail.model.CategoryUiModel
+import com.example.nexcashapplication.feature.category.presentation.shared.model.CategoryUiItemModel
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlin.time.Instant
 
@@ -13,7 +13,7 @@ data class DetailTransactionUiModel(
     val amount: Long,
     val type: TransactionType, // pindah ke domain.model
     val dateTime: Instant,
-    val category: CategoryUiModel?,      // bukan Category domain langsung
+    val category: CategoryUiItemModel?,      // bukan Category domain langsung
 //    val status: TransactionStatus,      // enum, bukan String
     val account: AccountUiModel?,        // bukan AccountModel domain langsung
     val note: String?,
