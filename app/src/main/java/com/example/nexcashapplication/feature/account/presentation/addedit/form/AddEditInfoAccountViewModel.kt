@@ -122,18 +122,18 @@ class AddEditInfoAccountViewModel @Inject constructor(
     private fun observerDetailAccount(id: String?, type: TypeAccount) {
         viewModelScope.launch {
             if (id != null) {
-                getAccountDetailUseCase(accountId = id).collect { account ->
+                getAccountDetailUseCase(accountId = id).collect { accountDetailData ->
                     updateState {
                         it.copy(
-                            accountId = account.id,
-                            namaAset = account.name,
-                            typeAccount = account.accountType,
-                            providers = ProviderCatalog.getByType(account.accountType),
-                            selectedProviderId = account.providerAccount?.id,
-                            saldoAwal = account.currentBalance,
-                            initialNamaAset = account.name,
-                            initialSaldoAwal = account.currentBalance,
-                            initialSelectedProviderId = account.providerAccount?.id,
+                            accountId = accountDetailData.account.id,
+                            namaAset = accountDetailData.account.name,
+                            typeAccount = accountDetailData.account.accountType,
+                            providers = ProviderCatalog.getByType(accountDetailData.account.accountType),
+                            selectedProviderId = accountDetailData.account.providerAccount?.id,
+                            saldoAwal = accountDetailData.account.currentBalance,
+                            initialNamaAset = accountDetailData.account.name,
+                            initialSaldoAwal = accountDetailData.account.currentBalance,
+                            initialSelectedProviderId = accountDetailData.account.providerAccount?.id,
                         )
                     }
                 }
