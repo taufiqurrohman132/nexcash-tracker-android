@@ -22,9 +22,8 @@ import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Bolt
 import androidx.compose.material.icons.filled.Category
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LocalGasStation
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.Replay
 import androidx.compose.material.icons.filled.Restaurant
@@ -36,8 +35,9 @@ import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.outlined.ShowChart
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -49,6 +49,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -271,6 +272,8 @@ fun DetailCategoryContent(
     onEvent: (DetailCategoryEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val showActionMenu by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -299,29 +302,36 @@ fun DetailCategoryContent(
                     }
                 },
                 actions = {
-                    Row {
-                        IconButton(onClick = { onEvent(DetailCategoryEvent.OnEditClick) }) {
-                            Icon(Icons.Default.Edit, contentDescription = "Edit")
-                        }
-                        IconButton(onClick = { onEvent(DetailCategoryEvent.OnDeleteClick) }) {
-                            Icon(Icons.Default.Delete, contentDescription = "Delete")
-                        }
+                    IconButton(onClick = { onEvent(DetailCategoryEvent.OnEditClick) }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Menu")
                     }
+
+                    DropdownMenu(
+                        expanded = showActionMenu,
+
+                        ) { }
                 },
             )
         },
         floatingActionButton = {
             if (state.category?.parentId == null) {
-                FloatingActionButton(
+                ExtendedFloatingActionButton(
                     onClick = { onEvent(DetailCategoryEvent.OnAddSubCategoryClick) },
                     containerColor = PrimaryCyan,
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        tint = Color.White,
-                        contentDescription = "Add Sub Category",
-                    )
-                }
+                    icon = {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            tint = Color.White,
+                            contentDescription = null, // udah ada text di sebelahnya
+                        )
+                    },
+                    text = {
+                        Text(
+                            text = "Tambah Subkategori",
+                            color = Color.White,
+                        )
+                    },
+                )
             }
         },
     ) { padding ->
