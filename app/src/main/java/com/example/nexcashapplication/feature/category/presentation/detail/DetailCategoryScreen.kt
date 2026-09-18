@@ -349,6 +349,18 @@ fun DetailCategoryContent(
                 onAddNoteClick = { onEvent(DetailCategoryEvent.OnAddNoteClick) },
             )
 
+
+            FormField(
+                title = "Tren Pengeluaran",
+                actionText = "7 Hari Terakhir",
+                onActionClick = { },
+            ) {
+                WeeklyTrendChart(
+                    data = state.weeklyData,
+                    labels = state.weeklyLabels,
+                )
+            }
+
             if (state.category?.parentId == null && state.subCategories.isNotEmpty()) {
                 FormField(
                     title = "Sub Kategori",
@@ -367,18 +379,6 @@ fun DetailCategoryContent(
                     )
                 }
             }
-
-            FormField(
-                title = "Tren Pengeluaran",
-                actionText = "7 Hari Terakhir",
-                onActionClick = { },
-            ) {
-                WeeklyTrendChart(
-                    data = state.weeklyData,
-                    labels = state.weeklyLabels,
-                )
-            }
-
 
 
             FormField(
