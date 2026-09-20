@@ -26,7 +26,7 @@ interface TransactionRepository {
     fun getUsedAmountByCategory(categoryId: String, periodStart: Long, periodEnd: Long): Flow<Long>
     fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<Transaction>>
 
-    fun getRecentTransactions(limit: Int): Flow<List<TransactionWithDetails>>
+    fun getRecentTransactionsByCategory(limit: Int, categoryId: String?): Flow<List<TransactionWithDetails>>
 
     fun getAllTransactions(): Flow<List<Transaction>>
     fun getTransactionById(id: String): Flow<Transaction>

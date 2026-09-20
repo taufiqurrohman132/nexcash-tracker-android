@@ -70,7 +70,7 @@ class DashboardViewModel @Inject constructor(
     }
 
     fun loadData() {
-        transactionRepository.getRecentTransactions(5)
+        transactionRepository.getRecentTransactionsByCategory(5, "")
                 .onEach { transactionsWithDetail ->
                     updateState { dashboardState ->
                         dashboardState.copy(

@@ -3,7 +3,6 @@ package com.example.nexcashapplication.feature.account.domain.usecase
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.account.domain.model.AccountModel
 import com.example.nexcashapplication.feature.account.domain.repository.AccountRepository
-import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -17,8 +16,8 @@ class GetAccountDetailUseCase @Inject constructor(
         val asset = accountRepository.getAccountById(accountId)
             ?: throw NoSuchElementException("Asset not found")
 
-        val recentTransactions = transactionRepository.getRecentTransactions(
-            6,
+        val recentTransactions = transactionRepository.getRecentTransactionsByCategory(
+            6, ""
         )
 
         return combine(

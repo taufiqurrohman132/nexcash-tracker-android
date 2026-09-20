@@ -226,7 +226,7 @@ class DetailCategoryViewModel @Inject constructor(
                 .launchIn(viewModelScope)
 
 
-        transactionRepository.getRecentTransactions(5)
+        transactionRepository.getRecentTransactionsByCategory(5, categoryId)
                 .onEach { transactions ->
                     updateState { current ->
                         val existingData =

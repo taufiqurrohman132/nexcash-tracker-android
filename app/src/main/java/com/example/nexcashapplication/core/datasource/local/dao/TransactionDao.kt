@@ -20,11 +20,12 @@ interface TransactionDao {
     @Query(
         """
         SELECT * FROM transactions
+        WHERE category_id = :categoryId
         ORDER BY transaction_date DESC
-        LIMIT :limit
+        LIMIT CASE WHEN :limit < 0 THEN -1 ELSE :limit END
     """,
     )
-    fun getRecentTransactions(limit: Int = 20): Flow<List<TransactionWithDetailsEntity>>
+    fun getRecentTransactionsByCategory(limit: Int = -1, categoryId: String?): Flow<List<TransactionWithDetailsEntity>>
 
     @Query(
         """

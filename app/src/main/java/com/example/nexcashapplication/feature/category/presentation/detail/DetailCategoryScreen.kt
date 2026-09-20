@@ -312,7 +312,10 @@ fun DetailCategoryContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { showActionMenu = true }) {
+                    IconButton(
+                        modifier = Modifier.padding(horizontal = 8.dp),
+                        onClick = { showActionMenu = true },
+                    ) {
                         Icon(Icons.Default.MoreVert, contentDescription = "Menu")
                     }
 
