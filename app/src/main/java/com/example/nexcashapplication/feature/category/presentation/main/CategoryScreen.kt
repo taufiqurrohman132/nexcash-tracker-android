@@ -34,7 +34,6 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
@@ -160,6 +159,7 @@ fun CategoryContent(
                 },
                 actions = {
                     IconButton(
+                        modifier = Modifier.padding(end = 8.dp),
                         onClick = {
                             onEvent(CategoryEvent.OnAddKategoriClick)
                         },
@@ -167,7 +167,7 @@ fun CategoryContent(
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = "Tambah",
-                            tint = Color(0xFF29B6F6),
+                            tint = PrimaryCyan,
                         )
                     }
                 },
@@ -175,17 +175,6 @@ fun CategoryContent(
                     containerColor = Color.White,
                 ),
             )
-        },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    onEvent(CategoryEvent.OnAddKategoriClick)
-                },
-                containerColor = Color(0xFF29B6F6),
-                shape = CircleShape,
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Tambah Kategori", tint = Color.White)
-            }
         },
         containerColor = Color.White,
         modifier = modifier,
@@ -227,14 +216,6 @@ fun CategoryContent(
                 },
                 onCategoryClick = { id ->
                     onEvent(CategoryEvent.OnKategoriClick(id))
-                },
-            )
-
-
-            // Add new category
-            AddCategoryButton(
-                onClick = {
-                    onEvent(CategoryEvent.OnAddKategoriClick)
                 },
             )
 
@@ -298,7 +279,7 @@ fun BudgetSummaryCard(
         modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color(0xFFE8F7FD))
+                .background(PrimaryCyan.copy(alpha = 0.1f))
                 .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -306,13 +287,13 @@ fun BudgetSummaryCard(
             modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFF29B6F6).copy(alpha = 0.15f)),
+                    .background(PrimaryCyan.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = Icons.Outlined.AccountBalanceWallet,
                 contentDescription = null,
-                tint = Color(0xFF29B6F6),
+                tint = PrimaryCyan,
                 modifier = Modifier.size(22.dp),
             )
         }
@@ -476,7 +457,7 @@ fun CategoryCard(
     onClick: () -> Unit,
 ) {
     val isOverBudget = item.persentase > 100
-    val progressColor = if (isOverBudget) PrimaryCyan else Color(0xFF29B6F6)
+    val progressColor = if (isOverBudget) Color.Red else PrimaryCyan
     val badgeBg = if (isOverBudget) Color(0xFFFFEBEE) else Color(0xFFF2F2F2)
     val badgeText = if (isOverBudget) Color(0xFFE53935) else Color(0xFF616161)
 
