@@ -7,6 +7,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
@@ -20,33 +21,28 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,11 +54,14 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -71,11 +70,12 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
+import com.example.nexcashapplication.core.domain.model.CategoryIconGroup
 import com.example.nexcashapplication.core.domain.model.TypeCategory
-import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.addnew.model.BudgetPeriod
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect
@@ -115,6 +115,9 @@ fun AddCategoryContent(
     onEvent: (AddCategoryEvent) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+
+    var showBottomSheet by remember { mutableStateOf(false) }
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     Scaffold(
         modifier = modifier,
@@ -198,29 +201,9 @@ fun AddCategoryContent(
                 selectedIcon = state.selectedIcon,
                 recentIcons = CategoryIcons.recentIcons,
                 onIconClick = { onEvent(AddCategoryEvent.OnChangeIcon(it)) },
+                onMenuIconClick = { showBottomSheet = true },
             )
 
-//            // Rencana Anggaran
-//            RencanaAnggaranCard(
-//                budgetLimit = state.budgetLimit,
-//                onBudgetLimitChange = {
-//                    onEvent(AddCategoryEvent.OnBudgetChanged(it))
-//                },
-//                selectedPeriod = state.selectedPeriod,
-//                onPeriodChange = { period ->
-//                    onEvent(AddCategoryEvent.OnPeriodSelected(period))
-//                },
-//            )
-
-//            // rekening default
-//            FormField("Rekening Default") {
-//                CategoryDropdownField(
-//                    value = state.defaultAccount,
-//                    isPlaceHolder = false,
-//                    options = listOf("Aset", "Bank", "Investasi"),
-//                    onOptionSelected = { onEvent(AddCategoryEvent.OnAccountSelected(it)) },
-//                )
-//            }
 
             FormField("Catatan Tambahan") {
                 OutlinedTextField(
@@ -246,31 +229,19 @@ fun AddCategoryContent(
             Spacer(Modifier.height(4.dp))
 
             // Tombol Aksi
-            Button(
-                onClick = { onEvent(AddCategoryEvent.OnSaveClicked) },
-                enabled = state.isValid,
-                shape = RoundedCornerShape(14.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryCyan,
-                    disabledContainerColor = Color(0xFFB8AEEB),
-                ),
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .height(52.dp),
-            ) {
-                Text(
-                    text = "Selesaikan Pembuatan",
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White,
-                )
-            }
+            AppButton(
+                title = "Selesaikan Pembuatan",
+                onClick = {
 
-            TextButton(
-                onClick = { },
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(text = "Batal & Kembali", color = Color(0xFF999999))
-            }
+                },
+            )
+
+            AppButton(
+                title = "Batal & Kembali",
+                textColor = TextSecondary,
+                backgroundColor = Color.White,
+                onClick = { onEvent(AddCategoryEvent.OnBackClicked) },
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -297,55 +268,25 @@ fun AddCategoryContent(
 
             )
 
+        if (showBottomSheet) {
+            ModalBottomSheet(
+                containerColor = Color.White,
+                onDismissRequest = { showBottomSheet = false },
+                sheetState = sheetState,
+            ) {
+                MenuIcons(
+                    selectedIcon = state.selectedIcon,
+                    groups = CategoryIcons.allGroups,
+                    onIconSelected = {
+                        onEvent(AddCategoryEvent.OnChangeIcon(it))
+                        showBottomSheet = false
+                    },
+                )
+            }
+        }
     }
-
 }
 
-//
-//@Composable
-//fun ColorPickerDialog(
-//    onDismiss: () -> Unit,
-//    onColorPicked: (Color) -> Unit,
-//    modifier: Modifier = Modifier,
-//) {
-//    val red by remember { mutableFloatStateOf(128f) }
-//    val green by remember { mutableFloatStateOf(128f) }
-//    val blue by remember { mutableFloatStateOf(128f) }
-//
-//    val previewColor = Color(red / 255f, green / 255f, blue / 255f)
-//
-//    AlertDialog(
-//        onDismissRequest = onDismiss,
-//        title = {
-//            Text("Pilih Warna")
-//        },
-//        text = {
-//            Column(
-//                verticalArrangement = Arrangement.spacedBy(12.dp),
-//            ) {
-//                Box(
-//                    modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(60.dp)
-//                            .clip(RoundedCornerShape(12.dp))
-//                            .background(previewColor),
-//                )
-//
-//                ColorSlider("R", red, Color.Red) { red = it }
-//                ColorSlider("G", green, Color.Green) { green = it }
-//                ColorSlider("B", blue, Color.Blue) { blue = it }
-//
-//            }
-//        },
-//        confirmButton = {
-//            TextButton(onClick = { onColorPicked(previewColor) }) { Text("Pilih") }
-//        },
-//        dismissButton = {
-//            TextButton(onClick = onDismiss) { Text("Batal") }
-//        },
-//
-//        )
-//}
 
 @Composable
 fun ParentCategoryBanner(
@@ -587,7 +528,7 @@ fun RencanaAnggaranCard(
                 textStyle = MaterialTheme.typography.bodyMedium,
                 prefix = {
                     Text("Rp ")
-                }
+                },
             )
 
         }
@@ -647,6 +588,7 @@ fun IconPreviewRow(
     selectedIcon: CategoryIcon?,
     recentIcons: List<CategoryIcon>,
     onIconClick: (CategoryIcon) -> Unit,
+    onMenuIconClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -680,7 +622,7 @@ fun IconPreviewRow(
             ),
             icon = Icons.Default.GridView,
             isSelected = false,
-            onClick = { },
+            onClick = { onMenuIconClick() },
             contentDescription = "Lihat semua icon",
             iconColor = Color.White,
             backgroundColor = PrimaryCyan,
@@ -725,6 +667,56 @@ fun IconChip(
             },
             modifier = Modifier.size(24.dp),
         )
+    }
+}
+
+@Composable
+fun MenuIcons(
+    selectedIcon: CategoryIcon?,
+    groups: List<CategoryIconGroup>,
+    onIconSelected: (CategoryIcon) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val nestedScrollConnection = remember {
+        object : NestedScrollConnection {
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource
+            ): Offset {
+                // sisa delta yang nggak bisa dikonsumsi scrollState (udah mentok)
+                // ditahan di sini, jangan dilempar ke sheet
+                return available
+            }
+        }
+    }
+    Column(
+        modifier = modifier
+                .fillMaxWidth()
+                .nestedScroll(nestedScrollConnection)
+                .verticalScroll(rememberScrollState())
+                .padding(16.dp),
+    ) {
+        groups.forEach { group ->
+            Text(
+                text = group.categoryName,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(vertical = 8.dp),
+            )
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                group.icons.forEach { icon ->
+                    IconChip(
+                        icon = icon.icon,
+                        isSelected = selectedIcon == icon,
+                        onClick = { onIconSelected(icon) },
+                    )
+                }
+            }
+        }
     }
 }
 

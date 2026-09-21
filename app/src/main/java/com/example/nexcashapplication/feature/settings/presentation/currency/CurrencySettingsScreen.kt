@@ -50,6 +50,7 @@ import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.feature.settings.presentation.component.LanguageItem
 import com.example.nexcashapplication.feature.settings.presentation.language.LanguageSettingsEvent
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations
+import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.*
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.BAHASA
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.MATA_UANG
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.NOTIFIKASI
@@ -81,6 +82,7 @@ fun CurrencySettingsScreen(
                         PUSAT_BANTUAN -> TODO()
                         BAHASA -> TODO()
                         MATA_UANG -> TODO()
+                        KATEGORI -> TODO()
                     }
                 }
 

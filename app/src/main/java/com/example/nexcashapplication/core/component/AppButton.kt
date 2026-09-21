@@ -22,6 +22,9 @@ fun AppButton(
     isEnabled: Boolean = true,
     title: String,
     onClick: () -> Unit,
+    backgroundColor: Color = PrimaryCyan,
+    disableBackgroundColor: Color = PrimaryCyanDisable,
+    textColor: Color = Color.White,
     modifier: Modifier = Modifier,
 ) {
     Button(
@@ -31,21 +34,21 @@ fun AppButton(
                 .shadow(
                     elevation = 8.dp,
                     shape = RoundedCornerShape(16.dp),
-                    ambientColor = PrimaryCyan,
-                    spotColor = PrimaryCyan,
+                    ambientColor = backgroundColor,
+                    spotColor = backgroundColor,
                 )
                 .fillMaxWidth()
                 .height(52.dp),
         shape = RoundedCornerShape(16.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = PrimaryCyan,
-            disabledContainerColor = PrimaryCyanDisable,
+            containerColor = backgroundColor,
+            disabledContainerColor = disableBackgroundColor,
         ),
     ) {
         Text(
             title,
             fontWeight = FontWeight.Bold,
-            color = Color.White,
+            color = textColor,
         )
     }
 }

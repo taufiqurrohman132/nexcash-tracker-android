@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.datasource.local.datastore.PreferencesKeys
+import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.PreferencesRepository
 import com.example.nexcashapplication.core.navigations.Route
@@ -17,6 +18,7 @@ import com.example.nexcashapplication.feature.category.presentation.mapper.toDom
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiState
 import com.example.nexcashapplication.feature.common.extentions.moveToFront
 import com.example.nexcashapplication.feature.common.extentions.sortedColor
+import com.example.nexcashapplication.feature.common.extentions.sortedIcon
 import com.example.nexcashapplication.feature.common.extentions.toColor
 import com.example.nexcashapplication.feature.common.extentions.toHex
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -96,22 +98,30 @@ class AddCategoryViewModel @Inject constructor(
             }
 
 
-
-
             is AddCategoryEvent.OnChangeIcon -> {
+                val recentIcons = state.value.recentIcons.sortedIcon(event.icon, 8)
+
                 updateState {
-                    it.copy(selectedIcon = event.icon)
+                    it.copy(
+                        recentIcons = recentIcons,
+                        selectedIcon = event.icon,
+                    )
                 }
+
+                viewModelScope.launch {
+                    saveRecentIcons(recentIcons.map { it.id })
+                }
+
             }
 
             is AddCategoryEvent.OnColorSelected -> {
                 val recentColors = state.value.recentColors.sortedColor(event.color, 4)
 
-
                 updateState { addCategoryState ->
                     addCategoryState.copy(
                         selectedColor = event.color,
                         recentColors = recentColors,
+                        showColorPalletDialog = false,
                     )
                 }
 
@@ -126,7 +136,6 @@ class AddCategoryViewModel @Inject constructor(
                     it.copy(note = event.notes)
                 }
             }
-
 
 
             is AddCategoryEvent.OnTypeSelected -> {
@@ -155,6 +164,7 @@ class AddCategoryViewModel @Inject constructor(
         viewModelScope.launch {
             val recentColorsSnapshot = getRecentColorsSnapshot() //.take(4)
             Log.d(TAG, "loadCategory: awal recent color = $recentColorsSnapshot")
+            val recentIconsSnapshot = getRecentIconsSnapshot() //.take(8)
 
             try {
                 // edit mode
@@ -163,15 +173,18 @@ class AddCategoryViewModel @Inject constructor(
                             .collect { detailCategory ->
                                 if (detailCategory != null) {
                                     Log.d(TAG, "loadCategory: recent color = $recentColorsSnapshot")
-                                    val newState =
-                                        detailCategory.toUiState(recentColors = recentColorsSnapshot)
+                                    val newState = detailCategory.toUiState(
+                                        recentColors = recentColorsSnapshot.moveToFront(
+                                            color = detailCategory.color.toColor(), // sudah termasuk logic default dari toUiState()
+                                            maxSize = 4,
+                                        ),
+                                        recentIcons = recentIconsSnapshot.moveToFront(
+                                            icon = CategoryIcons.fromId(detailCategory.iconId),
+                                            maxSize = 8,
+                                        ),
+                                    )
                                     updateState {
-                                        newState.copy(
-                                            recentColors = recentColorsSnapshot.moveToFront(
-                                                color = newState.selectedColor, // sudah termasuk logic default dari toUiState()
-                                                maxSize = 4,
-                                            ),
-                                        )
+                                        newState
                                     }
                                 }
                             }
@@ -229,10 +242,24 @@ class AddCategoryViewModel @Inject constructor(
         )
     }
 
+    suspend fun saveRecentIcons(icons: List<String>) {
+        preferencesRepository.saveList(
+            key = PreferencesKeys.RECENT_ICONS,
+            value = icons,
+            serializer = ListSerializer(String.serializer()),
+        )
+    }
+
     suspend fun getRecentColorsSnapshot(): List<Color> =
         preferencesRepository
                 .getList(PreferencesKeys.RECENT_COLORS, ListSerializer(String.serializer()))
                 .map { hexList -> hexList.map { it.toColor() } }
+                .first()
+
+    suspend fun getRecentIconsSnapshot(): List<CategoryIcon> =
+        preferencesRepository
+                .getList(PreferencesKeys.RECENT_ICONS, ListSerializer(String.serializer()))
+                .map { iconList -> iconList.map { CategoryIcons.fromId(it) } }
                 .first()
 
     companion object {

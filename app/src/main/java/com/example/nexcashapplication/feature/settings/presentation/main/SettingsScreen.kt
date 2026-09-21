@@ -98,6 +98,12 @@ fun SettingsScreen(
                                 Route.SettingsRoute.MataUang,
                             )
                         }
+
+                        SettingsDestinations.KATEGORI -> {
+                            navController.navigate(
+                                Route.CategoryRoute.Main
+                            )
+                        }
                     }
                 }
 
@@ -241,7 +247,7 @@ fun SettingsContent(
                         icon = Icons.Outlined.Category,
                         title = "Kategori",
                         onClick = {
-                            onEvent(SettingsEvent.OnMenuItemClick(SettingsDestinations.BAHASA))
+                            onEvent(SettingsEvent.OnMenuItemClick(SettingsDestinations.KATEGORI))
                         },
 
                         )

@@ -102,7 +102,6 @@ object CategoryIcons {
         CategoryIconGroup("Lainnya", lainnya),
     )
 
-
     // Buat preview row - icon yang sering dipakai
     val recentIcons = listOf(
         transportasi[0], // Sepeda
