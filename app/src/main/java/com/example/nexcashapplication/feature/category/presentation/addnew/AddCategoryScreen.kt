@@ -232,7 +232,7 @@ fun AddCategoryContent(
             AppButton(
                 title = "Selesaikan Pembuatan",
                 onClick = {
-
+                    onEvent(AddCategoryEvent.OnSaveClicked)
                 },
             )
 
