@@ -11,13 +11,11 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,7 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.GridView
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -64,6 +62,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -77,9 +76,7 @@ import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.CategoryIconGroup
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
-import com.example.nexcashapplication.feature.category.presentation.addnew.model.BudgetPeriod
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.AmountOutlinedTextField
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -199,7 +196,7 @@ fun AddCategoryContent(
 
             IconPreviewRow(
                 selectedIcon = state.selectedIcon,
-                recentIcons = CategoryIcons.recentIcons,
+                recentIcons = state.recentIcons,
                 onIconClick = { onEvent(AddCategoryEvent.OnChangeIcon(it)) },
                 onMenuIconClick = { showBottomSheet = true },
             )
@@ -270,6 +267,11 @@ fun AddCategoryContent(
 
         if (showBottomSheet) {
             ModalBottomSheet(
+                dragHandle = {
+                    BottomSheetDefaults.DragHandle(
+                        width = 40.dp,
+                    )
+                },
                 containerColor = Color.White,
                 onDismissRequest = { showBottomSheet = false },
                 sheetState = sheetState,
@@ -363,45 +365,7 @@ fun ColorSwatchRow(
         )
     }
 }
-//
-//@Composable
-//fun IconColorRow(colorIndex: Int, onChangeClick: () -> Unit) {
-//    Row(
-//        modifier = Modifier
-//                .fillMaxWidth()
-//                .clip(RoundedCornerShape(16.dp))
-//                .background(Color.White)
-//                .padding(14.dp),
-//        verticalAlignment = Alignment.CenterVertically,
-//    ) {
-//        Box(
-//            modifier = Modifier
-//                    .size(44.dp)
-//                    .clip(CircleShape)
-//                    .background(Color.White),
-//            contentAlignment = Alignment.Center,
-//        ) {
-//            Icon(
-//                Icons.Default.Share, contentDescription = null,
-//            )
-//        }
-//        Spacer(Modifier.width(12.dp))
-//        Column(modifier = Modifier.weight(1f)) {
-//            Text(text = "Ikon & Warna", fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-//            Text(text = "Sesuaikan tampilan visual", fontSize = 12.sp, color = Color(0xFF999999))
-//
-//        }
-//        OutlinedButton(
-//            onClick = onChangeClick,
-//            shape = RoundedCornerShape(20.dp),
-//            colors = ButtonDefaults.outlinedButtonColors(contentColor = Color(0xFF6C5CE7)),
-//            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 6.dp),
-//        ) {
-//            Text(text = "Ubah", fontSize = 13.sp)
-//        }
-//    }
-//
-//}
+
 
 @Composable
 fun TipeKategoriToggle(
@@ -450,138 +414,6 @@ fun TipeKategoriToggle(
         }
     }
 }
-
-@Composable
-fun ToggleOption(
-    text: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Box(
-        modifier = modifier
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(12.dp))
-                .background(if (selected) PrimaryCyan else TextTertiary)
-                .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = text,
-            color = if (selected) Color.White else TextSecondary,
-            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
-            fontSize = 14.sp,
-        )
-    }
-}
-
-
-@Composable
-fun RencanaAnggaranCard(
-    budgetLimit: Long,
-    onBudgetLimitChange: (String) -> Unit,
-    selectedPeriod: BudgetPeriod,
-    onPeriodChange: (BudgetPeriod) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-
-    Column(
-        modifier = Modifier
-                .fillMaxWidth()
-                .shadow(
-                    elevation = 4.dp,
-                    shape = RoundedCornerShape(16.dp),
-                    clip = false,
-                    ambientColor = PrimaryCyan,
-                    spotColor = PrimaryCyan,
-                )
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
-                .border(1.dp, BorderGray, RoundedCornerShape(16.dp))
-                .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            IconRounded(
-                imageVector = Icons.Default.Settings,
-                iconColor = PrimaryCyan,
-                backgroundColor = PrimaryCyan.copy(alpha = 0.1f),
-                size = 34.dp,
-            )
-            Spacer(Modifier.width(8.dp))
-            Text(text = "Rencana Anggaran", fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
-        }
-
-        FormField(
-            title = "Batas Anggaran",
-            fontWeight = FontWeight.Normal,
-            textColor = TextSecondary,
-        ) {
-            AmountOutlinedTextField(
-                modifier = Modifier.height(50.dp),
-                rawAmount = budgetLimit.toString(),
-                onAmountChange = { newValue ->
-                    onBudgetLimitChange(newValue)
-                },
-                textStyle = MaterialTheme.typography.bodyMedium,
-                prefix = {
-                    Text("Rp ")
-                },
-            )
-
-        }
-
-//        BudgetPeriodSelector(
-//            selected = selectedPeriod,
-//            onSelectedChange = { onPeriodChange(it) },
-//        )
-    }
-}
-
-@Composable
-fun BudgetPeriodSelector(
-    selected: BudgetPeriod,
-    onSelectedChange: (BudgetPeriod) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        BudgetPeriod.entries.forEach { period ->
-            val isSelected = period == selected
-
-            FilterChip(
-                selected = isSelected,
-                onClick = { onSelectedChange(period) },
-                label = {
-                    Text(
-                        text = period.label,
-                        fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                    )
-                },
-                shape = RoundedCornerShape(50), // full rounded / pill shape
-                colors = FilterChipDefaults.filterChipColors(
-                    containerColor = Color.White,
-                    labelColor = Color.Black,
-                    selectedContainerColor = PrimaryCyan.copy(alpha = 0.12f),
-                    selectedLabelColor = PrimaryCyan,
-                ),
-                border = FilterChipDefaults.filterChipBorder(
-                    enabled = true,
-                    selected = isSelected,
-                    borderColor = BorderGray,
-                    selectedBorderColor = PrimaryCyan,
-                    borderWidth = 1.dp,
-                    selectedBorderWidth = 1.dp,
-                ),
-            )
-        }
-    }
-}
-
 
 @Composable
 fun IconPreviewRow(
@@ -677,16 +509,30 @@ fun MenuIcons(
     onIconSelected: (CategoryIcon) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var hasScrolledThisGesture by remember { mutableStateOf(false) }
     val nestedScrollConnection = remember {
         object : NestedScrollConnection {
             override fun onPostScroll(
                 consumed: Offset,
                 available: Offset,
-                source: NestedScrollSource
+                source: NestedScrollSource,
             ): Offset {
-                // sisa delta yang nggak bisa dikonsumsi scrollState (udah mentok)
-                // ditahan di sini, jangan dilempar ke sheet
-                return available
+                if (consumed.y != 0f) {
+                    hasScrolledThisGesture = true
+                }
+                // cuma "telen" sisa delta kalau gesture ini SEBELUMNYA sempat scroll
+                // (berarti baru mentok di tengah jalan) -> jangan bocor ke sheet
+                return if (hasScrolledThisGesture && available.y != 0f) {
+                    available
+                } else {
+                    Offset.Zero
+                }
+            }
+
+            override suspend fun onPreFling(available: Velocity): Velocity {
+                // gesture selesai (jari lepas) -> reset buat gesture berikutnya
+                hasScrolledThisGesture = false
+                return Velocity.Zero
             }
         }
     }
