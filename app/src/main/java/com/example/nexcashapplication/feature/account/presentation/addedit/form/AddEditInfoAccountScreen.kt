@@ -156,7 +156,7 @@ fun AddEditAccountContent(
                     LangkahTerakhirBanner()
                     FormFieldEdit(
                         asetName = state.namaAset,
-                        saldoAwal = state.saldoAwal.formatCurrency(),
+                        saldoAwal = state.saldoAwal.toString(),
                         typeAccountName = stringResource(state.typeAccount.labelResId),
                         onAsetNameChange = {
                             onEvent(AddEditInfoAccountEvent.NamaAsetChanged(it))
