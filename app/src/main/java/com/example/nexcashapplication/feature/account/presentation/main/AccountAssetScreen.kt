@@ -136,7 +136,7 @@ fun AccountAssetContent(
                 },
                 actions = {
                     IconButton(
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier.padding(horizontal = 8.dp),
                         onClick = { onEvent(AccountAssetEvent.OnAddAccountClick) },
                     ) {
                         Icon(Icons.Filled.Add, contentDescription = "Tambah akun")

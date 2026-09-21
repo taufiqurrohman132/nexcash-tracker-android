@@ -21,7 +21,7 @@ sealed interface Route {
         data class Detail(val transactionId: String) : TransactionRoute
 
         @Serializable
-        data class AddEdit(val transactionId: String? = null) : TransactionRoute
+        data class AddEdit(val transactionId: String? = null,val accountId: String? = null,val categoryId: String? = null,) : TransactionRoute
     }
 
     @Serializable
