@@ -39,7 +39,11 @@ class DashboardViewModel @Inject constructor(
         when (event) {
             DashboardEvent.OnAddTransactionClick -> TODO()
             DashboardEvent.OnLainnyaClick -> TODO()
-            DashboardEvent.OnLihatDetailBudgetClick -> TODO()
+            DashboardEvent.OnLihatDetailBudgetClick -> {
+                viewModelScope.launch {
+                    sendEffect(DashboardEffect.NavigateToBudgetDetail)
+                }
+            }
             DashboardEvent.OnNotificationClick -> TODO()
             DashboardEvent.OnProfileClick -> TODO()
             DashboardEvent.OnRefresh -> TODO()

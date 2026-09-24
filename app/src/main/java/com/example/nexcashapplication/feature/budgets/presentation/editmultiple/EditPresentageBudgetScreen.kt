@@ -25,10 +25,13 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,6 +50,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.budgets.presentation.editmultiple.model.EditPresentageBudgetItemUiModel
 import com.example.nexcashapplication.feature.category.presentation.main.AddCategoryButton
 import com.example.nexcashapplication.ui.theme.BorderGray
@@ -61,14 +65,28 @@ fun EditPresentageBudgetScreen(
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
-            when(effect) {
-                else -> {}
+            when (effect) {
+                EditPresentageBudgetEffect.NavigateBack -> navController.popBackStack()
+
+                EditPresentageBudgetEffect.NavigateToAddCategory ->
+                    navController.navigate(Route.CategoryRoute.AddNew())
+
+                is EditPresentageBudgetEffect.ShowSnackbar ->
+                    snackbarHostState.showSnackbar(effect.message)
             }
         }
     }
+
+    EditPresentageBudgetContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
+        modifier = modifier,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -77,15 +95,24 @@ fun EditPresentageBudgetContent(
     state: EditPresentageBudgetState,
     onEvent: (EditPresentageBudgetEvent) -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
-//        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = { Text("Edit Anggaran") },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(EditPresentageBudgetEvent.OnBackClick) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
+                    }
+                },
+                actions = {
+                    TextButton(
+                        onClick = { onEvent(EditPresentageBudgetEvent.OnSaveClick) },
+                        enabled = !state.isSaving,
+                    ) {
+                        Text(if (state.isSaving) "Menyimpan…" else "Simpan")
                     }
                 },
             )
@@ -108,6 +135,24 @@ fun EditPresentageBudgetContent(
         ) {
 
             item { BudgetSummaryRow(state.totalBudget, state.totalUsed, state.totalRemaining) }
+
+            // Validasi alokasi (pengganti ValidasiAlokasiText yang dikomentari)
+            item {
+                Text(
+                    text = if (state.isValid) {
+                        "Total alokasi ${state.totalPercentage}% — siap disimpan"
+                    } else {
+                        "Total alokasi ${state.totalPercentage}% (maks 100%) • " +
+                                "setiap kategori harus lebih dari 0"
+                    },
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (state.isValid) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.error
+                    },
+                )
+            }
 
 //            item {
 //                DistribusiModeTabs(

@@ -10,6 +10,7 @@ import com.example.nexcashapplication.feature.account.presentation.addedit.typeo
 import com.example.nexcashapplication.feature.account.presentation.detail.DetailAccountScreen
 import com.example.nexcashapplication.feature.account.presentation.main.AccountAssetScreen
 import com.example.nexcashapplication.feature.budgets.presentation.addedit.AddEditBudgetScreen
+import com.example.nexcashapplication.feature.budgets.presentation.editmultiple.EditPresentageBudgetScreen
 import com.example.nexcashapplication.feature.category.presentation.addnew.AddCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.delete.DeleteCategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryScreen
@@ -35,7 +36,9 @@ fun NavigationStack(
         modifier = modifier,
     ) {
         composable<Route.HomeRoute.Main> {
-            DashboardScreen()
+            DashboardScreen(
+                navController = navController,
+            )
         }
 
         composable<Route.TransactionRoute.Detail> {
@@ -91,6 +94,12 @@ fun NavigationStack(
 
         composable<Route.BudgetRoute.AddEdit> {
             AddEditBudgetScreen(
+                navController = navController,
+            )
+        }
+
+        composable<Route.BudgetRoute.EditMultiple> {
+            EditPresentageBudgetScreen(
                 navController = navController,
             )
         }

@@ -115,6 +115,10 @@ sealed interface Route {
         @Serializable
         data class AddEdit(val budgetId: String? = null, val categoryId: String? = null) :
             BudgetRoute
+
+        /** Edit alokasi anggaran banyak kategori sekaligus (EditPresentageBudgetScreen). */
+        @Serializable
+        data object EditMultiple : BudgetRoute
     }
 
     @Serializable

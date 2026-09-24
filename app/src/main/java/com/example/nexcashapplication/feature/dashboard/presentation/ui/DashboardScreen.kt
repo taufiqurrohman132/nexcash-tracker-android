@@ -18,13 +18,17 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.nexcashapplication.core.component.FormField
+import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
 import com.example.nexcashapplication.feature.dashboard.presentation.state.DashboardState
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.components.BalanceCard
@@ -37,10 +41,32 @@ import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 @Composable
 fun DashboardScreen(
+    navController: NavHostController,
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.effect.collect { effect ->
+            when (effect) {
+                DashboardEffect.NavigateToBudgetDetail ->
+                    navController.navigate(Route.BudgetRoute.EditMultiple)
+
+                is DashboardEffect.NavigateToTransactionDetail ->
+                    navController.navigate(Route.TransactionRoute.Detail(effect.transactionId))
+
+                DashboardEffect.NavigateToAllTransactions ->
+                    navController.navigate(Route.TransactionRoute.Main)
+
+                DashboardEffect.NavigateToAddTransaction ->
+                    navController.navigate(Route.TransactionRoute.AddEdit())
+
+                // Efek lain (notifikasi, profil, transfer, scan, tagihan) belum punya tujuan
+                else -> Unit
+            }
+        }
+    }
 
     DashboardContent(
         state = state,
@@ -53,7 +79,7 @@ fun DashboardScreen(
 @Composable
 fun DashboardScreenPreview() {
     DashboardScreen(
-
+        navController = rememberNavController(),
     )
 }
 
@@ -113,7 +139,8 @@ fun DashboardContent(
 
             BudgetCard(
                 remainingBudget = state.remainingBudget,
-                progress = state.budgetUsedPercentage
+                progress = state.budgetUsedPercentage,
+                onDetailClick = { onEvent(DashboardEvent.OnLihatDetailBudgetClick) },
             )
 
             FormField(
