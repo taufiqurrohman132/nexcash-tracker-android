@@ -24,6 +24,11 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - Domain `Budget.recurringGroupId` + helper `isSeriesRoot`.
 - Repository: `getSeriesRoots()`, `getLastBudgetInSeries()`, `insertBudgetIfAbsent()`;
   seluruh metode `TODO()` pada `BudgetRepositoryImpl` diimplementasikan.
+- **Hapus anggaran (tutup seri)** — `DeleteBudgetUseCase`: instance aktif + periode
+  mendatang dihapus (anak-duluan demi FK RESTRICT), riwayat lampau tetap tersimpan
+  dengan `is_recurring` root dimatikan, seri lain tidak tersentuh. Titik masuk:
+  ikon hapus + dialog konfirmasi di `AddEditBudgetScreen` (TopAppBar) dan
+  `EditPresentageBudgetScreen` (per kartu kategori).
 
 #### Dokumentasi
 
@@ -33,9 +38,9 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 #### Pengujian
 
-- 18 unit test (JUnit Jupiter): mapper self-ref, generation (rollover, idempoten, cap,
+- 23 unit test (JUnit Jupiter): mapper self-ref, generation (rollover, idempoten, cap,
   interval custom, weekly +1, one-shot), save logic (validasi, create, update, ganti tipe,
-  urutan hapus FK).
+  urutan hapus FK), dan delete logic (tutup seri, riwayat aman, isolasi antar seri).
 
 ### Diubah
 
