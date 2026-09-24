@@ -117,11 +117,29 @@ sequenceDiagram
 
 ## 6. Migrasi Data
 
-Room v1 → v2 (`DatabaseModule.MIGRATION_1_2`):
+Room v1 → v2 (`DatabaseModule.MIGRATION_1_2`) — **rebuild tabel `budgets`**:
 
-```sql
-UPDATE budgets SET recurring_group_id = id WHERE recurring_group_id IS NULL
-```
+| # | Perubahan | Alasan |
+|---|---|---|
+| 1 | `recurring_group_id`: `INTEGER (Long?)` → `TEXT (String?)` | tipe kolom tak bisa di-`ALTER` in-place |
+| 2 | FK self-referencing: `ON DELETE CASCADE` → `RESTRICT` | aksi FK tak bisa di-`ALTER` in-place |
+| 3 | Backfill root lama: `COALESCE(CAST(recurring_group_id AS TEXT), id)` | root legacy `NULL` → self-reference |
+| 4 | Buat ulang 3 indeks (konvensi nama Room) | indeks ikut hilang saat tabel di-drop |
+
+Langkah migrasi:
+
+1. Deteksi kolom nyata via `PRAGMA table_info(budgets)` — adaptif terhadap varian skema v1
+   lama (mis. `recurrence_type` sebelum rename, atau kolom recurring yang belum ada).
+2. Salin data ke **staging table tanpa FK** (`budgets_stage_v2`) → self-referencing aman
+   di segala kondisi `PRAGMA foreign_keys`.
+3. `DROP TABLE budgets` → buat ulang persis skema entity v2 (tipe `TEXT` + FK `RESTRICT`).
+4. Pindahkan data dari staging, drop staging, buat ulang indeks
+   `index_budgets_category_id`, `index_budgets_recurring_group_id`,
+   `index_budgets_recurring_group_id_start_date` (UNIQUE).
+
+> Versi migrasi sebelumnya hanya `UPDATE budgets SET recurring_group_id = id WHERE ...`
+> dan gagal dengan `Migration didn't properly handle: budgets` karena tipe kolom &
+> aksi FK tetap tidak cocok dengan entity. Semua baris lama tetap dipertahankan.
 
 Tanpa migrasi ini, root legacy `NULL` tidak terlindungi unique index `(recurring_group_id, start_date)`.
 

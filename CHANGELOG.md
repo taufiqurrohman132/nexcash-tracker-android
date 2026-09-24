@@ -58,14 +58,26 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - `AddEditBudgetViewModel`: `handleSave()` memakai `SaveBudgetUseCase`, `ErrorShown -> TODO()`
   dihapus, form memuat instance aktif + sinkronisasi generasi saat dibuka.
 
+### Diperbaiki
+
+- **Migrasi Room v1 → v2 gagal validasi** (`Migration didn't properly handle: budgets`):
+  skema v1 punya `recurring_group_id` bertipe `INTEGER` dengan FK `CASCADE`, sedangkan
+  entity v2 mengharapkan `TEXT` dengan FK `RESTRICT` — keduanya tidak bisa di-ALTER
+  in-place, sehingga `UPDATE` backfill saja tidak cukup. `MIGRATION_1_2` kini membangun
+  ulang tabel `budgets`: deteksi kolom nyata via `PRAGMA table_info` (adaptif terhadap
+  varian skema v1 lama), salin data ke staging table tanpa FK, drop + buat ulang tabel
+  sesuai entity v2, backfill self-reference (`COALESCE(CAST(...), id)`), lalu buat ulang
+  indeks dengan konvensi penamaan Room. Data budget pengguna tetap dipertahankan.
+
 ### Peringatan
 
-- **Migrasi database Room v1 → v2** (otomatis, data-only):
+- **Migrasi database Room v1 → v2** (otomatis, rebuild tabel `budgets`):
 
-  ```sql
-  UPDATE budgets SET recurring_group_id = id WHERE recurring_group_id IS NULL
-  ```
+  1. `recurring_group_id`: `INTEGER (Long?)` → `TEXT (String?)`
+  2. FK self-referencing: `ON DELETE CASCADE` → `ON DELETE RESTRICT`
+  3. Backfill semua root lama (`NULL`) menjadi self-reference (`= id`)
 
   Versi skema dinaikkan di `NexCashDatabase` dan migrasi didaftarkan di
-  `DatabaseModule` (`MIGRATION_1_2`). Pengguna v1 akan dimigrasi saat pertama membuka
-  versi baru; tidak ada kolom yang ditambah/dihapus.
+  `DatabaseModule` (`MIGRATION_1_2`). Karena tipe kolom dan aksi FK tak bisa diubah
+  via `ALTER TABLE`, tabel `budgets` dibangun ulang lewat staging table (tanpa FK)
+  — semua baris lama disalin, indeks dibuat ulang; tabel lain tidak tersentuh.
