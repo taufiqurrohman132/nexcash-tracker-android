@@ -4,12 +4,15 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
-import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
+import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
+import com.example.nexcashapplication.feature.budgets.domain.usecase.EnsureUpToDateBudgetsUseCase
 import com.example.nexcashapplication.feature.budgets.domain.usecase.GetBudgetPeriodUseCase
+import com.example.nexcashapplication.feature.budgets.domain.usecase.SaveBudgetUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
@@ -18,15 +21,16 @@ import javax.inject.Inject
 class AddEditBudgetViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val budgetRepository: BudgetRepository,
+    private val categoryRepository: CategoryRepository,
     private val getBudgetPeriodUseCase: GetBudgetPeriodUseCase,
+    private val saveBudgetUseCase: SaveBudgetUseCase,
+    private val ensureUpToDateBudgets: EnsureUpToDateBudgetsUseCase,
 ) : BaseViewModel<AddEditBudgetState, AddEditBudgetEvent, AddEditBudgetEffect>(
     AddEditBudgetState(),
 ) {
     private val route: Route.BudgetRoute.AddEdit = savedStateHandle.toRoute()
     private val budgetId = route.budgetId
     private val categoryId = route.categoryId
-
-    private val currentStete get() = state.value
 
     init {
         loadData()
@@ -52,17 +56,34 @@ class AddEditBudgetViewModel @Inject constructor(
 
             is AddEditBudgetEvent.BerulangToggled -> {
                 updateState {
-                    it.copy(
-                        isBerulang = event.enabled,
-                    )
+                    // Switch hanya aktif di CUSTOM; tipe lain selalu "berulang".
+                    if (it.isBerulangToggleEnabled) it.copy(isBerulang = event.enabled) else it
                 }
             }
 
-            AddEditBudgetEvent.ErrorShown -> TODO()
-            is AddEditBudgetEvent.PeriodeTipeChanged -> updateState {
-                it.copy(
-                    periodeTipe = event.tipe,
-                    isBerulangToggleEnabled = event.tipe == RecurrenceType.CUSTOM,
+            AddEditBudgetEvent.ErrorShown -> updateState { it.copy(errorMessage = null) }
+
+            is AddEditBudgetEvent.PeriodeTipeChanged -> updateState { st ->
+                val tipe = event.tipe
+                val today = LocalDate.now()
+                val (mulai, akhir) = if (tipe == RecurrenceType.CUSTOM) {
+                    st.tanggalMulai to st.tanggalBerakhir // pertahankan pilihan user, bisa diedit
+                } else {
+                    // Non-custom: field tanggal non-editable → snap ke periode yang mencakup hari ini.
+                    getBudgetPeriodUseCase(
+                        isRecurring = true,
+                        type = tipe,
+                        startDate = today,
+                        endDate = null,
+                    )
+                }
+                st.copy(
+                    periodeTipe = tipe,
+                    tanggalMulai = mulai,
+                    tanggalBerakhir = akhir,
+                    isTanggalEditable = tipe == RecurrenceType.CUSTOM,
+                    isBerulangToggleEnabled = tipe == RecurrenceType.CUSTOM,
+                    isBerulang = if (tipe == RecurrenceType.CUSTOM) st.isBerulang else true,
                 )
             }
 
@@ -118,53 +139,70 @@ class AddEditBudgetViewModel @Inject constructor(
         }
     }
 
-    private fun handleSave() {
-        val currentState = state.value
-        val (startDate, endDate) = getBudgetPeriodUseCase(
-            isRecurring = currentState.isBerulang,
-            type = currentState.periodeTipe,
-            startDate = currentState.tanggalMulai,
-            endDate = currentState.tanggalBerakhir,
+    private suspend fun handleSave() {
+        val st = state.value
+        updateState { it.copy(isSaving = true) }
+
+        val result = saveBudgetUseCase(
+            SaveBudgetUseCase.Request(
+                budgetId = budgetId,
+                categoryId = categoryId,
+                amount = st.batasBaruParsed,
+                periodType = st.periodeTipe,
+                customStart = st.tanggalMulai,
+                customEnd = st.tanggalBerakhir,
+                isRecurringRequested = st.isBerulang,
+            ),
         )
 
-        viewModelScope.launch {
-            if (categoryId != null) {
-                val budget = Budget(
-                    categoryId = categoryId,
-                    startDate = startDate,
-                    endDate = endDate,
-                    amount = currentState.batasBaruParsed,
-                    recurrenceType = currentState.periodeTipe,
-                    isRecurring = currentState.isBerulang,
-                )
-
-                budgetRepository.insertBudget(budget)
-            }
-            sendEffect(AddEditBudgetEffect.NavigateBack)
+        updateState { it.copy(isSaving = false) }
+        when (result) {
+            is SaveBudgetUseCase.Result.Success -> sendEffect(AddEditBudgetEffect.NavigateBack)
+            is SaveBudgetUseCase.Result.Failure ->
+                sendEffect(AddEditBudgetEffect.ShowSnackbar(result.message))
         }
     }
 
     private fun loadData() {
         viewModelScope.launch {
-            if (categoryId != null) {
-                val today = LocalDate.now()
-                budgetRepository.getActiveBudgetForCategory(categoryId, today)
-                        .collect { activeBudget ->
-                            if (activeBudget != null) {
-                                updateState {
-                                    it.copy(
-                                        periodeTipe = activeBudget.recurrenceType,
-                                        tanggalMulai = activeBudget.startDate,
-                                        tanggalBerakhir = activeBudget.endDate
-                                            ?: activeBudget.startDate, /// sementararaa
-                                        batasBaruParsed = activeBudget.amount,
-                                    )
-                                }
-                            }
-                        }
+            // Sinkronkan periode dulu supaya instance aktif hari ini tersedia.
+            runCatching { ensureUpToDateBudgets() }
+
+            categoryId?.let { catId ->
+                categoryRepository.getCategoryById(catId).first()?.let { cat ->
+                    updateState { it.copy(kategoriNama = cat.name, kategoriIkon = cat.iconId) }
+                }
+            }
+
+            val today = LocalDate.now()
+            val existing = budgetId?.let { budgetRepository.getById(it) }
+                ?: categoryId?.let { catId ->
+                    budgetRepository.getActiveBudgetForCategory(catId, today).first()
+                }
+
+            if (existing == null) {
+                // Mode buat baru: default state (MONTHLY, hari ini) sudah sesuai.
+                updateState { it.copy(isLoading = false) }
+                return@launch
+            }
+
+            updateState {
+                it.copy(
+                    budgetId = existing.id,
+                    categoryId = existing.categoryId,
+                    periodeTipe = existing.recurrenceType,
+                    tanggalMulai = existing.startDate,
+                    tanggalBerakhir = existing.endDate,
+                    isTanggalEditable = existing.recurrenceType == RecurrenceType.CUSTOM,
+                    isBerulangToggleEnabled = existing.recurrenceType == RecurrenceType.CUSTOM,
+                    isBerulang =
+                        if (existing.recurrenceType == RecurrenceType.CUSTOM) existing.isRecurring
+                        else true,
+                    batasSebelumnya = existing.amount,
+                    batasBaruParsed = existing.amount,
+                    isLoading = false,
+                )
             }
         }
     }
-
-
 }

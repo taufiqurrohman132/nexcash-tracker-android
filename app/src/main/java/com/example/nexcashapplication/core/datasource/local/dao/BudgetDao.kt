@@ -37,6 +37,7 @@ interface BudgetDao {
         WHERE category_id = :categoryId
         AND start_date <= :dateEpoch 
         AND end_date >= :dateEpoch
+        ORDER BY start_date DESC
         LIMIT 1
     """,
     )
@@ -47,10 +48,8 @@ interface BudgetDao {
     SELECT * FROM budgets 
     WHERE category_id IN (:categoryIds)
     AND start_date <= :referenceDate
-    AND (
-        period_type != 'custom' 
-        OR (period_type = 'custom' AND end_date >= :referenceDate)
-    )
+    AND end_date >= :referenceDate
+    ORDER BY start_date ASC
 """,
     )
     fun getActiveBudgetsForCategories(
@@ -60,6 +59,11 @@ interface BudgetDao {
 
     @Query("SELECT * FROM budgets WHERE period_type = :type")
     fun getByRecurrenceType(type: String): Flow<List<BudgetEntity>>
+
+    // Semua root seri: baris yang recurring_group_id menunjuk ke id-nya sendiri.
+    // Dipakai EnsureUpToDateBudgetsUseCase untuk generate periode berikutnya.
+    @Query("SELECT * FROM budgets WHERE recurring_group_id = id")
+    suspend fun getSeriesRoots(): List<BudgetEntity>
 
 
     @Query(
@@ -139,6 +143,12 @@ interface BudgetDao {
     // Buat anggaran baru
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBudget(budget: BudgetEntity)
+
+    // Insert idempoten untuk generate periode berikutnya:
+    // unique index (recurring_group_id, start_date) menahan duplikat, bukan menghapus baris lama
+    // (REPLACE = DELETE+INSERT → melanggar FK RESTRICT bila baris punya anak).
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertBudgetIfAbsent(budget: BudgetEntity): Long
 
     // Edit limit anggaran
     @Update

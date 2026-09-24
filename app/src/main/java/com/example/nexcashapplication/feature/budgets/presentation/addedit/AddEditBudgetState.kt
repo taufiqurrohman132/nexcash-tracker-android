@@ -3,6 +3,7 @@ package com.example.nexcashapplication.feature.budgets.presentation.addedit
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 
 data class AddEditBudgetState(
@@ -20,8 +21,9 @@ data class AddEditBudgetState(
     val tanggalBerakhir: LocalDate = LocalDate.now().plusDays(1),
     val isTanggalEditable: Boolean = false, // true hanya saat CUSTOM
 
-    val isBerulang: Boolean = false,
-    val isBerulangToggleEnabled: Boolean = true, // false saat MINGGUAN/CUSTOM
+    // MONTHLY/WEEKLY selalu berulang → default true; switch hanya bisa di-toggle di CUSTOM.
+    val isBerulang: Boolean = true,
+    val isBerulangToggleEnabled: Boolean = false, // true hanya saat CUSTOM
 
     val isSaving: Boolean = false,
     val isLoading: Boolean = true,
@@ -33,9 +35,29 @@ data class AddEditBudgetState(
     val hasChange: Boolean
         get() = batasBaruParsed != batasSebelumnya && batasBaruParsed > 0
 
+    /** Durasi periode dalam hari (inklusif). */
+    val durasiHari: Long
+        get() = ChronoUnit.DAYS.between(tanggalMulai, tanggalBerakhir) + 1
+
     val previewTeksBerulang: String
-        get() = "Sistem akan membuat anggaran $kategoriNama sebesar " +
-                "Rp ${batasBaruParsed.formatCurrency()} secara otomatis pada tanggal 1 setiap bulannya."
+        get() {
+            val nominal = "Rp ${batasBaruParsed.formatCurrency()}"
+            val nama = kategoriNama.ifBlank { "kategori ini" }
+            return when (periodeTipe) {
+                RecurrenceType.MONTHLY ->
+                    "Sistem akan membuat anggaran $nama sebesar $nominal " +
+                            "secara otomatis pada tanggal 1 setiap bulannya."
+
+                RecurrenceType.WEEKLY ->
+                    "Sistem akan membuat anggaran $nama sebesar $nominal " +
+                            "secara otomatis setiap awal minggu."
+
+                RecurrenceType.CUSTOM ->
+                    "Sistem akan membuat anggaran $nama sebesar $nominal " +
+                            "secara otomatis setiap $durasiHari hari sejak " +
+                            "${tanggalMulai}."
+            }
+        }
 }
 
 // di State

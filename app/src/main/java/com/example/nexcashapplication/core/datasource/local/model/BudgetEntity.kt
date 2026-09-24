@@ -19,7 +19,7 @@ import java.util.UUID
         ForeignKey(
             entity = BudgetEntity::class,
             parentColumns = ["id"], childColumns = ["recurring_group_id"],
-            onDelete = ForeignKey.CASCADE,
+            onDelete = ForeignKey.RESTRICT,
         )
     ],
     indices = [
@@ -48,7 +48,7 @@ data class BudgetEntity(
     val amount: Long,
 
     @ColumnInfo(name = "recurring_group_id")
-    val recurringGroupId: Long?,
+    val recurringGroupId: String?,
 
     @ColumnInfo(name = "is_recurring")
     val isRecurring: Boolean = true,

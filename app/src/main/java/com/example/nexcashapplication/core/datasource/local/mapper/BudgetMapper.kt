@@ -15,16 +15,23 @@ fun BudgetEntity.toDomain() = Budget(
     amount = amount,
     recurrenceType = RecurrenceType.valueOf(periodType.uppercase()),
     isRecurring = isRecurring,
+    recurringGroupId = recurringGroupId,
 )
 
-fun Budget.toEntity() = BudgetEntity(
-    id = id ?: UUID.randomUUID().toString(),
-    categoryId = categoryId,
-    startDate = startDate.toEpochMillis(),
-    endDate = endDate.toEpochMillis(),
-    amount = amount,
-    periodType = recurrenceType.name.lowercase(),
-    recurringGroupId = null,
-    isRecurring = isRecurring,
-)
-
+fun Budget.toEntity(): BudgetEntity {
+    // Baris baru selalu dapat id segar; baris existing memakai id-nya sendiri.
+    val rowId = id ?: UUID.randomUUID().toString()
+    return BudgetEntity(
+        id = rowId,
+        categoryId = categoryId,
+        startDate = startDate.toEpochMillis(),
+        endDate = endDate.toEpochMillis(),
+        amount = amount,
+        periodType = recurrenceType.name.lowercase(),
+        // Root seri WAJIB self-reference (bukan NULL): unique index (recurring_group_id, start_date)
+        // tidak menjamin apa-apa untuk NULL di SQLite, sehingga budget ganda bisa lolos.
+        // Anak seri sudah membawa recurringGroupId = id root dari hasil generate.
+        recurringGroupId = recurringGroupId ?: rowId,
+        isRecurring = isRecurring,
+    )
+}

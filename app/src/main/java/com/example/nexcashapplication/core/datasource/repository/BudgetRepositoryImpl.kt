@@ -19,15 +19,17 @@ class BudgetRepositoryImpl @Inject constructor(
     private val db: NexCashDatabase,
 ) : BudgetRepository {
     override suspend fun getById(id: String): Budget? {
-        TODO("Not yet implemented")
+        return budgetDao.getById(id)?.toDomain()
     }
 
     override fun getByCategory(categoryId: String): Flow<List<Budget>> {
-        TODO("Not yet implemented")
+        return budgetDao.getByCategory(categoryId)
+                .map { list -> list.map { it.toDomain() } }
     }
 
     override fun getActiveBudgets(date: LocalDate): Flow<List<Budget>> {
-        TODO("Not yet implemented")
+        return budgetDao.getActiveBudgets(date.toEpochMillis())
+                .map { list -> list.map { it.toDomain() } }
     }
 
     override fun getActiveBudgetForCategory(
@@ -47,7 +49,8 @@ class BudgetRepositoryImpl @Inject constructor(
     }
 
     override fun getByRecurrenceType(type: String): Flow<List<Budget>> {
-        TODO("Not yet implemented")
+        return budgetDao.getByRecurrenceType(type)
+                .map { list -> list.map { it.toDomain() } }
     }
 
     override suspend fun deleteById(id: String) {
@@ -59,7 +62,7 @@ class BudgetRepositoryImpl @Inject constructor(
         month: String,
         year: String,
     ): Flow<List<DailyExpenseResult>> {
-        TODO("Not yet implemented")
+        return budgetDao.getDailyExpenseByCategory(categoryId, month, year)
     }
 
     override fun getBudgetsByMonth(monthStart: Long, monthEnd: Long): Flow<List<Budget>> {
@@ -76,7 +79,19 @@ class BudgetRepositoryImpl @Inject constructor(
         month: String,
         year: String,
     ): Flow<List<CategoryExpenseResult>> {
-        TODO("Not yet implemented")
+        return budgetDao.getExpenseBySubCategory(parentCategoryId, month, year)
+    }
+
+    override suspend fun getSeriesRoots(): List<Budget> {
+        return budgetDao.getSeriesRoots().map { it.toDomain() }
+    }
+
+    override suspend fun getLastBudgetInSeries(groupId: String): Budget? {
+        return budgetDao.getLastBudgetInSeries(groupId)?.toDomain()
+    }
+
+    override suspend fun insertBudgetIfAbsent(budget: Budget): Boolean {
+        return budgetDao.insertBudgetIfAbsent(budget.toEntity()) != -1L
     }
 
     override suspend fun insertBudget(budget: Budget) {

@@ -41,6 +41,8 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -49,6 +51,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -83,16 +86,14 @@ fun AddEditBudgetScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsState()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 AddEditBudgetEffect.NavigateBack -> navController.popBackStack()
-                is AddEditBudgetEffect.ShowSnackbar -> {
-
-                }
-
-                AddEditBudgetEffect.ShowDiscardConfirmation -> TODO()
+                is AddEditBudgetEffect.ShowSnackbar -> snackbarHostState.showSnackbar(effect.message)
+                AddEditBudgetEffect.ShowDiscardConfirmation -> navController.popBackStack()
             }
         }
     }
@@ -100,6 +101,7 @@ fun AddEditBudgetScreen(
     AddEditBudgetContent(
         state = state,
         onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
     )
 
@@ -111,8 +113,10 @@ fun AddEditBudgetContent(
     state: AddEditBudgetState,
     onEvent: (AddEditBudgetEvent) -> Unit,
     modifier: Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -218,7 +222,7 @@ fun AddEditBudgetContent(
                             onClick = {
                                 onEvent(
                                     AddEditBudgetEvent.TanggalBerakhirClicked(
-                                        state.tanggalBerakhir ?: LocalDate.now(),
+                                        state.tanggalBerakhir,
                                     ),
                                 )
                             },
@@ -227,7 +231,7 @@ fun AddEditBudgetContent(
                     }
 
                     Text(
-                        text = "Durasi 12 Hari",
+                        text = "Durasi ${state.durasiHari} Hari",
                         style = MaterialTheme.typography.bodySmall,
                         color = TextSecondary,
                     )
@@ -248,6 +252,7 @@ fun AddEditBudgetContent(
             ) {
                 RecurringBudgetCard(
                     isRecurring = state.isBerulang,
+                    enabled = state.isBerulangToggleEnabled,
                     onToggle = { onEvent(AddEditBudgetEvent.BerulangToggled(it)) },
                     previewText = state.previewTeksBerulang,
                 )
@@ -258,7 +263,7 @@ fun AddEditBudgetContent(
         state.activeDateDialog?.let { target ->
             val initialDate = when (target) {
                 DateFieldTarget.TanggalMulai -> state.tanggalMulai
-                DateFieldTarget.TanggalAkhir -> state.tanggalBerakhir ?: state.tanggalMulai
+                DateFieldTarget.TanggalAkhir -> state.tanggalBerakhir
             }
 
             AppDatePickerDialog(
@@ -358,6 +363,7 @@ private fun DateField(
 @Composable
 private fun RecurringBudgetCard(
     isRecurring: Boolean,
+    enabled: Boolean,
     onToggle: (Boolean) -> Unit,
     previewText: String,
 ) {
@@ -392,7 +398,7 @@ private fun RecurringBudgetCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Switch(checked = isRecurring, onCheckedChange = { onToggle(it)})
+            Switch(checked = isRecurring, onCheckedChange = { onToggle(it) }, enabled = enabled)
         }
 
         AnimatedVisibility(visible = isRecurring) {
@@ -519,7 +525,7 @@ private fun AddEditBudgetContentPreview() {
                 tanggalBerakhir = LocalDate.of(2023, 10, 31),
                 isTanggalEditable = false,
                 isBerulang = true,
-                isBerulangToggleEnabled = true,
+                isBerulangToggleEnabled = false,
                 isLoading = false,
                 isFormValid = true,
             ),
@@ -544,7 +550,7 @@ private fun AddEditBudgetContentCustomPreview() {
                 tanggalBerakhir = LocalDate.of(2023, 11, 5),
                 isTanggalEditable = true,
                 isBerulang = false,
-                isBerulangToggleEnabled = false,
+                isBerulangToggleEnabled = true,
                 isLoading = false,
                 isFormValid = true,
             ),

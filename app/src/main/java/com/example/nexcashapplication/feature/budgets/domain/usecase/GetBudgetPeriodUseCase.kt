@@ -6,6 +6,17 @@ import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceTyp
 import java.time.LocalDate
 import javax.inject.Inject
 
+/**
+ * Menghitung window (start..end) periode anggaran berdasarkan tipe periode.
+ *
+ * - WEEKLY  : minggu locale (hari pertama minggu menurut [java.util.Locale.getDefault]) .. +6 hari.
+ * - MONTHLY : 1 .. akhir bulan kalender dari [startDate].
+ * - CUSTOM  : [startDate] .. [endDate] (wajib; error bila endDate null).
+ *
+ * Dipakai saat create/ganti tipe (anchor pada hari ini) dan saat form menampilkan
+ * pratinjau periode. Untuk generate periode berikutnya pada seri berjalan,
+ * lihat [EnsureUpToDateBudgetsUseCase] (start = end sebelumnya + 1 hari).
+ */
 class GetBudgetPeriodUseCase @Inject constructor() {
     operator fun invoke(
         isRecurring: Boolean,

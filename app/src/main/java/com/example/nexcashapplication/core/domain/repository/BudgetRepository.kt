@@ -34,6 +34,16 @@ interface BudgetRepository {
         year: String,
     ): Flow<List<CategoryExpenseResult>>
 
+    // Seri recurring ─────────────────────────────────
+    /** Semua root seri (baris dengan recurring_group_id menunjuk ke id-nya sendiri). */
+    suspend fun getSeriesRoots(): List<Budget>
+
+    /** Baris terakhir (start_date terbesar) dalam satu seri, root ikut dihitung. */
+    suspend fun getLastBudgetInSeries(groupId: String): Budget?
+
+    /** Insert idempoten: duplikat (recurring_group_id, start_date) diabaikan. True bila benar-benar insert. */
+    suspend fun insertBudgetIfAbsent(budget: Budget): Boolean
+
     // CRUD ────────────────────────────────────────────
     // Buat anggaran baru
     suspend fun insertBudget(budget: Budget)
