@@ -178,6 +178,11 @@ class DetailCategoryViewModel @Inject constructor(
                                     DetailCategoryUiModel(
                                         category = category?.toUiModel(),
                                         subCategories = subCategories.map { it.toUiModel() },
+                                        // Pertahankan data turunan lain: tanpa ini, setiap
+                                        // re-emit Room (mis. kategori berubah) akan mengosongkan
+                                        // grafik mingguan dan transaksi terakhir secara permanen.
+                                        weeklyData = existingData?.weeklyData ?: emptyList(),
+                                        weeklyLabels = existingData?.weeklyLabels ?: emptyList(),
                                         recentTransactions = existingData?.recentTransactions
                                             ?: emptyList(),
                                     ),

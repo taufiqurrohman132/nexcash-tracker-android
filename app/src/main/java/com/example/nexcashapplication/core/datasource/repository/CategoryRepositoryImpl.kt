@@ -76,10 +76,15 @@ class CategoryRepositoryImpl @Inject constructor(
     override fun getWeeklyTrend(typeTransaction: String?, categoryId: String?): Flow<WeeklyTrend> {
         val zone = ZoneId.systemDefault()
         val today = LocalDate.now(zone)
-        val startDate = today.minusDays(7)
+        // Jendela 7 hari yang benar: H-6 s/d hari ini (inklusif).
+        // Dulu memakai H-7 s/d H+1 (8 hari), padahal `dates` hanya 7 slot H-7..H-1:
+        // GROUP BY dayOfWeek menggabungkan transaksi hari ini dengan H-7 (weekday sama),
+        // sehingga data hari ini bocor ke slot paling tua dan hari ini tidak pernah tampil.
+        val startDate = today.minusDays(6)
 
         val startDateMillis = startDate.atStartOfDay(zone).toInstant().toEpochMilli()
-        val endDateMillis = today.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli()
+        // Batas akhir = akhir hari ini (−1 ms) supaya transaksi tengah malam besok tidak ikut.
+        val endDateMillis = today.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli() - 1
 
         val dayNames = arrayOf("Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab") // index 0 = Minggu
 

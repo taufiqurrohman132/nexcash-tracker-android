@@ -103,10 +103,15 @@ import com.patrykandpatrick.vico.compose.cartesian.layer.LineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.compose.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.compose.cartesian.marker.LineCartesianLayerMarkerTarget
 import com.patrykandpatrick.vico.compose.cartesian.marker.rememberDefaultCartesianMarker
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.common.Fill
+import com.patrykandpatrick.vico.compose.common.Insets
+import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.compose.common.component.rememberShapeComponent
 import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.compose.common.component.ShapeComponent
 
 val dummyTransactions = listOf(
     TransactionItemUiModel(
@@ -397,7 +402,11 @@ fun DetailCategoryContent(
 
 
             FormField(
-                title = "Tren Pengeluaran",
+                title = if (state.category?.typeCategory == TypeCategory.INCOME) {
+                    "Tren Pemasukan"
+                } else {
+                    "Tren Pengeluaran"
+                },
                 actionText = "7 Hari Terakhir",
                 onActionClick = { },
             ) {
@@ -425,8 +434,7 @@ fun DetailCategoryContent(
                     )
                 }
             }
-
-
+            
             FormField(
                 title = "Transaksi Terakhir",
                 icon = Icons.Default.Replay,
@@ -680,10 +688,32 @@ private val RangeProvider = CartesianLayerRangeProvider.auto()
 private val CurrencyFormatter = CartesianValueFormatter { _, value, _ ->
     value.toLong().formatCompact()
 }
-private val MarkerValueFormatter = DefaultCartesianMarker.ValueFormatter { _, targets ->
-    targets.joinToString { target ->
-        // ganti `target.y` sesuai properti asli, aku belum yakin nama field-nya di versi kamu
-        target.x.toLong().formatCompact()
+
+/**
+ * Formatter label marker (muncul saat titik grafik disentuh).
+ *
+ * Menampilkan nama hari + nominal harian. Nominal diambil dari nilai **Y**
+ * pada [LineCartesianLayerMarkerTarget.points] — [CartesianMarker.Target]
+ * sendiri hanya menyediakan `x` dan koordinat piksel, sehingga memakai `target.x`
+ * (seperti sebelumnya) akan menampilkan indeks hari 0..6, bukan rupiah.
+ */
+@Composable
+private fun rememberMarkerValueFormatter(
+    labels: List<String>,
+): DefaultCartesianMarker.ValueFormatter = remember(labels) {
+    DefaultCartesianMarker.ValueFormatter { _, targets ->
+        targets.joinToString { target ->
+            val amount = (target as? LineCartesianLayerMarkerTarget)
+                ?.points
+                ?.firstOrNull()
+                ?.entry
+                ?.y
+                ?.toLong()
+                ?: target.x.toLong()
+            val formatted = amount.formatCompact()
+            val dayLabel = labels.getOrNull(target.x.toInt())
+            if (dayLabel != null) "$dayLabel • $formatted" else formatted
+        }
     }
 }
 
@@ -702,7 +732,10 @@ fun WeeklyTrendChart(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         border = BorderStroke(1.dp, BorderGray),
     ) {
-        if (data.isEmpty() || labels.isEmpty()) {
+        // Data selalu berisi 7 slot (0 = tanpa transaksi). Bila semua nol, berarti
+        // benar-benar tidak ada transaksi minggu ini → tampilkan empty state,
+        // bukan garis datar di dasar grafik.
+        if (data.isEmpty() || labels.isEmpty() || data.all { it <= 0f }) {
             WeeklyTrendEmptyState(modifier = Modifier.fillMaxSize())
         } else {
             WeeklyTrendChartContent(data = data, labels = labels)
@@ -737,6 +770,16 @@ private fun WeeklyTrendChartContent(
 ) {
     val modelProducer = remember { CartesianChartModelProducer() }
 
+    // Di-remember per `labels`: lambda formatter yang dibuat baru setiap recomposition
+    // membuat HorizontalAxis ikut re-create tiap recomposition (grafik berkedip).
+    // Catatan: JANGAN kembalikan string kosong — Vico memvalidasi hasil formatter
+    // sumbu (check(isNotBlank)) dan akan crash dengan IllegalStateException.
+    val bottomAxisFormatter = remember(labels) {
+        CartesianValueFormatter { _, value, _ ->
+            labels.getOrElse(value.toInt()) { labels.lastOrNull() ?: "?" }
+        }
+    }
+
     LaunchedEffect(data) {
         modelProducer.runTransaction {
             lineSeries {
@@ -768,18 +811,40 @@ private fun WeeklyTrendChartContent(
                 rangeProvider = RangeProvider,
             ),
             startAxis = VerticalAxis.rememberStart(
-                label = rememberTextComponent(style = TextStyle(color = TextTertiary)),
+                label = rememberTextComponent(
+                    style = TextStyle(color = TextTertiary, fontSize = 12.sp),
+                ),
                 guideline = rememberAxisGuidelineComponent(fill = Fill(color = BorderGray)),
                 valueFormatter = CurrencyFormatter,
             ),
             bottomAxis = HorizontalAxis.rememberBottom(
-                label = rememberTextComponent(style = TextStyle(color = TextTertiary)),
+                label = rememberTextComponent(
+                    style = TextStyle(color = TextTertiary, fontSize = 12.sp),
+                ),
                 guideline = rememberAxisGuidelineComponent(fill = Fill(color = BorderGray)),
-                valueFormatter = { _, value, _ -> labels.getOrElse(value.toInt()) { "" } },
+                valueFormatter = bottomAxisFormatter,
             ),
             marker = rememberDefaultCartesianMarker(
-                label = rememberTextComponent(style = TextStyle(color = PrimaryCyan)),
-                valueFormatter = MarkerValueFormatter,
+                label = rememberTextComponent(
+                    style = TextStyle(
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                    ),
+                    background = rememberShapeComponent(
+                        fill = Fill(PrimaryCyan),
+                        shape = RoundedCornerShape(6.dp),
+                    ),
+                    padding = Insets(all = 6.dp),
+                ),
+                valueFormatter = rememberMarkerValueFormatter(labels),
+                labelPosition = DefaultCartesianMarker.LabelPosition.AroundPoint,
+                indicator = { color -> ShapeComponent(fill = Fill(color), shape = CircleShape) },
+                indicatorSize = 10.dp,
+                guideline = rememberLineComponent(
+                    fill = Fill(color = BorderGray),
+                    thickness = 1.dp,
+                ),
             ),
         ),
         modelProducer = modelProducer,
@@ -916,6 +981,8 @@ private fun DetailCategoryContentPreview() {
 
                         ),
                 ),
+                weeklyData = listOf(150_000f, 85_000f, 0f, 240_000f, 310_000f, 95_000f, 175_000f),
+                weeklyLabels = listOf("Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"),
                 recentTransactions = dummyTransactions,
             ),
             onEvent = {},
