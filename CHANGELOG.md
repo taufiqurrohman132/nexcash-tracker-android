@@ -41,6 +41,13 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - 23 unit test (JUnit Jupiter): mapper self-ref, generation (rollover, idempoten, cap,
   interval custom, weekly +1, one-shot), save logic (validasi, create, update, ganti tipe,
   urutan hapus FK), dan delete logic (tutup seri, riwayat aman, isolasi antar seri).
+- **17 unit test fitur kategori** (`feature/category/presentation/main`):
+  `CategoryViewModelTest` (load expense/income + budget aktif & terpakai pada window,
+  event → state, event → effect, search dengan debounce 300ms via virtual time),
+  `CategoryStateTest` (total/sisa anggaran per tab), `CategoryItemTest` (persentase),
+  plus `FakeCategoryRepository` & `FakeTransactionRepository` in-memory.
+  Total suite: 40 test. Gradle: dependency `kotlinx-coroutines-test:1.11.0` dan
+  `testOptions unitTests.returnDefaultValues` agar `android.util.Log` aman di JVM.
 
 ### Diubah
 
