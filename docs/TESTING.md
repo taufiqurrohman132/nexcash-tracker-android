@@ -7,17 +7,28 @@ We focus on testing business logic, mappers, and ViewModels.
     (untuk ViewModel: `Dispatchers.setMain` + virtual time), fake/repository in-memory
     untuk use case (tanpa mock berat).
 *   **Goal**: Ensure data transformations (Mappers) and State transitions (ViewModels) work correctly.
-*   **Contoh**: 47 unit test — 23 fitur anggaran berulang: mapper self-ref, lazy generation
+*   **Contoh**: 70 unit test — 23 fitur anggaran berulang: mapper self-ref, lazy generation
     (`EnsureUpToDateBudgetsUseCaseTest`), alur simpan (`SaveBudgetUseCaseTest`), tutup seri
-    (`DeleteBudgetUseCaseTest`) + `FakeBudgetRepository`; 17 fitur kategori:
+    (`DeleteBudgetUseCaseTest`) + `FakeBudgetRepository`; 17 fitur kategori tab utama:
     `CategoryViewModelTest` (load budget+terpakai, event→state/effect, search dengan
-    debounce virtual time), `CategoryStateTest`, `CategoryItemTest` +
-    `FakeCategoryRepository`/`FakeTransactionRepository`; dan 7 fitur halaman Semua
+    debounce virtual time), `CategoryStateTest`, `CategoryItemTest`; **23 fitur detail
+    kategori** (`feature/category/presentation/detail`): `DetailCategoryViewModelTest`
+    (15 — load kategori+subkategori+transaksi terakhir+tren, budget pada window CUSTOM,
+    regresi re-emit, jalur Error, 10 event→effect termasuk jembatan "Lihat Semua") dan
+    `DetailCategoryModelTest` (8 — default state/model, mapper `Category.toUiModel`,
+    properti `usedPercentage`/`remainingBudget`); dan 7 fitur halaman Semua
     Transaksi: `GetTransactionsByFilterUseCaseTest` (filter None/ByAccount, subtree
-    subkategori reaktif, judul per filter) + `FakeTransactionRepository`/
-    `FakeAccountRepository`. Aturan bisnisnya di
+    subkategori reaktif, judul per filter) + fake in-memory per paket
+    (`FakeBudgetRepository`, `FakeCategoryRepository`/`FakeTransactionRepository`,
+    `FakeAccountRepository`). Aturan bisnisnya di
     [BUDGET_RECURRING.md](BUDGET_RECURRING.md); keputusan arsitekturnya di
     [ADR-002](adr/002-single-mvi-all-transactions.md).
+*   **Catatan `toRoute()`**: `SavedStateHandle.toRoute()` tidak dapat diuji di JVM —
+    `RouteDecoder` Navigation membaca argumen lewat Bundle Android yang di-mock
+    (`getString` selalu null), sehingga nilai argumen diam-diam menjadi null tanpa
+    error. VM yang membaca route (mis. `DetailCategoryViewModel`) kini menyediakan
+    konstruktor `internal` penerima object route langsung untuk unit test, sementara
+    konstruktor `@Inject` produksi tetap memakai `toRoute()` di device.
 
 ## 2. UI Testing (Instrumented)
 **Location**: `app/src/androidTest/java/`

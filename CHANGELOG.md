@@ -73,7 +73,15 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   `GetTransactionsByFilterUseCaseTest` — filter `None`/`ByAccount`, subtree subkategori
   3 level, reaktivitas subkategori baru, dan judul per filter, plus
   `FakeTransactionRepository`/`FakeAccountRepository` in-memory.
-  Total suite: 47 test. Gradle: dependency `kotlinx-coroutines-test:1.11.0` dan
+- **23 unit test detail kategori** (`feature/category/presentation/detail`):
+  `DetailCategoryViewModelTest` (15) — load kategori + subkategori + transaksi terakhir +
+  tren mingguan, budget aktif/tanpa pada window CUSTOM, regresi re-emit tidak
+  mengosongkan tren, jalur Error, dan 10 event → effect termasuk jembatan "Lihat Semua" →
+  halaman Semua Transaksi; `DetailCategoryModelTest` (8) — default state/model, mapper
+  `Category.toUiModel`, properti `usedPercentage`/`remainingBudget`. Fake di-upgrade:
+  `FakeCategoryRepository` (+ `seedWeeklyTrend`, `throwOnLoad`) dan `FakeTransactionRepository`
+  (+ `seedWithDetails`, `getRecentTransactionsByCategory`, `getUsedAmountByCategory`).
+  Total suite: **70 test**. Gradle: dependency `kotlinx-coroutines-test:1.11.0` dan
   `testOptions unitTests.returnDefaultValues` agar `android.util.Log` aman di JVM.
 
 ### Diubah
@@ -121,6 +129,18 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
      teks terlalu kecil); kini 12sp, label marker diberi pill latar cyan dengan
      posisi `AroundPoint` + indikator titik, dan judul bagian mengikuti tipe
      kategori ("Tren Pemasukan" untuk pemasukan).
+
+- **"Transaksi Terakhir" di detail kategori bisa kosong permanen** — aliran
+  `getRecentTransactionsByCategory` dialirkan terpisah dengan guard
+  `existingData ?: return`; emit pertama bisa kalah cepat dengan pembentukan
+  `Success` dari `combine` sehingga daftar kosong sampai invalidasi tabel
+  transaksi berikutnya. Aliran recent kini menjadi slot ke-3 `combine` utama
+  sehingga datanya ikut membangun `Success`. Seiring itu konstruktor
+  `DetailCategoryViewModel` dipecah: konstruktor `@Inject` produksi tetap
+  membaca typed route lewat `toRoute()` (jalur device identik) dan konstruktor
+  `internal` menerima `Route.CategoryRoute.Detail` langsung untuk unit test —
+  `toRoute()` tidak berjalan di JVM karena Bundle Android di-mock
+  (`getString` selalu null, nilai argumen diam-diam menjadi null).
 
 ### Peringatan
 
