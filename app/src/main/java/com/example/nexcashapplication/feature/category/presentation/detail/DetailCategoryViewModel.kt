@@ -39,8 +39,8 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailCategoryViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+class DetailCategoryViewModel internal constructor(
+    private val route: Route.CategoryRoute.Detail,
     private val transactionRepository: TransactionRepository,
     private val budgetRepository: BudgetRepository,
     private val categoryRepository: CategoryRepository,
@@ -50,7 +50,31 @@ class DetailCategoryViewModel @Inject constructor(
     DetailCategoryState(),
 ) {
 
-    private val route: Route.CategoryRoute.Detail = savedStateHandle.toRoute()
+    /**
+     * Konstruktor produksi (dipakai Hilt + Navigation): membaca typed route dari
+     * [SavedStateHandle] lewat `toRoute()`.
+     *
+     * Catatan pengujian: `toRoute()` membaca nilai argumen lewat Bundle Android;
+     * di JVM unit test Bundle di-mock sehingga `getString()` selalu null (diam-diam).
+     * Karena itu unit test memakai konstruktor `internal` dengan [Route.CategoryRoute.Detail]
+     * langsung — jalur di device tetap identik lewat konstruktor ini.
+     */
+    @Inject constructor(
+        savedStateHandle: SavedStateHandle,
+        transactionRepository: TransactionRepository,
+        budgetRepository: BudgetRepository,
+        categoryRepository: CategoryRepository,
+        categoryUseCases: CategoryUseCases,
+        getBudgetPeriodUseCase: GetBudgetPeriodUseCase,
+    ) : this(
+        route = savedStateHandle.toRoute<Route.CategoryRoute.Detail>(),
+        transactionRepository = transactionRepository,
+        budgetRepository = budgetRepository,
+        categoryRepository = categoryRepository,
+        categoryUseCases = categoryUseCases,
+        getBudgetPeriodUseCase = getBudgetPeriodUseCase,
+    )
+
     private val categoryId = route.categoryId
 
     init {
@@ -166,11 +190,12 @@ class DetailCategoryViewModel @Inject constructor(
             combine(
                 categoryUseCases.getCategoryById(id = categoryId),
                 categoryRepository.getSubCategories(categoryId),
-            ) { category, subCategories ->
-                category to subCategories
+                transactionRepository.getRecentTransactionsByCategory(5, categoryId),
+            ) { category, subCategories, transactions ->
+                Triple(category, subCategories, transactions)
             }
                     .catch { e -> updateState { it.copy(dataState = UiState.Error(e.message.toString())) } }
-                    .collect { (category, subCategories) ->
+                    .collect { (category, subCategories, transactions) ->
                         updateState { current ->
                             val existingData = current.dataState.dataOrNull
                             current.copy(
@@ -178,13 +203,15 @@ class DetailCategoryViewModel @Inject constructor(
                                     DetailCategoryUiModel(
                                         category = category?.toUiModel(),
                                         subCategories = subCategories.map { it.toUiModel() },
-                                        // Pertahankan data turunan lain: tanpa ini, setiap
-                                        // re-emit Room (mis. kategori berubah) akan mengosongkan
-                                        // grafik mingguan dan transaksi terakhir secara permanen.
+                                        // Transaksi terakhir datang langsung dari combine —
+                                        // bila dialirkan terpisah (onEach + guard Success),
+                                        // emit pertama bisa kalah cepat dengan pembentukan
+                                        // Success dan hilang permanen.
+                                        recentTransactions = transactions.map { it.toItemUiModel() },
+                                        // Tren mingguan flow-nya terpisah (observer state):
+                                        // pertahankan agar re-emit kategori tidak mengosongkannya.
                                         weeklyData = existingData?.weeklyData ?: emptyList(),
                                         weeklyLabels = existingData?.weeklyLabels ?: emptyList(),
-                                        recentTransactions = existingData?.recentTransactions
-                                            ?: emptyList(),
                                     ),
                                 ),
                             )
@@ -224,21 +251,6 @@ class DetailCategoryViewModel @Inject constructor(
                                         usedBudget = usedAmount,
                                     ),
                                 ),
-                            ),
-                        )
-                    }
-                }
-                .launchIn(viewModelScope)
-
-
-        transactionRepository.getRecentTransactionsByCategory(5, categoryId)
-                .onEach { transactions ->
-                    updateState { current ->
-                        val existingData =
-                            current.dataState.dataOrNull ?: return@updateState current
-                        current.copy(
-                            dataState = UiState.Success(
-                                existingData.copy(recentTransactions = transactions.map { it.toItemUiModel() }),
                             ),
                         )
                     }
