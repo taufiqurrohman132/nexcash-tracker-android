@@ -53,6 +53,12 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    testOptions {
+        // Agar android.util.Log & android.graphics.Color (via toColor()) tidak
+        // melempar "Method not mocked" pada unit test JVM murni.
+        unitTests.isReturnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -116,6 +122,9 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:6.1.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
+    // ViewModel test: Dispatchers.setMain, runTest, virtual time (debounce)
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.11.0")
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
