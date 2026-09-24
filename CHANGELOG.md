@@ -30,9 +30,32 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   ikon hapus + dialog konfirmasi di `AddEditBudgetScreen` (TopAppBar) dan
   `EditPresentageBudgetScreen` (per kartu kategori).
 
+#### Halaman Semua Transaksi (Lihat Semua)
+
+- Satu layar + satu MVI untuk semua titik "Lihat Semua transaksi": rute
+  `Route.TransactionRoute.All(filter)` dengan `TransactionFilter` sealed
+  (`None`, `ByCategory`, `ByAccount`) — keputusan di
+  [ADR-002](docs/adr/002-single-mvi-all-transactions.md).
+- `GetTransactionsByFilterUseCase` — logika per-filter terpusat: judul TopAppBar
+  diambil dari repository (ikut berubah saat entitas diedit), `ByCategory`
+  menghitung subtree induk → subkategori (BFS) sehingga transaksi subkategori
+  ikut terhitung di daftar induknya.
+- Layar `feature/transaction/presentation/alltransactions` — grouping per tanggal
+  + sticky header mengikuti tab Transaksi, lipat grup, loading, empty state,
+  error + retry.
+- Titik masuk: "Lihat Semua" di detail kategori → `ByCategory` (event
+  `OnLoadMoreTransactionsClick` sebelumnya kosong) dan di detail akun →
+  `ByAccount` (`onActionClick` sebelumnya mati).
+- Query baru `getTransactionsByAccount` dan `getTransactionsWithDetailsByCategoryIds`
+  (keduanya `deleted_at IS NULL`); paket lama
+  `feature/category/presentation/transactionlist` (belum terpasang di NavHost dan
+  membaca route yang salah) dihapus.
+
 #### Dokumentasi
 
 - `docs/adr/001-recurring-budget-series-instance.md` — Architecture Decision Records fitur recurring.
+- `docs/adr/002-single-mvi-all-transactions.md` — keputusan satu MVI + filter di route
+  untuk halaman Semua Transaksi.
 - `docs/BUDGET_RECURRING.md` — spesifikasi aturan bisnis + diagram sequence (Mermaid).
 - `CHANGELOG.md` ini.
 
@@ -46,7 +69,11 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   event → state, event → effect, search dengan debounce 300ms via virtual time),
   `CategoryStateTest` (total/sisa anggaran per tab), `CategoryItemTest` (persentase),
   plus `FakeCategoryRepository` & `FakeTransactionRepository` in-memory.
-  Total suite: 40 test. Gradle: dependency `kotlinx-coroutines-test:1.11.0` dan
+- **7 unit test halaman Semua Transaksi** (`feature/transaction/domain/usecase`):
+  `GetTransactionsByFilterUseCaseTest` — filter `None`/`ByAccount`, subtree subkategori
+  3 level, reaktivitas subkategori baru, dan judul per filter, plus
+  `FakeTransactionRepository`/`FakeAccountRepository` in-memory.
+  Total suite: 47 test. Gradle: dependency `kotlinx-coroutines-test:1.11.0` dan
   `testOptions unitTests.returnDefaultValues` agar `android.util.Log` aman di JVM.
 
 ### Diubah
