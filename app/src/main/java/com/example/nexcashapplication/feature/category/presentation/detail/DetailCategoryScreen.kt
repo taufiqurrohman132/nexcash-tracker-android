@@ -85,7 +85,6 @@ import com.example.nexcashapplication.core.ui.dataOrNull
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.detail.model.DetailCategoryUiModel
 import com.example.nexcashapplication.feature.category.presentation.shared.model.CategoryUiItemModel
-import com.example.nexcashapplication.feature.transaction.domain.model.TransactionFilter
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
@@ -236,9 +235,7 @@ fun DetailCategoryScreen(
 
                 is DetailCategoryEffect.NavigateToAllTransactions -> {
                     navController.navigate(
-                        Route.TransactionRoute.All(
-                            filter = TransactionFilter.ByCategory(effect.categoryId),
-                        ),
+                        Route.TransactionRoute.All(categoryId = effect.categoryId),
                     )
                 }
 

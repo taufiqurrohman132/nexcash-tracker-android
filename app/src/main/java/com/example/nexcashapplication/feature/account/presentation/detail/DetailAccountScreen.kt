@@ -82,7 +82,6 @@ import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.form.model.AccountProviderUiModel
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.feature.account.presentation.shared.component.DeleteAccountDialog
-import com.example.nexcashapplication.feature.transaction.domain.model.TransactionFilter
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -114,9 +113,7 @@ fun DetailAccountScreen(
 
                 is DetailAccountEffect.NavigateToAllTransactions -> {
                     navController.navigate(
-                        Route.TransactionRoute.All(
-                            filter = TransactionFilter.ByAccount(effect.assetId),
-                        ),
+                        Route.TransactionRoute.All(accountId = effect.assetId),
                     )
                 }
                 is DetailAccountEffect.NavigateToAssetSettings -> TODO()

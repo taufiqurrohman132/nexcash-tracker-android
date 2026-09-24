@@ -33,7 +33,8 @@ class AllTransactionsViewModel @Inject constructor(
 ) {
 
     private val route: Route.TransactionRoute.All = savedStateHandle.toRoute()
-    private val filter: TransactionFilter = route.filter
+    private val filter: TransactionFilter =
+        TransactionFilter.fromRoute(route.categoryId, route.accountId)
 
     private var titleJob: Job? = null
     private var transactionsJob: Job? = null

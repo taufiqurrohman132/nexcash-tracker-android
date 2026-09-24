@@ -49,7 +49,7 @@ import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 /**
  * Halaman "Semua Transaksi" — satu layar untuk semua titik "Lihat Semua"
  * (by kategori, by akun, tanpa filter). Filter dibawa lewat route
- * `Route.TransactionRoute.All(filter)` (ADR-002).
+ * `Route.TransactionRoute.All(categoryId, accountId)` (ADR-002).
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

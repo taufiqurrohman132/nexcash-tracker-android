@@ -2,7 +2,6 @@ package com.example.nexcashapplication.core.navigations
 
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
-import com.example.nexcashapplication.feature.transaction.domain.model.TransactionFilter
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -27,9 +26,19 @@ sealed interface Route {
         /**
          * Halaman Semua Transaksi — dibuka dari berbagai titik "Lihat Semua"
          * (detail kategori, detail akun, dst.) dengan filter berbeda (ADR-002).
+         *
+         * Filter diwakili **argumen primitif** (`categoryId`/`accountId`), bukan objek
+         * sealed, karena inferensi NavType Navigation hanya menutup tipe primitif —
+         * objek sealed membuat graph NavHost gagal dibangun saat start. Pemetaan ke
+         * [com.example.nexcashapplication.feature.transaction.domain.model.TransactionFilter]
+         * dilakukan lewat `TransactionFilter.fromRoute(...)` di ViewModel.
+         * Keduanya `null` = tanpa filter (seluruh transaksi).
          */
         @Serializable
-        data class All(val filter: TransactionFilter = TransactionFilter.None) : TransactionRoute
+        data class All(
+            val categoryId: String? = null,
+            val accountId: String? = null,
+        ) : TransactionRoute
     }
 
     @Serializable
