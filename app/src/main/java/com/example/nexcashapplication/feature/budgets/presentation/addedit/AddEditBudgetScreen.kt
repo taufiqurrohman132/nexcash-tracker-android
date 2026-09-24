@@ -27,6 +27,8 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.AreaChart
 import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -46,6 +48,7 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -136,6 +139,18 @@ fun AddEditBudgetContent(
                 navigationIcon = {
                     IconButton(onClick = { onEvent(AddEditBudgetEvent.BatalClicked) }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    // Hapus hanya bila budget sudah ada (bukan saat menambah baru)
+                    if (state.budgetId != null && !state.isLoading) {
+                        IconButton(onClick = { onEvent(AddEditBudgetEvent.HapusClicked) }) {
+                            Icon(
+                                Icons.Outlined.Delete,
+                                contentDescription = "Hapus Anggaran",
+                                tint = MaterialTheme.colorScheme.error,
+                            )
+                        }
                     }
                 },
 //                actions = {
@@ -277,6 +292,31 @@ fun AddEditBudgetContent(
                             DateFieldTarget.TanggalAkhir -> AddEditBudgetEvent.TanggalBerakhirChanged(selected)
                         }
                     )
+                },
+            )
+        }
+
+        // Konfirmasi hapus: tutup seri (periode berikutnya dihapus, riwayat tetap)
+        if (state.showDeleteConfirmation) {
+            AlertDialog(
+                onDismissRequest = { onEvent(AddEditBudgetEvent.BatalHapusClicked) },
+                title = { Text("Hapus Anggaran?") },
+                text = {
+                    Text(
+                        "Anggaran \"${state.kategoriNama}\" untuk periode berjalan dan " +
+                                "periode berikutnya akan dihapus. Riwayat periode lampau " +
+                                "tetap tersimpan.",
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = { onEvent(AddEditBudgetEvent.KonfirmasiHapusClicked) }) {
+                        Text("Hapus", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { onEvent(AddEditBudgetEvent.BatalHapusClicked) }) {
+                        Text("Batal")
+                    }
                 },
             )
         }

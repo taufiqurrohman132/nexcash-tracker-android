@@ -31,6 +31,9 @@ data class AddEditBudgetState(
 
     val isDirty: Boolean = false,
     val isFormValid: Boolean = false,
+
+    // Dialog konfirmasi hapus (hanya untuk budget yang sudah ada)
+    val showDeleteConfirmation: Boolean = false,
 ) {
     val hasChange: Boolean
         get() = batasBaruParsed != batasSebelumnya && batasBaruParsed > 0

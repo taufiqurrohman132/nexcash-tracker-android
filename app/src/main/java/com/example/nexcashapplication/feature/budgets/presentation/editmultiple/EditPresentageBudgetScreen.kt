@@ -20,6 +20,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -184,6 +186,9 @@ fun EditPresentageBudgetContent(
                     onAmountChange = { newAmount ->
                         onEvent(EditPresentageBudgetEvent.OnAmountInputChange(budget.id, newAmount))
                     },
+                    onDeleteClick = {
+                        onEvent(EditPresentageBudgetEvent.OnDeleteBudgetClick(budget.id))
+                    },
                 )
             }
 
@@ -198,6 +203,32 @@ fun EditPresentageBudgetContent(
 //            }
 
 //            item { ValidasiAlokasiText(isValid = state.isValid, total = state.totalPercentage) }
+        }
+
+        // Konfirmasi hapus alokasi per kategori (tutup seri, riwayat tetap)
+        state.deleteConfirmationId?.let { deleteId ->
+            val categoryName = state.budgets.firstOrNull { it.id == deleteId }?.name ?: "kategori ini"
+            AlertDialog(
+                onDismissRequest = { onEvent(EditPresentageBudgetEvent.OnDismissDeleteClick) },
+                title = { Text("Hapus Alokasi?") },
+                text = {
+                    Text(
+                        "Alokasi \"$categoryName\" untuk periode berjalan dan periode " +
+                                "berikutnya akan dihapus. Riwayat periode lampau tetap " +
+                                "tersimpan.",
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = { onEvent(EditPresentageBudgetEvent.OnConfirmDeleteClick) }) {
+                        Text("Hapus", color = MaterialTheme.colorScheme.error)
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { onEvent(EditPresentageBudgetEvent.OnDismissDeleteClick) }) {
+                        Text("Batal")
+                    }
+                },
+            )
         }
     }
 }
@@ -234,6 +265,7 @@ fun CategoryAllocationCard(
     category: EditPresentageBudgetItemUiModel,
     onSliderChange: (Int) -> Unit,
     onAmountChange: (Long) -> Unit,
+    onDeleteClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     var localPercentage by remember(category.percentage) {
@@ -270,6 +302,14 @@ fun CategoryAllocationCard(
                     text = "Rp ${category.totalBudget.formatCurrency()}",
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     style = MaterialTheme.typography.labelLarge,
+                )
+            }
+            Spacer(Modifier.width(4.dp))
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    Icons.Outlined.Delete,
+                    contentDescription = "Hapus Alokasi ${category.name}",
+                    tint = MaterialTheme.colorScheme.error,
                 )
             }
         }

@@ -17,6 +17,9 @@ data class EditPresentageBudgetState(
     val showMonthPicker: Boolean = false,
     val isLoading: Boolean = true,
     val isSaving: Boolean = false,
+
+    /** Id kategori yang sedang dikonfirmasi dihapus; null = dialog tertutup. */
+    val deleteConfirmationId: String? = null,
 ) {
     /**
      * Total persentase alokasi (tiap item dibulatkan ke bawah).

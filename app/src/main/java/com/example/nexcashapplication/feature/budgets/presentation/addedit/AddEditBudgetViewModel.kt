@@ -8,6 +8,7 @@ import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
+import com.example.nexcashapplication.feature.budgets.domain.usecase.DeleteBudgetUseCase
 import com.example.nexcashapplication.feature.budgets.domain.usecase.EnsureUpToDateBudgetsUseCase
 import com.example.nexcashapplication.feature.budgets.domain.usecase.GetBudgetPeriodUseCase
 import com.example.nexcashapplication.feature.budgets.domain.usecase.SaveBudgetUseCase
@@ -24,6 +25,7 @@ class AddEditBudgetViewModel @Inject constructor(
     private val categoryRepository: CategoryRepository,
     private val getBudgetPeriodUseCase: GetBudgetPeriodUseCase,
     private val saveBudgetUseCase: SaveBudgetUseCase,
+    private val deleteBudgetUseCase: DeleteBudgetUseCase,
     private val ensureUpToDateBudgets: EnsureUpToDateBudgetsUseCase,
 ) : BaseViewModel<AddEditBudgetState, AddEditBudgetEvent, AddEditBudgetEffect>(
     AddEditBudgetState(),
@@ -93,6 +95,21 @@ class AddEditBudgetViewModel @Inject constructor(
                 }
             }
 
+            AddEditBudgetEvent.HapusClicked ->
+                // Trash hanya ditampilkan saat budget sudah ada (state.budgetId != null)
+                if (state.value.budgetId != null) {
+                    updateState { it.copy(showDeleteConfirmation = true) }
+                }
+
+            AddEditBudgetEvent.BatalHapusClicked ->
+                updateState { it.copy(showDeleteConfirmation = false) }
+
+            AddEditBudgetEvent.KonfirmasiHapusClicked -> {
+                viewModelScope.launch {
+                    handleDelete()
+                }
+            }
+
             is AddEditBudgetEvent.TanggalBerakhirChanged -> {
                 updateState {
                     it.copy(
@@ -159,6 +176,32 @@ class AddEditBudgetViewModel @Inject constructor(
         when (result) {
             is SaveBudgetUseCase.Result.Success -> sendEffect(AddEditBudgetEffect.NavigateBack)
             is SaveBudgetUseCase.Result.Failure ->
+                sendEffect(AddEditBudgetEffect.ShowSnackbar(result.message))
+        }
+    }
+
+    private suspend fun handleDelete() {
+        val st = state.value
+        val id = st.budgetId
+        if (id == null) {
+            updateState { it.copy(showDeleteConfirmation = false) }
+            return
+        }
+
+        updateState { it.copy(isSaving = true) }
+        val existing = budgetRepository.getById(id)
+        val result = if (existing == null) {
+            DeleteBudgetUseCase.Result.Failure("Anggaran tidak ditemukan")
+        } else {
+            deleteBudgetUseCase(existing)
+        }
+        updateState { it.copy(isSaving = false, showDeleteConfirmation = false) }
+
+        when (result) {
+            is DeleteBudgetUseCase.Result.Success ->
+                sendEffect(AddEditBudgetEffect.NavigateBack)
+
+            is DeleteBudgetUseCase.Result.Failure ->
                 sendEffect(AddEditBudgetEffect.ShowSnackbar(result.message))
         }
     }

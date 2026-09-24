@@ -16,4 +16,9 @@ sealed interface AddEditBudgetEvent {
     data object SimpanClicked : AddEditBudgetEvent
     data object BatalClicked : AddEditBudgetEvent
     data object ErrorShown : AddEditBudgetEvent
+
+    // Hapus anggaran (tutup seri) — ikon trash di TopAppBar
+    data object HapusClicked : AddEditBudgetEvent
+    data object KonfirmasiHapusClicked : AddEditBudgetEvent
+    data object BatalHapusClicked : AddEditBudgetEvent
 }

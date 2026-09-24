@@ -11,4 +11,8 @@ sealed interface EditPresentageBudgetEvent {
     data object OnSaveClick : EditPresentageBudgetEvent
     data object OnAddCategoryClick : EditPresentageBudgetEvent
 
+    // Hapus alokasi kategori (tutup seri) — ikon hapus per kartu kategori
+    data class OnDeleteBudgetClick(val id: String) : EditPresentageBudgetEvent
+    data object OnConfirmDeleteClick : EditPresentageBudgetEvent
+    data object OnDismissDeleteClick : EditPresentageBudgetEvent
 }

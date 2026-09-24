@@ -12,6 +12,7 @@ import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
+import com.example.nexcashapplication.feature.budgets.domain.usecase.DeleteBudgetUseCase
 import com.example.nexcashapplication.feature.budgets.domain.usecase.SaveBudgetUseCase
 import com.example.nexcashapplication.feature.budgets.presentation.editmultiple.model.EditPresentageBudgetItemUiModel
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
@@ -20,6 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.launchIn
@@ -48,6 +50,7 @@ class EditPresentageBudgetViewModel @Inject constructor(
     private val budgetRepository: BudgetRepository,
     private val transactionRepository: TransactionRepository,
     private val saveBudgetUseCase: SaveBudgetUseCase,
+    private val deleteBudgetUseCase: DeleteBudgetUseCase,
 ) : BaseViewModel<EditPresentageBudgetState, EditPresentageBudgetEvent, EditPresentageBudgetEffect>(
     EditPresentageBudgetState(),
 ) {
@@ -74,6 +77,15 @@ class EditPresentageBudgetViewModel @Inject constructor(
             }
 
             EditPresentageBudgetEvent.OnSaveClick -> handleSave()
+
+            is EditPresentageBudgetEvent.OnDeleteBudgetClick ->
+                // Dialog konfirmasi per kartu kategori
+                updateState { it.copy(deleteConfirmationId = event.id) }
+
+            EditPresentageBudgetEvent.OnDismissDeleteClick ->
+                updateState { it.copy(deleteConfirmationId = null) }
+
+            EditPresentageBudgetEvent.OnConfirmDeleteClick -> handleDelete()
 
             // Persentase → nominal: amount = pot * persen / 100 (pot tetap selama edit)
             is EditPresentageBudgetEvent.OnSliderChange -> {
@@ -193,6 +205,38 @@ class EditPresentageBudgetViewModel @Inject constructor(
 
     private fun sendEffectDirect(effect: EditPresentageBudgetEffect) {
         viewModelScope.launch { sendEffect(effect) }
+    }
+
+    /**
+     * Konfirmasi hapus alokasi satu kategori: cari instance aktifnya di periode
+     * terpilih, lalu tutup serinya via [DeleteBudgetUseCase] (periode berjalan +
+     * mendatang ikut terhapus, riwayat lampau tetap tersimpan).
+     * Daftar kartu ikut berubah otomatis karena load-nya berbasis Flow Room.
+     */
+    private fun handleDelete() {
+        val categoryId = state.value.deleteConfirmationId ?: return
+        val anchor = anchorFor(state.value.period)
+
+        viewModelScope.launch {
+            val active = budgetRepository
+                    .getActiveBudgetForCategory(categoryId, anchor)
+                    .first()
+
+            val result = if (active == null) {
+                DeleteBudgetUseCase.Result.Failure("Anggaran tidak ditemukan")
+            } else {
+                deleteBudgetUseCase(active, today = anchor)
+            }
+
+            updateState { it.copy(deleteConfirmationId = null) }
+            when (result) {
+                is DeleteBudgetUseCase.Result.Success ->
+                    sendEffect(EditPresentageBudgetEffect.ShowSnackbar("Alokasi kategori dihapus"))
+
+                is DeleteBudgetUseCase.Result.Failure ->
+                    sendEffect(EditPresentageBudgetEffect.ShowSnackbar(result.message))
+            }
+        }
     }
 
     // ── Load ──────────────────────────────────────────────────────────────
