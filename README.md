@@ -14,6 +14,9 @@ For detailed technical information, please refer to the following guides:
 *   [**Testing Strategy**](docs/TESTING.md) – Unit and UI testing guidelines.
 *   [**Contribution Guidelines**](docs/CONTRIBUTING.md) – Coding standards and Git flow.
 *   [**Troubleshooting**](docs/TROUBLESHOOTING.md) – Solutions for common build and runtime issues.
+*   [**Spesifikasi Anggaran Berulang**](docs/BUDGET_RECURRING.md) – Aturan bisnis budget recurring (MONTHLY/WEEKLY/CUSTOM) + diagram sequence.
+*   [**ADR: Recurring Budget**](docs/adr/001-recurring-budget-series-instance.md) – Keputusan arsitektur series + instance, lazy generation, dan migrasi DB.
+*   [**Changelog**](CHANGELOG.md) – Riwayat perubahan penting tiap rilis.
 
 ---
 

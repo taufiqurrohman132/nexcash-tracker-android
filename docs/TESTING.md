@@ -3,8 +3,11 @@
 ## 1. Unit Testing
 **Location**: `app/src/test/java/`
 We focus on testing business logic, mappers, and ViewModels.
-*   **Tools**: JUnit 4, Mockk, Truth.
+*   **Tools**: JUnit Jupiter (JUnit 5), `useJUnitPlatform()`. Fake/repository in-memory untuk use case (tanpa mock berat).
 *   **Goal**: Ensure data transformations (Mappers) and State transitions (ViewModels) work correctly.
+*   **Contoh**: 18 unit test fitur anggaran berulang — mapper self-ref, lazy generation
+    (`EnsureUpToDateBudgetsUseCaseTest`), alur simpan (`SaveBudgetUseCaseTest`) +
+    `FakeBudgetRepository`. Aturan bisnisnya di [BUDGET_RECURRING.md](BUDGET_RECURRING.md).
 
 ## 2. UI Testing (Instrumented)
 **Location**: `app/src/androidTest/java/`
