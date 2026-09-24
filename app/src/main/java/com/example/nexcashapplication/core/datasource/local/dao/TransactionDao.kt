@@ -41,6 +41,30 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE deleted_at IS NULL ORDER BY transaction_date DESC")
     fun getAllTransactionWithDetails(): Flow<List<TransactionWithDetailsEntity>>
 
+    // Halaman "Semua Transaksi" by akun (titik masuk "Lihat Semua" di detail akun)
+    @Transaction
+    @Query(
+        """
+        SELECT * FROM transactions
+WHERE account_id = :accountId AND deleted_at IS NULL
+ORDER BY transaction_date DESC
+        """,
+    )
+    fun getTransactionsByAccount(accountId: String): Flow<List<TransactionWithDetailsEntity>>
+
+    // Halaman "Semua Transaksi" by kategori — daftar id (induk + sub) dihitung di domain layer
+    @Transaction
+    @Query(
+        """
+        SELECT * FROM transactions
+WHERE category_id IN (:categoryIds) AND deleted_at IS NULL
+ORDER BY transaction_date DESC
+        """,
+    )
+    fun getTransactionsWithDetailsByCategoryIds(
+        categoryIds: List<String>,
+    ): Flow<List<TransactionWithDetailsEntity>>
+
     @Transaction
     @Query(
         """

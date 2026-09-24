@@ -81,7 +81,7 @@ class DetailCategoryViewModel @Inject constructor(
             }
 
             DetailCategoryEvent.OnLoadMoreTransactionsClick -> viewModelScope.launch {
-
+                sendEffect(DetailCategoryEffect.NavigateToAllTransactions(categoryId))
             }
             DetailCategoryEvent.OnManageSubCategoryClick -> TODO()
             DetailCategoryEvent.OnReminderClick -> TODO()

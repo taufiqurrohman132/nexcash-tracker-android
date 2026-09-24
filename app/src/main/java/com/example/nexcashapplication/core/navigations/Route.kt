@@ -2,6 +2,7 @@ package com.example.nexcashapplication.core.navigations
 
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
+import com.example.nexcashapplication.feature.transaction.domain.model.TransactionFilter
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -22,6 +23,13 @@ sealed interface Route {
 
         @Serializable
         data class AddEdit(val transactionId: String? = null,val accountId: String? = null,val categoryId: String? = null,) : TransactionRoute
+
+        /**
+         * Halaman Semua Transaksi — dibuka dari berbagai titik "Lihat Semua"
+         * (detail kategori, detail akun, dst.) dengan filter berbeda (ADR-002).
+         */
+        @Serializable
+        data class All(val filter: TransactionFilter = TransactionFilter.None) : TransactionRoute
     }
 
     @Serializable

@@ -21,6 +21,7 @@ import com.example.nexcashapplication.feature.settings.presentation.language.Lan
 import com.example.nexcashapplication.feature.settings.presentation.main.SettingsScreen
 import com.example.nexcashapplication.feature.statistics.presentation.main.StatistikScreen
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.AddEditTransactionScreen
+import com.example.nexcashapplication.feature.transaction.presentation.alltransactions.AllTransactionsScreen
 import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionScreen
 import com.example.nexcashapplication.feature.transaction.presentation.ui.DetailTransactionScreen
 
@@ -55,6 +56,13 @@ fun NavigationStack(
 
         composable<Route.TransactionRoute.Main> {
             TransactionScreen(
+                navController = navController,
+            )
+        }
+
+        // Satu layar untuk semua titik "Lihat Semua" (by kategori/akun/tanpa filter)
+        composable<Route.TransactionRoute.All> {
+            AllTransactionsScreen(
                 navController = navController,
             )
         }
