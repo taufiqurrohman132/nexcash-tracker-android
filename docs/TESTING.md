@@ -7,7 +7,7 @@ We focus on testing business logic, mappers, and ViewModels.
     (untuk ViewModel: `Dispatchers.setMain` + virtual time), fake/repository in-memory
     untuk use case (tanpa mock berat).
 *   **Goal**: Ensure data transformations (Mappers) and State transitions (ViewModels) work correctly.
-*   **Contoh**: 70 unit test — 23 fitur anggaran berulang: mapper self-ref, lazy generation
+*   **Contoh**: 74 unit test — 23 fitur anggaran berulang: mapper self-ref, lazy generation
     (`EnsureUpToDateBudgetsUseCaseTest`), alur simpan (`SaveBudgetUseCaseTest`), tutup seri
     (`DeleteBudgetUseCaseTest`) + `FakeBudgetRepository`; 17 fitur kategori tab utama:
     `CategoryViewModelTest` (load budget+terpakai, event→state/effect, search dengan
@@ -16,9 +16,12 @@ We focus on testing business logic, mappers, and ViewModels.
     (15 — load kategori+subkategori+transaksi terakhir+tren, budget pada window CUSTOM,
     regresi re-emit, jalur Error, 10 event→effect termasuk jembatan "Lihat Semua") dan
     `DetailCategoryModelTest` (8 — default state/model, mapper `Category.toUiModel`,
-    properti `usedPercentage`/`remainingBudget`); dan 7 fitur halaman Semua
+    properti `usedPercentage`/`remainingBudget`); 7 fitur halaman Semua
     Transaksi: `GetTransactionsByFilterUseCaseTest` (filter None/ByAccount, subtree
-    subkategori reaktif, judul per filter) + fake in-memory per paket
+    subkategori reaktif, judul per filter) + `TransactionFilterTest` (4 — pemetaan
+    argumen route primitif `All(categoryId, accountId)` ke `TransactionFilter` via
+    `fromRoute`); dan 1 mapper (`BudgetMapperTest`) + `ExampleUnitTest` — fake in-memory
+    per paket
     (`FakeBudgetRepository`, `FakeCategoryRepository`/`FakeTransactionRepository`,
     `FakeAccountRepository`). Aturan bisnisnya di
     [BUDGET_RECURRING.md](BUDGET_RECURRING.md); keputusan arsitekturnya di

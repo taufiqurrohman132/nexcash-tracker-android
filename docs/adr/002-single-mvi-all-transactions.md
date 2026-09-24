@@ -78,3 +78,43 @@ beda** itu. Prinsipnya: pecah karena ada alasan fitur, bukan karena ragu.
 - **Netral**: dua query baru (`getTransactionsByAccount`,
   `getTransactionsWithDetailsByCategoryIds`) keduanya konsisten `deleted_at IS NULL`;
   titik masuk lama dihapus (`transactionlist`) karena tidak terpasang dan salah route.
+
+## Amendments (Amendmen)
+
+### A1 — 2026-09-24: argumen route dipetakan jadi primitif (`All(categoryId, accountId)`)
+
+**Pemicu**: verifikasi device menemukan aplikasi crash saat start:
+
+```
+IllegalArgumentException: Route ...Route.TransactionRoute.All could not find any
+NavType for argument filter of type TransactionFilter - typeMap received was {}
+```
+
+**Kenapa**: inferensi NavType Navigation (`navigation-common:2.9.8`) hanya menutup
+(1) NavType kustom dari `typeMap` — tidak pernah kita daftarkan, dan (2) NavType
+bawaan `NavType.Companion` yang **hanya untuk tipe primitif**. Objek sealed
+`TransactionFilter` masuk tak satu pun, sehingga graph NavHost gagal dibangun.
+`@Serializable` saja tidak cukup: serialization meng-encode *nilai*, tetapi NavType
+tetap diperlukan untuk memutuskan *representasi argumen*. Ini validasi runtime, jadi
+lolos compile.
+
+**Keputusan baru**:
+
+```kotlin
+@Serializable
+data class All(
+    val categoryId: String? = null,
+    val accountId: String? = null,
+) : TransactionRoute
+```
+
+- Keduanya argumen primitif → selalu dapat NavType bawaan, tanpa `typeMap`;
+  keduanya `null` = tanpa filter (seluruh transaksi).
+- Pemetaan ke varian sealed pindah ke fungsi murni
+  `TransactionFilter.fromRoute(categoryId, accountId)` (prioritas `categoryId`
+  sebagai guard saat keduanya terisi) — diuji `TransactionFilterTest` di JVM tanpa
+  bergantung `SavedStateHandle.toRoute()`.
+
+**Yang tidak berubah**: esensi keputusan tetap sama — satu layar + satu MVI, yang
+membedakan antar titik "Lihat Semua" tetap argumen filter di route, dan logika
+per-varian tetap di `GetTransactionsByFilterUseCase`.

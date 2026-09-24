@@ -81,7 +81,11 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   `Category.toUiModel`, properti `usedPercentage`/`remainingBudget`. Fake di-upgrade:
   `FakeCategoryRepository` (+ `seedWeeklyTrend`, `throwOnLoad`) dan `FakeTransactionRepository`
   (+ `seedWithDetails`, `getRecentTransactionsByCategory`, `getUsedAmountByCategory`).
-  Total suite: **70 test**. Gradle: dependency `kotlinx-coroutines-test:1.11.0` dan
+- **4 unit test pemetaan filter route** (`feature/transaction/domain/model`):
+  `TransactionFilterTest` — `TransactionFilter.fromRoute` memetakan argumen route
+  `All(categoryId, accountId)` ke `ByCategory`/`ByAccount`/`None`, termasuk guard
+  saat keduanya terisi. Total suite: **74 test**. Gradle: dependency
+  `kotlinx-coroutines-test:1.11.0` dan
   `testOptions unitTests.returnDefaultValues` agar `android.util.Log` aman di JVM.
 
 ### Diubah
@@ -141,6 +145,18 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   `internal` menerima `Route.CategoryRoute.Detail` langsung untuk unit test —
   `toRoute()` tidak berjalan di JVM karena Bundle Android di-mock
   (`getString` selalu null, nilai argumen diam-diam menjadi null).
+
+- **`Route.TransactionRoute.All` crash saat aplikasi start** — argumen
+  `filter: TransactionFilter` (sealed) memicu
+  `IllegalArgumentException: ... could not find any NavType for argument filter ...
+  - typeMap received was {}`: inferensi NavType Navigation hanya menutup tipe
+  primitif (+ `typeMap` NavType kustom yang tidak kita daftarkan), dan `@Serializable`
+  saja tidak cukup — graph NavHost gagal dibangun. Route kini memakai argumen
+  primitif `All(categoryId, accountId)` (keduanya `null` = tanpa filter) yang
+  dipetakan ke `TransactionFilter` lewat fungsi murni `TransactionFilter.fromRoute(...)`
+  (prioritas kategori sebagai guard); titik panggil "Lihat Semua" di detail kategori
+  dan detail akun disesuaikan, ADR-002 diamend. Pemetaan ditutup 4 unit test
+  `TransactionFilterTest` → total suite **74 test**.
 
 ### Peringatan
 
