@@ -69,6 +69,32 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   sesuai entity v2, backfill self-reference (`COALESCE(CAST(...), id)`), lalu buat ulang
   indeks dengan konvensi penamaan Room. Data budget pengguna tetap dipertahankan.
 
+- **Grafik tren mingguan ("7 Hari Terakhir") di detail kategori**:
+
+  1. **Marker salah nilai** — label saat titik disentuh menampilkan indeks sumbu-X
+     (0–6) alih-alih nominal; kini menampilkan **nama hari + nilai Y** yang diambil
+     dari `LineCartesianLayerMarkerTarget.points`.
+  2. **Risiko crash sumbu bawah** — formatter bisa mengembalikan string kosong dan
+     memicu `IllegalStateException` dari Vico (`check(it.isNotBlank)`); fallback
+     kini selalu terisi dan formatter di-`remember` agar sumbu tidak dibuat ulang
+     setiap recomposition.
+  3. **Jendela tanggal meleset** — query SQL mencakup 8 hari (H-7..hari ini)
+     sedangkan label hanya 7 slot (H-7..H-1), sehingga `GROUP BY dayOfWeek`
+     menggabungkan transaksi hari ini dengan H-7 (weekday sama) — data hari ini
+     bocor ke slot tertua dan hari ini tidak pernah tampil. Jendela kini tepat
+     **H-6..hari ini (inklusif)**.
+  4. **Data grafik ter-reset permanen** — `loadDetailCategory` membuat ulang
+     `DetailCategoryUiModel` tanpa mempertahankan `weeklyData`/`weeklyLabels`;
+     setiap re-emit Room kategori/subkategori mengosongkan grafik hingga transaksi
+     berikutnya. Kini dipertahankan seperti `recentTransactions`.
+  5. **Empty state tak pernah muncul** — seminggu tanpa transaksi (7 slot nol)
+     menampilkan garis datar di dasar; kini tampil "Belum ada data transaksi
+     minggu ini".
+  6. **Keterbacaan label** — label sumbu/marker tanpa `fontSize` eksplisit (risiko
+     teks terlalu kecil); kini 12sp, label marker diberi pill latar cyan dengan
+     posisi `AroundPoint` + indikator titik, dan judul bagian mengikuti tipe
+     kategori ("Tren Pemasukan" untuk pemasukan).
+
 ### Peringatan
 
 - **Migrasi database Room v1 → v2** (otomatis, rebuild tabel `budgets`):
