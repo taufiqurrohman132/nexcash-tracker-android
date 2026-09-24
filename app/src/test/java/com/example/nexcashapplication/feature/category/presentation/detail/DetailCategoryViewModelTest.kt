@@ -331,18 +331,16 @@ class DetailCategoryViewModelTest {
         }
 
     @Test
-    fun `OnAddTransactionClick dan OnAddNoteClick hari ini tidak mengirim efek`() =
-        runTest(testDispatcher) {
-            val vm = createViewModel()
-            val effects = collectEffects(vm)
-            advanceUntilIdle()
+    fun `OnAddNoteClick hari ini tidak mengirim efek`() = runTest(testDispatcher) {
+        val vm = createViewModel()
+        val effects = collectEffects(vm)
+        advanceUntilIdle()
 
-            vm.onEvent(DetailCategoryEvent.OnAddTransactionClick)
-            vm.onEvent(DetailCategoryEvent.OnAddNoteClick)
-            advanceUntilIdle()
+        vm.onEvent(DetailCategoryEvent.OnAddNoteClick)
+        advanceUntilIdle()
 
-            assertTrue(effects.isEmpty())
-        }
+        assertTrue(effects.isEmpty())
+    }
 
     // ── Helpers ──────────────────────────────────────────────────────────
 

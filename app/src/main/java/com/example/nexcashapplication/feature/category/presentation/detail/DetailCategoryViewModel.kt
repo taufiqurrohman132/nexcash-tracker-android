@@ -84,10 +84,6 @@ class DetailCategoryViewModel internal constructor(
 
     override fun onEvent(event: DetailCategoryEvent) {
         when (event) {
-            DetailCategoryEvent.OnAddTransactionClick -> {
-
-            }
-
             DetailCategoryEvent.OnBackClick -> {
                 viewModelScope.launch {
                     sendEffect(DetailCategoryEffect.NavigateBack)
@@ -107,9 +103,6 @@ class DetailCategoryViewModel internal constructor(
             DetailCategoryEvent.OnLoadMoreTransactionsClick -> viewModelScope.launch {
                 sendEffect(DetailCategoryEffect.NavigateToAllTransactions(categoryId))
             }
-            DetailCategoryEvent.OnManageSubCategoryClick -> TODO()
-            DetailCategoryEvent.OnReminderClick -> TODO()
-            DetailCategoryEvent.OnRetryClick -> TODO()
             DetailCategoryEvent.OnSeeAllSubCategoryClick -> {
                 viewModelScope.launch {
                     sendEffect(
