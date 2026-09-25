@@ -16,8 +16,9 @@ import kotlinx.coroutines.flow.map
  *
  * Flow reaktif:
  * - [getTransactionsForCategories] dari [seed] (dipakai CategoryViewModel),
- * - [getRecentTransactionsByCategory] dari [seedWithDetails] (urut terbaru,
- *   hormati `limit`; `limit < 0` = tanpa batas seperti SQL-nya),
+ * - [getRecentTransactions] & [getRecentTransactionsByCategory] dari
+ *   [seedWithDetails] (urut terbaru, hormati `limit`; `limit < 0` = tanpa batas
+ *   seperti SQL-nya),
  * - [getUsedAmountByCategory] dari [seed] (EXPENSE dalam window periode).
  *
  * Metode lain sengaja melempar — bila suatu saat dipanggil test akan gagal jelas,
@@ -40,14 +41,20 @@ class FakeTransactionRepository : TransactionRepository {
     override fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<Transaction>> =
         transactions.map { list -> list.filter { it.categoryId in categoryIds } }
 
+    override fun getRecentTransactions(limit: Int): Flow<List<TransactionWithDetails>> =
+        withDetails.map { list ->
+            list.sortedByDescending { it.transaction.dateTime }
+                .let { rows -> if (limit < 0) rows else rows.take(limit) }
+        }
+
     override fun getRecentTransactionsByCategory(
         limit: Int,
-        categoryId: String?,
+        categoryId: String,
     ): Flow<List<TransactionWithDetails>> =
         withDetails.map { list ->
-            list.filter { categoryId == null || it.transaction.categoryId == categoryId }
-                .sortedByDescending { it.transaction.dateTime }
-                .let { rows -> if (limit < 0) rows else rows.take(limit) }
+            list.filter { it.transaction.categoryId == categoryId }
+                    .sortedByDescending { it.transaction.dateTime }
+                    .let { rows -> if (limit < 0) rows else rows.take(limit) }
         }
 
     override fun getUsedAmountByCategory(

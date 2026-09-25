@@ -136,7 +136,11 @@ class TransactionRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun getRecentTransactionsByCategory(limit: Int, categoryId: String?): Flow<List<TransactionWithDetails>> {
+    override fun getRecentTransactions(limit: Int): Flow<List<TransactionWithDetails>> {
+        return transactionDao.getRecentTransactions(limit).map { list -> list.map { it.toDomain() } }
+    }
+
+    override fun getRecentTransactionsByCategory(limit: Int, categoryId: String): Flow<List<TransactionWithDetails>> {
         return transactionDao.getRecentTransactionsByCategory(limit, categoryId).map { list -> list.map { it.toDomain() } }
     }
 

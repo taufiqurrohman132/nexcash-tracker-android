@@ -66,9 +66,11 @@ class FakeTransactionRepository : TransactionRepository {
     override fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<Transaction>> =
         unused()
 
+    override fun getRecentTransactions(limit: Int): Flow<List<TransactionWithDetails>> = unused()
+
     override fun getRecentTransactionsByCategory(
         limit: Int,
-        categoryId: String?,
+        categoryId: String,
     ): Flow<List<TransactionWithDetails>> = unused()
 
     override fun getAllTransactions(): Flow<List<Transaction>> = unused()

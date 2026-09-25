@@ -38,7 +38,11 @@ interface TransactionRepository {
 
     fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<Transaction>>
 
-    fun getRecentTransactionsByCategory(limit: Int, categoryId: String?): Flow<List<TransactionWithDetails>>
+    /** Transaksi terakhir **tanpa** filter kategori — daftar "Transaksi Terakhir" di dashboard. */
+    fun getRecentTransactions(limit: Int): Flow<List<TransactionWithDetails>>
+
+    /** Transaksi terakhir satu kategori — daftar "Transaksi Terakhir" di detail kategori. */
+    fun getRecentTransactionsByCategory(limit: Int, categoryId: String): Flow<List<TransactionWithDetails>>
 
     /** Semua transaksi (belum dihapus) + detail akun/kategori — filter `None` di halaman Semua Transaksi. */
     fun getAllTransactionsWithDetails(): Flow<List<TransactionWithDetails>>

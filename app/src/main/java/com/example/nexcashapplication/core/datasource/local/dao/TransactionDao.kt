@@ -16,16 +16,27 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TransactionDao {
 
-    // dashboard: List transaksi terakhir limit 10-20
+    // dashboard: transaksi terakhir tanpa filter kategori
     @Query(
         """
         SELECT * FROM transactions
-        WHERE category_id = :categoryId
+        WHERE deleted_at IS NULL
         ORDER BY transaction_date DESC
         LIMIT CASE WHEN :limit < 0 THEN -1 ELSE :limit END
     """,
     )
-    fun getRecentTransactionsByCategory(limit: Int = -1, categoryId: String?): Flow<List<TransactionWithDetailsEntity>>
+    fun getRecentTransactions(limit: Int = -1): Flow<List<TransactionWithDetailsEntity>>
+
+    // detail kategori: transaksi terakhir milik satu kategori (categoryId wajib)
+    @Query(
+        """
+        SELECT * FROM transactions
+        WHERE deleted_at IS NULL AND category_id = :categoryId
+        ORDER BY transaction_date DESC
+        LIMIT CASE WHEN :limit < 0 THEN -1 ELSE :limit END
+    """,
+    )
+    fun getRecentTransactionsByCategory(limit: Int, categoryId: String): Flow<List<TransactionWithDetailsEntity>>
 
     @Query(
         """
