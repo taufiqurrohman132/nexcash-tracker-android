@@ -164,7 +164,9 @@ class AddCategoryViewModel @Inject constructor(
         viewModelScope.launch {
             val recentColorsSnapshot = getRecentColorsSnapshot() //.take(4)
             Log.d(TAG, "loadCategory: awal recent color = $recentColorsSnapshot")
-            val recentIconsSnapshot = getRecentIconsSnapshot() //.take(8)
+            // Pertama kali buka (pref masih kosong) → pakai daftar default,
+            // supaya baris recent icons tidak pernah kosong.
+            val recentIconsSnapshot = getRecentIconsSnapshot().ifEmpty { CategoryIcons.recentIcons }
 
             try {
                 // edit mode
@@ -191,7 +193,12 @@ class AddCategoryViewModel @Inject constructor(
                 } else {
                     Log.d(TAG, "loadCategory: recent color else = $recentColorsSnapshot")
                     updateState {
-                        val newState = it.copy(recentColors = recentColorsSnapshot)
+                        // Mode tambah baru: recent icons juga wajib dimuat —
+                        // dulu hanya warna yang diisi, baris icon selalu kosong.
+                        val newState = it.copy(
+                            recentColors = recentColorsSnapshot,
+                            recentIcons = recentIconsSnapshot,
+                        )
                         Log.d(TAG, "loadCategory: state after copy = ${newState.recentColors}")
                         newState
                     }

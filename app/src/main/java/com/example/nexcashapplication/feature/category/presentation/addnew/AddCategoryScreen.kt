@@ -424,15 +424,15 @@ fun IconPreviewRow(
     modifier: Modifier = Modifier,
 ) {
     Row(
+        modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
-            modifier = modifier
-                    .horizontalScroll(rememberScrollState())
-                    .weight(1f),
+            modifier = Modifier
+                    .weight(1f)
+                    .horizontalScroll(rememberScrollState()),
         ) {
-
             recentIcons.forEach { icon ->
                 IconChip(
                     icon = icon.icon,
