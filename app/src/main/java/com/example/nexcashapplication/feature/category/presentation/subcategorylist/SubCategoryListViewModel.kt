@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
-import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.category.domain.usecase.GetSubCategoriesWithBudgetUseCase
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.launchIn
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SubCategoryListViewModel @Inject constructor(
-    private val categoryRepository: CategoryRepository,
+    private val getSubCategoriesWithBudgetUseCase: GetSubCategoriesWithBudgetUseCase,
     savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<SubCategoryListState, SubCategoryListEvent, SubCategoryListEffect>(initialState = SubCategoryListState()) {
 
@@ -44,13 +44,24 @@ class SubCategoryListViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Sub + budget lew [GetSubCategoriesWithBudgetUseCase] — sama dengan layar detail,
+     * supaya kartu sub tidak lagi menampilkan `0% / Rp 0`.
+     * Budget induk ikut dibawa untuk kontribusi sub yang belum punya budget sendiri.
+     */
     private fun observerSubCategories() {
-        categoryRepository.getSubCategories(categoryId)
-                .onEach { subCategories ->
+        getSubCategoriesWithBudgetUseCase(categoryId)
+                .onEach { result ->
                     updateState {
                         it.copy(
                             parentCategoryName = route.categoryName,
-                            subCategories = subCategories.map { category -> category.toUiModel() },
+                            parentTotalBudget = result.parentBudgetAmount,
+                            subCategories = result.subCategories.map { detail ->
+                                detail.category.toUiModel(
+                                    totalBudget = detail.totalBudget,
+                                    usedBudget = detail.usedBudget,
+                                )
+                            },
                             isLoading = false,
                         )
                     }

@@ -46,9 +46,11 @@ fun SubCategoryListScreen(
         viewModel.effect.collect { effect ->
             when (effect) {
                 is SubCategoryListEffect.NavigateBack -> navHostController.popBackStack()
-                is SubCategoryListEffect.NavigateToSubCategoryDetail ->{
+                is SubCategoryListEffect.NavigateToSubCategoryDetail -> {
+                    // Sub punya layar detail sendiri (reuse CategoryRoute.Detail);
+                    // sebelumnya salah navigasi ke SubCategoryList tanpa args.
                     navHostController.navigate(
-                        Route.CategoryRoute.SubCategoryList
+                        Route.CategoryRoute.Detail(effect.subCategoryId),
                     )
                 }
             }
@@ -88,6 +90,8 @@ fun SubCategoryListContent(
         ) {
             SubcategoryGrid(
                 subcategories = state.subCategories,
+                parentTotalBudget = state.parentTotalBudget,
+                parentName = state.parentCategoryName,
                 onSubcategoryClick = { id ->
                     onEvent(SubCategoryListEvent.OnSubCategoryClick(id))
                 },

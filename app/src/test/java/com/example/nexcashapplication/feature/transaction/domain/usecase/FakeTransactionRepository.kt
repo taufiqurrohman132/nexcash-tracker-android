@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.feature.transaction.domain.usecase
 
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
+import com.example.nexcashapplication.core.datasource.local.result.CategoryExpenseResult
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.dashboard.domain.model.MonthlySummary
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
@@ -55,6 +56,12 @@ class FakeTransactionRepository : TransactionRepository {
         periodStart: Long,
         periodEnd: Long,
     ): Flow<Long> = unused()
+
+    override fun getUsedAmountsForCategories(
+        categoryIds: List<String>,
+        periodStart: Long,
+        periodEnd: Long,
+    ): Flow<List<CategoryExpenseResult>> = unused()
 
     override fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<Transaction>> =
         unused()

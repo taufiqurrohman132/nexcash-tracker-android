@@ -13,6 +13,7 @@ import com.example.nexcashapplication.feature.category.domain.model.WeeklyTrend
 import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
 import com.example.nexcashapplication.feature.category.domain.usecase.DeleteCategoryUseCase
 import com.example.nexcashapplication.feature.category.domain.usecase.GetCategoryByIdUseCase
+import com.example.nexcashapplication.feature.category.domain.usecase.GetSubCategoriesWithBudgetUseCase
 import com.example.nexcashapplication.feature.category.presentation.main.FakeCategoryRepository
 import com.example.nexcashapplication.feature.category.presentation.main.FakeTransactionRepository
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
@@ -41,6 +42,10 @@ import kotlin.time.Instant
  * Unit test [DetailCategoryViewModel]:
  * - load detail: kategori + subkategori + transaksi terakhir + tren mingguan
  * - budget aktif (CUSTOM window ±2 hari) → totalBudget/usedBudget pada kategori
+ * - pola hybrid: rollup terpakai induk (transaksi sub ikut), sub tampil budget
+ *   sendiri bila ada, atau terpakai + kontribusi ke budget induk bila tidak
+ * - pola "sub ngikut induk": [ParentBudgetUiModel] (parentInfo) hanya terisi
+ *   di layar sub; layar induk selalu null
  * - regresi: re-emit Room tidak mengosongkan tren & transaksi terakhir
  *   (bug yang diperbaiki pada commit grafik tren mingguan)
  * - event → effect navigasi, termasuk jembatan "Lihat Semua" → NavigateToAllTransactions
@@ -139,6 +144,97 @@ class DetailCategoryViewModelTest {
         val data = vm.state.value.dataState.dataOrNull
         assertEquals(0L, data?.category?.totalBudget)
         assertEquals(0L, data?.category?.usedBudget)
+    }
+
+    @Test
+    fun `rollup - transaksi sub ikut dihitung ke terpakai induk, sub tampilkan terpakainya`() =
+        runTest(testDispatcher) {
+            budgetRepository.seed(budget("b1", categoryId, 500_000L))
+            transactionRepository.seed(
+                transaction("c1-sub", 60L, TransactionType.EXPENSE, Clock.System.now()),
+            )
+
+            val vm = createViewModel()
+            advanceUntilIdle()
+
+            val data = vm.state.value.dataState.dataOrNull
+            // 150 (induk) + 60 (sub) dalam periode CUSTOM budget (±2 hari)
+            assertEquals(210L, data?.category?.usedBudget)
+
+            val sub = data?.subCategories?.firstOrNull { it.id == "c1-sub" }
+            // Sub tanpa budget sendiri → terpakai memakai periode induk (bukan 0)
+            assertEquals(0L, sub?.totalBudget)
+            assertEquals(60L, sub?.usedBudget)
+        }
+
+    @Test
+    fun `sub dengan budget sendiri - budget dan terpakai terpasang pada sub`() =
+        runTest(testDispatcher) {
+            budgetRepository.seed(budget("b1", categoryId, 500_000L))
+            budgetRepository.seed(budget("b2", "c1-sub", 100_000L))
+            transactionRepository.seed(
+                transaction("c1-sub", 60L, TransactionType.EXPENSE, Clock.System.now()),
+            )
+
+            val vm = createViewModel()
+            advanceUntilIdle()
+
+            val data = vm.state.value.dataState.dataOrNull
+            val sub = data?.subCategories?.firstOrNull { it.id == "c1-sub" }
+            assertEquals(100_000L, sub?.totalBudget)
+            assertEquals(60L, sub?.usedBudget)
+
+            // Rollup induk tetap menghitung transaksi sub walau sub punya budget sendiri
+            assertEquals(210L, data?.category?.usedBudget)
+        }
+
+    @Test
+    fun `sub tanpa budget sendiri - parentInfo terisi budget induk, rollup, dan terpakai sub`() =
+        runTest(testDispatcher) {
+            budgetRepository.seed(budget("b1", categoryId, 500_000L))
+            transactionRepository.seed(
+                transaction("c1-sub", 60L, TransactionType.EXPENSE, Clock.System.now()),
+            )
+
+            // Layar sub kategori (route id = sub, bukan induk)
+            val vm = createViewModel(routeCategoryId = "c1-sub")
+            advanceUntilIdle()
+
+            val data = vm.state.value.dataState.dataOrNull
+            assertEquals("Makan Siang", data?.category?.name)
+            // Sub tanpa budget sendiri → kartu anggarannya memakai data induk
+            assertEquals(0L, data?.category?.totalBudget)
+
+            val parent = data?.parentInfo
+            assertEquals("c1", parent?.id)
+            assertEquals("Makanan", parent?.name)
+            assertEquals(500_000L, parent?.totalBudget)
+            // rollup keluarga: 150 (induk) + 60 (sub) dalam periode budget
+            assertEquals(210L, parent?.usedBudget)
+            // kontribusi sub ini pada periode induk
+            assertEquals(60L, parent?.thisUsedBudget)
+        }
+
+    @Test
+    fun `sub dengan induk tanpa budget - parentInfo tetap terisi dengan total 0`() =
+        runTest(testDispatcher) {
+            val vm = createViewModel(routeCategoryId = "c1-sub")
+            advanceUntilIdle()
+
+            val parent = vm.state.value.dataState.dataOrNull?.parentInfo
+            // nama induk dibutuhkan UI untuk pesan "Budget {nama} belum diatur"
+            assertEquals("c1", parent?.id)
+            assertEquals("Makanan", parent?.name)
+            assertEquals(0L, parent?.totalBudget)
+            assertEquals(0L, parent?.usedBudget)
+        }
+
+    @Test
+    fun `layar induk - parentInfo tetap null karena bukan sub`() = runTest(testDispatcher) {
+        val vm = createViewModel()
+        advanceUntilIdle()
+
+        assertTrue(vm.state.value.dataState.dataOrNull?.parentInfo == null)
     }
 
     @Test
@@ -342,6 +438,22 @@ class DetailCategoryViewModelTest {
         assertTrue(effects.isEmpty())
     }
 
+    @Test
+    fun `OnSetNotificationClick mengirim ShowSnackbar - tidak lagi TODO crash`() =
+        runTest(testDispatcher) {
+            val vm = createViewModel()
+            val effects = collectEffects(vm)
+            advanceUntilIdle()
+
+            vm.onEvent(DetailCategoryEvent.OnSetNotificationClick)
+            advanceUntilIdle()
+
+            assertEquals(
+                listOf(DetailCategoryEffect.ShowSnackbar("Fitur notifikasi sedang dikembangkan")),
+                effects,
+            )
+        }
+
     // ── Helpers ──────────────────────────────────────────────────────────
 
     /** Kumpulkan semua effect selama test berjalan (collector di background scope). */
@@ -355,16 +467,20 @@ class DetailCategoryViewModelTest {
         return effects
     }
 
-    private fun createViewModel() = DetailCategoryViewModel(
-        route = Route.CategoryRoute.Detail(categoryId),
+    private fun createViewModel(routeCategoryId: String = categoryId) = DetailCategoryViewModel(
+        route = Route.CategoryRoute.Detail(routeCategoryId),
         transactionRepository = transactionRepository,
-        budgetRepository = budgetRepository,
         categoryRepository = categoryRepository,
         categoryUseCases = CategoryUseCases(
             getCategoryById = GetCategoryByIdUseCase(categoryRepository),
             deleteCategory = DeleteCategoryUseCase(categoryRepository),
         ),
-        getBudgetPeriodUseCase = GetBudgetPeriodUseCase(),
+        getSubCategoriesWithBudgetUseCase = GetSubCategoriesWithBudgetUseCase(
+            categoryRepository = categoryRepository,
+            budgetRepository = budgetRepository,
+            transactionRepository = transactionRepository,
+            getBudgetPeriodUseCase = GetBudgetPeriodUseCase(),
+        ),
     )
 
     private fun category(id: String, name: String, parentId: String? = null) = Category(

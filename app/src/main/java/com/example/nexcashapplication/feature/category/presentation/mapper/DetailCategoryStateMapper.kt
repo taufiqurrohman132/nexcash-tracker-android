@@ -6,7 +6,7 @@ import com.example.nexcashapplication.feature.category.presentation.shared.model
 import com.example.nexcashapplication.feature.common.extentions.toColor
 
 
-fun Category.toUiModel(): CategoryUiItemModel =
+fun Category.toUiModel(totalBudget: Long = 0L, usedBudget: Long = 0L): CategoryUiItemModel =
     CategoryUiItemModel(
         id = id,
         parentId = parentId,
@@ -14,4 +14,6 @@ fun Category.toUiModel(): CategoryUiItemModel =
         icon = CategoryIcons.fromId(id = iconId),  // mapping enum -> resource
         typeCategory = type,
         color = color.toColor(),
+        totalBudget = totalBudget,
+        usedBudget = usedBudget,
     )

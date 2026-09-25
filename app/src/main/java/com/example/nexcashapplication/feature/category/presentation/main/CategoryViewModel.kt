@@ -4,12 +4,14 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.common.toEpochMillis
+import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.budgets.domain.usecase.GetBudgetPeriodUseCase
 import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect.NavigateToDetail
+import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryItem
 import com.example.nexcashapplication.feature.category.presentation.mapper.toCategoryItem
 import com.example.nexcashapplication.feature.category.presentation.mapper.toCategoryItemList
 import com.example.nexcashapplication.feature.common.utils.toEndOfDayMillis
@@ -17,6 +19,7 @@ import com.example.nexcashapplication.feature.common.utils.toStartOfDayMillis
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -91,107 +94,91 @@ class CategoryViewModel @Inject constructor(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeCategories() {
-        categoryRepository.getExpenseCategories() // Flow<List<CategoryEntity>>
+        observeCategoriesByType(categoryRepository.getExpenseCategories()) { items ->
+            updateState { it.copy(expenseList = items) }
+        }
+        observeCategoriesByType(categoryRepository.getIncomeCategories()) { items ->
+            updateState { it.copy(incomeList = items) }
+        }
+    }
+
+    /**
+     * Amati satu tipe kategori (induk) lengkap dengan budget + jumlah terpakai.
+     *
+     * Terpakai bersifat **rollup**: transaksi anak (sub kategori) ikut dihitung ke
+     * induknya supaya angka di daftar kategori selaras dengan layar detail — sebelumnya
+     * transaksi yang dicatat di sub tidak pernah naik ke progress induknya.
+     * Periode & budget tetap per induk (sub punya budget sendiri = limit terpisah,
+     * bukan pengurang budget induk, jadi tidak ada double-count).
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun observeCategoriesByType(
+        categoriesFlow: Flow<List<Category>>,
+        onUpdate: (List<CategoryItem>) -> Unit,
+    ) {
+        categoriesFlow
                 .flatMapLatest { categories ->
-                    val categoryIds = categories.map { it.id } // sekarang baru ada
+                    val parentIds = categories.map { it.id }
 
-                    combine(
-                        budgetRepository.getActiveBudgetsForCategories(
-                            categoryIds,
-                            LocalDate.now().toEpochMillis(),
-                        ),
-                        transactionRepository.getTransactionsForCategories(categoryIds),
-                    ) { budgets, transactions ->
-                        val budgetsByCategory = budgets.associateBy { it.categoryId }
+                    // Semua kategori (induk + sub) → petakan id anak tiap induk untuk rollup.
+                    categoryRepository.getAllCategory().flatMapLatest { allCategories ->
+                        val childIdsByParent = allCategories
+                                .filterNotNull()
+                                .mapNotNull { child ->
+                                    child.parentId?.let { parentId -> parentId to child.id }
+                                }
+                                .groupBy({ it.first }, { it.second })
+                        val familyIds = (parentIds + parentIds.flatMap { childIdsByParent[it].orEmpty() })
+                                .distinct()
 
-                        categories.map { category ->
-                            val budget = budgetsByCategory[category.id]
-                            val usedAmount = if (budget != null) {
-                                val (start, end) = getBudgetPeriodUseCase(
-                                    isRecurring = budget.isRecurring,
-                                    startDate = budget.startDate,
-                                    endDate = budget.endDate,
-                                    type = budget.recurrenceType,
+                        combine(
+                            budgetRepository.getActiveBudgetsForCategories(
+                                parentIds,
+                                LocalDate.now().toEpochMillis(),
+                            ),
+                            transactionRepository.getTransactionsForCategories(familyIds),
+                        ) { budgets, transactions ->
+                            val budgetsByCategory = budgets.associateBy { it.categoryId }
+
+                            categories.map { category ->
+                                val budget = budgetsByCategory[category.id]
+                                val usedAmount = if (budget != null) {
+                                    val (start, end) = getBudgetPeriodUseCase(
+                                        isRecurring = budget.isRecurring,
+                                        startDate = budget.startDate,
+                                        endDate = budget.endDate,
+                                        type = budget.recurrenceType,
+                                    )
+
+                                    val periodStartMillis = start.toStartOfDayMillis()
+                                    val periodEndMillis =
+                                        end.toEndOfDayMillis() // end nggak boleh nullable di titik ini — lihat poin 2
+
+                                    val childIds = childIdsByParent[category.id].orEmpty().toSet()
+                                    transactions.filter { transaction ->
+                                        val txCategoryId = transaction.categoryId
+                                        val belongsToFamily = txCategoryId != null &&
+                                                (txCategoryId == category.id || txCategoryId in childIds)
+                                        belongsToFamily &&
+                                                transaction.dateTime.toEpochMilliseconds() in periodStartMillis..periodEndMillis
+                                    }.sumOf { it.amount }
+
+                                } else 0L
+
+                                Log.d(
+                                    "${CategoryViewModel::class.java.simpleName}",
+                                    "observeCategories: used = $usedAmount, budget = ${budget?.amount ?: 0L}",
                                 )
-
-                                val periodStartMillis = start.toStartOfDayMillis()
-                                val periodEndMillis =
-                                    end.toEndOfDayMillis() // end nggak boleh nullable di titik ini — lihat poin 2
-
-                                transactions.filter {
-                                    it.categoryId == category.id && it.dateTime.toEpochMilliseconds() in periodStartMillis..periodEndMillis
-                                }.sumOf { it.amount }
-
-                            } else 0L
-
-                            Log.d(
-                                "${CategoryViewModel::class.java.simpleName}",
-                                "observeCategories: used = $usedAmount, budget = ${budget?.amount ?: 0L}",
-                            )
-                            category.toCategoryItem(
-                                usedBudget = usedAmount,
-                                budget = budget?.amount ?: 0L,
-                            )
+                                category.toCategoryItem(
+                                    usedBudget = usedAmount,
+                                    budget = budget?.amount ?: 0L,
+                                )
+                            }
                         }
                     }
-
                 }
-                .onEach { items ->
-                    updateState {
-                        it.copy(
-                            expenseList = items,
-                        )
-                    }
-                }.launchIn(viewModelScope)
-
-        categoryRepository.getIncomeCategories() // Flow<List<CategoryEntity>>
-                .flatMapLatest { categories ->
-                    val categoryIds = categories.map { it.id } // sekarang baru ada
-
-                    combine(
-                        budgetRepository.getActiveBudgetsForCategories(
-                            categoryIds,
-                            LocalDate.now().toEpochMillis(),
-                        ),
-                        transactionRepository.getTransactionsForCategories(categoryIds),
-                    ) { budgets, transactions ->
-                        val budgetsByCategory = budgets.associateBy { it.categoryId }
-
-                        categories.map { category ->
-                            val budget = budgetsByCategory[category.id]
-                            val usedAmount = if (budget != null) {
-                                val (start, end) = getBudgetPeriodUseCase(
-                                    isRecurring = budget.isRecurring,
-                                    startDate = budget.startDate,
-                                    endDate = budget.endDate,
-                                    type = budget.recurrenceType,
-                                )
-
-                                val periodStartMillis = start.toStartOfDayMillis()
-                                val periodEndMillis =
-                                    end.toEndOfDayMillis() // end nggak boleh nullable di titik ini — lihat poin 2
-
-                                transactions.filter {
-                                    it.categoryId == category.id && it.dateTime.toEpochMilliseconds() in periodStartMillis..periodEndMillis
-                                }.sumOf { it.amount }
-
-                            } else 0L
-
-                            category.toCategoryItem(
-                                usedBudget = usedAmount,
-                                budget = budget?.amount ?: 0L,
-                            )
-                        }
-                    }
-
-                }
-                .onEach { items ->
-                    updateState {
-                        it.copy(
-                            incomeList = items,
-                        )
-                    }
-                }.launchIn(viewModelScope)
+                .onEach { items -> onUpdate(items) }
+                .launchIn(viewModelScope)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)

@@ -43,6 +43,7 @@ class DetailCategoryModelTest {
         assertTrue(ui.weeklyData.isEmpty())
         assertTrue(ui.weeklyLabels.isEmpty())
         assertTrue(ui.recentTransactions.isEmpty())
+        assertTrue(ui.parentInfo == null)
     }
 
     // ── Mapper Category.toUiModel ────────────────────────────────────────
@@ -57,6 +58,16 @@ class DetailCategoryModelTest {
         assertEquals(TypeCategory.EXPENSE, ui.typeCategory)
         assertEquals(0L, ui.totalBudget)
         assertEquals(0L, ui.usedBudget)
+    }
+
+    @Test
+    fun `toUiModel - budget eksplisit induk rollup dan sub ikut terpetakan`() {
+        val ui = category(id = "c1").toUiModel(totalBudget = 500_000L, usedBudget = 210_000L)
+
+        assertEquals(500_000L, ui.totalBudget)
+        assertEquals(210_000L, ui.usedBudget)
+        assertEquals(290_000L, ui.remainingBudget)
+        assertEquals(42, ui.usedPercentage)
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.feature.category.presentation.main
 
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
+import com.example.nexcashapplication.core.datasource.local.result.CategoryExpenseResult
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.dashboard.domain.model.MonthlySummary
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
@@ -60,6 +61,31 @@ class FakeTransactionRepository : TransactionRepository {
                         it.typeTransaction == TransactionType.EXPENSE &&
                         it.dateTime.toEpochMilliseconds() in periodStart..periodEnd
             }.sumOf { it.amount }
+        }
+
+    /**
+     * Batch per kategori — meniru SQL `GROUP BY category_id` tanpa filter tipe
+     * (sama dengan query Room-nya; tipe sudah tergantung tipenya kategori).
+     * Kategori tanpa transaksi pada window tidak muncul, seperti SQL aslinya.
+     */
+    override fun getUsedAmountsForCategories(
+        categoryIds: List<String>,
+        periodStart: Long,
+        periodEnd: Long,
+    ): Flow<List<CategoryExpenseResult>> =
+        transactions.map { list ->
+            list.filter {
+                it.categoryId != null &&
+                        it.categoryId in categoryIds &&
+                        it.dateTime.toEpochMilliseconds() in periodStart..periodEnd
+            }
+                    .groupBy { it.categoryId }
+                    .map { (categoryId, rows) ->
+                        CategoryExpenseResult(
+                            categoryId = categoryId.orEmpty(),
+                            total = rows.sumOf { it.amount },
+                        )
+                    }
         }
 
     override fun getMonthlySummary(yearMonth: String): Flow<MonthlySummary> = unused()

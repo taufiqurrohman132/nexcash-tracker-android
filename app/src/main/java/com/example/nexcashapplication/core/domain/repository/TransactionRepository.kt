@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.core.domain.repository
 
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
+import com.example.nexcashapplication.core.datasource.local.result.CategoryExpenseResult
 import com.example.nexcashapplication.feature.dashboard.domain.model.MonthlySummary
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
@@ -24,6 +25,17 @@ interface TransactionRepository {
     ): Flow<Map<String, Long>> // categoryId -> total
 
     fun getUsedAmountByCategory(categoryId: String, periodStart: Long, periodEnd: Long): Flow<Long>
+
+    /**
+     * Jumlah terpakai per kategori dalam window — batch untuk rollup induk
+     * (induk + sub) dan rincian sub kategori. Kategori tanpa transaksi tidak muncul.
+     */
+    fun getUsedAmountsForCategories(
+        categoryIds: List<String>,
+        periodStart: Long,
+        periodEnd: Long,
+    ): Flow<List<CategoryExpenseResult>>
+
     fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<Transaction>>
 
     fun getRecentTransactionsByCategory(limit: Int, categoryId: String?): Flow<List<TransactionWithDetails>>

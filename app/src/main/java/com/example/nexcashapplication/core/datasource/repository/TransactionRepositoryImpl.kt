@@ -8,6 +8,7 @@ import com.example.nexcashapplication.core.datasource.local.dao.TransactionDao
 import com.example.nexcashapplication.core.datasource.local.database.NexCashDatabase
 import com.example.nexcashapplication.core.datasource.local.mapper.toDomain
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
+import com.example.nexcashapplication.core.datasource.local.result.CategoryExpenseResult
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.dashboard.domain.model.MonthlySummary
 import com.example.nexcashapplication.feature.transaction.data.mapper.toDomain
@@ -77,6 +78,14 @@ class TransactionRepositoryImpl @Inject constructor(
         periodEnd: Long,
     ): Flow<Long> {
         return transactionDao.getUsedAmountByCategory(categoryId, periodStart, periodEnd)
+    }
+
+    override fun getUsedAmountsForCategories(
+        categoryIds: List<String>,
+        periodStart: Long,
+        periodEnd: Long,
+    ): Flow<List<CategoryExpenseResult>> {
+        return transactionDao.getUsedAmountsForCategories(categoryIds, periodStart, periodEnd)
     }
 
     override fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<Transaction>> {

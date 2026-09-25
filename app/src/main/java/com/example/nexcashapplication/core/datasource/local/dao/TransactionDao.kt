@@ -96,6 +96,30 @@ ORDER BY transaction_date DESC
     )
     fun getUsedAmountByCategory(categoryId: String, periodStart: Long, periodEnd: Long): Flow<Long>
 
+    /**
+     * Jumlah terpakai **per kategori** dalam satu window (batch).
+     *
+     * Dipakai layar detail kategori untuk dua hal sekaligus:
+     * - rollup induk: id induk + seluruh sub dijumlahkan → terpakai induk;
+     * - rincian sub: nilai per sub (periode induk atau periode budget sub sendiri).
+     *
+     * Sengaja tidak memfilter tipe transaksi — sama dengan [getUsedAmountByCategory],
+     * tipe sudah tergantung tipenya kategori (pemasukan vs pengeluaran).
+     */
+    @Query(
+        """
+            SELECT category_id, COALESCE(SUM(amount), 0) AS total FROM transactions
+            WHERE category_id IN (:categoryIds)
+            AND transaction_date BETWEEN :periodStart AND :periodEnd
+            GROUP BY category_id
+        """,
+    )
+    fun getUsedAmountsForCategories(
+        categoryIds: List<String>,
+        periodStart: Long,
+        periodEnd: Long,
+    ): Flow<List<CategoryExpenseResult>>
+
     // dashboard: total bulan ini
     @Query(
         """

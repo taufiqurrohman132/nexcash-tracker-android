@@ -33,6 +33,7 @@ import kotlin.time.Instant
 /**
  * Unit test [CategoryViewModel]:
  * - load expense/income list (budget aktif + terpakai pada window periode)
+ * - rollup: transaksi sub ikut mengisi terpakai induknya
  * - event tab/page/search  → perubahan state
  * - event klik kategori/tambah → effect navigasi (sekali-kali)
  * - search dengan debounce 300ms (virtual time via runTest)
@@ -112,6 +113,25 @@ class CategoryViewModelTest {
             assertEquals(listOf("c3"), income.map { it.id })
             assertEquals(500_000L, income.first().budget)
             assertEquals(5_000L, income.first().terpakai)
+        }
+
+    @Test
+    fun `rollup - transaksi sub kategori ikut dihitung ke terpakai induk`() =
+        runTest(testDispatcher) {
+            categoryRepository.seed(
+                category("c1-sub", "Makan Siang", TypeCategory.EXPENSE, parentId = "c1"),
+            )
+            transactionRepository.seed(
+                transaction("c1-sub", 75L, TransactionType.EXPENSE, Clock.System.now()),
+            )
+
+            val vm = createViewModel()
+            advanceUntilIdle()
+
+            // 100 + 50 (induk) + 75 (sub) dalam window — sub tidak muncul sebagai item sendiri
+            val expense = vm.state.value.expenseList
+            assertEquals(listOf("c1", "c2"), expense.map { it.id })
+            assertEquals(225L, expense.first { it.id == "c1" }.terpakai)
         }
 
     @Test
@@ -262,8 +282,9 @@ class CategoryViewModelTest {
         getBudgetPeriodUseCase = GetBudgetPeriodUseCase(),
     )
 
-    private fun category(id: String, name: String, type: TypeCategory) = Category(
+    private fun category(id: String, name: String, type: TypeCategory, parentId: String? = null) = Category(
         id = id,
+        parentId = parentId,
         name = name,
         type = type,
         iconId = "location",

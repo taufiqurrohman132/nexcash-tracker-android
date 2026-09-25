@@ -1,19 +1,16 @@
 package com.example.nexcashapplication.feature.category.presentation.detail
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
-import com.example.nexcashapplication.core.common.toEpochMillis
-import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.core.ui.UiState
 import com.example.nexcashapplication.core.ui.dataOrNull
-import com.example.nexcashapplication.feature.budgets.domain.usecase.GetBudgetPeriodUseCase
 import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
+import com.example.nexcashapplication.feature.category.domain.usecase.GetSubCategoriesWithBudgetUseCase
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToAddSubCategory
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToDeleteCategory
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToEditCategory
@@ -21,6 +18,7 @@ import com.example.nexcashapplication.feature.category.presentation.detail.Detai
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.NavigateToTransactionDetail
 import com.example.nexcashapplication.feature.category.presentation.detail.DetailCategoryEffect.ShowSnackbar
 import com.example.nexcashapplication.feature.category.presentation.detail.model.DetailCategoryUiModel
+import com.example.nexcashapplication.feature.category.presentation.detail.model.ParentBudgetUiModel
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -29,23 +27,17 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
 class DetailCategoryViewModel internal constructor(
     private val route: Route.CategoryRoute.Detail,
     private val transactionRepository: TransactionRepository,
-    private val budgetRepository: BudgetRepository,
     private val categoryRepository: CategoryRepository,
     private val categoryUseCases: CategoryUseCases,
-    private val getBudgetPeriodUseCase: GetBudgetPeriodUseCase,
+    private val getSubCategoriesWithBudgetUseCase: GetSubCategoriesWithBudgetUseCase,
 ) : BaseViewModel<DetailCategoryState, DetailCategoryEvent, DetailCategoryEffect>(
     DetailCategoryState(),
 ) {
@@ -62,17 +54,15 @@ class DetailCategoryViewModel internal constructor(
     @Inject constructor(
         savedStateHandle: SavedStateHandle,
         transactionRepository: TransactionRepository,
-        budgetRepository: BudgetRepository,
         categoryRepository: CategoryRepository,
         categoryUseCases: CategoryUseCases,
-        getBudgetPeriodUseCase: GetBudgetPeriodUseCase,
+        getSubCategoriesWithBudgetUseCase: GetSubCategoriesWithBudgetUseCase,
     ) : this(
         route = savedStateHandle.toRoute<Route.CategoryRoute.Detail>(),
         transactionRepository = transactionRepository,
-        budgetRepository = budgetRepository,
         categoryRepository = categoryRepository,
         categoryUseCases = categoryUseCases,
-        getBudgetPeriodUseCase = getBudgetPeriodUseCase,
+        getSubCategoriesWithBudgetUseCase = getSubCategoriesWithBudgetUseCase,
     )
 
     private val categoryId = route.categoryId
@@ -80,6 +70,7 @@ class DetailCategoryViewModel internal constructor(
     init {
         loadDetailCategory(categoryId)
         handleWeeklyTrendObserver()
+        handleParentBudgetObserver()
     }
 
     override fun onEvent(event: DetailCategoryEvent) {
@@ -173,7 +164,11 @@ class DetailCategoryViewModel internal constructor(
                 )
             }
 
-            DetailCategoryEvent.OnSetNotificationClick -> TODO()
+            // Fitur notifikasi belum ada — jangan TODO() (crash saat diklik),
+            // beri tahu pengguna lewat snackbar yang kini benar-benar dirender.
+            DetailCategoryEvent.OnSetNotificationClick -> viewModelScope.launch {
+                sendEffect(ShowSnackbar("Fitur notifikasi sedang dikembangkan"))
+            }
         }
     }
 
@@ -182,20 +177,32 @@ class DetailCategoryViewModel internal constructor(
         viewModelScope.launch {
             combine(
                 categoryUseCases.getCategoryById(id = categoryId),
-                categoryRepository.getSubCategories(categoryId),
+                getSubCategoriesWithBudgetUseCase(categoryId),
                 transactionRepository.getRecentTransactionsByCategory(5, categoryId),
-            ) { category, subCategories, transactions ->
-                Triple(category, subCategories, transactions)
+            ) { category, budgetResult, transactions ->
+                Triple(category, budgetResult, transactions)
             }
                     .catch { e -> updateState { it.copy(dataState = UiState.Error(e.message.toString())) } }
-                    .collect { (category, subCategories, transactions) ->
+                    .collect { (category, budgetResult, transactions) ->
                         updateState { current ->
                             val existingData = current.dataState.dataOrNull
                             current.copy(
                                 dataState = UiState.Success(
                                     DetailCategoryUiModel(
-                                        category = category?.toUiModel(),
-                                        subCategories = subCategories.map { it.toUiModel() },
+                                        // Budget induk (rollup: transaksi induk + sub) & sub
+                                        // datang dari use case yang sama sehingga angkanya
+                                        // selalu selaras — tidak lagi pipeline terpisah
+                                        // yang bisa kalah cepat dengan pembentukan Success.
+                                        category = category?.toUiModel(
+                                            totalBudget = budgetResult.parentBudgetAmount,
+                                            usedBudget = budgetResult.parentUsedAmount,
+                                        ),
+                                        subCategories = budgetResult.subCategories.map { detail ->
+                                            detail.category.toUiModel(
+                                                totalBudget = detail.totalBudget,
+                                                usedBudget = detail.usedBudget,
+                                            )
+                                        },
                                         // Transaksi terakhir datang langsung dari combine —
                                         // bila dialirkan terpisah (onEach + guard Success),
                                         // emit pertama bisa kalah cepat dengan pembentukan
@@ -205,50 +212,62 @@ class DetailCategoryViewModel internal constructor(
                                         // pertahankan agar re-emit kategori tidak mengosongkannya.
                                         weeklyData = existingData?.weeklyData ?: emptyList(),
                                         weeklyLabels = existingData?.weeklyLabels ?: emptyList(),
+                                        // Info budget induk juga di-patch observer terpisah —
+                                        // pertahankan agar re-emit Room tidak menghapusnya
+                                        // (sama pola dengan tren mingguan di atas).
+                                        parentInfo = existingData?.parentInfo,
                                     ),
                                 ),
                             )
                         }
                     }
         }
+    }
 
-        budgetRepository.getActiveBudgetForCategory(categoryId, LocalDate.now())
-                .flatMapLatest { activeBudget ->
-                    if (activeBudget == null) {
-                        flowOf(null to 0L)
-                    } else {
-                        val (periodStart, periodEnd) = getBudgetPeriodUseCase(
-                            isRecurring = activeBudget.isRecurring,
-                            type = activeBudget.recurrenceType,
-                            startDate = activeBudget.startDate,
-                            endDate = activeBudget.endDate,
-                        )
-                        transactionRepository.getUsedAmountByCategory(
-                            categoryId,
-                            periodStart.toEpochMillis(),
-                            periodEnd.toEpochMillis(), //?: LocalDate.now().toEpochMillis(),// sementara
-                        ).map { usedAmount -> activeBudget to usedAmount }
+    /**
+     * Anggaran **induk** untuk layar sub (pola: sub ngikut induk).
+     *
+     * - Kategori induk (`parentId == null`) → flow ini tidak pernah jalan,
+     *   [ParentBudgetUiModel] tetap null dan layar memakai kartu anggarannya sendiri.
+     * - Gagal memuat induk sengaja **diabaikan** (bukan `UiState.Error`): layar tetap utuh,
+     *   hanya kartu anggaran induknya yang tidak tampil.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun handleParentBudgetObserver() {
+        viewModelScope.launch {
+            state
+                    .mapNotNull { it.dataState.dataOrNull?.category?.parentId }
+                    .distinctUntilChanged()
+                    .flatMapLatest { parentId ->
+                        combine(
+                            categoryUseCases.getCategoryById(id = parentId),
+                            getSubCategoriesWithBudgetUseCase(parentId),
+                        ) { parent, result -> Triple(parentId, parent, result) }
                     }
-                }.onEach { (budget, usedAmount) ->
-                    updateState { current ->
-                        val existingData =
-                            current.dataState.dataOrNull ?: return@updateState current
+                    .catch { /* abaikan — parentInfo tetap null */ }
+                    .collect { (parentId, parent, result) ->
+                        updateState { current ->
+                            val existingData =
+                                current.dataState.dataOrNull ?: return@updateState current
+                            val thisDetail =
+                                result.subCategories.firstOrNull { it.category.id == categoryId }
 
-                        Log.d(TAG, "loadDetailCategory: exiting data = $existingData")
-                        Log.d(TAG, "loadDetailCategory: bu")
-                        current.copy(
-                            dataState = UiState.Success(
-                                existingData.copy(
-                                    category = existingData.category?.copy(
-                                        totalBudget = budget?.amount ?: 0L,
-                                        usedBudget = usedAmount,
+                            current.copy(
+                                dataState = UiState.Success(
+                                    existingData.copy(
+                                        parentInfo = ParentBudgetUiModel(
+                                            id = parentId,
+                                            name = parent?.name ?: "",
+                                            totalBudget = result.parentBudgetAmount,
+                                            usedBudget = result.parentUsedAmount,
+                                            thisUsedBudget = thisDetail?.usedBudget ?: 0L,
+                                        ),
                                     ),
                                 ),
-                            ),
-                        )
+                            )
+                        }
                     }
-                }
-                .launchIn(viewModelScope)
+        }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -281,9 +300,5 @@ class DetailCategoryViewModel internal constructor(
                         }
                     }
         }
-    }
-
-    companion object {
-        private val TAG = DetailCategoryViewModel::class.java.simpleName
     }
 }

@@ -48,6 +48,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -84,6 +86,7 @@ import com.example.nexcashapplication.core.navigations.Route.CategoryRoute.Delet
 import com.example.nexcashapplication.core.ui.dataOrNull
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.detail.model.DetailCategoryUiModel
+import com.example.nexcashapplication.feature.category.presentation.detail.model.ParentBudgetUiModel
 import com.example.nexcashapplication.feature.category.presentation.shared.model.CategoryUiItemModel
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.ui.theme.BorderGray
@@ -108,10 +111,10 @@ import com.patrykandpatrick.vico.compose.cartesian.marker.rememberDefaultCartesi
 import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.Insets
+import com.patrykandpatrick.vico.compose.common.component.ShapeComponent
 import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
 import com.patrykandpatrick.vico.compose.common.component.rememberShapeComponent
 import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
-import com.patrykandpatrick.vico.compose.common.component.ShapeComponent
 
 val dummyTransactions = listOf(
     TransactionItemUiModel(
@@ -211,6 +214,7 @@ fun DetailCategoryScreen(
     navController: NavHostController,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -260,7 +264,7 @@ fun DetailCategoryScreen(
                 }
 
                 is DetailCategoryEffect.ShowSnackbar -> {
-                    // Show snackbar
+                    snackbarHostState.showSnackbar(effect.message)
                 }
 
                 is DetailCategoryEffect.NavigateToDeleteCategory -> navController.navigate(
@@ -282,6 +286,7 @@ fun DetailCategoryScreen(
     DetailCategoryContent(
         state = state.dataState.dataOrNull ?: DetailCategoryUiModel(null),
         onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
     )
 
 }
@@ -291,11 +296,21 @@ fun DetailCategoryScreen(
 fun DetailCategoryContent(
     state: DetailCategoryUiModel,
     onEvent: (DetailCategoryEvent) -> Unit,
+    snackbarHostState: SnackbarHostState? = null,
     modifier: Modifier = Modifier,
 ) {
     var showActionMenu by remember { mutableStateOf(false) }
 
+    // Pola "sub ngikut induk": sub tanpa budget sendiri memakai kartu anggaran induk;
+    // sub yang sudah punya budget sendiri (data lama) tetap tampil apa adanya.
+    val isSubCategory = state.category?.parentId != null
+    val hasOwnBudget = (state.category?.totalBudget ?: 0L) > 0L
+
+    // Preview cukup panggil tanpa snackbar host — null = buat sendiri di sini.
+    val hostState = snackbarHostState ?: remember { SnackbarHostState() }
+
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -333,7 +348,8 @@ fun DetailCategoryContent(
                     DropdownMenu(
                         expanded = showActionMenu,
                         onDismissRequest = { showActionMenu = false },
-                        modifier = Modifier.background(Color.White),
+                        shape = RoundedCornerShape(16.dp),
+                        containerColor = Color.White
                     ) {
                         DropdownMenuItem(
                             text = { Text("Edit Category") },
@@ -392,15 +408,22 @@ fun DetailCategoryContent(
         ) {
             Spacer(Modifier.height(4.dp)) // pengganti contentPadding top
 
-            BudgetSummaryCard(
-                totalBudget = state.category?.totalBudget?.formatCurrency() ?: "0",
-                used = state.category?.usedBudget?.formatCurrency() ?: "0",
-                remaining = state.category?.remainingBudget?.formatCurrency() ?: "0",
-                usedPersentage = state.category?.usedPercentage ?: 0,
-            )
+            if (isSubCategory && !hasOwnBudget) {
+                // Sub ngikut induk: kartu ini menampilkan budget induk + kontribusi sub.
+                SubCategoryBudgetCard(parentInfo = state.parentInfo)
+            } else {
+                BudgetSummaryCard(
+                    totalBudget = state.category?.totalBudget?.formatCurrency() ?: "0",
+                    used = state.category?.usedBudget?.formatCurrency() ?: "0",
+                    remaining = state.category?.remainingBudget?.formatCurrency() ?: "0",
+                    usedPersentage = state.category?.usedPercentage ?: 0,
+                )
+            }
             Spacer(Modifier.height(16.dp))
 
             QuickActionsRow(
+                // Edit Budget hanya untuk induk (atau sub ber-budget lama yang masih bisa diedit)
+                showEditBudget = !isSubCategory || hasOwnBudget,
                 onEditBudgetClick = { onEvent(DetailCategoryEvent.OnEditBudgetClick) },
                 onSetNotificationClick = { onEvent(DetailCategoryEvent.OnSetNotificationClick) },
                 onAddNoteClick = { onEvent(DetailCategoryEvent.OnAddNoteClick) },
@@ -430,6 +453,8 @@ fun DetailCategoryContent(
                 ) {
                     SubcategoryGrid(
                         subcategories = state.subCategories,
+                        parentTotalBudget = state.category?.totalBudget ?: 0L,
+                        parentName = state.category?.name ?: "",
                         onSubcategoryClick = { id ->
                             onEvent(
                                 DetailCategoryEvent.OnSubCategoryClick(
@@ -440,7 +465,7 @@ fun DetailCategoryContent(
                     )
                 }
             }
-            
+
             FormField(
                 title = "Transaksi Terakhir",
                 icon = Icons.Default.Replay,
@@ -453,7 +478,7 @@ fun DetailCategoryContent(
                 onItemClick = { id -> onEvent(DetailCategoryEvent.OnTransactionClick(id)) },
             )
 
-            Spacer(Modifier.height(16.dp)) // pengganti contentPadding bottom
+            Spacer(Modifier.height(68.dp)) // pengganti contentPadding bottom
         }
     }
 }
@@ -490,9 +515,17 @@ fun TransactionListCard(
     }
 }
 
+/**
+ * Grid 2 kolom kartu sub kategori.
+ *
+ * [parentTotalBudget] & [parentName] dipakai kartu yang **belum** punya budget sendiri
+ * untuk menampilkan kontribusinya ke budget induk ("n% dari budget Transportasi").
+ */
 @Composable
 fun SubcategoryGrid(
     subcategories: List<CategoryUiItemModel>,
+    parentTotalBudget: Long,
+    parentName: String,
     onSubcategoryClick: (String) -> Unit,
 ) {
     val rows = subcategories.chunked(2)
@@ -505,6 +538,8 @@ fun SubcategoryGrid(
                 rowItems.forEach { item ->
                     SubcategoryCard(
                         subcategory = item,
+                        parentTotalBudget = parentTotalBudget,
+                        parentName = parentName,
                         modifier = Modifier.weight(1f),
                         onClick = { onSubcategoryClick(item.id) },
                     )
@@ -517,8 +552,43 @@ fun SubcategoryGrid(
     }
 }
 
+/**
+ * Kartu sub kategori — mengikuti pola budget **hybrid**:
+ *
+ * - **punya budget sendiri** → badge "% terpakai", nominal budget, progress miliknya;
+ * - **tanpa budget sendiri** → nominal *terpakai* + caption "n% dari budget {induk}"
+ *   (kontribusi terhadap budget induk); progress mengikuti kontribusi;
+ * - **belum ada transaksi & tanpa budget** → empty state netral ("Belum ada transaksi"),
+ *   bukan angka `0% / Rp 0` yang menyesatkan.
+ */
 @Composable
-fun SubcategoryCard(subcategory: CategoryUiItemModel, modifier: Modifier, onClick: () -> Unit) {
+fun SubcategoryCard(
+    subcategory: CategoryUiItemModel,
+    parentTotalBudget: Long,
+    parentName: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+) {
+    val hasBudget = subcategory.totalBudget > 0L
+    val isEmpty = !hasBudget && subcategory.usedBudget == 0L
+
+    // Kontribusi terpakai sub ke budget induk — hanya relevan bila induk punya budget.
+    val contribution = if (parentTotalBudget > 0L) {
+        ((subcategory.usedBudget.toFloat() / parentTotalBudget) * 100).toInt().coerceIn(0, 100)
+    } else 0
+
+    val progress = when {
+        hasBudget -> subcategory.usedPercentage.coerceIn(0, 100)
+        parentTotalBudget > 0L -> contribution
+        else -> 0
+    }
+
+    val badgeText = when {
+        hasBudget -> "${subcategory.usedPercentage}%"
+        !isEmpty && parentTotalBudget > 0L -> "$contribution%"
+        else -> null
+    }
+
     Card(
         onClick = onClick,
         modifier = modifier,
@@ -547,11 +617,13 @@ fun SubcategoryCard(subcategory: CategoryUiItemModel, modifier: Modifier, onClic
                     )
                 }
 
-                Text(
-                    text = "${subcategory.usedPercentage}%",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = Color.Black,
-                )
+                if (badgeText != null) {
+                    Text(
+                        text = badgeText,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = Color.Black,
+                    )
+                }
             }
 
             Spacer(Modifier.height(10.dp))
@@ -562,21 +634,184 @@ fun SubcategoryCard(subcategory: CategoryUiItemModel, modifier: Modifier, onClic
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
-            Text(
-                text = subcategory.totalBudget.formatCurrency(),
-                style = MaterialTheme.typography.bodySmall,
-                color = TextTertiary,
-            )
+
+            when {
+                hasBudget -> Text(
+                    text = subcategory.totalBudget.formatCurrency(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextTertiary,
+                )
+
+                isEmpty -> Text(
+                    text = "Belum ada transaksi",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextTertiary,
+                )
+
+                else -> {
+                    Text(
+                        text = "${subcategory.usedBudget.formatCurrency()} terpakai",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextTertiary,
+                    )
+                    if (parentTotalBudget > 0L && parentName.isNotBlank()) {
+                        Text(
+                            text = "$contribution% dari budget $parentName",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = TextTertiary,
+                        )
+                    }
+                }
+            }
+
+            if (!isEmpty) {
+                Spacer(Modifier.height(8.dp))
+                LinearProgressIndicator(
+                    progress = { progress / 100f },
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                            .clip(RoundedCornerShape(50)),
+                    color = PrimaryCyan,
+                    trackColor = BorderGray,
+                )
+            }
+        }
+    }
+}
+
+/**
+ * Kartu anggaran untuk layar **sub kategori** — pola "sub ngikut induk":
+ *
+ * - [parentInfo] null → induk belum termuat: tidak tampil apa-apa
+ *   (bukan angka `Rp 0` palsu);
+ * - budget induk 0 → empty-state "Budget {nama} belum diatur";
+ * - selain itu → budget induk, terpakai sub ini, badge kontribusi, dan sisa induk.
+ */
+@Composable
+fun SubCategoryBudgetCard(
+    parentInfo: ParentBudgetUiModel?,
+    modifier: Modifier = Modifier,
+) {
+    if (parentInfo == null) return
+
+    val hasBudget = parentInfo.totalBudget > 0L
+    val contribution = if (hasBudget) {
+        ((parentInfo.thisUsedBudget.toFloat() / parentInfo.totalBudget) * 100)
+                .toInt()
+                .coerceIn(0, 100)
+    } else 0
+    val remainingInduk = parentInfo.totalBudget - parentInfo.usedBudget
+
+    Box(
+        modifier = modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(20.dp))
+                .background(
+                    Brush.linearGradient(
+                        colors = listOf(
+                            PrimaryCyan,
+                            SecondaryDeepPurple,
+                        ),
+                    ),
+                )
+                .padding(20.dp),
+    ) {
+        Column {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    text = "Anggaran ${parentInfo.name}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White,
+                    letterSpacing = 0.5.sp,
+                )
+                if (hasBudget) {
+                    Box(
+                        modifier = Modifier
+                                .clip(RoundedCornerShape(50))
+                                .background(PrimaryCyan.copy(alpha = 0.5f))
+                                .padding(horizontal = 12.dp, vertical = 4.dp),
+                    ) {
+                        Text(
+                            text = "$contribution% Kontribusi",
+                            color = Color.White,
+                            style = MaterialTheme.typography.labelSmall,
+                            fontWeight = FontWeight.SemiBold,
+                        )
+                    }
+                }
+            }
+
             Spacer(Modifier.height(8.dp))
-            LinearProgressIndicator(
-                progress = { subcategory.usedPercentage / 100f },
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp)
-                        .clip(RoundedCornerShape(50)),
-                color = PrimaryCyan,
-                trackColor = BorderGray,
-            )
+
+            if (!hasBudget) {
+                Text(
+                    text = "Budget ${parentInfo.name} belum diatur",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White,
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    text = "Budget sub mengikuti induk — atur di kategori ${parentInfo.name}.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.8f),
+                )
+            } else {
+                Text(
+                    text = parentInfo.totalBudget.formatCurrency(),
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                )
+                Spacer(Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Row {
+                        Text(
+                            text = "Terpakai: ",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.8f),
+                        )
+                        Text(
+                            text = parentInfo.thisUsedBudget.formatCurrency(),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                        )
+                    }
+
+                    Row {
+                        Text(
+                            text = "Sisa induk: ",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.White.copy(alpha = 0.8f),
+                        )
+                        Text(
+                            text = remainingInduk.formatCurrency(),
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.White,
+                        )
+                    }
+                }
+                Spacer(Modifier.height(8.dp))
+                LinearProgressIndicator(
+                    progress = { contribution / 100f },
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                            .clip(RoundedCornerShape(50)),
+                    color = Color.White,
+                    trackColor = Color.White.copy(alpha = 0.3f),
+                )
+            }
         }
     }
 }
@@ -710,11 +945,11 @@ private fun rememberMarkerValueFormatter(
     DefaultCartesianMarker.ValueFormatter { _, targets ->
         targets.joinToString { target ->
             val amount = (target as? LineCartesianLayerMarkerTarget)
-                ?.points
-                ?.firstOrNull()
-                ?.entry
-                ?.y
-                ?.toLong()
+                    ?.points
+                    ?.firstOrNull()
+                    ?.entry
+                    ?.y
+                    ?.toLong()
                 ?: target.x.toLong()
             val formatted = amount.formatCompact()
             val dayLabel = labels.getOrNull(target.x.toInt())
@@ -859,6 +1094,7 @@ private fun WeeklyTrendChartContent(
 
 @Composable
 fun QuickActionsRow(
+    showEditBudget: Boolean = true,
     onEditBudgetClick: () -> Unit,
     onSetNotificationClick: () -> Unit,
     onAddNoteClick: () -> Unit,
@@ -868,12 +1104,16 @@ fun QuickActionsRow(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        QuickActionItem(
-            icon = Icons.Outlined.Edit,
-            label = "Edit Budget",
-            onClick = onEditBudgetClick,
-            modifier = Modifier.weight(1f),
-        )
+        // Disembunyikan untuk sub kategori tanpa budget sendiri — sub ngikut induk,
+        // jadi tidak ada yang bisa di-set di layar ini.
+        if (showEditBudget) {
+            QuickActionItem(
+                icon = Icons.Outlined.Edit,
+                label = "Edit Budget",
+                onClick = onEditBudgetClick,
+                modifier = Modifier.weight(1f),
+            )
+        }
         QuickActionItem(
             icon = Icons.Outlined.Notifications,
             label = "Set Notification",
@@ -993,5 +1233,37 @@ private fun DetailCategoryContentPreview() {
             ),
             onEvent = {},
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SubCategoryBudgetCardPreview() {
+    NexCashApplicationTheme {
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+        ) {
+            // Sub dengan induk ber-budget → tampil budget induk + kontribusi
+            SubCategoryBudgetCard(
+                parentInfo = ParentBudgetUiModel(
+                    id = "c1",
+                    name = "Transportasi",
+                    totalBudget = 1_500_000L,
+                    usedBudget = 1_150_000L,
+                    thisUsedBudget = 450_000L,
+                ),
+            )
+            // Induk belum punya budget → empty-state, bukan Rp 0 palsu
+            SubCategoryBudgetCard(
+                parentInfo = ParentBudgetUiModel(
+                    id = "c2",
+                    name = "Tagihan",
+                    totalBudget = 0L,
+                    usedBudget = 0L,
+                    thisUsedBudget = 0L,
+                ),
+            )
+        }
     }
 }
