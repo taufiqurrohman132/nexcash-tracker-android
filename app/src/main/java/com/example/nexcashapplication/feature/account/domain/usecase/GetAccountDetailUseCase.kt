@@ -6,6 +6,7 @@ import com.example.nexcashapplication.feature.account.domain.repository.AccountR
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class GetAccountDetailUseCase @Inject constructor(
@@ -16,9 +17,12 @@ class GetAccountDetailUseCase @Inject constructor(
         val asset = accountRepository.getAccountById(accountId)
             ?: throw NoSuchElementException("Asset not found")
 
-        val recentTransactions = transactionRepository.getRecentTransactionsByCategory(
-            6, ""
-        )
+        // Dulu: getRecentTransactionsByCategory(6, "") → WHERE category_id = ''
+        // tidak pernah cocok (dan itu filter kategori, bukan akun) → daftar selalu kosong.
+        // Sekarang: transaksi milik akun ini (urut terbaru), maks RECENT_LIMIT.
+        val recentTransactions = transactionRepository
+            .getTransactionsByAccount(accountId)
+            .map { list -> list.take(RECENT_LIMIT) }
 
         return combine(
             asset,
@@ -26,6 +30,10 @@ class GetAccountDetailUseCase @Inject constructor(
         ){ account, recentTransactions ->
             AccountDetailData(account, recentTransactions)
         }
+    }
+
+    companion object {
+        private const val RECENT_LIMIT = 6
     }
 }
 
