@@ -10,16 +10,22 @@ import com.example.nexcashapplication.feature.transaction.presentation.addnew.Tr
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import java.time.Instant
+import java.time.ZoneId
+import java.util.Locale
 
 /**
- * In-memory [TransactionRepository] untuk unit test (fitur kategori: main & detail).
+ * In-memory [TransactionRepository] untuk unit test (fitur kategori, dashboard
+ * & statistik).
  *
  * Flow reaktif:
  * - [getTransactionsForCategories] dari [seed] (dipakai CategoryViewModel),
  * - [getRecentTransactions] & [getRecentTransactionsByCategory] dari
  *   [seedWithDetails] (urut terbaru, hormati `limit`; `limit < 0` = tanpa batas
  *   seperti SQL-nya),
- * - [getUsedAmountByCategory] dari [seed] (EXPENSE dalam window periode).
+ * - [getUsedAmountByCategory] dari [seed] (EXPENSE dalam window periode),
+ * - [getMonthlySummary], [getTotalExpenseByMonth] & [getExpenseByCategoryByMonth]
+ *   dari [seed] (dipakai use case statistik: tren, tingkat tabungan, alokasi).
  *
  * Metode lain sengaja melempar — bila suatu saat dipanggil test akan gagal jelas,
  * bukan diam-diam return data palsu.
@@ -95,7 +101,18 @@ class FakeTransactionRepository : TransactionRepository {
                     }
         }
 
-    override fun getMonthlySummary(yearMonth: String): Flow<MonthlySummary> = unused()
+    override fun getMonthlySummary(yearMonth: String): Flow<MonthlySummary> =
+        transactions.map { list ->
+            val rows = list.filter { it.dateTime.toEpochMilliseconds().toYearMonthString() == yearMonth }
+            val pemasukan = rows.filter { it.typeTransaction == TransactionType.INCOME }.sumOf { it.amount }
+            val pengeluaran = rows.filter { it.typeTransaction == TransactionType.EXPENSE }.sumOf { it.amount }
+            MonthlySummary(
+                totalPemasukan = pemasukan,
+                totalPengeluaran = pengeluaran,
+                totalSaldo = pemasukan - pengeluaran,
+                yearMonth = yearMonth,
+            )
+        }
 
     override fun getObserverTransactionsByMonth(yearMonth: String): Flow<List<Transaction>> =
         unused()
@@ -106,12 +123,22 @@ class FakeTransactionRepository : TransactionRepository {
     ): Flow<List<TransactionWithDetails>> = unused()
 
     override fun getTotalExpenseByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Long> =
-        unused()
+        transactions.map { list ->
+            list.filter { it.isExpenseBetween(startOfMonth, endOfMonth) }.sumOf { it.amount }
+        }
 
     override fun getExpenseByCategoryByMonth(
         startOfMonth: Long,
         endOfMonth: Long,
-    ): Flow<Map<String, Long>> = unused()
+    ): Flow<Map<String, Long>> =
+        transactions.map { list ->
+            list.filter { it.isExpenseBetween(startOfMonth, endOfMonth) }
+                    .groupBy { it.categoryId }
+                    .mapNotNull { (categoryId, rows) ->
+                        categoryId?.let { it to rows.sumOf { row -> row.amount } }
+                    }
+                    .toMap()
+        }
 
     override fun getAllTransactionsWithDetails(): Flow<List<TransactionWithDetails>> = unused()
 
@@ -141,6 +168,16 @@ class FakeTransactionRepository : TransactionRepository {
     override suspend fun updateTransaction(transaction: Transaction): Unit = unused()
 
     override suspend fun deleteTransaction(transactionId: String): Unit = unused()
+
+    private fun Transaction.isExpenseBetween(startOfMonth: Long, endOfMonth: Long): Boolean =
+        typeTransaction == TransactionType.EXPENSE &&
+                dateTime.toEpochMilliseconds() in startOfMonth..endOfMonth
+
+    /** "yyyy-MM" ala SQL `strftime`, zona sistem — sama dengan pemanggilnya. */
+    private fun Long.toYearMonthString(): String {
+        val date = Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toLocalDate()
+        return String.format(Locale.ROOT, "%04d-%02d", date.year, date.monthValue)
+    }
 
     private fun unused(): Nothing =
         throw UnsupportedOperationException("Tidak dipakai di unit test fitur kategori")

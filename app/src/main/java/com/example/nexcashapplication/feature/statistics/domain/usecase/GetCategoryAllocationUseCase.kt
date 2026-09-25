@@ -33,17 +33,23 @@ class GetCategoryAllocationUseCase @Inject constructor(
 
             categories
                     .filterNotNull() // drop kategori null DI SINI, sebelum masuk transform
-                    .map { category ->
+                    .mapNotNull { category ->
                         val amount = amounts[category.id] ?: 0L
+                        // nominal 0 tidak ikut — dulu semua kategori tampil sehingga
+                        // donut & legend penuh irisan 0%
+                        if (amount <= 0L) return@mapNotNull null
 
                         AlokasiKategoriUi(
                             kategoriId = category.id,
                             nama = category.name,
-                            persentase = if (totalAmount > 0) (amount / totalAmount * 100).toFloat() else 0f,
+                            // Float division — versi Long `amount / totalAmount`
+                            // membuang pecahan dan hampir selalu 0
+                            persentase = amount * 100f / totalAmount,
                             nominal = amount,
                             colorHex = category.color,
                         )
                     }
+                    .sortedByDescending { it.nominal }
         }
     }
 }

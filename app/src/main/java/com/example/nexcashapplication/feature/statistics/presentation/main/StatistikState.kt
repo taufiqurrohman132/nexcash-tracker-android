@@ -15,20 +15,8 @@ data class StatistikState(
     val alokasiDana: List<AlokasiKategoriUi> = emptyList(),
     val totalAlokasi: Long = 0,
     val alokasiMode: AlokasiMode = AlokasiMode.ALOKASI,
-    val isModeRencanaActive: Boolean = false,
-    val showMonthPicker: Boolean = false
-//    val targetFinansial: List<TargetFinansialUi> = emptyList(),
-//    val aiSummaryQuote: String? = null,
+    val showMonthPicker: Boolean = false,
 )
 
 enum class BudgetStatus { AMAN, WASPADA, OVER }
 enum class AlokasiMode { ALOKASI, REALISASI }
-
-
-//data class TargetFinansialUi(
-//    val id: Long,
-//    val nama: String,
-//    val progressPercent: Int,
-//    val terkumpul: Long,
-//    val target: Long,
-//)
