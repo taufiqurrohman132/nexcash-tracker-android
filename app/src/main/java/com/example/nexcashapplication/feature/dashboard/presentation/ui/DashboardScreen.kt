@@ -62,7 +62,13 @@ fun DashboardScreen(
                 DashboardEffect.NavigateToAddTransaction ->
                     navController.navigate(Route.TransactionRoute.AddEdit())
 
-                // Efek lain (notifikasi, profil, transfer, scan, tagihan) belum punya tujuan
+                DashboardEffect.NavigateToNotifications ->
+                    navController.navigate(Route.SettingsRoute.Notifikasi)
+
+                DashboardEffect.NavigateToProfile ->
+                    navController.navigate(Route.SettingsRoute.EditProfile)
+
+                // Efek lain (transfer, tagihan, scan, lainnya) belum punya tujuan
                 else -> Unit
             }
         }
@@ -94,7 +100,7 @@ fun DashboardContent(
         floatingActionButton = {
             FloatingActionButton(
                 containerColor = PrimaryCyan,
-                onClick = {}
+                onClick = { onEvent(DashboardEvent.OnAddTransactionClick) }
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -116,10 +122,10 @@ fun DashboardContent(
             HeaderSection(
                 userName = state.userName,
                 onClickNotification = {
-
+                    onEvent(DashboardEvent.OnNotificationClick)
                 },
                 onClickProfile = {
-
+                    onEvent(DashboardEvent.OnProfileClick)
                 }
             )
 
@@ -134,7 +140,11 @@ fun DashboardContent(
             )
 
             QuickActionSection(
-                modifier = Modifier.padding(vertical = 16.dp)
+                modifier = Modifier.padding(vertical = 16.dp),
+                onTransferClick = { onEvent(DashboardEvent.OnTransferClick) },
+                onTagihanClick = { onEvent(DashboardEvent.OnTagihanClick) },
+                onScanClick = { onEvent(DashboardEvent.OnScanClick) },
+                onLainnyaClick = { onEvent(DashboardEvent.OnLainnyaClick) },
             )
 
             BudgetCard(
@@ -146,6 +156,7 @@ fun DashboardContent(
             FormField(
                 title = "Transaksi Terakhir",
                 actionText = "Semua",
+                onActionClick = { onEvent(DashboardEvent.OnSemuaTransaksiClick) },
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 Card(
@@ -162,7 +173,12 @@ fun DashboardContent(
                     state.transactions.take(5).forEachIndexed { index, transaction ->
                         TransactionItem(
                             transaction = transaction,
-                            onClick = {}
+                            onClick = {
+                                // id bisa null (data mapper) → event hanya dikirim bila ada
+                                transaction.id?.let { id ->
+                                    onEvent(DashboardEvent.OnTransactionClick(id))
+                                }
+                            }
                         )
 
                         if (index != state.transactions.take(5).lastIndex) {

@@ -30,7 +30,13 @@ import com.example.nexcashapplication.ui.theme.LightCyan
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 @Composable
-fun QuickActionSection(modifier: Modifier = Modifier) {
+fun QuickActionSection(
+    modifier: Modifier = Modifier,
+    onTransferClick: () -> Unit = {},
+    onTagihanClick: () -> Unit = {},
+    onScanClick: () -> Unit = {},
+    onLainnyaClick: () -> Unit = {},
+) {
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -40,22 +46,26 @@ fun QuickActionSection(modifier: Modifier = Modifier) {
 
         QuickActionItem(
             icon = painterResource(R.drawable.transfer),
-            label = "Transfer"
+            label = "Transfer",
+            onClick = onTransferClick,
         )
 
         QuickActionItem(
             icon = painterResource(R.drawable.bill_dollar),
-            label = "Tagihan"
+            label = "Tagihan",
+            onClick = onTagihanClick,
         )
 
         QuickActionItem(
             icon = painterResource(R.drawable.scan),
-            label = "Scan"
+            label = "Scan",
+            onClick = onScanClick,
         )
 
         QuickActionItem(
             icon = painterResource(R.drawable.more_horizontal),
-            label = "Lainnya"
+            label = "Lainnya",
+            onClick = onLainnyaClick,
         )
     }
 }
