@@ -133,33 +133,15 @@ fun TransactionContent(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        IconRounded(
-                            imageVector = Icons.Outlined.Insights,
-                            iconColor = Color.White,
-                            backgroundColor = PrimaryCyan,
-                            size = 28.dp,
-                        )
-                        Text(
-                            text = "KeuanganKu",
-                            style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
-                        )
-                    }
+
+                    Text(
+                        text = "Transaction",
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
                 },
                 actions = {
-                    IconButton(
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        onClick = { /* Navigate to Account screen if needed */ },
-                    ) {
-                        Icon(
-                            Icons.Outlined.AccountBalanceWallet,
-                            contentDescription = "Tambah akun",
-                        )
-                    }
+
                 },
             )
         },
