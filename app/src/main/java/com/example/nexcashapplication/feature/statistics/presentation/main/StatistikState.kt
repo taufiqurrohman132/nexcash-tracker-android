@@ -4,7 +4,9 @@ import com.example.nexcashapplication.feature.statistics.presentation.main.model
 import java.time.YearMonth
 
 data class StatistikState(
-    val isLoading: Boolean = false,
+    // true sampai emisi pertama — kalau data kosong, layar menampilkan
+    // indikator, bukan kartu Rp 0 + donut kosong
+    val isLoading: Boolean = true,
     val selectedMonth: YearMonth = YearMonth.now(),
     val totalPengeluaran: Long = 0,
     val pengeluaranTrendPercent: Float = 0f,

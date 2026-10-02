@@ -107,15 +107,22 @@ fun BalanceCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    // format sekali per nilai, bukan tiap recomposition
+                    val formattedBalance = remember(totalBalance) {
+                        "Rp ${totalBalance.formatCurrency()}"
+                    }
+                    val compactBalance = remember(totalBalance) {
+                        "Rp ${totalBalance.formatCompact()}"
+                    }
                     Text(
                         modifier = Modifier
                                 .weight(1f),
                         text = if (!isVisible) {
                             "Rp ••••••••"
                         } else if (isTotalSaldoOverflow) {
-                            "Rp ${totalBalance.formatCompact()}"
+                            compactBalance
                         } else {
-                            "Rp ${totalBalance.formatCurrency()}"
+                            formattedBalance
                         },
                         style =
                             MaterialTheme.typography.headlineLarge,

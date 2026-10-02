@@ -85,8 +85,8 @@ class FakeBudgetRepository : BudgetRepository {
 
     override fun getDailyExpenseByCategory(
         categoryId: String,
-        month: String,
-        year: String,
+        monthStart: Long,
+        monthEnd: Long,
     ): Flow<List<DailyExpenseResult>> = flowOf(emptyList())
 
     override fun getBudgetsByMonth(monthStart: Long, monthEnd: Long): Flow<List<Budget>> = flow {
@@ -101,8 +101,8 @@ class FakeBudgetRepository : BudgetRepository {
 
     override fun getExpenseBySubCategory(
         parentCategoryId: String,
-        month: String,
-        year: String,
+        monthStart: Long,
+        monthEnd: Long,
     ): Flow<List<CategoryExpenseResult>> = flowOf(emptyList())
 
     override suspend fun getSeriesRoots(): List<Budget> =

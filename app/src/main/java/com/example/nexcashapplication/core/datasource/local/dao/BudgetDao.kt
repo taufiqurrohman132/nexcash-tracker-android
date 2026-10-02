@@ -80,6 +80,7 @@ interface BudgetDao {
     suspend fun deleteById(id: String)
 
     // Total pengeluaran harian dalam bulan (untuk grafik tren)
+    // Rentang epoch, bukan strftime di kolom → index transaction_date bisa dipakai
     @Query(
         """
         SELECT 
@@ -88,16 +89,15 @@ interface BudgetDao {
         FROM transactions
         WHERE category_id = :categoryId
         AND type = 'expense'
-        AND strftime('%m', transaction_date/1000, 'unixepoch') = :month
-        AND strftime('%Y', transaction_date/1000, 'unixepoch') = :year
+        AND transaction_date BETWEEN :monthStart AND :monthEnd
         GROUP BY day
         ORDER BY day ASC
     """,
     )
     fun getDailyExpenseByCategory(
         categoryId: String,
-        month: String,
-        year: String,
+        monthStart: Long,
+        monthEnd: Long,
     ): Flow<List<DailyExpenseResult>>
 
     // Pengeluaran per subkategori (rincian sub-kategori)
@@ -110,15 +110,14 @@ interface BudgetDao {
         INNER JOIN categories c ON t.category_id = c.id
         WHERE c.parent_id = :parentCategoryId
         AND t.type = 'expense'
-        AND strftime('%m', t.transaction_date/1000, 'unixepoch') = :month
-        AND strftime('%Y', t.transaction_date/1000, 'unixepoch') = :year
+        AND t.transaction_date BETWEEN :monthStart AND :monthEnd
         GROUP BY t.category_id
     """,
     )
     fun getExpenseBySubCategory(
         parentCategoryId: String,
-        month: String,
-        year: String,
+        monthStart: Long,
+        monthEnd: Long,
     ): Flow<List<CategoryExpenseResult>>
 
     @Query(

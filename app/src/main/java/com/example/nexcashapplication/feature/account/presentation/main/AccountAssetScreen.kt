@@ -172,6 +172,31 @@ fun AccountAssetContent(
                 }
             }
 
+            state.bankAccounts.isEmpty() && state.eWallets.isEmpty() -> {
+                // loading sudah selesai tapi tidak ada akun sama sekali —
+                // dulu halaman tampil hampa tanpa keterangan apa pun
+                Box(
+                    Modifier
+                            .fillMaxSize()
+                            .padding(padding),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("Belum ada akun")
+                        Spacer(Modifier.height(4.dp))
+                        Text(
+                            text = "Tambahkan rekening atau e-wallet untuk mulai mencatat aset.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = Color.Gray,
+                        )
+                        Spacer(Modifier.height(12.dp))
+                        Button(onClick = { onEvent(AccountAssetEvent.OnAddAccountClick) }) {
+                            Text("Tambah Akun")
+                        }
+                    }
+                }
+            }
+
             else -> {
                 Column(
                     modifier = Modifier

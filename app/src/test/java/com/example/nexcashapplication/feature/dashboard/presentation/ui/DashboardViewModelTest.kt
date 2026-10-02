@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.dashboard.presentation.ui
 
+import com.example.nexcashapplication.awaitSettled
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
@@ -47,6 +48,9 @@ class DashboardViewModelTest {
         testDispatcher = StandardTestDispatcher()
         Dispatchers.setMain(testDispatcher)
         transactionRepository = FakeTransactionRepository()
+        // cache lintas ViewModel bersifat statis — kalau tidak di-reset, test
+        // ini langsung kebagian data test sebelumnya
+        DashboardViewModel.lastSnapshot = null
     }
 
     @AfterEach
@@ -71,7 +75,8 @@ class DashboardViewModelTest {
             }
 
             val vm = createViewModel()
-            advanceUntilIdle()
+            // hasil mapping sampai lewat Dispatchers.Default → tunggu state mengendap
+            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
             // Kategori c2 ikut terbaca → membuktikan daftar tanpa filter kategori;
             // kode lama memakai ByCategory("") sehingga daftar ini selalu kosong
@@ -82,7 +87,7 @@ class DashboardViewModelTest {
     @Test
     fun `transaksi terakhir - tanpa data daftar kosong tanpa crash`() = runTest(testDispatcher) {
         val vm = createViewModel()
-        advanceUntilIdle()
+        awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
         assertTrue(vm.state.value.transactions.isEmpty())
     }
@@ -145,11 +150,12 @@ class DashboardViewModelTest {
             transactionRepository.seedWithDetails(withDetails("t1", "c1", hoursAgo = 1))
 
             val vm = createViewModel()
-            advanceUntilIdle()
+            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
             vm.onEvent(DashboardEvent.OnRefresh)
             vm.onEvent(DashboardEvent.OnScreenLoad)
-            advanceUntilIdle()
+            // reload menyalakan isLoading lagi → tunggu emisi berikutnya
+            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
             // collector lama dibatalkan saat reload → daftar tidak terduplikasi
             assertEquals(listOf("t1"), vm.state.value.transactions.map { it.id })

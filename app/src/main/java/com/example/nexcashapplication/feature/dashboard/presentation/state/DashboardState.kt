@@ -10,6 +10,9 @@ data class DashboardState(
     val remainingBudget: Long = 1755000,
     val budgetUsedPercentage: Float = 0.65f,
     val transactions: List<TransactionItemUiModel> = emptyList(),
+    // true sampai "transaksi terakhir" pertama masuk — frame pertama tanpa
+    // cache menampilkan indikator, bukan kartu kosong
+    val isLoading: Boolean = true,
     val isBalanceVisible: Boolean = true,
 )
 //

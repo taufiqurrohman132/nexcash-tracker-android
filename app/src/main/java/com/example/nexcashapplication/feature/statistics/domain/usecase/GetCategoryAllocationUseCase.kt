@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.statistics.domain.usecase
 
+import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
@@ -7,8 +8,10 @@ import com.example.nexcashapplication.core.domain.repository.TransactionReposito
 import com.example.nexcashapplication.feature.statistics.presentation.main.AlokasiMode
 import com.example.nexcashapplication.feature.statistics.presentation.main.RealisasiTipe
 import com.example.nexcashapplication.feature.statistics.presentation.main.model.AlokasiKategoriUi
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
@@ -30,16 +33,22 @@ class GetCategoryAllocationUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
 ) {
+    /**
+     * [budgetsFlow] boleh dikirim dari luar supaya query `getBudgetsByMonth`
+     * tidak dijalankan dua kali (use case ini + [GetBudgetHealthUseCase] pada
+     * combine yang sama di StatistikViewModel).
+     */
     operator fun invoke(
         monthStart: Long,
         monthEnd: Long,
         alocationMode: AlokasiMode,
         realisasiTipe: RealisasiTipe = RealisasiTipe.PENGELUARAN,
+        budgetsFlow: Flow<List<Budget>> = budgetRepository.getBudgetsByMonth(monthStart, monthEnd),
     ): Flow<List<AlokasiKategoriUi>> {
         val amountsFlow = when (alocationMode) {
-            AlokasiMode.ALOKASI -> budgetRepository.getBudgetsByMonth(
-                monthStart, monthEnd,
-            ).map { budgets -> budgets.associate { budget -> budget.categoryId to budget.amount } }
+            AlokasiMode.ALOKASI -> budgetsFlow.map { budgets ->
+                budgets.associate { budget -> budget.categoryId to budget.amount }
+            }
 
             AlokasiMode.REALISASI -> when (realisasiTipe) {
                 RealisasiTipe.PENGELUARAN ->
@@ -88,6 +97,9 @@ class GetCategoryAllocationUseCase @Inject constructor(
                         .sortedByDescending { it.nominal }
             }
         }
+                // rollup + O(n²) `find` + sort: jangan jalan di main thread
+                // (StatistikViewModel mengumpulkan ini pas transisi pindah tab)
+                .flowOn(Dispatchers.Default)
     }
 
     /**

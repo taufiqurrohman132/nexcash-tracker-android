@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -74,6 +75,9 @@ import com.example.nexcashapplication.ui.theme.TextTertiary
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
+
+/** Locale dibentuk sekali di top-level — jangan per `String.format` per frame. */
+private val idLocale = Locale.forLanguageTag("id")
 
 
 @Composable
@@ -135,41 +139,56 @@ fun StatistikContent(
                     .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            TotalPengeluaranCard(state.totalPengeluaran, state.pengeluaranTrendPercent)
+            if (state.isLoading && state.alokasiDana.isEmpty()) {
+                // Frame pertama tanpa cache (atau belum pernah ada data):
+                // tampilkan indikator, bukan kartu Rp 0 + donut kosong.
+                // Kalau masih ada data lama, kartu lama tetap tampil supaya
+                // tidak berkedip saat ganti bulan/tab.
+                Box(
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .height(360.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                TotalPengeluaranCard(state.totalPengeluaran, state.pengeluaranTrendPercent)
 
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                SummaryStatCard(
-                    title = "Sisa Anggaran",
-                    value = state.sisaAnggaran.formatCompact(),
-                    badge = state.statusAnggaran.name,
-                    icon = Icons.Outlined.ShoppingBag,
-                    modifier = Modifier.weight(1f),
-                )
-                SummaryStatCard(
-                    title = "Tingkat Tabungan",
-                    value = String.format(
-                        Locale.forLanguageTag("id"),
-                        "%.1f%%",
-                        state.tingkatTabungan,
-                    ),
-                    badge = String.format(
-                        Locale.forLanguageTag("id"),
-                        "%+.1f%%",
-                        state.tabunganTrendPercent,
-                    ),
-                    icon = Icons.Outlined.TrendingUp,
-                    modifier = Modifier.weight(1f),
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    SummaryStatCard(
+                        title = "Sisa Anggaran",
+                        value = state.sisaAnggaran.formatCompact(),
+                        badge = state.statusAnggaran.name,
+                        icon = Icons.Outlined.ShoppingBag,
+                        modifier = Modifier.weight(1f),
+                    )
+                    SummaryStatCard(
+                        title = "Tingkat Tabungan",
+                        value = String.format(
+                            idLocale,
+                            "%.1f%%",
+                            state.tingkatTabungan,
+                        ),
+                        badge = String.format(
+                            idLocale,
+                            "%+.1f%%",
+                            state.tabunganTrendPercent,
+                        ),
+                        icon = Icons.Outlined.TrendingUp,
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+
+                AlokasiDanaCard(
+                    total = state.totalAlokasi,
+                    items = state.alokasiDana,
+                    mode = state.alokasiMode,
+                    realisasiTipe = state.realisasiTipe,
+                    onTabChange = { onEvent(StatistikEvent.OnAlokasiTabChange(it)) },
+                    onTipeChange = { onEvent(StatistikEvent.OnRealisasiTipeChange(it)) },
                 )
             }
-
-            AlokasiDanaCard(
-                total = state.totalAlokasi,
-                items = state.alokasiDana,
-                mode = state.alokasiMode,
-                realisasiTipe = state.realisasiTipe,
-                onTabChange = { onEvent(StatistikEvent.OnAlokasiTabChange(it)) },
-                onTipeChange = { onEvent(StatistikEvent.OnRealisasiTipeChange(it)) },
-            )
 
             TindakanCepatCard(onClick = { onEvent(StatistikEvent.OnUbahAlokasiClick) })
 
@@ -293,7 +312,9 @@ fun AlokasiDanaCard(
         Spacer(Modifier.height(16.dp))
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            items.chunked(2).forEach { rowItems ->
+            // chunked tiap recomposition = alokasi list baru; ingat hasilnya
+            val rows = remember(items) { items.chunked(2) }
+            rows.forEach { rowItems ->
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -311,11 +332,13 @@ fun AlokasiDanaCard(
 
 @Composable
 private fun LegendItem(item: AlokasiKategoriUi, modifier: Modifier = Modifier) {
+    // parse warna hex tiap recomposition = buang-buang; warna ikut item saja
+    val dotColor = remember(item.colorHex) { item.colorHex.toColor() }
     Row(
         modifier = modifier,verticalAlignment = Alignment.CenterVertically) {
         Box(
             Modifier
-                    .background(item.colorHex.toColor(), CircleShape)
+                    .background(dotColor, CircleShape)
                     .padding(horizontal = 4.dp)
         ){
             Text(item.persentase.formatDecimal2(), style = MaterialTheme.typography.titleSmall)
@@ -528,7 +551,7 @@ fun TotalPengeluaranCard(totalPengeluaran: Long, deltaPercent: Float) {
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(
-                        String.format(Locale.forLanguageTag("id"), "%+.1f%%", deltaPercent),
+                        String.format(idLocale, "%+.1f%%", deltaPercent),
                         color = trendColor,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,

@@ -24,16 +24,26 @@ interface AccountDao {
     @Query("SELECT * FROM accounts ORDER BY is_active DESC")
     fun getAllAccounts(): Flow<List<AccountEntity>>
 
+    // Ringkasan bulan berjalan untuk layar Asset.
+    // Pakai rentang epoch (bukan strftime) karena:
+    //  1) strftime di kolom tidak bisa pakai index -> full table scan tiap emisi;
+    //  2) bug satuan: transaction_date itu epoch MILLIS, tapi strftime menerimanya
+    //     sebagai DETIK -> hasilnya selalu 0 (monthlyIncome/monthlyExpense = 0,
+    //     persentase perubahan bulanan selalu 0.0%).
     @Query(
         """
     SELECT
         (SELECT COALESCE(SUM(current_balance), 0) FROM accounts WHERE is_active = 1) AS totalBalance,
         (SELECT COUNT(*) FROM accounts WHERE is_active = 1) AS activeAccount,
-        (SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'income' AND strftime('%Y-%m', transaction_date) = strftime('%Y-%m', 'now')) AS monthlyIncome,
-        (SELECT COALESCE(SUM(amount), 0) FROM transactions WHERE type = 'expense' AND strftime('%Y-%m', transaction_date) = strftime('%Y-%m', 'now')) AS monthlyExpense
+        (SELECT COALESCE(SUM(amount), 0) FROM transactions
+            WHERE type = 'income' AND deleted_at IS NULL
+            AND transaction_date BETWEEN :startOfMonth AND :endOfMonth) AS monthlyIncome,
+        (SELECT COALESCE(SUM(amount), 0) FROM transactions
+            WHERE type = 'expense' AND deleted_at IS NULL
+            AND transaction_date BETWEEN :startOfMonth AND :endOfMonth) AS monthlyExpense
 """,
     )
-    fun getMonthlySummary(): Flow<MonthlySummaryAccountResult>
+    fun getMonthlySummary(startOfMonth: Long, endOfMonth: Long): Flow<MonthlySummaryAccountResult>
 
     @Query("SELECT * FROM accounts WHERE id = :accountId")
     fun getAccountById(accountId: String): Flow<AccountEntity>

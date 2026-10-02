@@ -2,6 +2,7 @@ package com.example.nexcashapplication.feature.statistics.domain.usecase
 
 import com.example.nexcashapplication.core.common.toEndOfMonthMillis
 import com.example.nexcashapplication.core.common.toStartOfMonthMillis
+import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.statistics.domain.model.BudgetHealth
@@ -21,12 +22,25 @@ class GetBudgetHealthUseCase @Inject constructor(
     private val budgetRepository: BudgetRepository,
     private val transactionRepository: TransactionRepository,
 ) {
-    operator fun invoke(month: YearMonth): Flow<BudgetHealth> {
-        val monthStart = month.toStartOfMonthMillis()
-        val monthEnd = month.toEndOfMonthMillis()
+    /**
+     * [budgetsFlow]/[expenseFlow] boleh dikirim dari luar supaya query yang
+     * sama tidak diulang — StatistikViewModel memakainya untuk dua use case
+     * sekaligus.
+     */
+    operator fun invoke(
+        month: YearMonth,
+        budgetsFlow: Flow<List<Budget>> = budgetRepository.getBudgetsByMonth(
+            month.toStartOfMonthMillis(),
+            month.toEndOfMonthMillis(),
+        ),
+        expenseFlow: Flow<Long> = transactionRepository.getTotalExpenseByMonth(
+            month.toStartOfMonthMillis(),
+            month.toEndOfMonthMillis(),
+        ),
+    ): Flow<BudgetHealth> {
         return combine(
-            budgetRepository.getBudgetsByMonth(monthStart, monthEnd),
-            transactionRepository.getTotalExpenseByMonth(monthStart, monthEnd),
+            budgetsFlow,
+            expenseFlow,
         ) { budgets, expense ->
             val total = budgets.sumOf { it.amount }
             BudgetHealth(

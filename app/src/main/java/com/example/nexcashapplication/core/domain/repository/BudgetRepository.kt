@@ -21,8 +21,8 @@ interface BudgetRepository {
     suspend fun deleteById(id: String)
     fun getDailyExpenseByCategory(
         categoryId: String,
-        month: String,
-        year: String,
+        monthStart: Long,
+        monthEnd: Long,
     ): Flow<List<DailyExpenseResult>>
 
     fun getBudgetsByMonth(monthStart: Long, monthEnd: Long): Flow<List<Budget>>
@@ -30,8 +30,8 @@ interface BudgetRepository {
 
     fun getExpenseBySubCategory(
         parentCategoryId: String,
-        month: String,
-        year: String,
+        monthStart: Long,
+        monthEnd: Long,
     ): Flow<List<CategoryExpenseResult>>
 
     // Seri recurring ─────────────────────────────────

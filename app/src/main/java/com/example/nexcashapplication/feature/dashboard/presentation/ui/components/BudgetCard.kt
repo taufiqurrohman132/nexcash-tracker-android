@@ -16,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -81,7 +82,10 @@ fun BudgetCard(
 
                 Spacer(modifier = Modifier.height(2.dp))
 
-                // Remaining budget
+                // Remaining budget — format nilai sekali, bukan tiap recomposition
+                val formattedRemaining = remember(remainingBudget) {
+                    "Rp ${remainingBudget.formatCurrency()}"
+                }
                 Text(
                     text = buildAnnotatedString {
                         withStyle(
@@ -91,7 +95,7 @@ fun BudgetCard(
                                 fontSize = MaterialTheme.typography.headlineSmall.fontSize
                             )
                         ) {
-                            append("Rp ${remainingBudget.formatCurrency()} ")
+                            append("$formattedRemaining ")
                         }
                         withStyle(
                             SpanStyle(

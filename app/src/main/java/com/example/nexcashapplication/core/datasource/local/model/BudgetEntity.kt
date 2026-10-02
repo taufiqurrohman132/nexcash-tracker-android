@@ -25,7 +25,11 @@ import java.util.UUID
     indices = [
         Index(value = ["category_id"]),
         Index("recurring_group_id"),
-        Index(value = ["recurring_group_id", "start_date"], unique = true)
+        Index(value = ["recurring_group_id", "start_date"], unique = true),
+        // filter budget per bulan: start_date <= :monthEnd AND end_date >= :monthStart
+        // — tanpa index ini tiap kali ganti bulan = scan seluruh tabel budgets
+        Index(value = ["start_date"]),
+        Index(value = ["end_date"]),
     ],
 
     )

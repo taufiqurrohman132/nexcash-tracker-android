@@ -6,7 +6,9 @@ import com.example.nexcashapplication.feature.account.presentation.main.model.Ac
 
 @Immutable
 data class AccountAssetState(
-    val isLoading: Boolean = false,
+    // true sampai daftar akun pertama masuk; frame pertama tanpa cache
+    // menampilkan indikator, bukan halaman kosong
+    val isLoading: Boolean = true,
     val totalBalance: Long = 0L,
     val isBalanceVisible: Boolean = true,
     val monthlyChangePercent: Double = 0.0,

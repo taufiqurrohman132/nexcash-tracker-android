@@ -132,10 +132,16 @@ object DatabaseModule {
     }
 
     /**
-     * v2 → v3: indeks filter bulanan supaya memakai index, bukan full table scan.
-     * - `transactions.transaction_date`: daftar transaksi & ringkasan bulanan.
+     * v2 → v3: indeks yang dipakai filter bulanan supaya memakai index,
+     * bukan full table scan.
+     * - `transactions.transaction_date`: daftar transaksi, ringkasan bulanan,
+     *   ringkasan bulan-berjalan di layar Asset.
+     * - `budgets.start_date` / `budgets.end_date`: budget per bulan (statistik,
+     *   budget) — query `start_date <= :x AND end_date >= :y`.
      * Nama index harus persis konvensi Room (index_<tabel>_<kolom>) supaya cocok
      * dengan TableInfo yang divalidasi Room saat membuka database.
+     * Migrasi ini belum pernah dieksekusi di build mana pun, jadi semua indeks
+     * digabung dalam satu versi.
      */
     private val MIGRATION_2_3 = object : Migration(2, 3) {
         override fun migrate(db: SupportSQLiteDatabase) {
@@ -143,6 +149,8 @@ object DatabaseModule {
                 "CREATE INDEX IF NOT EXISTS index_transactions_transaction_date " +
                         "ON transactions(transaction_date)",
             )
+            db.execSQL("CREATE INDEX IF NOT EXISTS index_budgets_start_date ON budgets(start_date)")
+            db.execSQL("CREATE INDEX IF NOT EXISTS index_budgets_end_date ON budgets(end_date)")
         }
     }
 

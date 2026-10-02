@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -13,14 +14,19 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -170,21 +176,44 @@ fun DashboardContent(
                                 shape = RoundedCornerShape(16.dp)
                             )
                 ) {
-                    state.transactions.take(5).forEachIndexed { index, transaction ->
-                        TransactionItem(
-                            transaction = transaction,
-                            onClick = {
-                                // id bisa null (data mapper) → event hanya dikirim bila ada
-                                transaction.id?.let { id ->
-                                    onEvent(DashboardEvent.OnTransactionClick(id))
-                                }
-                            }
+                    if (state.isLoading && state.transactions.isEmpty()) {
+                        // frame pertama tanpa cache: indikator, bukan kartu kosong
+                        Box(
+                            modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(120.dp),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    } else if (state.transactions.isEmpty()) {
+                        Text(
+                            text = "Belum ada transaksi",
+                            modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 24.dp),
+                            textAlign = TextAlign.Center,
+                            color = Color.Gray,
                         )
-
-                        if (index != state.transactions.take(5).lastIndex) {
-                            HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 16.dp)
+                    } else {
+                        // DAO sudah LIMIT 5 → take(5) di sini cuma buang-buang;
+                        // lastIndex dihitung sekali, bukan dua kali per baris
+                        state.transactions.forEachIndexed { index, transaction ->
+                            TransactionItem(
+                                transaction = transaction,
+                                onClick = {
+                                    // id bisa null (data mapper) → event hanya dikirim bila ada
+                                    transaction.id?.let { id ->
+                                        onEvent(DashboardEvent.OnTransactionClick(id))
+                                    }
+                                }
                             )
+
+                            if (index != state.transactions.lastIndex) {
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
                         }
                     }
                 }

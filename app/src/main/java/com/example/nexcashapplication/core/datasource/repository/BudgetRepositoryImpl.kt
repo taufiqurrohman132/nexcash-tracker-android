@@ -9,7 +9,9 @@ import com.example.nexcashapplication.core.datasource.local.result.CategoryExpen
 import com.example.nexcashapplication.core.datasource.local.result.DailyExpenseResult
 import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import javax.inject.Inject
@@ -25,11 +27,13 @@ class BudgetRepositoryImpl @Inject constructor(
     override fun getByCategory(categoryId: String): Flow<List<Budget>> {
         return budgetDao.getByCategory(categoryId)
                 .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getActiveBudgets(date: LocalDate): Flow<List<Budget>> {
         return budgetDao.getActiveBudgets(date.toEpochMillis())
                 .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getActiveBudgetForCategory(
@@ -38,6 +42,7 @@ class BudgetRepositoryImpl @Inject constructor(
     ): Flow<Budget?> {
         return budgetDao.getActiveBudgetForCategory(categoryId, date.toEpochMillis())
                 .map { it?.toDomain() }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getActiveBudgetsForCategories(
@@ -46,11 +51,13 @@ class BudgetRepositoryImpl @Inject constructor(
     ): Flow<List<Budget>> {
         return budgetDao.getActiveBudgetsForCategories(categoryIds, referenceDate)
                 .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getByRecurrenceType(type: String): Flow<List<Budget>> {
         return budgetDao.getByRecurrenceType(type)
                 .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override suspend fun deleteById(id: String) {
@@ -59,15 +66,16 @@ class BudgetRepositoryImpl @Inject constructor(
 
     override fun getDailyExpenseByCategory(
         categoryId: String,
-        month: String,
-        year: String,
+        monthStart: Long,
+        monthEnd: Long,
     ): Flow<List<DailyExpenseResult>> {
-        return budgetDao.getDailyExpenseByCategory(categoryId, month, year)
+        return budgetDao.getDailyExpenseByCategory(categoryId, monthStart, monthEnd)
     }
 
     override fun getBudgetsByMonth(monthStart: Long, monthEnd: Long): Flow<List<Budget>> {
         return budgetDao.getBudgetsForMonth(monthStart, monthEnd)
                 .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getTotalBudgetLimit(monthStart: Long, monthEnd: Long): Flow<Long> {
@@ -76,10 +84,10 @@ class BudgetRepositoryImpl @Inject constructor(
 
     override fun getExpenseBySubCategory(
         parentCategoryId: String,
-        month: String,
-        year: String,
+        monthStart: Long,
+        monthEnd: Long,
     ): Flow<List<CategoryExpenseResult>> {
-        return budgetDao.getExpenseBySubCategory(parentCategoryId, month, year)
+        return budgetDao.getExpenseBySubCategory(parentCategoryId, monthStart, monthEnd)
     }
 
     override suspend fun getSeriesRoots(): List<Budget> {

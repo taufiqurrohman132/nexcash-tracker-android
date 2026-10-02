@@ -22,17 +22,24 @@ import javax.inject.Inject
 class GetExpenseSummaryUseCase @Inject constructor(
     private val transactionRepository: TransactionRepository,
 ) {
-    operator fun invoke(month: YearMonth): Flow<ExpenseSummary> {
-        val previousMonth = month.minusMonths(1)
-        val currentTotal = transactionRepository.getTotalExpenseByMonth(
+    /**
+     * [currentTotalFlow] boleh dikirim dari luar supaya total pengeluaran
+     * bulan berjalan tidak di-query dua kali (dipakai juga oleh
+     * [GetBudgetHealthUseCase] di combine yang sama).
+     */
+    operator fun invoke(
+        month: YearMonth,
+        currentTotalFlow: Flow<Long> = transactionRepository.getTotalExpenseByMonth(
             month.toStartOfMonthMillis(),
             month.toEndOfMonthMillis(),
-        )
+        ),
+    ): Flow<ExpenseSummary> {
+        val previousMonth = month.minusMonths(1)
         val previousTotal = transactionRepository.getTotalExpenseByMonth(
             previousMonth.toStartOfMonthMillis(),
             previousMonth.toEndOfMonthMillis(),
         )
-        return combine(currentTotal, previousTotal) { current, previous ->
+        return combine(currentTotalFlow, previousTotal) { current, previous ->
             ExpenseSummary(
                 total = current,
                 percentChangeFromLastMonth = if (previous == 0L) {

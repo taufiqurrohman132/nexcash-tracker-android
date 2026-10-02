@@ -13,7 +13,9 @@ import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.feature.category.domain.model.CategoryDeleteResolution
 import com.example.nexcashapplication.feature.category.domain.model.CategoryName
 import com.example.nexcashapplication.feature.category.domain.model.WeeklyTrend
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 import java.time.ZoneId
@@ -26,11 +28,15 @@ class CategoryRepositoryImpl @Inject constructor(
 ) : CategoryRepository {
     override fun getCategoryById(id: String): Flow<Category?> {
         return categoryDao.getCategoryById(id).map { it?.toDomain() }
+                .flowOn(Dispatchers.Default)
     }
 
-    override fun getAllCategory(): Flow<List<Category?>> {
-        return categoryDao.getAllCategories().map { list -> list.map { it?.toDomain() } }
-    }
+    override fun getAllCategory(): Flow<List<Category?>> =
+        // mapping entity → domain di luar main thread: dipakai banyak layar
+        // (transaksi, statistik) yang semuanya jalan pas transisi navigasi
+        categoryDao.getAllCategories()
+                .map { list -> list.map { it?.toDomain() } }
+                .flowOn(Dispatchers.Default)
 
     override fun searchCategories(
         query: String,
@@ -41,25 +47,25 @@ class CategoryRepositoryImpl @Inject constructor(
             type = type,
         ).map { list ->
             list.map { it.toDomain() }
-        }
+        }.flowOn(Dispatchers.Default)
     }
 
-    override fun getExpenseCategories(): Flow<List<Category>> {
-        return categoryDao.getExpenseCategories().map { list -> list.map { it.toDomain() } }
-    }
+    override fun getExpenseCategories(): Flow<List<Category>> =
+        categoryDao.getExpenseCategories()
+                .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
 
-    override fun getIncomeCategories(): Flow<List<Category>> {
-        return categoryDao.getIncomeCategories().map { list -> list.map { it.toDomain() } }
+    override fun getIncomeCategories(): Flow<List<Category>> =
+        categoryDao.getIncomeCategories()
+                .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
 
-    }
-
-    override fun getSubCategories(parentId: String): Flow<List<Category>> {
-        return categoryDao.getSubCategories(parentId).map { list ->
+    override fun getSubCategories(parentId: String): Flow<List<Category>> =
+        categoryDao.getSubCategories(parentId).map { list ->
             Log.d("getSubCategories", "loadDetailCategory: list = $list")
 
             list.map { it.toDomain() }
-        }
-    }
+        }.flowOn(Dispatchers.Default)
 
     override suspend fun getParentCategories(): List<Category> {
         return categoryDao.getParentCategories().map { list -> list.toDomain() }
@@ -104,7 +110,7 @@ class CategoryRepositoryImpl @Inject constructor(
                     dataMap[dow]?.total?.toFloat() ?: 0f
                 },
             )
-        }
+        }.flowOn(Dispatchers.Default)
     }
 
     override suspend fun insertCategory(category: Category) {

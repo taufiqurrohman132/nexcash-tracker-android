@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.statistics.presentation.main
 
+import com.example.nexcashapplication.awaitSettled
 import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.model.TypeCategory
@@ -20,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -62,6 +62,8 @@ class StatistikViewModelTest {
         budgetRepository = FakeBudgetRepository()
         categoryRepository = FakeCategoryRepository()
         transactionRepository = FakeTransactionRepository()
+        // cache lintas ViewModel bersifat statis — reset antar test
+        StatistikViewModel.lastSnapshot = null
     }
 
     @AfterEach
@@ -76,7 +78,7 @@ class StatistikViewModelTest {
         seedDasar()
 
         val vm = createViewModel()
-        advanceUntilIdle()
+        awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
         val state = vm.state.value
         assertEquals(2, state.alokasiDana.size) // kategori kosong tidak ikut
@@ -95,7 +97,7 @@ class StatistikViewModelTest {
         transactionRepository.seed(tx("expense", 250_000, TransactionType.EXPENSE, bulanIni, day = 15))
 
         val vm = createViewModel()
-        advanceUntilIdle()
+        awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
         val state = vm.state.value
         assertEquals(0L, state.sisaAnggaran) // tanpa OVER palsu
@@ -112,7 +114,7 @@ class StatistikViewModelTest {
         transactionRepository.seed(tx("expense", 250_000, TransactionType.EXPENSE, bulanIni, day = 15))
 
         val vm = createViewModel()
-        advanceUntilIdle()
+        awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
         assertEquals(-150_000L, vm.state.value.sisaAnggaran)
         assertEquals(BudgetStatus.OVER, vm.state.value.statusAnggaran)
@@ -126,7 +128,7 @@ class StatistikViewModelTest {
             transactionRepository.seed(tx("expense", 250_000, TransactionType.EXPENSE, bulanIni, day = 15))
 
             val vm = createViewModel()
-            advanceUntilIdle()
+            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
             // terpakai 83,3% → sisa 50rb < 20% dari 300rb
             assertEquals(BudgetStatus.WASPADA, vm.state.value.statusAnggaran)
@@ -139,10 +141,10 @@ class StatistikViewModelTest {
         seedDasar()
 
         val vm = createViewModel()
-        advanceUntilIdle()
+        awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
         vm.onEvent(StatistikEvent.OnAlokasiTabChange(AlokasiMode.REALISASI))
-        advanceUntilIdle()
+        awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
         val state = vm.state.value
         assertEquals(AlokasiMode.REALISASI, state.alokasiMode)
@@ -156,11 +158,11 @@ class StatistikViewModelTest {
             seedDasar()
 
             val vm = createViewModel()
-            advanceUntilIdle()
+            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
             vm.onEvent(StatistikEvent.OnAlokasiTabChange(AlokasiMode.REALISASI))
             vm.onEvent(StatistikEvent.OnRealisasiTipeChange(RealisasiTipe.PENDAPATAN))
-            advanceUntilIdle()
+            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
             val state = vm.state.value
             assertEquals(AlokasiMode.REALISASI, state.alokasiMode)
@@ -172,7 +174,7 @@ class StatistikViewModelTest {
 
             // kembali ke pengeluaran → donut expense muncul lagi
             vm.onEvent(StatistikEvent.OnRealisasiTipeChange(RealisasiTipe.PENGELUARAN))
-            advanceUntilIdle()
+            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
             assertEquals(listOf("c1"), vm.state.value.alokasiDana.map { it.kategoriId })
             assertEquals(250_000L, vm.state.value.totalAlokasi)
@@ -183,13 +185,13 @@ class StatistikViewModelTest {
         seedDasar()
 
         val vm = createViewModel()
-        advanceUntilIdle()
+        awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
         vm.onEvent(StatistikEvent.OnGantiBulanClick)
         assertTrue(vm.state.value.showMonthPicker)
 
         vm.onEvent(StatistikEvent.OnMonthSelected(bulanLalu))
-        advanceUntilIdle()
+        awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
         assertFalse(vm.state.value.showMonthPicker)
         assertEquals(bulanLalu, vm.state.value.selectedMonth)
         assertEquals(400_000L, vm.state.value.totalPengeluaran) // data ikut reload
@@ -203,10 +205,10 @@ class StatistikViewModelTest {
     fun `OnUbahAlokasiClick - mengirim effect navigasi`() = runTest(testDispatcher) {
         val vm = createViewModel()
         val effects = collectEffects(vm)
-        advanceUntilIdle()
+        awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
         vm.onEvent(StatistikEvent.OnUbahAlokasiClick)
-        advanceUntilIdle()
+        awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
         assertEquals(
             listOf<StatistikEffect>(StatistikEffect.NavigateToUbahAlokasi),
@@ -256,6 +258,8 @@ class StatistikViewModelTest {
         getExpenseSummaryUseCase = GetExpenseSummaryUseCase(transactionRepository),
         getSavingsRateUseCase = GetSavingsRateUseCase(transactionRepository),
         getBudgetHealthUseCase = GetBudgetHealthUseCase(budgetRepository, transactionRepository),
+        budgetRepository = budgetRepository,
+        transactionRepository = transactionRepository,
     )
 
     private fun category(id: String, name: String) = Category(
