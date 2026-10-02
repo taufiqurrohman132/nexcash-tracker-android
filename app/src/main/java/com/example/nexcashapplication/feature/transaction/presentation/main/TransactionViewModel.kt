@@ -13,6 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -22,10 +23,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import javax.inject.Inject
-import kotlin.time.Clock
 import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
@@ -38,12 +36,12 @@ class TransactionViewModel @Inject constructor(
     TransactionState(),
 ) {
 
-    // State untuk bulan yang sedang dipilih
-    private val _selectedYearMonth = MutableStateFlow(
-        Clock.System.now()
-                .toLocalDateTime(TimeZone.currentSystemDefault())
-                .let { "%04d-%02d".format(it.year, it.monthNumber) },
-    )
+    // Bulan yang sedang dipilih: sumbernya satu — TransactionState.selectedMonth
+    // (diisi lewat navigator bulan di TopAppBar). Dipetakan ke "yyyy-MM" karena
+    // format itu yang diminta use case.
+    private val selectedMonth: Flow<String> = state
+            .map { it.selectedMonth.toString() }
+            .distinctUntilChanged()
 
     private val _selectedCategoryId = MutableStateFlow<String?>(null)
 
@@ -110,6 +108,24 @@ class TransactionViewModel @Inject constructor(
                     sendEffect(TransactionEffect.NavigateToAddTransaction)
                 }
             }
+
+            is TransactionEvent.OnMonthSelected -> {
+                // sekalian menutup picker kalau datang dari konfirmasi MonthPicker
+                updateState {
+                    it.copy(
+                        selectedMonth = event.month,
+                        showMonthPicker = false,
+                    )
+                }
+            }
+
+            is TransactionEvent.OnOpenMonthPicker -> {
+                updateState { it.copy(showMonthPicker = true) }
+            }
+
+            is TransactionEvent.OnMonthPickerDismiss -> {
+                updateState { it.copy(showMonthPicker = false) }
+            }
         }
     }
 
@@ -118,7 +134,7 @@ class TransactionViewModel @Inject constructor(
     private fun observerData() {
 
         combine(
-            _selectedYearMonth,
+            selectedMonth,
             _selectedCategoryId,
         ) { yearMonth, categoryId ->
             yearMonth to categoryId

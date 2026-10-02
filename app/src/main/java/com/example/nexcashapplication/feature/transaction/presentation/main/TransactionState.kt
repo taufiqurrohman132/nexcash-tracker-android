@@ -3,9 +3,15 @@ package com.example.nexcashapplication.feature.transaction.presentation.main
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.CategoryNameItemUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionUiGroupModel
+import java.time.YearMonth
 
 data class TransactionState(
     val searchQuery: String = "",
+
+    // Navigasi bulan di TopAppBar — filter daftar transaksi & ringkasan
+    val selectedMonth: YearMonth = YearMonth.now(),
+    val showMonthPicker: Boolean = false,
+
     val categoryList: List<CategoryNameItemUiModel?> = emptyList(),
     val selectedCategoryId: String? = null,
 

@@ -69,6 +69,8 @@ import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.component.IconRounded
+import com.example.nexcashapplication.core.component.MonthNavigator
+import com.example.nexcashapplication.core.component.MonthPicker
 import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCompact
@@ -87,6 +89,7 @@ import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.SuccessGreen
 import com.example.nexcashapplication.ui.theme.TextTertiary
 import com.example.nexcashapplication.ui.theme.WarningAmber
+import java.time.YearMonth
 
 @Composable
 fun TransactionScreen(
@@ -141,7 +144,11 @@ fun TransactionContent(
                     )
                 },
                 actions = {
-
+                    MonthNavigator(
+                        month = state.selectedMonth,
+                        onMonthSelected = { onEvent(TransactionEvent.OnMonthSelected(it)) },
+                        onOpenPicker = { onEvent(TransactionEvent.OnOpenMonthPicker) },
+                    )
                 },
             )
         },
@@ -322,6 +329,18 @@ fun TransactionContent(
                     }
                 }
             }
+
+            MonthPicker(
+                visible = state.showMonthPicker,
+                currentMonth = state.selectedMonth.monthValue - 1,
+                currentYear = state.selectedMonth.year,
+                confirmButtonCLicked = { month, year ->
+                    onEvent(TransactionEvent.OnMonthSelected(YearMonth.of(year, month + 1)))
+                },
+                cancelClicked = {
+                    onEvent(TransactionEvent.OnMonthPickerDismiss)
+                },
+            )
         }
     }
 }
