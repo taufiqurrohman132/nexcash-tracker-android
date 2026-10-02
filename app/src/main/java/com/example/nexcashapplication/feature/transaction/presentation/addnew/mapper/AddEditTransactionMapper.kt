@@ -24,7 +24,7 @@ fun CategoryAndSubcategory.toUIModel() = TransactionCategoryAndSubModel(
 )
 
 fun TransactionWithDetails.toAddEditTransactionState(
-    availableCategories: List<TransactionCategoryAndSubModel>,
+    allCategories: List<TransactionCategoryAndSubModel>,
     availableAccounts: List<AccountUiModel>,
 ) = AddEditTransactionState(
     transactionId = transaction.id,
@@ -35,7 +35,7 @@ fun TransactionWithDetails.toAddEditTransactionState(
     selectedAccountId = transaction.accountId,
     transactionAt = transaction.dateTime,
     note = transaction.description ?: "",
-    availableCategories = availableCategories,
+    allCategories = allCategories,
     availableAccounts = availableAccounts,
 //    attachmentName = transaction.,
 //    isRecurring = transaction.isRecurring

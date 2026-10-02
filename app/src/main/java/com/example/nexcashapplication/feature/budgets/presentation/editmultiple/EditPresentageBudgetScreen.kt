@@ -268,9 +268,9 @@ fun CategoryAllocationCard(
     onDeleteClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
-    var localPercentage by remember(category.percentage) {
-        mutableFloatStateOf(category.percentage)
-    }
+//    var localPercentage by remember(category.percentage) {
+//        mutableFloatStateOf(category.percentage)
+//    }
 
     Column(
         Modifier
@@ -320,10 +320,10 @@ fun CategoryAllocationCard(
         ) {
             Slider(
                 modifier = Modifier.weight(1f),
-                value = localPercentage,
+                value = category.percentage,
                 valueRange = 0f..100f,
-                onValueChange = { localPercentage = it },
-                onValueChangeFinished = { onSliderChange(localPercentage.toInt()) },
+//                onValueChange = { localPercentage = it },
+                onValueChange = { onSliderChange(it.toInt()) },
                 thumb = {
                     Box(
                         modifier = Modifier
@@ -370,11 +370,11 @@ fun SummaryBudgetCard(
                     elevation = 4.dp,
                     ambientColor = PrimaryCyan,
                     spotColor = PrimaryCyan,
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(10.dp),
                 )
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(10.dp))
                 .background(Color.White)
-                .padding(16.dp),
+                .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Text(

@@ -138,6 +138,9 @@ fun NavigationStack(
 
         composable<Route.InsightRoute.Main> {
             // InsightScreen()
+            StatistikScreen(
+                navController = navController,
+            )
         }
 
 

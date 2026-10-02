@@ -51,6 +51,11 @@ class FakeTransactionRepository : TransactionRepository {
         endOfMonth: Long,
     ): Flow<Map<String, Long>> = unused()
 
+    override fun getIncomeByCategoryByMonth(
+        startOfMonth: Long,
+        endOfMonth: Long,
+    ): Flow<Map<String, Long>> = unused()
+
     override fun getUsedAmountByCategory(
         categoryId: String,
         periodStart: Long,

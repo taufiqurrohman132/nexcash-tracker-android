@@ -1,14 +1,13 @@
 package com.example.nexcashapplication.feature.statistics.presentation.main
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,18 +19,19 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.TrendingUp
-import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,17 +57,23 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.IconCircular
+import com.example.nexcashapplication.core.component.MonthNavigator
 import com.example.nexcashapplication.core.component.MonthPicker
 import com.example.nexcashapplication.core.component.donutchart.DonutSlice
 import com.example.nexcashapplication.core.component.donutchart.InteractiveDonutChart
 import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.extension.formatDecimal2
+import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.common.extentions.toColor
 import com.example.nexcashapplication.feature.statistics.presentation.main.model.AlokasiKategoriUi
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
+import com.example.nexcashapplication.ui.theme.TextTertiary
 import java.time.YearMonth
+import java.time.format.TextStyle
+import java.util.Locale
 
 
 @Composable
@@ -79,19 +86,8 @@ fun StatistikScreen(
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is StatistikEffect.NavigateToUbahAlokasi -> {
-
-                }
-
-                is StatistikEffect.NavigateToTargetList -> {
-
-                }
-
-                is StatistikEffect.NavigateToTargetDetail -> {
-
-                }
-
-                is StatistikEffect.ShowMonthPicker -> Unit // TODO: tampilkan dialog
+                is StatistikEffect.NavigateToUbahAlokasi ->
+                    navController.navigate(Route.BudgetRoute.EditMultiple)
             }
         }
     }
@@ -114,7 +110,7 @@ fun StatistikContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Statistic",
+                        text = "Statistik",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -123,45 +119,11 @@ fun StatistikContent(
                     containerColor = Color.White,
                 ),
                 actions = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        IconCircular(
-                            icon = Icons.Default.KeyboardArrowLeft,
-                            iconColor = Color.Black,
-                            backgroundColor = BorderGray,
-                            iconToCountainerRatio = 1,
-                            onClick = {
-                                onEvent(
-                                    StatistikEvent.OnMonthSelected(
-                                        state.selectedMonth.minusMonths(
-                                            1,
-                                        ),
-                                    ),
-                                )
-                            },
-                        )
-                        OutlinedButton(
-                            onClick = { onEvent(StatistikEvent.OnGantiBulanClick) },
-                        ) {
-                            Text("${state.selectedMonth.month} ${state.selectedMonth.year}")
-                        }
-                        IconCircular(
-                            icon = Icons.Default.KeyboardArrowRight,
-                            iconColor = Color.Black,
-                            backgroundColor = BorderGray,
-                            iconToCountainerRatio = 1,
-                            onClick = {
-                                onEvent(
-                                    StatistikEvent.OnMonthSelected(
-                                        state.selectedMonth.plusMonths(
-                                            1,
-                                        ),
-                                    ),
-                                )
-                            },
-                        )
-                    }
+                    MonthNavigator(
+                        month = state.selectedMonth,
+                        onMonthSelected = { onEvent(StatistikEvent.OnMonthSelected(it)) },
+                        onOpenPicker = { onEvent(StatistikEvent.OnGantiBulanClick) },
+                    )
                 },
             )
         },
@@ -185,8 +147,16 @@ fun StatistikContent(
                 )
                 SummaryStatCard(
                     title = "Tingkat Tabungan",
-                    value = "${state.tingkatTabungan}%",
-                    badge = "+${state.tabunganTrendPercent}%",
+                    value = String.format(
+                        Locale.forLanguageTag("id"),
+                        "%.1f%%",
+                        state.tingkatTabungan,
+                    ),
+                    badge = String.format(
+                        Locale.forLanguageTag("id"),
+                        "%+.1f%%",
+                        state.tabunganTrendPercent,
+                    ),
                     icon = Icons.Outlined.TrendingUp,
                     modifier = Modifier.weight(1f),
                 )
@@ -196,17 +166,12 @@ fun StatistikContent(
                 total = state.totalAlokasi,
                 items = state.alokasiDana,
                 mode = state.alokasiMode,
+                realisasiTipe = state.realisasiTipe,
                 onTabChange = { onEvent(StatistikEvent.OnAlokasiTabChange(it)) },
-                onModeRencanaClick = { onEvent(StatistikEvent.OnModeRencanaToggle) },
+                onTipeChange = { onEvent(StatistikEvent.OnRealisasiTipeChange(it)) },
             )
 
             TindakanCepatCard(onClick = { onEvent(StatistikEvent.OnUbahAlokasiClick) })
-
-//            Text("Insight Pintar", style = MaterialTheme.typography.titleMedium)
-
-//            state.aiSummaryQuote?.let { quote ->
-//                item { AiQuoteCard(quote) }
-//            }
 
             MonthPicker(
                 visible = state.showMonthPicker,
@@ -217,9 +182,22 @@ fun StatistikContent(
                 },
                 cancelClicked = {
                     onEvent(StatistikEvent.OnMonthPickerDismiss)
-                }
+                },
             )
         }
+    }
+}
+
+
+@Preview(showBackground = true, name = "Navigasi bulan - di bulan berjalan")
+@Composable
+private fun MonthNavigatorPreview() {
+    NexCashApplicationTheme {
+        MonthNavigator(
+            month = YearMonth.now(),
+            onMonthSelected = {},
+            onOpenPicker = {},
+        )
     }
 }
 
@@ -228,8 +206,9 @@ fun AlokasiDanaCard(
     total: Long,
     items: List<AlokasiKategoriUi>,
     mode: AlokasiMode,
+    realisasiTipe: RealisasiTipe,
     onTabChange: (AlokasiMode) -> Unit,
-    onModeRencanaClick: () -> Unit,
+    onTipeChange: (RealisasiTipe) -> Unit,
 ) {
     Column(
         Modifier
@@ -250,29 +229,59 @@ fun AlokasiDanaCard(
         ) {
             Column {
                 Text("Alokasi Dana", style = MaterialTheme.typography.titleMedium)
-                Text("Berdasarkan Target", style = MaterialTheme.typography.bodySmall)
+                val basis = when {
+                    mode == AlokasiMode.ALOKASI -> "Berdasarkan Target"
+                    realisasiTipe == RealisasiTipe.PENGELUARAN ->
+                        "Berdasarkan Realisasi (Pengeluaran)"
+
+                    else -> "Berdasarkan Realisasi (Pendapatan)"
+                }
+                Text(
+                    text = "$basis · ${total.formatCurrency()}",
+                    style = MaterialTheme.typography.bodySmall,
+                )
             }
-            Button(onClick = onModeRencanaClick) { Text("Mode Rencana") }
-
-
         }
 
         Spacer(Modifier.height(12.dp))
 
-        SegmentedTabRow(mode, onTabChange)
+        SegmentedTabRow(
+            selected = mode,
+            options = listOf(
+                AlokasiMode.ALOKASI to "Alokasi",
+                AlokasiMode.REALISASI to "Realisasi",
+            ),
+            onSelect = onTabChange,
+        )
+
+        // Tab sekunder hanya relevan di Realisasi — budget (Alokasi) memang
+        // cuma ada di kategori pengeluaran.
+        if (mode == AlokasiMode.REALISASI) {
+            Spacer(Modifier.height(8.dp))
+
+            SegmentedTabRow(
+                selected = realisasiTipe,
+                options = listOf(
+                    RealisasiTipe.PENGELUARAN to "Pengeluaran",
+                    RealisasiTipe.PENDAPATAN to "Pendapatan",
+                ),
+                onSelect = onTipeChange,
+            )
+        }
 
         Spacer(Modifier.height(16.dp))
 
-        val slices = remember(items) {
-            items.map { item ->
+        // Memastikan slices diperbarui setiap kali data items berubah
+        val slices = remember(items, mode, realisasiTipe) {
+            items.mapIndexed { index, item ->
                 DonutSlice(
                     label = item.nama,
                     value = item.persentase,
-                    color = item.colorHex.toColor(),
+                    color = item.colorHex.toColor()
                 )
             }
         }
-        Log.d("SLICEDONUT", "slices: $slices")
+
 
         InteractiveDonutChart(
             slices = slices,
@@ -283,56 +292,82 @@ fun AlokasiDanaCard(
 
         Spacer(Modifier.height(16.dp))
 
-        FlowRow(
-            modifier = Modifier.fillMaxWidth(),
-            maxItemsInEachRow = 3,
-            horizontalArrangement = Arrangement.SpaceAround,
-        ) {
-            items.forEach { item -> LegendItem(item) }
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            items.chunked(2).forEach { rowItems ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                ) {
+                    rowItems.forEach { item ->
+                        // weight(1f) → tiap sel dapat (lebar - jarak) / 2 → kolom seimbang
+                        LegendItem(item, Modifier.weight(1f))
+                    }
+                }
+            }
         }
 
     }
 }
 
 @Composable
-private fun LegendItem(item: AlokasiKategoriUi) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+private fun LegendItem(item: AlokasiKategoriUi, modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier,verticalAlignment = Alignment.CenterVertically) {
         Box(
             Modifier
-                    .size(10.dp)
-                    .background(item.colorHex.toColor(), CircleShape),
-        )
+                    .background(item.colorHex.toColor(), CircleShape)
+                    .padding(horizontal = 4.dp)
+        ){
+            Text(item.persentase.formatDecimal2(), style = MaterialTheme.typography.titleSmall)
+        }
         Spacer(Modifier.width(6.dp))
         Column {
-            Text(item.nama, style = MaterialTheme.typography.bodySmall)
-            Text("${item.persentase}%", style = MaterialTheme.typography.titleSmall)
+            // 1 baris + ellipsis: nama panjang jangan bikin sel jadi 2 baris
+            Text(
+                text = item.nama,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = item.nominal.formatCurrency(),
+                style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
         }
     }
 }
 
 
+/**
+ * Segmented control generik dipakai dua kali di [AlokasiDanaCard]:
+ * tab utama `AlokasiMode` dan tab sekunder `RealisasiTipe`.
+ */
 @Composable
-fun SegmentedTabRow(mode: AlokasiMode, onTabChange: (AlokasiMode) -> Unit) {
+fun <T> SegmentedTabRow(
+    selected: T,
+    options: List<Pair<T, String>>,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
-        Modifier
+        modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(50))
                 .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(4.dp),
     ) {
-        listOf(
-            AlokasiMode.ALOKASI to "Alokasi",
-            AlokasiMode.REALISASI to "Realisasi",
-        ).forEach { (m, label) ->
-            val selected = mode == m
+        options.forEach { (value, label) ->
+            val isSelected = selected == value
             Text(
                 text = label,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                         .weight(1f)
                         .clip(RoundedCornerShape(50))
-                        .background(if (selected) MaterialTheme.colorScheme.surface else Color.Transparent)
-                        .clickable { onTabChange(m) }
+                        .background(if (isSelected) MaterialTheme.colorScheme.surface else Color.Transparent)
+                        .clickable { onSelect(value) }
                         .padding(vertical = 8.dp),
             )
         }
@@ -475,15 +510,26 @@ fun TotalPengeluaranCard(totalPengeluaran: Long, deltaPercent: Float) {
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    // tren pengeluaran: naik = merah, turun = hijau, datar = abu
+                    val trendColor = when {
+                        deltaPercent > 0f -> Color(0xFFD32F2F)
+                        deltaPercent < 0f -> Color(0xFF2E7D32)
+                        else -> Color.Gray
+                    }
                     Icon(
-                        Icons.AutoMirrored.Filled.TrendingUp,
+                        if (deltaPercent >= 0f) {
+                            Icons.AutoMirrored.Filled.TrendingUp
+                        } else {
+                            Icons.AutoMirrored.Filled.TrendingDown
+                        },
                         contentDescription = null,
-                        tint = Color.Red,
+                        tint = trendColor,
                         modifier = Modifier.size(16.dp),
                     )
+                    Spacer(Modifier.width(4.dp))
                     Text(
-                        deltaPercent.toString(),
-                        color = Color.Red,
+                        String.format(Locale.forLanguageTag("id"), "%+.1f%%", deltaPercent),
+                        color = trendColor,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
@@ -542,7 +588,6 @@ fun StatistikContentPreview() {
                 tingkatTabungan = 38.5f,
                 tabunganTrendPercent = 5.2f,
                 alokasiMode = AlokasiMode.ALOKASI,
-                isModeRencanaActive = false,
                 totalAlokasi = 4_000_000,
                 alokasiDana = dummyListAlokasi,
             ),
@@ -564,6 +609,7 @@ fun StatistikContentOverPreview() {
                 tingkatTabungan = 8.0f,
                 tabunganTrendPercent = -15.0f,
                 alokasiMode = AlokasiMode.REALISASI,
+                realisasiTipe = RealisasiTipe.PENGELUARAN,
                 totalAlokasi = 4_000_000,
                 alokasiDana = listOf(
                     AlokasiKategoriUi("1", "Makanan", 50f, 2_600_000, "#FF6B6B"),

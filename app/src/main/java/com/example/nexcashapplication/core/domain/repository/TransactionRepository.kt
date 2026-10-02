@@ -19,7 +19,15 @@ interface TransactionRepository {
     ): Flow<List<TransactionWithDetails>>
 
     fun getTotalExpenseByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Long>
+
+    /** Total pengeluaran per kategori pada rentang bulan — donut Realisasi (Pengeluaran). */
     fun getExpenseByCategoryByMonth(
+        startOfMonth: Long,
+        endOfMonth: Long,
+    ): Flow<Map<String, Long>> // categoryId -> total
+
+    /** Total pemasukan per kategori pada rentang bulan — donut Realisasi (Pendapatan). */
+    fun getIncomeByCategoryByMonth(
         startOfMonth: Long,
         endOfMonth: Long,
     ): Flow<Map<String, Long>> // categoryId -> total

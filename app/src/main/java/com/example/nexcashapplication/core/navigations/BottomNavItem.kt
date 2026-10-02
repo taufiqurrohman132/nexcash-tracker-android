@@ -45,7 +45,7 @@ val TOP_LEVEL_DESTINATION = listOf(
         title = "Insight",
         selectedIcon = Icons.Filled.Insights,
         unselectedIcon = Icons.Outlined.Insights,
-        route = Route.CategoryRoute.Main,
+        route = Route.StatisticRoute.Main,
 
         ),
     BottomNavItem(

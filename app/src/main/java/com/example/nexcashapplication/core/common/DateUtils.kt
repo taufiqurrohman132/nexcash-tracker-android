@@ -19,7 +19,3 @@ fun getWeeklyPeriodByLocale(
     val periodEnd = periodStart.plusDays(6)
     return periodStart to periodEnd
 }
-
-fun previousMonthOf(month: Long, year: Long): Pair<Long, Long> {
-    return if (month == 1L) 12L to (year - 1L) else (month - 1L) to year
-}
