@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.core.navigations.Route
@@ -123,7 +124,26 @@ class AddEditTransactionViewModel @Inject constructor(
 
             is AddEditTransactionEvent.OnTypeChange -> {
                 updateState {
-                    it.copy(type = event.type)
+                    // kategori lama tidak sah untuk tipe baru → buang,
+                    // supaya `isValid` menahan save sampai pilih ulang
+                    val tipeBaru = if (event.type == TransactionType.EXPENSE) {
+                        TypeCategory.EXPENSE
+                    } else {
+                        TypeCategory.INCOME
+                    }
+                    val masihValid = it.selectedCategoryId?.let { id ->
+                        it.allCategories.any { group ->
+                            group.categoriItem.tipe == tipeBaru && (
+                                    group.categoriItem.id == id ||
+                                            group.subCategoriesItem.any { sub -> sub.id == id }
+                                    )
+                        }
+                    } ?: false
+
+                    it.copy(
+                        type = event.type,
+                        selectedCategoryId = if (masihValid) it.selectedCategoryId else null,
+                    )
                 }
             }
 
@@ -219,7 +239,7 @@ class AddEditTransactionViewModel @Inject constructor(
                     transaction?.let {
                         updateState { current ->
                             transaction.toAddEditTransactionState(
-                                availableCategories = current.availableCategories,
+                                allCategories = current.allCategories,
                                 availableAccounts = current.availableAccounts,
                             ).copy(
                                 showDatePicker = current.showDatePicker,
@@ -235,13 +255,13 @@ class AddEditTransactionViewModel @Inject constructor(
     }
 
     private suspend fun ensureCategoriesLoaded() {
-        if (state.value.availableCategories.isNotEmpty()) return
+        if (state.value.allCategories.isNotEmpty()) return
 
         runCatching {
             categoryRepository.getCategoriesAndSubCategories()
         }.onSuccess { result ->
             updateState {
-                it.copy(availableCategories = result.map { model -> model.toUIModel() })
+                it.copy(allCategories = result.map { model -> model.toUIModel() })
             }
         }
     }
