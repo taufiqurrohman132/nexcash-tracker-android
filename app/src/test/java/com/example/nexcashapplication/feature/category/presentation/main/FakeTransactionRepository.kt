@@ -140,6 +140,19 @@ class FakeTransactionRepository : TransactionRepository {
                     .toMap()
         }
 
+    override fun getIncomeByCategoryByMonth(
+        startOfMonth: Long,
+        endOfMonth: Long,
+    ): Flow<Map<String, Long>> =
+        transactions.map { list ->
+            list.filter { it.isIncomeBetween(startOfMonth, endOfMonth) }
+                    .groupBy { it.categoryId }
+                    .mapNotNull { (categoryId, rows) ->
+                        categoryId?.let { it to rows.sumOf { row -> row.amount } }
+                    }
+                    .toMap()
+        }
+
     override fun getAllTransactionsWithDetails(): Flow<List<TransactionWithDetails>> = unused()
 
     override fun getTransactionsByAccount(accountId: String): Flow<List<TransactionWithDetails>> =
@@ -171,6 +184,10 @@ class FakeTransactionRepository : TransactionRepository {
 
     private fun Transaction.isExpenseBetween(startOfMonth: Long, endOfMonth: Long): Boolean =
         typeTransaction == TransactionType.EXPENSE &&
+                dateTime.toEpochMilliseconds() in startOfMonth..endOfMonth
+
+    private fun Transaction.isIncomeBetween(startOfMonth: Long, endOfMonth: Long): Boolean =
+        typeTransaction == TransactionType.INCOME &&
                 dateTime.toEpochMilliseconds() in startOfMonth..endOfMonth
 
     /** "yyyy-MM" ala SQL `strftime`, zona sistem — sama dengan pemanggilnya. */

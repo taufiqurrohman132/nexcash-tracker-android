@@ -15,8 +15,16 @@ data class StatistikState(
     val alokasiDana: List<AlokasiKategoriUi> = emptyList(),
     val totalAlokasi: Long = 0,
     val alokasiMode: AlokasiMode = AlokasiMode.ALOKASI,
+    val realisasiTipe: RealisasiTipe = RealisasiTipe.PENGELUARAN,
     val showMonthPicker: Boolean = false,
 )
 
 enum class BudgetStatus { AMAN, WASPADA, OVER }
 enum class AlokasiMode { ALOKASI, REALISASI }
+
+/**
+ * Rincian tab "Realisasi" pada kartu Alokasi Dana: donut pengeluaran atau
+ * pemasukan per kategori. Tidak dipakai saat mode [AlokasiMode.ALOKASI]
+ * (budget hanya ada di kategori pengeluaran).
+ */
+enum class RealisasiTipe { PENGELUARAN, PENDAPATAN }

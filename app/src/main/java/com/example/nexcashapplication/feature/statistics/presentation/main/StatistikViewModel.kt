@@ -42,6 +42,7 @@ class StatistikViewModel @Inject constructor(
 ) {
     private val selectedPeriod = MutableStateFlow(YearMonth.now())
     private val alokasiMode = MutableStateFlow(AlokasiMode.ALOKASI)
+    private val realisasiTipe = MutableStateFlow(RealisasiTipe.PENGELUARAN)
 
     init {
         observeStatistics()
@@ -55,6 +56,16 @@ class StatistikViewModel @Inject constructor(
                 updateState {
                     it.copy(
                         alokasiMode = event.mode,
+                    )
+                }
+            }
+
+            is StatistikEvent.OnRealisasiTipeChange -> {
+                realisasiTipe.value = event.tipe
+
+                updateState {
+                    it.copy(
+                        realisasiTipe = event.tipe,
                     )
                 }
             }
@@ -99,13 +110,15 @@ class StatistikViewModel @Inject constructor(
         combine(
             selectedPeriod,
             alokasiMode,
-        ) { yearMonth, alokasiMode -> Pair(yearMonth, alokasiMode) }
-                .flatMapLatest { (yearMonth, alokasiMode) ->
+            realisasiTipe,
+        ) { yearMonth, mode, tipe -> Triple(yearMonth, mode, tipe) }
+                .flatMapLatest { (yearMonth, mode, tipe) ->
                     combine(
                         getCategoryAllocationUseCase(
                             yearMonth.toStartOfMonthMillis(),
                             yearMonth.toEndOfMonthMillis(),
-                            alokasiMode,
+                            mode,
+                            tipe,
                         ),
                         getExpenseSummaryUseCase(yearMonth),
                         getSavingsRateUseCase(yearMonth),

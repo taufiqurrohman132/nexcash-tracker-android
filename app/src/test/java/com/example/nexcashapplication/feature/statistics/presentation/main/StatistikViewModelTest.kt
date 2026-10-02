@@ -11,6 +11,7 @@ import com.example.nexcashapplication.feature.statistics.domain.usecase.GetBudge
 import com.example.nexcashapplication.feature.statistics.domain.usecase.GetCategoryAllocationUseCase
 import com.example.nexcashapplication.feature.statistics.domain.usecase.GetExpenseSummaryUseCase
 import com.example.nexcashapplication.feature.statistics.domain.usecase.GetSavingsRateUseCase
+import com.example.nexcashapplication.feature.statistics.presentation.main.RealisasiTipe
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlinx.coroutines.Dispatchers
@@ -148,6 +149,34 @@ class StatistikViewModelTest {
         assertEquals(listOf("c1"), state.alokasiDana.map { it.kategoriId })
         assertEquals(250_000L, state.totalAlokasi) // pengeluaran bulan ini
     }
+
+    @Test
+    fun `OnRealisasiTipeChange - pendapatan memakai pemasukan per kategori`() =
+        runTest(testDispatcher) {
+            seedDasar()
+
+            val vm = createViewModel()
+            advanceUntilIdle()
+
+            vm.onEvent(StatistikEvent.OnAlokasiTabChange(AlokasiMode.REALISASI))
+            vm.onEvent(StatistikEvent.OnRealisasiTipeChange(RealisasiTipe.PENDAPATAN))
+            advanceUntilIdle()
+
+            val state = vm.state.value
+            assertEquals(AlokasiMode.REALISASI, state.alokasiMode)
+            assertEquals(RealisasiTipe.PENDAPATAN, state.realisasiTipe)
+            // pemasukan punya kategori sendiri di seedDasar (categoryId null) →
+            // tidak ada irisan, total ikut 0
+            assertTrue(state.alokasiDana.isEmpty())
+            assertEquals(0L, state.totalAlokasi)
+
+            // kembali ke pengeluaran → donut expense muncul lagi
+            vm.onEvent(StatistikEvent.OnRealisasiTipeChange(RealisasiTipe.PENGELUARAN))
+            advanceUntilIdle()
+
+            assertEquals(listOf("c1"), vm.state.value.alokasiDana.map { it.kategoriId })
+            assertEquals(250_000L, vm.state.value.totalAlokasi)
+        }
 
     @Test
     fun `bulan - picker membuka, memilih menutup dan reload data`() = runTest(testDispatcher) {

@@ -10,6 +10,7 @@ import com.example.nexcashapplication.feature.budgets.domain.usecase.FakeBudgetR
 import com.example.nexcashapplication.feature.category.presentation.main.FakeCategoryRepository
 import com.example.nexcashapplication.feature.category.presentation.main.FakeTransactionRepository
 import com.example.nexcashapplication.feature.statistics.presentation.main.AlokasiMode
+import com.example.nexcashapplication.feature.statistics.presentation.main.RealisasiTipe
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlinx.coroutines.flow.first
@@ -78,16 +79,66 @@ class GetCategoryAllocationUseCaseTest {
         assertEquals(60f, list[0].persentase, 0.001f) // 600rb / 1jt
     }
 
-    private fun useCase(mode: AlokasiMode) = GetCategoryAllocationUseCase(
+    @Test
+    fun `realisasi pengeluaran - nominal subkategori digulung ke induk`() = runTest {
+        categoryRepository.seed(
+            category("p1", "Makanan"),
+            category("s1", "Bakso", parentId = "p1"),
+        )
+        transactionRepository.seed(
+            tx("e1", 400_000, "p1"),
+            tx("e2", 100_000, "s1"), // sub → masuk p1
+            tx("e3", 300_000, "c2"),
+        )
+
+        val list = useCase(AlokasiMode.REALISASI).first()
+
+        assertEquals(listOf("p1", "c2"), list.map { it.kategoriId }) // s1 tidak jadi irisan
+        assertEquals(500_000L, list[0].nominal) // 400rb induk + 100rb sub
+        assertEquals(62.5f, list[0].persentase, 0.001f) // 500rb / 800rb
+    }
+
+    @Test
+    fun `realisasi pendapatan - memakai pemasukan, pengeluaran diabaikan`() = runTest {
+        transactionRepository.seed(
+            Transaction(
+                id = "i1",
+                title = "gaji",
+                amount = 900_000,
+                categoryId = "c1",
+                description = null,
+                dateTime = Instant.fromEpochMilliseconds(
+                    LocalDate.of(2026, 9, 15).atTime(12, 0).toInstant(ZoneOffset.UTC).toEpochMilli(),
+                ),
+                typeTransaction = TransactionType.INCOME,
+                accountId = "acc1",
+            ),
+            tx("e1", 600_000, "c1"), // expense tidak ikut donut pendapatan
+            tx("e2", 300_000, "c2"),
+        )
+
+        val list = useCase(AlokasiMode.REALISASI, RealisasiTipe.PENDAPATAN).first()
+
+        assertEquals(listOf("c1"), list.map { it.kategoriId }) // c2 cuma punya expense
+        assertEquals(900_000L, list[0].nominal)
+        assertEquals(100f, list[0].persentase, 0.001f) // 900rb / 900rb
+    }
+
+    private fun useCase(
+        mode: AlokasiMode,
+        tipe: RealisasiTipe = RealisasiTipe.PENGELUARAN,
+    ) = GetCategoryAllocationUseCase(
         budgetRepository, transactionRepository, categoryRepository,
     )(
         bulan.toStartOfMonthMillis(),
         bulan.toEndOfMonthMillis(),
         mode,
+        tipe,
     )
 
-    private fun category(id: String, name: String) = Category(
+    private fun category(id: String, name: String, parentId: String? = null) = Category(
         id = id,
+        parentId = parentId,
         name = name,
         type = TypeCategory.EXPENSE,
         iconId = "ic",

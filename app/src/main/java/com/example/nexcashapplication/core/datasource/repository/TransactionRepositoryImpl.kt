@@ -68,9 +68,13 @@ class TransactionRepositoryImpl @Inject constructor(
         return transactionDao.getTotalExpenseInRange(startOfMonth = startOfMonth, endOfMonth = endOfMonth)
     }
 
-    override fun getExpenseByCategoryByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Map<String, Long>> {
-        TODO("Not yet implemented")
-    }
+    override fun getExpenseByCategoryByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Map<String, Long>> =
+        transactionDao.getExpenseByCategoryInRange(startOfMonth, endOfMonth)
+                .map { rows -> rows.associate { it.categoryId to it.total } }
+
+    override fun getIncomeByCategoryByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Map<String, Long>> =
+        transactionDao.getIncomeByCategoryInRange(startOfMonth, endOfMonth)
+                .map { rows -> rows.associate { it.categoryId to it.total } }
 
     override fun getUsedAmountByCategory(
         categoryId: String,

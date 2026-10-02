@@ -231,14 +231,32 @@ ORDER BY transaction_date DESC
     )
     fun getTotalIncomeInRange(startOfMonth: Long, endOfMonth: Long): Flow<Double>
 
+    // Statistik: donut "Realisasi (Pengeluaran)" per kategori.
+    // Kategori null dikeluarkan — Room tidak bisa memetakan grup NULL ke
+    // CategoryExpenseResult non-null; transaksi terhapus ikut dikeluarkan.
     @Query(
         """
         SELECT category_id, SUM(amount) as total FROM transactions
-        WHERE type = 'expense' AND transaction_date BETWEEN :startOfMonth AND :endOfMonth
+        WHERE type = 'expense' AND deleted_at IS NULL AND category_id IS NOT NULL
+        AND transaction_date BETWEEN :startOfMonth AND :endOfMonth
         GROUP BY category_id
     """,
     )
     fun getExpenseByCategoryInRange(
+        startOfMonth: Long, endOfMonth: Long,
+    ): Flow<List<CategoryExpenseResult>>
+
+    // Statistik: donut "Realisasi (Pendapatan)" per kategori — pasangan
+    // [getExpenseByCategoryInRange] untuk tipe 'income'.
+    @Query(
+        """
+        SELECT category_id, SUM(amount) as total FROM transactions
+        WHERE type = 'income' AND deleted_at IS NULL AND category_id IS NOT NULL
+        AND transaction_date BETWEEN :startOfMonth AND :endOfMonth
+        GROUP BY category_id
+    """,
+    )
+    fun getIncomeByCategoryInRange(
         startOfMonth: Long, endOfMonth: Long,
     ): Flow<List<CategoryExpenseResult>>
 
