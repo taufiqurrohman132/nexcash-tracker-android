@@ -2,6 +2,8 @@ package com.example.nexcashapplication.core.datasource.repository
 
 import android.util.Log
 import androidx.room.withTransaction
+import com.example.nexcashapplication.core.common.toEndOfMonthMillis
+import com.example.nexcashapplication.core.common.toStartOfMonthMillis
 import com.example.nexcashapplication.core.datasource.local.dao.AccountDao
 import com.example.nexcashapplication.core.datasource.local.dao.CategoryDao
 import com.example.nexcashapplication.core.datasource.local.dao.TransactionDao
@@ -15,8 +17,11 @@ import com.example.nexcashapplication.feature.transaction.data.mapper.toDomain
 import com.example.nexcashapplication.feature.transaction.data.mapper.toEntity
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import java.time.YearMonth
 import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
@@ -25,6 +30,20 @@ class TransactionRepositoryImpl @Inject constructor(
     val accountDao: AccountDao,
     val categoryDao: CategoryDao,
 ) : TransactionRepository {
+
+    /**
+     * "yyyy-MM" → (awal, akhir) bulan itu dalam epoch millis UTC.
+     *
+     * Sama persis artinya dengan `strftime('%Y-%m', transaction_date/1000, 'unixepoch')`
+     * yang dipakai sebelumnya (UTC, tanpa modifier 'localtime'), tapi rentang angka
+     * bisa memakai index `transaction_date` — strftime tidak bisa.
+     * Gagal parse jatuh ke bulan berjalan supaya query tetap valid.
+     */
+    private fun String.toUtcMonthRange(): Pair<Long, Long> {
+        val month = runCatching { YearMonth.parse(this) }.getOrDefault(YearMonth.now())
+        return month.toStartOfMonthMillis() to month.toEndOfMonthMillis()
+    }
+
     override fun getAllTransactions(): Flow<List<Transaction>> {
         TODO("Not yet implemented")
     }
@@ -35,6 +54,7 @@ class TransactionRepositoryImpl @Inject constructor(
 
     override fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetails?> {
         return transactionDao.getTransactionWithDetailsById(id).map { it?.toDomain() }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getCountTransactionsByAccount(accountId: String): Flow<Int> {
@@ -47,21 +67,29 @@ class TransactionRepositoryImpl @Inject constructor(
 
     override fun searchTransactions(query: String): Flow<List<TransactionWithDetails>> {
         return transactionDao.searchTransactions(query).map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getObserverTransactionsByMonth(yearMonth: String): Flow<List<Transaction>> {
+        val (startOfMonth, endOfMonth) = yearMonth.toUtcMonthRange()
         return transactionDao.getTransactionsByMonth(
-            yearMonth,
+            startOfMonth, endOfMonth,
         ).map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getObserverTransactionsWithDetailsByMonth(
         yearMonth: String,
         categoryFilter: String?,
     ): Flow<List<TransactionWithDetails>> {
+        val (startOfMonth, endOfMonth) = yearMonth.toUtcMonthRange()
         return transactionDao.getAllTransactionWithDetailsByMonth(
-            yearMonth, categoryFilter,
-        ).map { list -> list.map { it.toDomain() } }
+            startOfMonth, endOfMonth, categoryFilter,
+        )
+                // mapping entity → domain (alokasi per baris) jangan di main thread:
+                // ini yang bikin transisi pindah tab tersendat
+                .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getTotalExpenseByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Long> {
@@ -71,10 +99,12 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun getExpenseByCategoryByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Map<String, Long>> =
         transactionDao.getExpenseByCategoryInRange(startOfMonth, endOfMonth)
                 .map { rows -> rows.associate { it.categoryId to it.total } }
+                .flowOn(Dispatchers.Default)
 
     override fun getIncomeByCategoryByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Map<String, Long>> =
         transactionDao.getIncomeByCategoryInRange(startOfMonth, endOfMonth)
                 .map { rows -> rows.associate { it.categoryId to it.total } }
+                .flowOn(Dispatchers.Default)
 
     override fun getUsedAmountByCategory(
         categoryId: String,
@@ -95,6 +125,7 @@ class TransactionRepositoryImpl @Inject constructor(
     override fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<Transaction>> {
         return transactionDao.getTransactionsForCategories(categoryIds)
                 .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
 
@@ -135,26 +166,32 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     override fun getMonthlySummary(yearMonth: String): Flow<MonthlySummary> {
-        return transactionDao.getMonthlySummary(yearMonth).map {
+        val (startOfMonth, endOfMonth) = yearMonth.toUtcMonthRange()
+        return transactionDao.getMonthlySummary(startOfMonth, endOfMonth).map {
             it.toDomain(yearMonth)
-        }
+        }.flowOn(Dispatchers.Default)
     }
 
     override fun getRecentTransactions(limit: Int): Flow<List<TransactionWithDetails>> {
         return transactionDao.getRecentTransactions(limit).map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getRecentTransactionsByCategory(limit: Int, categoryId: String): Flow<List<TransactionWithDetails>> {
-        return transactionDao.getRecentTransactionsByCategory(limit, categoryId).map { list -> list.map { it.toDomain() } }
+        return transactionDao.getRecentTransactionsByCategory(limit, categoryId)
+                .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getAllTransactionsWithDetails(): Flow<List<TransactionWithDetails>> {
         return transactionDao.getAllTransactionWithDetails().map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getTransactionsByAccount(accountId: String): Flow<List<TransactionWithDetails>> {
         return transactionDao.getTransactionsByAccount(accountId)
                 .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
     override fun getTransactionsWithDetailsByCategoryIds(
@@ -162,6 +199,7 @@ class TransactionRepositoryImpl @Inject constructor(
     ): Flow<List<TransactionWithDetails>> {
         return transactionDao.getTransactionsWithDetailsByCategoryIds(categoryIds)
                 .map { list -> list.map { it.toDomain() } }
+                .flowOn(Dispatchers.Default)
     }
 
 }

@@ -37,6 +37,7 @@ import androidx.compose.material.icons.outlined.Insights
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -283,12 +284,25 @@ fun TransactionContent(
                     }
 
                     if (state.groupedTransactions.isEmpty()) {
-                        item {
-                            TransactionEmptyScreen(
-                                onAddClick = {
-                                    onEvent(TransactionEvent.OnAddTransactionClick)
-                                },
-                            )
+                        item(key = "loading_or_empty") {
+                            if (state.isLoading) {
+                                // data belum sampai: tampil progres, jangan
+                                // buru-buru bilang "tidak ada transaksi"
+                                Box(
+                                    modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(48.dp),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    CircularProgressIndicator()
+                                }
+                            } else {
+                                TransactionEmptyScreen(
+                                    onAddClick = {
+                                        onEvent(TransactionEvent.OnAddTransactionClick)
+                                    },
+                                )
+                            }
                         }
                     } else {
                         state.groupedTransactions.forEach { uiGroupModel ->

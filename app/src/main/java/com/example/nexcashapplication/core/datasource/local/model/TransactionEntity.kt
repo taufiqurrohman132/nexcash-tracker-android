@@ -25,7 +25,14 @@ import java.util.UUID
             onDelete = ForeignKey.SET_NULL,
         )
     ],
-    indices = [Index(value = ["account_id"]), Index(value = ["category_id"])],
+    indices = [
+        Index(value = ["account_id"]),
+        Index(value = ["category_id"]),
+        // filter bulanan (daftar transaksi & ringkasan) pakai rentang transaction_date,
+        // jadi harus bisa pakai index — tanpa ini tiap query = full table scan.
+        // Nama index mengikuti konvensi Room: index_transactions_transaction_date.
+        Index(value = ["transaction_date"]),
+    ],
 )
 data class TransactionEntity(
 

@@ -25,6 +25,8 @@ data class TransactionState(
     val collapsGroups: Set<String> = emptySet(), // group yang sedang expand
 
     // Loading & error
-    val isLoading: Boolean = false,
+    // true sampai emisi data pertama diterima — UI menampilkan indikator loading
+    // menggantikan pesan "tidak ada transaksi"
+    val isLoading: Boolean = true,
     val errorMessage: String? = null,
 )

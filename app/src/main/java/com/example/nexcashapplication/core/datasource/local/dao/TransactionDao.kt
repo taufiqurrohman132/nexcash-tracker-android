@@ -17,6 +17,9 @@ import kotlinx.coroutines.flow.Flow
 interface TransactionDao {
 
     // dashboard: transaksi terakhir tanpa filter kategori
+    // @Transaction supaya parent + relasi (@Relation) dibaca dalam satu batch
+    // atomik — tanpa ini 3 query terpisah dan bisa tidak konsisten antar baris
+    @Transaction
     @Query(
         """
         SELECT * FROM transactions
@@ -28,6 +31,7 @@ interface TransactionDao {
     fun getRecentTransactions(limit: Int = -1): Flow<List<TransactionWithDetailsEntity>>
 
     // detail kategori: transaksi terakhir milik satu kategori (categoryId wajib)
+    @Transaction
     @Query(
         """
         SELECT * FROM transactions
@@ -38,14 +42,19 @@ interface TransactionDao {
     )
     fun getRecentTransactionsByCategory(limit: Int, categoryId: String): Flow<List<TransactionWithDetailsEntity>>
 
+    // filter bulan pakai rentang epoch (bukan strftime di kolom) supaya bisa
+    // memakai index transaction_date — sama seperti query bulanan lainnya
     @Query(
         """
         SELECT * FROM transactions 
-        WHERE strftime('%Y-%m', transaction_date / 1000, 'unixepoch') = :yearMonth
+        WHERE transaction_date BETWEEN :startOfMonth AND :endOfMonth
         ORDER BY transaction_date DESC
     """,
     )
-    fun getTransactionsByMonth(yearMonth: String): Flow<List<TransactionEntity>>
+    fun getTransactionsByMonth(
+        startOfMonth: Long,
+        endOfMonth: Long,
+    ): Flow<List<TransactionEntity>>
 
     // baru — khusus buat nampilin list dengan detail akun/kategori
     @Transaction
@@ -80,13 +89,14 @@ ORDER BY transaction_date DESC
     @Query(
         """
         SELECT * FROM transactions 
-WHERE deleted_at IS NULL AND strftime('%Y-%m', transaction_date / 1000, 'unixepoch') = :yearMonth 
+WHERE deleted_at IS NULL AND transaction_date BETWEEN :startOfMonth AND :endOfMonth
 AND (:categoryFilterId IS NULL OR category_id = :categoryFilterId)
 ORDER BY transaction_date DESC
         """,
     )
     fun getAllTransactionWithDetailsByMonth(
-        yearMonth: String,
+        startOfMonth: Long,
+        endOfMonth: Long,
         categoryFilterId: String?,
     ): Flow<List<TransactionWithDetailsEntity>>
 
@@ -141,32 +151,10 @@ ORDER BY transaction_date DESC
         - COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS totalSaldo
     FROM transactions
     WHERE deleted_at IS NULL
-    AND strftime('%Y-%m', transaction_date/1000, 'unixepoch') = :yearMonth
+    AND transaction_date BETWEEN :startOfMonth AND :endOfMonth
 """,
     )
-    fun getMonthlySummary(yearMonth: String): Flow<MonthlySummaryResult>
-
-    @Query(
-        """
-        SELECT COALESCE(SUM(amount), 0) FROM transactions
-        WHERE type = :type
-        AND strftime('%Y-%m', transaction_date) = :monthYear
-    """,
-    )
-    fun getTotalForMonth(monthYear: String, type: String): Flow<Long>
-
-    // Dashboard: total pengeluaran per kategori (untuk widget anggaran)
-    @Query(
-        """
-        SELECT category_id, SUM(amount) as total 
-        FROM transactions 
-        WHERE type = 'expense'
-        AND strftime('%m', transaction_date/1000, 'unixepoch') = :month
-        AND strftime('%Y', transaction_date/1000, 'unixepoch') = :year
-        GROUP BY category_id
-    """,
-    )
-    fun getExpenseGroupedByCategory(month: String, year: String): Flow<List<CategoryExpenseResult>>
+    fun getMonthlySummary(startOfMonth: Long, endOfMonth: Long): Flow<MonthlySummaryResult>
 
     @Query(
         """
