@@ -25,14 +25,30 @@ import javax.inject.Inject
  * menyentuh kelas ini (ADR-002).
  */
 @HiltViewModel
-class AllTransactionsViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+class AllTransactionsViewModel internal constructor(
+    private val route: Route.TransactionRoute.All,
     private val getTransactionsByFilterUseCase: GetTransactionsByFilterUseCase,
 ) : BaseViewModel<AllTransactionsState, AllTransactionsEvent, AllTransactionsEffect>(
     AllTransactionsState(),
 ) {
 
-    private val route: Route.TransactionRoute.All = savedStateHandle.toRoute()
+    /**
+     * Konstruktor produksi (Hilt + Navigation): membaca typed route dari
+     * [SavedStateHandle] lewat `toRoute()`.
+     *
+     * `toRoute()` membaca argumen lewat Bundle Android; di JVM unit test Bundle
+     * di-mock, jadi test memakai konstruktor `internal` dengan
+     * [Route.TransactionRoute.All] langsung — jalur di device tetap identik.
+     * Pola yang sama dipakai `AddEditTransactionViewModel` dan `DetailCategoryViewModel`.
+     */
+    @Inject constructor(
+        savedStateHandle: SavedStateHandle,
+        getTransactionsByFilterUseCase: GetTransactionsByFilterUseCase,
+    ) : this(
+        route = savedStateHandle.toRoute<Route.TransactionRoute.All>(),
+        getTransactionsByFilterUseCase = getTransactionsByFilterUseCase,
+    )
+
     private val filter: TransactionFilter =
         TransactionFilter.fromRoute(route.categoryId, route.accountId)
 

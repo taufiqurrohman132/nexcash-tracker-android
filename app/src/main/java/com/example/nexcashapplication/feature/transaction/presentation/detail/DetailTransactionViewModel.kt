@@ -19,14 +19,30 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DetailTransactionViewModel @Inject constructor(
+class DetailTransactionViewModel internal constructor(
+    private val route: Route.TransactionRoute.Detail,
     private val transactionRepository: TransactionRepository,
-    savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<DetailTransactionState, DetailTransactionEvent, DetailTransactionEffect>(
     DetailTransactionState(),
 ) {
 
-    private val route: Route.TransactionRoute.Detail = savedStateHandle.toRoute()
+    /**
+     * Konstruktor produksi (Hilt + Navigation): membaca typed route dari
+     * [SavedStateHandle] lewat `toRoute()`.
+     *
+     * `toRoute()` membaca argumen lewat Bundle Android; di JVM unit test Bundle
+     * di-mock, jadi test memakai konstruktor `internal` dengan
+     * [Route.TransactionRoute.Detail] langsung — jalur di device tetap identik.
+     * Pola yang sama dipakai `AddEditTransactionViewModel` dan `DetailCategoryViewModel`.
+     */
+    @Inject constructor(
+        savedStateHandle: SavedStateHandle,
+        transactionRepository: TransactionRepository,
+    ) : this(
+        route = savedStateHandle.toRoute<Route.TransactionRoute.Detail>(),
+        transactionRepository = transactionRepository,
+    )
+
     private val transactionId = route.transactionId
 
     init {
