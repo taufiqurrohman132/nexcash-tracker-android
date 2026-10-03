@@ -1,5 +1,9 @@
 package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,6 +11,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,7 +44,6 @@ import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -64,6 +69,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -79,6 +85,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -537,30 +544,99 @@ private fun SegmentedTypeToggle(
     selected: TransactionType,
     onSelect: (TransactionType) -> Unit,
 ) {
-    Row(
+    val inset = 2.dp
+    val gap = 4.dp
+
+    BoxWithConstraints(
         modifier = Modifier
                 .fillMaxWidth()
-                .background(Color(0xFFF0F0F0), RoundedCornerShape(20.dp))
-                .padding(2.dp),
+                .clip(RoundedCornerShape(20.dp))
+                .background(Color(0xFFF0F0F0)),
     ) {
-        ToggleChip(
-            label = "Expense",
-            icon = Icons.Default.TrendingDown,
-            selected = selected == TransactionType.EXPENSE,
-            selectedColor = Color(0xFFE8433D),
-            modifier = Modifier.weight(1f),
-            onClick = { onSelect(TransactionType.EXPENSE) },
+        // Sama dengan hasil Modifier.weight(1f) di Row bawah:
+        // (lebar track - padding kiri/kanan - jarak antar chip) / 2
+        val chipWidth = (maxWidth - inset * 2f - gap) / 2f
+
+        // Composable terpisah supaya hanya pil ini yang rekomposisi tiap frame
+        // animasi; Row di bawahnya ikut membaca nilai animasi kalau disatukan.
+        ToggleIndicator(
+            trackWidth = maxWidth,
+            chipWidth = chipWidth,
+            inset = inset,
+            gap = gap,
+            selected = selected,
         )
-        Spacer(Modifier.width(4.dp))
-        ToggleChip(
-            label = "Income",
-            icon = Icons.Default.TrendingUp,
-            selected = selected == TransactionType.INCOME,
-            selectedColor = PrimaryCyan,
-            modifier = Modifier.weight(1f),
-            onClick = { onSelect(TransactionType.INCOME) },
-        )
+
+        Row(
+            modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(inset),
+            horizontalArrangement = Arrangement.spacedBy(gap),
+        ) {
+            ToggleChip(
+                label = "Expense",
+                icon = Icons.Default.TrendingDown,
+                selected = selected == TransactionType.EXPENSE,
+                selectedColor = Color(0xFFE8433D),
+                modifier = Modifier.weight(1f),
+                onClick = { onSelect(TransactionType.EXPENSE) },
+            )
+            ToggleChip(
+                label = "Income",
+                icon = Icons.Default.TrendingUp,
+                selected = selected == TransactionType.INCOME,
+                selectedColor = PrimaryCyan,
+                modifier = Modifier.weight(1f),
+                onClick = { onSelect(TransactionType.INCOME) },
+            )
+        }
     }
+}
+
+/**
+ * Pil putih yang menandai pilihan aktif, digambar **di belakang** isi track.
+ *
+ * Dideklarasi sebelum [Row] chip supaya ditempatkan lebih dulu (urutan tempat =
+ * urutan gambar), lebar/sisinya diatur lewat padding dari satu nilai animasi
+ * sehingga pil meluncur tanpa berubah lebar, dan tingginya ikut track lewat
+ * `matchParentSize` — track ada di dalam `verticalScroll` sehingga tingginya
+ * tidak bisa diturunkan dari constraint.
+ */
+@Composable
+private fun BoxScope.ToggleIndicator(
+    trackWidth: Dp,
+    chipWidth: Dp,
+    inset: Dp,
+    gap: Dp,
+    selected: TransactionType,
+) {
+    // Tepi kiri pil: Expense (kiri) -> Income (kanan). Satu nilai animasi untuk
+    // dua sisi supaya lebar pil selalu tetap saat meluncur.
+    val startPadding by animateDpAsState(
+        targetValue = if (selected == TransactionType.EXPENSE) {
+            inset
+        } else {
+            inset + chipWidth + gap
+        },
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioLowBouncy,
+            stiffness = Spring.StiffnessMediumLow,
+        ),
+        label = "typeToggleIndicator",
+    )
+
+    Box(
+        modifier = Modifier
+                .matchParentSize()
+                .padding(
+                    start = startPadding,
+                    end = trackWidth - chipWidth - startPadding,
+                    top = inset,
+                    bottom = inset,
+                )
+                .shadow(2.dp, RoundedCornerShape(16.dp))
+                .background(Color.White, RoundedCornerShape(16.dp)),
+    )
 }
 
 @Composable
@@ -572,12 +648,23 @@ private fun ToggleChip(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
+    // warna ikut memudar selama pil meluncur, bukan berubah mendadak
+    val tint by animateColorAsState(
+        targetValue = if (selected) selectedColor else Color.Gray,
+        label = "toggleChipTint",
+    )
+
     Surface(
         modifier = modifier
                 .clip(RoundedCornerShape(16.dp))
-                .clickable { onClick() },
-        color = if (selected) Color.White else Color.Transparent,
-        shadowElevation = if (selected) 2.dp else 0.dp,
+                // selectable, bukan clickable: pembaca layar mengumumkan "terpilih"
+                .selectable(
+                    selected = selected,
+                    role = Role.Tab,
+                    onClick = onClick,
+                ),
+        // background putih digambar pil di belakang, jadi chip tetap bening
+        color = Color.Transparent,
     ) {
         Row(
             modifier = Modifier.padding(vertical = 12.dp),
@@ -587,13 +674,13 @@ private fun ToggleChip(
             Icon(
                 icon,
                 contentDescription = null,
-                tint = if (selected) selectedColor else Color.Gray,
+                tint = tint,
                 modifier = Modifier.size(16.dp),
             )
             Spacer(Modifier.width(6.dp))
             Text(
                 label,
-                color = if (selected) selectedColor else Color.Gray,
+                color = tint,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 13.sp,
             )
