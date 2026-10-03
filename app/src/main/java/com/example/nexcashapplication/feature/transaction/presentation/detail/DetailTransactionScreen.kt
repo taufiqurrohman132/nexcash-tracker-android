@@ -1,5 +1,6 @@
-package com.example.nexcashapplication.feature.transaction.presentation.ui
+package com.example.nexcashapplication.feature.transaction.presentation.detail
 
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,35 +17,40 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.DateRange
-import androidx.compose.material.icons.outlined.DirectionsCar
 import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.NoteAlt
+import androidx.compose.material.icons.outlined.Receipt
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -64,14 +70,11 @@ import com.example.nexcashapplication.feature.common.extentions.toAmountColor
 import com.example.nexcashapplication.feature.common.utils.formatDate
 import com.example.nexcashapplication.feature.common.utils.formatTime
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
-import com.example.nexcashapplication.feature.transaction.presentation.detail.DetailTransactionEffect
-import com.example.nexcashapplication.feature.transaction.presentation.detail.DetailTransactionEvent
-import com.example.nexcashapplication.feature.transaction.presentation.detail.DetailTransactionState
-import com.example.nexcashapplication.feature.transaction.presentation.detail.DetailTransactionViewModel
 import com.example.nexcashapplication.feature.transaction.presentation.detail.components.DeleteTransactionDialog
 import com.example.nexcashapplication.feature.transaction.presentation.detail.model.AttachmentUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.detail.model.DetailTransactionUiModel
 import com.example.nexcashapplication.ui.theme.BorderGray
+import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.TextSecondary
 import kotlin.time.Clock
 
@@ -82,8 +85,12 @@ fun DetailTransactionScreen(
     navController: NavHostController,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        // `collect`, bukan collectLatest: showSnackbar itu suspend, collectLatest
+        // bisa membatalkannya di tengah jalan kalau effect berikutnya datang.
         viewModel.effect.collect { effect ->
             when (effect) {
                 DetailTransactionEffect.NavigateBack -> {
@@ -96,10 +103,22 @@ fun DetailTransactionScreen(
                     )
                 }
 
-                is DetailTransactionEffect.ShareTransaction -> TODO()
-                DetailTransactionEffect.ShowDeleteConfirmationDialog -> TODO()
-                is DetailTransactionEffect.ShowSnackbar -> {
+                is DetailTransactionEffect.ShareTransaction -> {
+                    // Bagikan lewat share sheet bawaan Android; aplikasi lain yang
+                    // menangani teks (WA, Gmail, dst.)
+                    val sendIntent = Intent(Intent.ACTION_SEND).apply {
+                        type = "text/plain"
+                        putExtra(Intent.EXTRA_TEXT, effect.shareText)
+                    }
+                    val chooser = Intent.createChooser(sendIntent, "Bagikan transaksi")
+                    runCatching { context.startActivity(chooser) }
+                        .onFailure {
+                            snackbarHostState.showSnackbar("Tidak ada aplikasi untuk membagikan")
+                        }
+                }
 
+                is DetailTransactionEffect.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(effect.message)
                 }
             }
         }
@@ -108,6 +127,7 @@ fun DetailTransactionScreen(
     DetailTransactionContent(
         state = state,
         onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
     )
 
@@ -119,8 +139,11 @@ fun DetailTransactionContent(
     state: DetailTransactionState,
     onEvent: (DetailTransactionEvent) -> Unit,
     modifier: Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
+        modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {
@@ -132,7 +155,7 @@ fun DetailTransactionContent(
                 },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(DetailTransactionEvent.OnBackClick) }) {
-                        Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Kembali")
+                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Kembali")
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
@@ -145,33 +168,46 @@ fun DetailTransactionContent(
                     .padding(horizontal = 16.dp)
                     .fillMaxSize(),
         ) {
-            if (state.transaction != null) {
+            val transaction = state.transaction
 
+            if (transaction == null) {
+                // belum termuat: tampilkan indikator/pesan, bukan baris aksi
+                // + ID TRANSAKSI yang isinya masih kosong
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    if (state.isLoading) {
+                        CircularProgressIndicator()
+                    } else {
+                        Text(
+                            text = "Transaksi tidak ditemukan",
+                            color = TextSecondary,
+                        )
+                    }
+                }
+            } else {
                 HeaderContent(
-                    titleName = state.transaction.name,
-                    amount = state.transaction.amount,
-                    amountColor = state.transaction.type.toAmountColor(),
-                    iconColor = Color.Black,
-                    icon = Icons.Outlined.DirectionsCar,
-                    categoryName = state.transaction.category?.name ?: "",
+                    titleName = transaction.name,
+                    amount = transaction.amount,
+                    amountColor = transaction.type.toAmountColor(),
+                    // ikon & warna ngikut kategori transaksi, bukan gambar tetap
+                    iconColor = transaction.category?.color ?: Color.Black,
+                    icon = transaction.category?.icon?.icon ?: Icons.Outlined.Receipt,
+                    categoryName = transaction.category?.name ?: "",
                     modifier = Modifier.fillMaxWidth(),
                 )
 
                 DetailContent(
-                    date = state.transaction.dateTime.formatDate(),
-                    time = state.transaction.dateTime.formatTime(),
-                    categoryName = state.transaction.category?.name ?: "Unknown Category",
-                    accountName = state.transaction.account?.name ?: "Unknown Account",
-                    catatan = state.transaction.note ?: "",
-                    type = state.transaction.type,
+                    date = transaction.dateTime.formatDate(),
+                    time = transaction.dateTime.formatTime(),
+                    categoryName = transaction.category?.name ?: "Unknown Category",
+                    accountName = transaction.account?.name ?: "Unknown Account",
+                    catatan = transaction.note ?: "",
+                    type = transaction.type,
                 )
 
-                LampiranContent(
-
-                )
-
-
-                if (state.transaction.attachment != null) {
+                if (transaction.attachment != null) {
                     Spacer(Modifier.height(24.dp))
 
                     Text(
@@ -186,7 +222,7 @@ fun DetailTransactionContent(
                     Row(
                         modifier = Modifier
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(18.dp))
+                                .clip(RoundedCornerShape(14.dp))
                                 .border(1.dp, BorderGray, RoundedCornerShape(14.dp))
                                 .clickable(onClick = { onEvent(DetailTransactionEvent.OnAttachmentClick) })
                                 .padding(12.dp),
@@ -199,9 +235,9 @@ fun DetailTransactionContent(
                                     .background(BorderGray),
                             contentAlignment = Alignment.Center,
                         ) {
-                            if (state.transaction.attachment.thumbnailUri != null) {
+                            if (transaction.attachment.thumbnailUri != null) {
                                 AsyncImage(
-                                    model = state.transaction.attachment.thumbnailUri,
+                                    model = transaction.attachment.thumbnailUri,
                                     contentDescription = null,
                                     modifier = Modifier
                                             .fillMaxSize()
@@ -221,13 +257,13 @@ fun DetailTransactionContent(
 
                         Column {
                             Text(
-                                text = state.transaction.attachment.fileName,
+                                text = transaction.attachment.fileName,
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Medium,
                                 color = Color.Black,
                             )
                             Text(
-                                text = state.transaction.attachment.fileSizeLabel,
+                                text = transaction.attachment.fileSizeLabel,
                                 fontSize = 12.sp,
                                 color = Color(0xFF999999),
                             )
@@ -240,56 +276,56 @@ fun DetailTransactionContent(
                         }
                     }
                 }
+
+                Spacer(Modifier.height(24.dp))
+
+                // Action buttons
+                Row(
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(20.dp))
+                            .border(1.dp, BorderGray, RoundedCornerShape(20.dp))
+                            .background(Color(0xFFF7F7F7))
+                            .padding(vertical = 14.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                ) {
+                    ActionButton(
+                        icon = Icons.Default.Edit,
+                        label = "UBAH",
+                        onClick = { onEvent(DetailTransactionEvent.OnEditClick) },
+                    )
+                    ActionButton(
+                        icon = Icons.Default.ContentCopy,
+                        label = "SALIN",
+                        onClick = { onEvent(DetailTransactionEvent.OnDuplicateClick) },
+                    )
+                    ActionButton(
+                        icon = Icons.Default.Share,
+                        label = "BAGIKAN",
+                        onClick = { onEvent(DetailTransactionEvent.OnShareClick) },
+                    )
+                    ActionButton(
+                        icon = Icons.Default.Delete,
+                        label = "HAPUS",
+                        onClick = { onEvent(DetailTransactionEvent.OnDeleteClick) },
+                        iconTint = Color(0xFFE94057),
+                        labelColor = Color(0xFFE94057),
+                        backgroundColor = Color(0xFFFDE9EC),
+                    )
+                }
+
+                Spacer(Modifier.height(20.dp))
+
+                Text(
+                    text = "ID TRANSAKSI: ${transaction.transactionId ?: "-"}",
+                    fontSize = 11.sp,
+                    color = Color(0xFFB0B0B0),
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                    textAlign = TextAlign.Center,
+                )
             }
-
-            Spacer(Modifier.height(24.dp))
-
-            // Action buttons
-            Row(
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(20.dp))
-                        .border(1.dp, BorderGray, RoundedCornerShape(20.dp))
-                        .background(Color(0xFFF7F7F7))
-                        .padding(vertical = 14.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-            ) {
-                ActionButton(
-                    icon = Icons.Default.Edit,
-                    label = "UBAH",
-                    onClick = { onEvent(DetailTransactionEvent.OnEditClick) },
-                )
-                ActionButton(
-                    icon = Icons.Default.ContentCopy,
-                    label = "SALIN",
-                    onClick = { onEvent(DetailTransactionEvent.OnDuplicateClick) },
-                )
-                ActionButton(
-                    icon = Icons.Default.Share,
-                    label = "BAGIKAN",
-                    onClick = { onEvent(DetailTransactionEvent.OnShareClick) },
-                )
-                ActionButton(
-                    icon = Icons.Default.Delete,
-                    label = "HAPUS",
-                    onClick = { onEvent(DetailTransactionEvent.OnDeleteClick) },
-                    iconTint = Color(0xFFE94057),
-                    labelColor = Color(0xFFE94057),
-                    backgroundColor = Color(0xFFFDE9EC),
-                )
-            }
-
-            Spacer(Modifier.height(20.dp))
-
-            Text(
-                text = "ID TRANSAKSI: ${state.transaction?.transactionId}",
-                fontSize = 11.sp,
-                color = Color(0xFFB0B0B0),
-                modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 16.dp),
-                textAlign = TextAlign.Center,
-            )
 
         }
 
@@ -302,12 +338,6 @@ fun DetailTransactionContent(
         }
     }
 }
-
-@Composable
-fun LampiranContent() {
-
-}
-
 
 @Composable
 private fun ActionButton(
@@ -354,7 +384,7 @@ fun DetailContent(
     catatan: String,
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 16.dp),
+        modifier = modifier,
     ) {
         DetailContentRow(
             icon = Icons.Outlined.DateRange,
@@ -443,7 +473,8 @@ fun HeaderContent(
         )
         Spacer(Modifier.height(16.dp))
         Text(
-            text = "$titleName - $categoryName",
+            // tanpa kategori jangan sisakan "Nama - " menggantung
+            text = if (categoryName.isEmpty()) titleName else "$titleName - $categoryName",
             style = MaterialTheme.typography.bodyMedium,
         )
         Text(
@@ -461,25 +492,27 @@ fun HeaderContent(
 @Preview
 @Composable
 private fun DetailTransactionScreenPreview() {
-    DetailTransactionContent(
-        state = DetailTransactionState(
-            transaction = DetailTransactionUiModel(
-                name = "Gojek - Transportasi",
-                amount = 100000,
-                attachment = AttachmentUiModel(
-                    fileName = "Resi_Gojek_141023.jpg",
-                    fileSizeLabel = "Image • 245 KB",
-                    thumbnailUri = null,
+    NexCashApplicationTheme {
+        DetailTransactionContent(
+            state = DetailTransactionState(
+                transaction = DetailTransactionUiModel(
+                    name = "Gojek - Transportasi",
+                    amount = 100000,
+                    attachment = AttachmentUiModel(
+                        fileName = "Resi_Gojek_141023.jpg",
+                        fileSizeLabel = "Image • 245 KB",
+                        thumbnailUri = null,
+                    ),
+                    transactionId = "",
+                    type = TransactionType.EXPENSE,
+                    dateTime = Clock.System.now(),
+                    category = null,
+                    account = null,
+                    note = "",
                 ),
-                transactionId = "",
-                type = TransactionType.EXPENSE,
-                dateTime = Clock.System.now(),
-                category = null,
-                account = null,
-                note = "",
             ),
-        ),
-        onEvent = {},
-        modifier = Modifier,
-    )
+            onEvent = {},
+            modifier = Modifier.fillMaxSize(),
+        )
+    }
 }

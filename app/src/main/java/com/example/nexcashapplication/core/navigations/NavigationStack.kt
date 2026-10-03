@@ -22,8 +22,8 @@ import com.example.nexcashapplication.feature.settings.presentation.main.Setting
 import com.example.nexcashapplication.feature.statistics.presentation.main.StatistikScreen
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.AddEditTransactionScreen
 import com.example.nexcashapplication.feature.transaction.presentation.alltransactions.AllTransactionsScreen
+import com.example.nexcashapplication.feature.transaction.presentation.detail.DetailTransactionScreen
 import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionScreen
-import com.example.nexcashapplication.feature.transaction.presentation.ui.DetailTransactionScreen
 
 @Composable
 fun NavigationStack(

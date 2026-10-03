@@ -8,5 +8,4 @@ data class DetailTransactionState(
     val transaction: DetailTransactionUiModel? = null,
     val isDeleting: Boolean = false,
     val deleteDialogState: DeleteTransactionDialogUiState? = null,
-    val errorMessage: String? = null,
 )

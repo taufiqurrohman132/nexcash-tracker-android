@@ -6,9 +6,13 @@ import androidx.navigation.toRoute
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.common.utils.formatDate
+import com.example.nexcashapplication.feature.common.utils.formatTime
+import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.presentation.detail.mapper.toDeleteDialogUiState
 import com.example.nexcashapplication.feature.transaction.presentation.detail.mapper.toDetailTransactionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -31,7 +35,16 @@ class DetailTransactionViewModel @Inject constructor(
 
     override fun onEvent(event: DetailTransactionEvent) {
         when (event) {
-            DetailTransactionEvent.OnAttachmentClick -> TODO()
+            DetailTransactionEvent.OnAttachmentClick -> {
+                // TODO: buka viewer lampiran setelah mapper memetakan data attachment
+                // (sekarang selalu null). Sengaja bukan TODO() — baris ini bisa diklik.
+                viewModelScope.launch {
+                    sendEffect(
+                        DetailTransactionEffect.ShowSnackbar("Pratinjau lampiran belum tersedia"),
+                    )
+                }
+            }
+
             DetailTransactionEvent.OnBackClick -> {
                 viewModelScope.launch {
                     sendEffect(DetailTransactionEffect.NavigateBack)
@@ -58,16 +71,19 @@ class DetailTransactionViewModel @Inject constructor(
                 }
             }
 
-            DetailTransactionEvent.OnDismissMenu -> TODO()
-            DetailTransactionEvent.OnDuplicateClick -> TODO()
+            DetailTransactionEvent.OnDuplicateClick -> {
+                handleDuplicate()
+            }
+
             DetailTransactionEvent.OnEditClick -> {
                 viewModelScope.launch {
                     sendEffect(DetailTransactionEffect.NavigateToEdit(transactionId))
                 }
             }
 
-            DetailTransactionEvent.OnMenuClick -> TODO()
-            DetailTransactionEvent.OnShareClick -> TODO()
+            DetailTransactionEvent.OnShareClick -> {
+                handleShare()
+            }
         }
     }
 
@@ -75,6 +91,11 @@ class DetailTransactionViewModel @Inject constructor(
         transactionRepository.getTransactionWithDetailsById(id)
                 .onEach { transactionWithDetails ->
                     if (transactionWithDetails == null) {
+                        if (state.value.isDeleting) {
+                            // null ini akibat delete kita sendiri; popBackStack sudah
+                            // dikirim handleDeleteTransaction. Pop lagi = dua layar kebelakang.
+                            return@onEach
+                        }
                         // Transaksi udah kehapus — kemungkinan besar karena delete sukses,
                         // atau race condition lain. Navigate back, bukan crash atau nampilin state kosong.
                         sendEffect(DetailTransactionEffect.NavigateBack)
@@ -87,14 +108,87 @@ class DetailTransactionViewModel @Inject constructor(
                         )
                     }
                 }
+                // query gagal: jangan bocor ke viewModelScope (crash), lapor ke layar
+                .catch {
+                    updateState { state -> state.copy(isLoading = false) }
+                    sendEffect(DetailTransactionEffect.ShowSnackbar("Transaksi gagal dimuat"))
+                }
                 .launchIn(viewModelScope)
     }
 
-
+    /**
+     * Hapus transaksi. Guard [DetailTransactionState.isDeleting] menahan tap kedua
+     * supaya tidak delete dobel; kegagalan ditangkap lalu dilaporkan lewat
+     * [DetailTransactionEffect.ShowSnackbar] (dibiarkan bocor ke viewModelScope = crash),
+     * dialog ditutup supaya pengguna bisa mencoba lagi.
+     */
     private fun handleDeleteTransaction(transactionId: String) {
+        if (state.value.isDeleting) return
+
+        updateState { it.copy(isDeleting = true) }
+
         viewModelScope.launch {
-            transactionRepository.deleteTransaction(transactionId)
-            sendEffect(DetailTransactionEffect.NavigateBack)
+            val result = runCatching {
+                transactionRepository.deleteTransaction(transactionId)
+            }
+
+            if (result.isSuccess) {
+                sendEffect(DetailTransactionEffect.NavigateBack)
+            } else {
+                updateState { it.copy(isDeleting = false, deleteDialogState = null) }
+                sendEffect(
+                    DetailTransactionEffect.ShowSnackbar("Transaksi gagal dihapus. Coba lagi."),
+                )
+            }
+        }
+    }
+
+    /** Salin transaksi ini jadi entri baru — id baru, isi & waktu sama. */
+    private fun handleDuplicate() {
+        val source = state.value.transaction ?: return
+
+        viewModelScope.launch {
+            val result = runCatching {
+                transactionRepository.insertTransaction(
+                    Transaction(
+                        id = null,
+                        title = source.name,
+                        amount = source.amount,
+                        categoryId = source.category?.id,
+                        description = source.note,
+                        typeTransaction = source.type,
+                        accountId = source.account?.id,
+                        dateTime = source.dateTime,
+                    ),
+                )
+            }
+
+            sendEffect(
+                if (result.isSuccess) {
+                    DetailTransactionEffect.ShowSnackbar("Transaksi disalin")
+                } else {
+                    DetailTransactionEffect.ShowSnackbar("Transaksi gagal disalin. Coba lagi.")
+                },
+            )
+        }
+    }
+
+    /** Teks yang dibagikan tombol BAGIKAN — satu blok, siap ditempel ke chat. */
+    private fun handleShare() {
+        val transaction = state.value.transaction ?: return
+
+        val shareText = buildString {
+            appendLine("${transaction.name} • ${transaction.signedAmountText}")
+            appendLine(
+                "Tanggal: ${transaction.dateTime.formatDate()} ${transaction.dateTime.formatTime()}",
+            )
+            transaction.category?.name?.let { appendLine("Kategori: $it") }
+            transaction.account?.name?.let { appendLine("${transaction.accountLabel}: $it") }
+            transaction.note?.takeIf { it.isNotBlank() }?.let { appendLine("Catatan: $it") }
+        }
+
+        viewModelScope.launch {
+            sendEffect(DetailTransactionEffect.ShareTransaction(shareText.trimEnd()))
         }
     }
 }
