@@ -42,9 +42,6 @@ import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Notes
 import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material.icons.outlined.Timer
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -91,6 +88,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
@@ -215,32 +213,14 @@ fun AddEditTransactionContent(
             // imePadding: ikut terangkat saat keyboard muncul, jadi tidak tertimpa
             Surface(shadowElevation = 8.dp, modifier = Modifier.imePadding()) {
                 Box(modifier = Modifier.padding(16.dp)) {
-                    Button(
+                    // AppButton sudah fillMaxWidth + 52.dp + radius 16.dp,
+                    // warna default PrimaryCyan sama dengan `accent` di layar ini
+                    AppButton(
+                        isEnabled = state.isValid && !state.isSaving,
+                        // AppButton belum punya state simpan, jadi teksnya yang menandai proses
+                        title = if (state.isSaving) "Saving..." else "Save Transaction",
                         onClick = { onEvent(AddEditTransactionEvent.OnSaveClick) },
-                        enabled = state.isValid && !state.isSaving,
-                        modifier = Modifier
-                                .fillMaxWidth()
-                                .height(52.dp),
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = accent,
-                            disabledContainerColor = accent.copy(alpha = 0.35f),
-                        ),
-                    ) {
-                        if (state.isSaving) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                color = Color.Black,
-                                strokeWidth = 2.dp,
-                            )
-                        } else {
-                            Text(
-                                "Save Transaction",
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black,
-                            )
-                        }
-                    }
+                    )
                 }
             }
         },
