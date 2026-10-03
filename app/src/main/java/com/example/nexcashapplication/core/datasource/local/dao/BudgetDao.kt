@@ -120,10 +120,21 @@ interface BudgetDao {
         monthEnd: Long,
     ): Flow<List<CategoryExpenseResult>>
 
+    /**
+     * Budget yang menabrak window [monthStart]..[monthEnd] untuk keperluan **Statistik**
+     * (sisa anggaran + donut alokasi) — hanya kategori **pengeluaran**.
+     *
+     * Tanpa filter ini, budget kategori pemasukan ikut dijumlahkan dengan total
+     * pengeluaran sehingga "sisa anggaran" & "% terpakai" meleset. Kategori pemasukan
+     * tidak boleh punya baris budget (lihat `SaveBudgetUseCase`); query ini penjaga
+     * terakhir bila baris lama masih ada.
+     */
     @Query(
         """
-    SELECT * FROM budgets
-    WHERE start_date <= :monthEnd AND end_date >= :monthStart
+    SELECT b.* FROM budgets b
+    INNER JOIN categories c ON c.id = b.category_id
+    WHERE c.type = 'expense'
+    AND b.start_date <= :monthEnd AND b.end_date >= :monthStart
 """,
     )
     fun getBudgetsForMonth(monthStart: Long, monthEnd: Long): Flow<List<BudgetEntity>>
@@ -135,7 +146,15 @@ interface BudgetDao {
 //    )
 //    fun getAmmountBudgetForMonth(monthStart: Long, monthEnd: Long): Flow<Long>
 
-    @Query("SELECT COALESCE(SUM(`amount`), 0) FROM budgets WHERE start_date <= :monthEnd AND end_date >= :monthStart")
+    /** Total batas pengeluaran bulan itu — sengaja hanya kategori pengeluaran, samakan dengan [getBudgetsForMonth]. */
+    @Query(
+        """
+    SELECT COALESCE(SUM(b.amount), 0) FROM budgets b
+    INNER JOIN categories c ON c.id = b.category_id
+    WHERE c.type = 'expense'
+    AND b.start_date <= :monthEnd AND b.end_date >= :monthStart
+""",
+    )
     fun getTotalBudgetForMonth(monthStart: Long, monthEnd: Long): Flow<Long>
     // CRUD ────────────────────────────────────────────
 

@@ -306,6 +306,10 @@ fun DetailCategoryContent(
     val isSubCategory = state.category?.parentId != null
     val hasOwnBudget = (state.category?.totalBudget ?: 0L) > 0L
 
+    // Anggaran hanya untuk kategori pengeluaran: pemasukan tidak punya "sisa/terpakai"
+    // (penjagaan simpan ada di SaveBudgetUseCase).
+    val isIncomeCategory = state.category?.typeCategory == TypeCategory.INCOME
+
     // Preview cukup panggil tanpa snackbar host — null = buat sendiri di sini.
     val hostState = snackbarHostState ?: remember { SnackbarHostState() }
 
@@ -408,22 +412,25 @@ fun DetailCategoryContent(
         ) {
             Spacer(Modifier.height(4.dp)) // pengganti contentPadding top
 
-            if (isSubCategory && !hasOwnBudget) {
-                // Sub ngikut induk: kartu ini menampilkan budget induk + kontribusi sub.
-                SubCategoryBudgetCard(parentInfo = state.parentInfo)
-            } else {
-                BudgetSummaryCard(
-                    totalBudget = state.category?.totalBudget?.formatCurrency() ?: "0",
-                    used = state.category?.usedBudget?.formatCurrency() ?: "0",
-                    remaining = state.category?.remainingBudget?.formatCurrency() ?: "0",
-                    usedPersentage = state.category?.usedPercentage ?: 0,
-                )
+            if (!isIncomeCategory) {
+                if (isSubCategory && !hasOwnBudget) {
+                    // Sub ngikut induk: kartu ini menampilkan budget induk + kontribusi sub.
+                    SubCategoryBudgetCard(parentInfo = state.parentInfo)
+                } else {
+                    BudgetSummaryCard(
+                        totalBudget = state.category?.totalBudget?.formatCurrency() ?: "0",
+                        used = state.category?.usedBudget?.formatCurrency() ?: "0",
+                        remaining = state.category?.remainingBudget?.formatCurrency() ?: "0",
+                        usedPersentage = state.category?.usedPercentage ?: 0,
+                    )
+                }
+                Spacer(Modifier.height(16.dp))
             }
-            Spacer(Modifier.height(16.dp))
 
             QuickActionsRow(
-                // Edit Budget hanya untuk induk (atau sub ber-budget lama yang masih bisa diedit)
-                showEditBudget = !isSubCategory || hasOwnBudget,
+                // Edit Budget hanya untuk kategori pengeluaran & induk
+                // (atau sub ber-budget lama yang masih bisa diedit)
+                showEditBudget = !isIncomeCategory && (!isSubCategory || hasOwnBudget),
                 onEditBudgetClick = { onEvent(DetailCategoryEvent.OnEditBudgetClick) },
                 onSetNotificationClick = { onEvent(DetailCategoryEvent.OnSetNotificationClick) },
                 onAddNoteClick = { onEvent(DetailCategoryEvent.OnAddNoteClick) },

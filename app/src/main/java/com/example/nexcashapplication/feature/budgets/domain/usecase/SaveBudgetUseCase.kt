@@ -1,7 +1,9 @@
 package com.example.nexcashapplication.feature.budgets.domain.usecase
 
 import com.example.nexcashapplication.core.domain.model.Budget
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
+import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -21,9 +23,15 @@ import javax.inject.Inject
  *   root baru (mapper memberi recurring_group_id = id sendiri).
  * - Tipe sama → update HANYA instance yang sedang berjalan + baris seri di periode mendatang;
  *   riwayat tidak berubah. Baris yang belum di-generate akan meng-copy amount terakhir.
+ *
+ * Aturan tipe kategori:
+ * - Anggaran = batas belanja, jadi hanya berlaku untuk kategori **pengeluaran**.
+ *   Kategori pemasukan ditolak: "terpakai/sisa" tidak bermakna untuk pemasukan, dan
+ *   Statistik menjumlahkan seluruh baris budget sebagai total batas pengeluaran.
  */
 class SaveBudgetUseCase @Inject constructor(
     private val budgetRepository: BudgetRepository,
+    private val categoryRepository: CategoryRepository,
     private val getBudgetPeriodUseCase: GetBudgetPeriodUseCase,
 ) {
 
@@ -46,6 +54,14 @@ class SaveBudgetUseCase @Inject constructor(
     suspend operator fun invoke(request: Request): Result {
         val catId = request.categoryId
             ?: return Result.Failure("Kategori tidak ditemukan")
+
+        // Anggaran hanya untuk kategori pengeluaran. Kategori yang tidak ditemukan
+        // diteruskan ke validasi berikutnya seperti biasa — yang ditolak hanya pemasukan.
+        val category = categoryRepository.getCategoryById(catId).first()
+        if (category?.type == TypeCategory.INCOME) {
+            return Result.Failure("Anggaran hanya bisa diset untuk kategori pengeluaran")
+        }
+
         if (request.amount <= 0L) {
             return Result.Failure("Batas anggaran harus lebih dari 0")
         }

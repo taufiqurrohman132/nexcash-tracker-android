@@ -2,7 +2,10 @@ package com.example.nexcashapplication.feature.budgets.domain.usecase
 
 import com.example.nexcashapplication.core.common.getWeeklyPeriodByLocale
 import com.example.nexcashapplication.core.domain.model.Budget
+import com.example.nexcashapplication.core.domain.model.Category
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
+import com.example.nexcashapplication.feature.category.presentation.main.FakeCategoryRepository
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -53,6 +56,19 @@ class SaveBudgetUseCaseTest {
         today = today,
     )
 
+    /** Kategori pengeluaran bawaan — hampir semua test memakai `categoryId = "cat_1"`. */
+    private val expenseCategoryRepo = FakeCategoryRepository().apply {
+        seed(
+            Category(
+                id = "cat_1",
+                name = "Makanan",
+                type = TypeCategory.EXPENSE,
+                iconId = "icon_food",
+                color = "#E8433D",
+            ),
+        )
+    }
+
     private suspend fun save(
         repo: FakeBudgetRepository,
         amount: Long = 2_000L,
@@ -63,7 +79,7 @@ class SaveBudgetUseCaseTest {
         customEnd: LocalDate = today.plusDays(1),
         isRecurring: Boolean = true,
     ): SaveBudgetUseCase.Result =
-        SaveBudgetUseCase(repo, GetBudgetPeriodUseCase())(
+        SaveBudgetUseCase(repo, expenseCategoryRepo, GetBudgetPeriodUseCase())(
             request(amount, type, budgetId, categoryId, customStart, customEnd, isRecurring),
         )
 
@@ -102,6 +118,33 @@ class SaveBudgetUseCaseTest {
 
         assertInstanceOf(SaveBudgetUseCase.Result.Failure::class.java, result)
         assertTrue(repo.stored.isEmpty())
+    }
+
+    @Test
+    fun `kategori pemasukan ditolak - anggaran hanya untuk pengeluaran`() = runBlocking {
+        val repo = FakeBudgetRepository()
+        val incomeCategoryRepo = FakeCategoryRepository().apply {
+            seed(
+                Category(
+                    id = "cat_income",
+                    name = "Gaji",
+                    type = TypeCategory.INCOME,
+                    iconId = "icon_salary",
+                    color = "#00BFA5",
+                ),
+            )
+        }
+
+        val result = SaveBudgetUseCase(repo, incomeCategoryRepo, GetBudgetPeriodUseCase())(
+            request(categoryId = "cat_income"),
+        )
+
+        assertInstanceOf(SaveBudgetUseCase.Result.Failure::class.java, result)
+        assertTrue(
+            (result as SaveBudgetUseCase.Result.Failure).message
+                .contains("pengeluaran", ignoreCase = true),
+        )
+        assertTrue(repo.stored.isEmpty()) // tidak ada baris budget pemasukan yang tersimpan
     }
 
     // ── Create ────────────────────────────────────────────────────────────
