@@ -28,7 +28,6 @@ import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -147,14 +146,11 @@ fun AccountAssetContent(
     ) { padding ->
         when {
             state.isLoading && state.bankAccounts.isEmpty() && state.eWallets.isEmpty() -> {
-                Box(
+                Spacer(
                     Modifier
                             .fillMaxSize()
                             .padding(padding),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
+                )
             }
 
             state.error != null && state.bankAccounts.isEmpty() -> {

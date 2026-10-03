@@ -30,7 +30,6 @@ import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -141,17 +140,14 @@ fun StatistikContent(
         ) {
             if (state.isLoading && state.alokasiDana.isEmpty()) {
                 // Frame pertama tanpa cache (atau belum pernah ada data):
-                // tampilkan indikator, bukan kartu Rp 0 + donut kosong.
+                // area kosong dulu, bukan kartu Rp 0 + donut kosong.
                 // Kalau masih ada data lama, kartu lama tetap tampil supaya
                 // tidak berkedip saat ganti bulan/tab.
-                Box(
+                Spacer(
                     modifier = Modifier
                             .fillMaxWidth()
                             .height(360.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
+                )
             } else {
                 TotalPengeluaranCard(state.totalPengeluaran, state.pengeluaranTrendPercent)
 

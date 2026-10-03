@@ -39,7 +39,6 @@ import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -174,29 +173,14 @@ fun DetailAssetContent(
         ) { padding ->
         when {
             state.isLoading -> {
-                Box(
+                Spacer(
                     Modifier
                             .fillMaxSize()
                             .padding(padding),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
+                )
             }
 
             else -> {
-                if (state.isLoading) {
-                    Box(
-                        Modifier
-                                .fillMaxSize()
-                                .padding(padding),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                    return@Scaffold
-                }
-
                 Column(
                     modifier = Modifier
                             .fillMaxSize()

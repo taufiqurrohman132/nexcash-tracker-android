@@ -61,7 +61,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
@@ -146,24 +145,14 @@ fun DeleteCategoryContent(
                             disabledContainerColor = Color.Red.copy(alpha = 0.3f)
                         )
                     ) {
-                        if (state.isSubmitting) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = Color.White,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
-                            Text("Hapus Kategori", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-                        }
+                        Text("Hapus Kategori", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                     }
                 }
             }
         }
     ) { padding ->
         if (state.isLoading) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(color = PrimaryCyan)
-            }
+            Spacer(modifier = Modifier.fillMaxSize().padding(padding))
         } else {
             Column(
                 modifier = Modifier

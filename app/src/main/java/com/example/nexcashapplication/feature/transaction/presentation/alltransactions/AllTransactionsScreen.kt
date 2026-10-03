@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.Fastfood
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -103,14 +102,11 @@ fun AllTransactionsContent(
         },
     ) { padding ->
         when {
-            state.isLoading -> Box(
+            state.isLoading -> Spacer(
                 modifier = Modifier
                         .fillMaxSize()
                         .padding(padding),
-                contentAlignment = Alignment.Center,
-            ) {
-                CircularProgressIndicator()
-            }
+            )
 
             state.error != null -> Column(
                 modifier = Modifier

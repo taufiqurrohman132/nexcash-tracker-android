@@ -14,7 +14,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -177,15 +176,13 @@ fun DashboardContent(
                             )
                 ) {
                     if (state.isLoading && state.transactions.isEmpty()) {
-                        // frame pertama tanpa cache: indikator, bukan kartu kosong
-                        Box(
+                        // frame pertama tanpa cache: area kosong, bukan kartu
+                        // "Belum ada transaksi" yang muncul sebelum data sampai
+                        Spacer(
                             modifier = Modifier
                                     .fillMaxWidth()
                                     .height(120.dp),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            CircularProgressIndicator()
-                        }
+                        )
                     } else if (state.transactions.isEmpty()) {
                         Text(
                             text = "Belum ada transaksi",

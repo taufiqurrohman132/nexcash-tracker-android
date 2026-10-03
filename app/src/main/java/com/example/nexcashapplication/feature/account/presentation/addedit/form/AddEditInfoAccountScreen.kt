@@ -25,7 +25,6 @@ import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -138,7 +137,6 @@ fun AddEditAccountContent(
         bottomBar = {
             SimpanAsetButton(
                 enabled = state.isSaveEnabled,
-                isLoading = state.isSaving,
                 isEditMode = state.isEditMode,
                 onClick = { onEvent(AddEditInfoAccountEvent.SimpanClicked) },
             )
@@ -231,7 +229,6 @@ fun ProviderGrid(
 private fun SimpanAsetButton(
     isEditMode: Boolean,
     enabled: Boolean,
-    isLoading: Boolean,
     onClick: () -> Unit,
 ) {
     Surface(color = Color.White, shadowElevation = 8.dp) {
@@ -248,27 +245,19 @@ private fun SimpanAsetButton(
                     .padding(20.dp)
                     .height(56.dp),
         ) {
-            if (isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(20.dp),
+            AnimatedContent(
+                targetState = isEditMode,
+                label = "saveButtonText",
+            ) { editMode ->
+                Text(
+                    if (editMode) "Simpan Perubahan" else "Simpan Aset",
                     color = Color.White,
-                    strokeWidth = 2.dp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
                 )
-            } else {
-                AnimatedContent(
-                    targetState = isEditMode,
-                    label = "saveButtonText",
-                ) { editMode ->
-                    Text(
-                        if (editMode) "Simpan Perubahan" else "Simpan Aset",
-                        color = Color.White,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                    )
-                }
-                Spacer(Modifier.width(6.dp))
-                Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.White)
             }
+            Spacer(Modifier.width(6.dp))
+            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.White)
         }
     }
 }
