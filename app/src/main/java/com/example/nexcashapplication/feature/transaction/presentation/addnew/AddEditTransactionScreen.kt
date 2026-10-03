@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -59,11 +61,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
@@ -135,6 +142,21 @@ fun AddEditTransactionContent(
     val accent = PrimaryCyan // light blue, matching the design
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
+    // --- alur cepat isi form: amount -> Nama -> sheet Category ---
+    val amountFocus = remember { FocusRequester() }
+    val nameFocus = remember { FocusRequester() }
+    val keyboard: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+
+    // Auto-focus amount + buka keyboard hanya saat TAMBAH BARU. Saat edit
+    // transaksi lama keyboard tidak muncul sendiri supaya tidak mengganggu.
+    val isAddMode = state.transactionId == null
+    LaunchedEffect(isAddMode) {
+        if (isAddMode) {
+            amountFocus.requestFocus()
+            keyboard?.show()
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -150,7 +172,8 @@ fun AddEditTransactionContent(
         },
         bottomBar = {
             // STICKY — does not scroll with the content
-            Surface(shadowElevation = 8.dp) {
+            // imePadding: ikut terangkat saat keyboard muncul, jadi tidak tertimpa
+            Surface(shadowElevation = 8.dp, modifier = Modifier.imePadding()) {
                 Box(modifier = Modifier.padding(16.dp)) {
                     Button(
                         onClick = { onEvent(AddEditTransactionEvent.OnSaveClick) },
@@ -186,6 +209,9 @@ fun AddEditTransactionContent(
             modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
+                    // imePadding SEBELUM verticalScroll: viewport mengecil saat
+                    // keyboard muncul, jadi field fokus ikut terlihat ke atas
+                    .imePadding()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp),
         ) {
@@ -205,6 +231,10 @@ fun AddEditTransactionContent(
                 onAmountChange = {
                     onEvent(AddEditTransactionEvent.OnAmountChange(it))
                 },
+                // tombol Next di keyboard: lompat ke field Nama
+                imeAction = ImeAction.Next,
+                onImeAction = { nameFocus.requestFocus() },
+                focusRequester = amountFocus,
                 label = {
                     Text(
                         text = if (state.type == TransactionType.EXPENSE) "AMOUNT (OUT)" else "AMOUNT (IN)",
@@ -256,10 +286,24 @@ fun AddEditTransactionContent(
                 OutlinedTextField(
                     value = state.nameTransaction,
                     onValueChange = { onEvent(AddEditTransactionEvent.OnNameTransactionChange(it)) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .focusRequester(nameFocus),
                     shape = RoundedCornerShape(16.dp),
                     placeholder = { Text("Nama Transaksi") },
                     singleLine = true,
+                    // Next di sini: tutup keyboard lalu langsung buka sheet Category
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next,
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            keyboard?.hide()
+                            // jalur cepat: setelah kategori dipilih lanjut ke sheet Account
+                            onEvent(AddEditTransactionEvent.OnCategoryClick(autoAdvance = true))
+                        },
+                    ),
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = PrimaryCyan,
                         unfocusedBorderColor = BorderGray,
@@ -280,7 +324,7 @@ fun AddEditTransactionContent(
                     ),
                     title = state.selectedCategory?.name ?: "Select Category",
                     subtitle = "e.g. Food, Transportation...",
-                    onClick = { onEvent(AddEditTransactionEvent.OnCategoryClick) },
+                    onClick = { onEvent(AddEditTransactionEvent.OnCategoryClick()) },
                 )
             }
 
@@ -311,6 +355,14 @@ fun AddEditTransactionContent(
                     value = state.note,
                     onValueChange = { onEvent(AddEditTransactionEvent.OnNoteChange(it)) },
                     placeholder = { Text("Add a note here...") },
+                    // Done: tutup keyboard, selesai mengisi
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done,
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { keyboard?.hide() },
+                    ),
                     leadingIcon = {
                         Icon(
                             imageVector = Icons.Outlined.Notes,
@@ -396,7 +448,7 @@ fun AddEditTransactionContent(
         if (state.showCategoryBottomSheet) {
             ModalBottomSheet(
                 onDismissRequest = {
-                    onEvent(AddEditTransactionEvent.OnCategoryClick)
+                    onEvent(AddEditTransactionEvent.OnCategoryClick())
                 },
                 sheetState = sheetState,
             ) {
@@ -507,6 +559,10 @@ fun AmountOutlinedTextField(
     label: @Composable (() -> Unit)? = null,
     prefix: @Composable (() -> Unit)? = null,
     modifier: Modifier = Modifier,
+    // opsional supaya pemakai lain (AddEditBudgetScreen) tidak ikut berubah
+    focusRequester: FocusRequester? = null,
+    imeAction: ImeAction = ImeAction.Done,
+    onImeAction: () -> Unit = {},
 ) {
     var amountField by remember {
         mutableStateOf(TextFieldValue(rawAmount, selection = TextRange(rawAmount.length)))
@@ -532,10 +588,22 @@ fun AmountOutlinedTextField(
             )
             onAmountChange(normalized)
         },
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier
+                .fillMaxWidth()
+                .then(
+                    // focusRequester null -> tidak ditambahkan (pemakai lain)
+                    if (focusRequester != null) Modifier.focusRequester(focusRequester) else Modifier,
+                ),
         singleLine = true,
         shape = RoundedCornerShape(16.dp),
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Number,
+            imeAction = imeAction,
+        ),
+        keyboardActions = KeyboardActions(
+            onNext = { onImeAction() },
+            onDone = { onImeAction() },
+        ),
         visualTransformation = ThousandSeparatorTransformation(),
         textStyle = textStyle,
         label = label,

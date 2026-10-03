@@ -12,7 +12,16 @@ sealed interface AddEditTransactionEvent {
     ) : AddEditTransactionEvent
 
 
-    data object OnCategoryClick : AddEditTransactionEvent
+    /**
+     * Buka/tutup sheet Category.
+     *
+     * @param autoAdvance kalau `true`, setelah kategori **selesai** dipilih (sheet
+     * tertutup) sheet Account langsung dibuka otomatis — jalur cepat dari tombol
+     * Next keyboard. Tap biasa / tutup pakai scrim = `false` jadi tidak lanjut.
+     */
+    data class OnCategoryClick(
+        val autoAdvance: Boolean = false,
+    ) : AddEditTransactionEvent
     data class OnCategorySelected(
         val category: TransactionCategoryItemModel,
     ) : AddEditTransactionEvent

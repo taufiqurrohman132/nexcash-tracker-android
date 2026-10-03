@@ -55,6 +55,13 @@ class AddEditTransactionViewModel internal constructor(
 
     private val transactionId = route.transactionId
 
+    /**
+     * Penanda alur cepat: dibuka lewat `OnCategoryClick(autoAdvance = true)`
+     * (tombol Next dari field Nama), lalu dikonsumsi begitu kategori selesai
+     * dipilih. Sengaja di luar state — ini info alur sesi, bukan data UI.
+     */
+    private var lanjutKeAccountSetelahKategori = false
+
     init {
         observeTransaction(transactionId)
     }
@@ -101,6 +108,10 @@ class AddEditTransactionViewModel internal constructor(
 
             is AddEditTransactionEvent.OnCategoryClick -> {
                 val willShow = !state.value.showCategoryBottomSheet
+
+                // flag cuma berlaku selama sheet Category terbuka: tutup manual
+                // (scrim/tap lagi) = batal, jadi Account tidak ikut kebuka
+                lanjutKeAccountSetelahKategori = event.autoAdvance && willShow
 
                 updateState {
                     it.copy(
@@ -210,11 +221,29 @@ class AddEditTransactionViewModel internal constructor(
                     state.value.availableCategories.find { it.categoriItem.id == categoryId }
                 val hasSubCategories = parentCategory?.subCategoriesItem?.isNotEmpty() == true
 
+                // kategori selesai dipilih (sheet tertutup) & jalur cepat aktif
+                // → langsung lanjut ke sheet Account. Kalau masih ada sub-kategori
+                // sheet tetap terbuka, flag ditahan sampai sub-nya dipilih.
+                val lanjutKeAccount = !hasSubCategories && lanjutKeAccountSetelahKategori
+                if (lanjutKeAccount) lanjutKeAccountSetelahKategori = false
+
                 updateState {
                     it.copy(
                         selectedCategoryId = categoryId,
                         showCategoryBottomSheet = hasSubCategories,
+                        showAccountBottomSheet = if (lanjutKeAccount) {
+                            true
+                        } else {
+                            it.showAccountBottomSheet
+                        },
                     )
+                }
+
+                if (lanjutKeAccount) {
+                    // di mode tambah, daftar akun belum tentu pernah dimuat
+                    viewModelScope.launch {
+                        ensureAccountsLoaded()
+                    }
                 }
             }
 
