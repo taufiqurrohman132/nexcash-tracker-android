@@ -1,6 +1,5 @@
 package com.example.nexcashapplication.feature.account.presentation.main
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,10 +23,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.TrendingDown
 import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -50,7 +51,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -82,7 +82,6 @@ fun AccountAssetScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
-    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -95,13 +94,8 @@ fun AccountAssetScreen(
                     Route.AccountRoute.AddEditTypeAccount,
                 )
 
-                is AccountAssetEffect.NavigateToAllAccounts -> {
-
-                }
-
-                is AccountAssetEffect.ShowError -> {
-                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
-                }
+                // Snackbar host sudah terpasang di Content — tidak perlu Toast
+                is AccountAssetEffect.ShowError -> snackbarHostState.showSnackbar(effect.message)
             }
         }
     }
@@ -146,11 +140,17 @@ fun AccountAssetContent(
     ) { padding ->
         when {
             state.isLoading && state.bankAccounts.isEmpty() && state.eWallets.isEmpty() -> {
-                Spacer(
+                // eWallets tidak pernah diisi VM (semua grup, termasuk E-Wallet, masuk
+                // `bankAccounts`) — kondisinya tetap dipertahankan agar aman bila kelak diisi.
+                // Dulu cabang ini cuma Spacer kosong: layar putih sampai data pertama masuk.
+                Box(
                     Modifier
                             .fillMaxSize()
                             .padding(padding),
-                )
+                    contentAlignment = Alignment.Center,
+                ) {
+                    CircularProgressIndicator()
+                }
             }
 
             state.error != null && state.bankAccounts.isEmpty() -> {
@@ -218,11 +218,12 @@ fun AccountAssetContent(
                                             .fillMaxWidth()
                                             .background(Color.White),
                                 ) {
+                                    // Semua akun grup sudah ikut dirender di daftar ini, dan
+                                    // belum ada layar tujuan untuk "semua akun per tipe" →
+                                    // action "Lihat Semua" sengaja tidak ditampilkan dulu.
                                     FormField(
                                         title = group.nameGroup,
                                         icon = Icons.Outlined.AccountBalanceWallet,
-                                        actionText = if (group.listAccount.size > 3) "Lihat Semua"
-                                        else null,
                                     )
                                 }
                             }
@@ -331,16 +332,20 @@ fun TotalBalanceCard(
                 Column {
                     Text("BULAN INI", color = Color.White.copy(alpha = 0.75f), fontSize = 10.sp)
                     Row(verticalAlignment = Alignment.CenterVertically) {
+                        // Naik = hijau mint, turun = merah muda; ikon & angka pakai warna yang sama
+                        val isUp = monthlyChangePercent >= 0.0
+                        val changeColor = if (isUp) Color(0xFFB9F6CA) else Color(0xFFFFCDD2)
                         Icon(
-                            Icons.Filled.TrendingUp,
+                            if (isUp) Icons.Filled.TrendingUp else Icons.Filled.TrendingDown,
                             contentDescription = null,
-                            tint = Color(0xFFB9F6CA),
+                            tint = changeColor,
                             modifier = Modifier.size(14.dp),
                         )
                         Spacer(Modifier.width(2.dp))
                         Text(
-                            "+${monthlyChangePercent}%",
-                            color = Color.Green,
+                            // Tanpa prefix "+" bawaan — nilai negatif sudah membawa tanda "-"
+                            text = if (isUp) "+$monthlyChangePercent%" else "$monthlyChangePercent%",
+                            color = changeColor,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )

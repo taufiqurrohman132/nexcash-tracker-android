@@ -72,11 +72,6 @@ class AccountAssetViewModel @Inject constructor(
                 observeMonthlySummary()
                 observeAccount()
             }
-            is AccountAssetEvent.OnSeeAllAccountsClick -> {
-                viewModelScope.launch {
-                    sendEffect(AccountAssetEffect.NavigateToAllAccounts(event.type))
-                }
-            }
             AccountAssetEvent.OnToggleBalanceVisibility -> {
                 viewModelScope.launch {
                     updateState { it.copy(isBalanceVisible = !it.isBalanceVisible) }
