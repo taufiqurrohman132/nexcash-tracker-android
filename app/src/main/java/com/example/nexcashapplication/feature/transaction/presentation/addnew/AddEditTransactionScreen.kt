@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -57,6 +58,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,6 +69,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -95,6 +98,7 @@ import com.example.nexcashapplication.feature.transaction.presentation.addnew.co
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -140,7 +144,35 @@ fun AddEditTransactionContent(
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     val accent = PrimaryCyan // light blue, matching the design
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+
+    // Satu sheetState per sheet: berbagi satu instance membuat sheet baru muncul
+    // langsung `Expanded` (tanpa animasi masuk) karena state-nya masih dipakai
+    // sheet sebelumnya. Tinggi konten tetap → skip partial supaya drag sedikit
+    // tidak mengecup setengah tinggi.
+    val categorySheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val accountSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val sheetScope = rememberCoroutineScope()
+
+    // Menutup lewat `hide()` dulu, baru state dibalik: sheet keluar dengan animasi
+    // dan SheetState kembali `Hidden`, jadi buka berikutnya juga ikut animasi.
+    val dismissCategorySheet: () -> Unit = {
+        sheetScope.launch { categorySheetState.hide() }
+            .invokeOnCompletion { cause ->
+                if (cause == null) onEvent(AddEditTransactionEvent.OnCategoryDismiss)
+            }
+    }
+    val dismissAccountSheet: () -> Unit = {
+        sheetScope.launch { accountSheetState.hide() }
+            .invokeOnCompletion { cause ->
+                if (cause == null) onEvent(AddEditTransactionEvent.OnAccountDismiss)
+            }
+    }
+
+    // dibungkus remember: daftar ini dihitung dari filter tipe, buang biar tidak
+    // dibuat ulang tiap recomposition
+    val parentCategories = remember(state.availableCategories) {
+        state.availableCategories.map { it.categoriItem }
+    }
 
     // --- alur cepat isi form: amount -> Nama -> sheet Category ---
     val amountFocus = remember { FocusRequester() }
@@ -447,17 +479,30 @@ fun AddEditTransactionContent(
         // sheet
         if (state.showCategoryBottomSheet) {
             ModalBottomSheet(
-                onDismissRequest = {
-                    onEvent(AddEditTransactionEvent.OnCategoryClick())
-                },
-                sheetState = sheetState,
+                onDismissRequest = dismissCategorySheet,
+                sheetState = categorySheetState,
             ) {
                 CategoryBottomSheetContent(
-                    parentCategories = state.availableCategories.map { it.categoriItem },
+                    parentCategories = parentCategories,
                     subCategories = state.subCategories,
-                    selectedParentId = state.selectedCategoryId,
-                    onCategorySelected = {
-                        onEvent(AddEditTransactionEvent.OnCategorySelected(it))
+                    selectedParentId = state.selectedParentGroupId,
+                    selectedSubId = state.selectedSubCategoryId,
+                    isLoading = state.isCategoriesLoading,
+                    onCategorySelected = { item ->
+                        // Induk ber-sub menahan sheet: event langsung dikirim.
+                        // Selainnya sheet menutup → tunggu animasi hide selesai dulu,
+                        // supaya perpindahan ke sheet Account tidak terjadi dalam satu
+                        // frame (sheet hilang mendadak, sheet baru muncul tanpa animasi).
+                        if (state.keepsCategorySheetOpen(item.id)) {
+                            onEvent(AddEditTransactionEvent.OnCategorySelected(item))
+                        } else {
+                            sheetScope.launch { categorySheetState.hide() }
+                                .invokeOnCompletion { cause ->
+                                    if (cause == null) {
+                                        onEvent(AddEditTransactionEvent.OnCategorySelected(item))
+                                    }
+                                }
+                        }
                     },
                 )
             }
@@ -465,16 +510,20 @@ fun AddEditTransactionContent(
 
         if (state.showAccountBottomSheet) {
             ModalBottomSheet(
-                onDismissRequest = {
-                    onEvent(AddEditTransactionEvent.OnAccountClick)
-                },
-                sheetState = sheetState,
+                onDismissRequest = dismissAccountSheet,
+                sheetState = accountSheetState,
             ) {
                 AccountBottomSheetContent(
                     accounts = state.availableAccounts,
                     selectedAccountId = state.selectedAccountId,
                     onAccountSelected = { account ->
-                        onEvent(AddEditTransactionEvent.OnAccountSelected(account))
+                        // sama seperti kategori: animasi keluar dulu, baru state
+                        sheetScope.launch { accountSheetState.hide() }
+                            .invokeOnCompletion { cause ->
+                                if (cause == null) {
+                                    onEvent(AddEditTransactionEvent.OnAccountSelected(account))
+                                }
+                            }
                     },
                 )
             }

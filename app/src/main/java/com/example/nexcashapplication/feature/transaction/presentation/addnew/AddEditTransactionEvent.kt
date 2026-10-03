@@ -26,10 +26,22 @@ sealed interface AddEditTransactionEvent {
         val category: TransactionCategoryItemModel,
     ) : AddEditTransactionEvent
 
+    /**
+     * Sheet Category ditutup tanpa memilih (scrim / drag-down).
+     *
+     * Sengaja terpisah dari [OnCategoryClick] yang toggle dari baris form:
+     * dismiss selalu berarti "tutup", sekaligus membatalkan penanda alur cepat
+     * supaya sheet Account tidak ikut kebuka.
+     */
+    data object OnCategoryDismiss : AddEditTransactionEvent
+
     data object OnAccountClick : AddEditTransactionEvent
     data class OnAccountSelected(
         val account: AccountUiModel,
     ) : AddEditTransactionEvent
+
+    /** Sheet Account ditutup tanpa memilih (scrim / drag-down). */
+    data object OnAccountDismiss : AddEditTransactionEvent
 
     data object OnDateClick : AddEditTransactionEvent
     data class OnDateChange(

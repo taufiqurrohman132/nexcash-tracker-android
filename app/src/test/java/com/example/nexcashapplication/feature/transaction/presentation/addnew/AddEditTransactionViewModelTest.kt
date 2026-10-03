@@ -11,6 +11,7 @@ import com.example.nexcashapplication.feature.category.domain.model.WeeklyTrend
 import com.example.nexcashapplication.feature.transaction.domain.usecase.FakeAccountRepository
 import com.example.nexcashapplication.feature.transaction.domain.usecase.FakeTransactionRepository
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.TransactionCategoryItemModel
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -37,7 +38,11 @@ import org.junit.jupiter.api.Test
  * - kategori ber-sub → sheet Category **tetap** terbuka sampai sub dipilih,
  *   baru lanjut ke Account.
  * - tap biasa (`autoAdvance = false`) → Account **tidak** ikut kebuka.
- * - tutup sheet pakai scrim di tengah alur cepat → flag dibatalkan.
+ * - tutup sheet pakai scrim di tengah alur cepat → flag dibatalkan; scrim memakai
+ *   event khusus `OnCategoryDismiss`/`OnAccountDismiss`, bukan toggle baris form.
+ * - sheet yang dibuka ulang setelah sub dipilih tetap menyorot induknya dan
+ *   menampilkan daftar sub (bukan placeholder "Pilih kategori utama").
+ * - `isCategoriesLoading` tampil selama kategori masih dimuat.
  *
  * Route dipakai lewat konstruktor `internal` dengan [Route.TransactionRoute.AddEdit]
  * langsung; konstruktor produksi `@Inject` tetap membaca `SavedStateHandle.toRoute()`
@@ -129,8 +134,8 @@ class AddEditTransactionViewModelTest {
             vm.onEvent(AddEditTransactionEvent.OnCategoryClick(autoAdvance = true))
             advanceUntilIdle()
 
-            // scrim menutup sheet (event tanpa autoAdvance) → flag dibuang
-            vm.onEvent(AddEditTransactionEvent.OnCategoryClick())
+            // scrim menutup sheet (bukan toggle) → flag dibuang
+            vm.onEvent(AddEditTransactionEvent.OnCategoryDismiss)
             advanceUntilIdle()
             assertFalse(vm.state.value.showCategoryBottomSheet)
 
@@ -143,15 +148,79 @@ class AddEditTransactionViewModelTest {
             assertFalse(vm.state.value.showAccountBottomSheet)
         }
 
+    @Test
+    fun `dismiss - menutup sheet Account tanpa mengubah pilihan`() =
+        runTest(testDispatcher) {
+            val vm = createViewModel(listOf(group("c1", "Makanan")))
+
+            vm.onEvent(AddEditTransactionEvent.OnAccountClick)
+            advanceUntilIdle()
+            assertTrue(vm.state.value.showAccountBottomSheet)
+
+            vm.onEvent(AddEditTransactionEvent.OnAccountDismiss)
+            advanceUntilIdle()
+
+            assertFalse(vm.state.value.showAccountBottomSheet)
+        }
+
+    // ── Konteks sheet saat dibuka ulang ────────────────────────────────
+
+    @Test
+    fun `pilih sub - sorotan induk dan daftar sub tetap ada saat sheet dibuka lagi`() =
+        runTest(testDispatcher) {
+            val vm = createViewModel(listOf(group("p1", "Makanan", subIds = listOf("p1s1"))))
+
+            vm.onEvent(AddEditTransactionEvent.OnCategoryClick())
+            advanceUntilIdle()
+            vm.onEvent(AddEditTransactionEvent.OnCategorySelected(vm.model("p1")))
+            advanceUntilIdle()
+            vm.onEvent(AddEditTransactionEvent.OnCategorySelected(vm.model("p1s1")))
+            advanceUntilIdle()
+            assertFalse(vm.state.value.showCategoryBottomSheet)
+
+            // buuka lagi: panel kanan harus tetap menampilkan sub-nya, bukan
+            // balik ke placeholder "Pilih kategori utama" (regresi P1)
+            vm.onEvent(AddEditTransactionEvent.OnCategoryClick())
+            advanceUntilIdle()
+
+            assertEquals("p1", vm.state.value.selectedParentGroupId)
+            assertEquals(listOf("p1s1"), vm.state.value.subCategories.map { it.id })
+            assertEquals("p1s1", vm.state.value.selectedSubCategoryId)
+        }
+
+    @Test
+    fun `buka sheet - indikator tampil selama kategori masih dimuat`() =
+        runTest(testDispatcher) {
+            val gate = CompletableDeferred<Unit>()
+            val vm = createViewModel(listOf(group("c1", "Makanan")), loadGate = gate)
+
+            vm.onEvent(AddEditTransactionEvent.OnCategoryClick())
+            advanceUntilIdle()
+
+            assertTrue(vm.state.value.isCategoriesLoading, "daftar belum termuat → loading")
+            assertTrue(vm.state.value.allCategories.isEmpty())
+
+            gate.complete(Unit)
+            advanceUntilIdle()
+
+            assertFalse(vm.state.value.isCategoriesLoading)
+            assertEquals(
+                listOf("c1"),
+                vm.state.value.allCategories.map { it.categoriItem.id },
+            )
+        }
+
     // ── Peralatan ──────────────────────────────────────────────────────
 
-    private fun createViewModel(categories: List<CategoryAndSubcategory>) =
-        AddEditTransactionViewModel(
-            route = Route.TransactionRoute.AddEdit(),
-            transactionRepository = FakeTransactionRepository(),
-            categoryRepository = SeedCategoryRepository(categories),
-            accountRepository = FakeAccountRepository(),
-        )
+    private fun createViewModel(
+        categories: List<CategoryAndSubcategory>,
+        loadGate: CompletableDeferred<Unit>? = null,
+    ) = AddEditTransactionViewModel(
+        route = Route.TransactionRoute.AddEdit(),
+        transactionRepository = FakeTransactionRepository(),
+        categoryRepository = SeedCategoryRepository(categories, loadGate),
+        accountRepository = FakeAccountRepository(),
+    )
 
     /** Ambil model kategori (induk maupun sub) persis seperti dibaca sheet. */
     private fun AddEditTransactionViewModel.model(id: String): TransactionCategoryItemModel =
@@ -189,12 +258,19 @@ class AddEditTransactionViewModelTest {
  * [CategoryRepository] minimal untuk test ini — hanya
  * [getCategoriesAndSubCategories] yang dipakai ViewModel; metode lain tidak
  * pernah dipanggil jadi sengaja melempar supaya ketahuan bila tiba-tiba terpakai.
+ *
+ * @param loadGate kalau diisi, query menahan sampai gate di-complete — dipakai
+ * untuk mengamati [AddEditTransactionState.isCategoriesLoading] di tengah jalan.
  */
 private class SeedCategoryRepository(
     private val rows: List<CategoryAndSubcategory>,
+    private val loadGate: CompletableDeferred<Unit>? = null,
 ) : CategoryRepository {
 
-    override suspend fun getCategoriesAndSubCategories(): List<CategoryAndSubcategory> = rows
+    override suspend fun getCategoriesAndSubCategories(): List<CategoryAndSubcategory> {
+        loadGate?.await()
+        return rows
+    }
 
     override fun getCategoryById(id: String): Flow<Category?> = tidakDipakai()
     override fun getAllCategory(): Flow<List<Category?>> = tidakDipakai()

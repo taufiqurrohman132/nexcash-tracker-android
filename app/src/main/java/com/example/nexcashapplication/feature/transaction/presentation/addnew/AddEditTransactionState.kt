@@ -29,6 +29,9 @@ data class AddEditTransactionState(
     val showCategoryBottomSheet: Boolean = false,
     val showAccountBottomSheet: Boolean = false,
 
+    /** Daftar kategori sedang dimuat — sheet menampilkan indikator, bukan layar kosong. */
+    val isCategoriesLoading: Boolean = false,
+
     val allCategories: List<TransactionCategoryAndSubModel> = emptyList(),
 //    val availableSubCategories: List<TransactionCategoryItemModel> = emptyList(),
     val availableAccounts: List<AccountUiModel> = emptyList(),
@@ -61,8 +64,40 @@ data class AddEditTransactionState(
             }
         }
 
+    /**
+     * Grup induk dari [selectedCategoryId] — id terpilih boleh berupa sub kategori,
+     * jadi dicari lewat induk **maupun** sub.
+     *
+     * Tanpa ini, sheet yang dibuka lagi setelah sub dipilih kehilangan sorotan
+     * induk dan panel kanan balik ke placeholder "Pilih kategori utama".
+     */
+    val selectedParentGroupId: String?
+        get() = availableCategories.find { group ->
+            group.categoriItem.id == selectedCategoryId ||
+                    group.subCategoriesItem.any { it.id == selectedCategoryId }
+        }?.categoriItem?.id
+
+    /** Id sub kategori terpilih — null kalau yang terpilih induk atau belum ada. */
+    val selectedSubCategoryId: String?
+        get() = selectedParentGroupId?.let { parent ->
+            availableCategories.find { it.categoriItem.id == parent }
+                    ?.subCategoriesItem
+                    ?.find { it.id == selectedCategoryId }
+                    ?.id
+        }
+
+    /**
+     * Aturan tutup sheet Category: induk yang masih punya sub menahan sheet tetap
+     * terbuka (pemilih harus memilih sub), selainnya sheet boleh ditutup.
+     *
+     * Satu sumber kebenaran untuk ViewModel **dan** screen — screen perlu tahu
+     * aturan ini sebelum menjalankan animasi hide-nya sendiri.
+     */
+    fun keepsCategorySheetOpen(id: String): Boolean =
+        availableCategories.any { it.categoriItem.id == id && it.subCategoriesItem.isNotEmpty() }
+
     val subCategories: List<TransactionCategoryItemModel>
-        get() = availableCategories.find { it.categoriItem.id == selectedCategoryId }
+        get() = availableCategories.find { it.categoriItem.id == selectedParentGroupId }
                 ?.subCategoriesItem ?: emptyList()
 
     val selectedCategory: TransactionCategoryItemModel?

@@ -106,6 +106,22 @@ class AddEditTransactionViewModel internal constructor(
                 }
             }
 
+            is AddEditTransactionEvent.OnAccountDismiss -> {
+                // scrim/drag-down: tutup saja, pilihan yang sudah ada dipertahankan
+                updateState {
+                    it.copy(showAccountBottomSheet = false)
+                }
+            }
+
+            is AddEditTransactionEvent.OnCategoryDismiss -> {
+                // tutup tanpa memilih → alur cepat batal, jangan buka Account
+                lanjutKeAccountSetelahKategori = false
+
+                updateState {
+                    it.copy(showCategoryBottomSheet = false)
+                }
+            }
+
             is AddEditTransactionEvent.OnCategoryClick -> {
                 val willShow = !state.value.showCategoryBottomSheet
 
@@ -217,9 +233,10 @@ class AddEditTransactionViewModel internal constructor(
 
             is AddEditTransactionEvent.OnCategorySelected -> {
                 val categoryId = event.category.id
-                val parentCategory =
-                    state.value.availableCategories.find { it.categoriItem.id == categoryId }
-                val hasSubCategories = parentCategory?.subCategoriesItem?.isNotEmpty() == true
+
+                // induk ber-sub menahan sheet terbuka; aturannya ada di state
+                // supaya screen (yang menjalankan animasi hide) memakai aturan yang sama
+                val hasSubCategories = state.value.keepsCategorySheetOpen(categoryId)
 
                 // kategori selesai dipilih (sheet tertutup) & jalur cepat aktif
                 // → langsung lanjut ke sheet Account. Kalau masih ada sub-kategori
@@ -329,6 +346,9 @@ class AddEditTransactionViewModel internal constructor(
     private suspend fun ensureCategoriesLoaded() {
         if (state.value.allCategories.isNotEmpty()) return
 
+        // supaya sheet bisa menampilkan indikator, bukan daftar kosong diam
+        updateState { it.copy(isCategoriesLoading = true) }
+
         runCatching {
             categoryRepository.getCategoriesAndSubCategories()
         }.onSuccess { result ->
@@ -336,6 +356,8 @@ class AddEditTransactionViewModel internal constructor(
                 it.copy(allCategories = result.map { model -> model.toUIModel() })
             }
         }
+
+        updateState { it.copy(isCategoriesLoading = false) }
     }
 
     private suspend fun ensureAccountsLoaded() {
