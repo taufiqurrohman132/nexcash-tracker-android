@@ -104,6 +104,7 @@ fun AccountAssetScreen(
         state = state,
         onEvent = viewModel::onEvent,
         snackbarHostState = snackbarHostState,
+        modifier = modifier,
     )
 
 }
@@ -117,6 +118,7 @@ fun AccountAssetContent(
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
+        modifier = modifier,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
@@ -256,10 +258,13 @@ fun TotalBalanceCard(
     onToggleVisibility: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Flag satu arah (hanya true) disengaja: flag ini memilih formatCompact()
+    // vs formatCurrency() di toFormatCurrencyVisibility. Bila dibalik otomatis,
+    // teks berubah panjang → pendek → panjang lagi dan layout-nya loop.
     var isTotalSaldoOverflow: Boolean by remember { mutableStateOf(false) }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
                 .background(
@@ -280,7 +285,6 @@ fun TotalBalanceCard(
                     color = Color.White.copy(alpha = 0.9f),
                     fontSize = 13.sp,
                 )
-                Spacer(Modifier.width(6.dp))
                 Spacer(Modifier.weight(1f))
                 Box(
                     modifier = Modifier
@@ -368,36 +372,6 @@ fun TotalBalanceCard(
 }
 
 
-@Composable
-private fun SectionHeader(
-    title: String,
-    actionLabel: String? = null,
-    onActionClick: () -> Unit = {},
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Text(
-            title,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold,
-            letterSpacing = 0.5.sp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-        )
-        if (actionLabel != null) {
-            Text(
-                actionLabel,
-                fontSize = 12.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.clickable(onClick = onActionClick),
-            )
-        }
-    }
-}
-
 // ---------- Account row (bank / e-wallet) ----------
 
 @Composable
@@ -413,16 +387,12 @@ private fun AccountRow(
                 .height(IntrinsicSize.Min)
                 .shadow(
                     elevation = 4.dp,
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(16.dp),
                     ambientColor = Color.Black.copy(alpha = 0.5f),
                     spotColor = Color.Black.copy(alpha = 0.5f),
                 )
                 .clip(RoundedCornerShape(16.dp))
-                .background(
-                    Color.White,
-//                    Color.Red
-                )
-
+                .background(Color.White)
                 .clickable(onClick = onClick),
     ) {
         Box(
@@ -479,11 +449,8 @@ private fun AccountRow(
 }
 
 
-// ---------------------------------------------------------------------------
+// -----------
 // PREVIEWS
-// Asumsi: AccountAssetState & AccountUiModel punya field ini — sesuaikan
-// nama field kalau berbeda dari data class asli kamu (tidak ada di file
-// yang kamu paste, jadi ini tebakan dari cara field itu dipakai).
 // ---------------------------------------------------------------------------
 
 
@@ -556,11 +523,10 @@ private fun AccountAssetContentLoadedPreview() {
                         ),
                     ),
                 ),
-
-                ),
+            ),
             eWallets = listOf(
                 AccountUiModel(
-                    id = "3",
+                    id = "5",
                     name = "GoPay",
                     provider = AccountProviderUiModel("kad", "BCA", TypeAccount.BANK, Color.Red),
 
