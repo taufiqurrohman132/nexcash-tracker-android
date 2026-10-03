@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.core.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -19,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -48,11 +48,10 @@ fun MonthNavigator(
 
     Row(
         modifier = modifier
-                .shadow(elevation = 4.dp, shape = RoundedCornerShape(50))
                 .clip(RoundedCornerShape(50))
+                .border(2.dp, TextTertiary, RoundedCornerShape(50))
                 .background(Color.White)
-                .height(40.dp)
-                .padding(horizontal = 4.dp),
+                .height(40.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
 
@@ -75,7 +74,8 @@ fun MonthNavigator(
                 imageVector = Icons.Outlined.DateRange,
                 contentDescription = null,
                 tint = PrimaryCyan,
-                modifier = Modifier.size(20.dp)
+                modifier = Modifier
+                        .size(20.dp)
                         .padding(end = 4.dp),
             )
             Text(
