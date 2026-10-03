@@ -1,6 +1,5 @@
 package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
@@ -11,6 +10,9 @@ import com.example.nexcashapplication.core.domain.repository.TransactionReposito
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.repository.AccountRepository
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.toAccountUiModel
+import com.example.nexcashapplication.feature.common.utils.toPickedLocalDate
+import com.example.nexcashapplication.feature.common.utils.withDate
+import com.example.nexcashapplication.feature.common.utils.withTime
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.mapper.toAddEditTransactionState
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.mapper.toUIModel
@@ -18,18 +20,39 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.time.Instant
 
 @HiltViewModel
-class AddEditTransactionViewModel @Inject constructor(
+class AddEditTransactionViewModel internal constructor(
+    private val route: Route.TransactionRoute.AddEdit,
     private val transactionRepository: TransactionRepository,
     private val categoryRepository: CategoryRepository,
     private val accountRepository: AccountRepository,
-    savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddEditTransactionState, AddEditTransactionEvent, AddEditTransactionEffect>(
     initialState = AddEditTransactionState(),
 ) {
-    private val route: Route.TransactionRoute.AddEdit = savedStateHandle.toRoute()
+
+    /**
+     * Konstruktor produksi (Hilt + Navigation): membaca typed route dari
+     * [SavedStateHandle] lewat `toRoute()`.
+     *
+     * Catatan pengujian: `toRoute()` membaca argumen lewat Bundle Android; di JVM
+     * unit test Bundle di-mock (`getString` selalu null). Unit test memakai
+     * konstruktor `internal` dengan [Route.TransactionRoute.AddEdit] langsung —
+     * jalur di device tetap identik lewat konstruktor ini.
+     * Pola yang sama dipakai `DetailCategoryViewModel`.
+     */
+    @Inject constructor(
+        savedStateHandle: SavedStateHandle,
+        transactionRepository: TransactionRepository,
+        categoryRepository: CategoryRepository,
+        accountRepository: AccountRepository,
+    ) : this(
+        route = savedStateHandle.toRoute<Route.TransactionRoute.AddEdit>(),
+        transactionRepository = transactionRepository,
+        categoryRepository = categoryRepository,
+        accountRepository = accountRepository,
+    )
+
     private val transactionId = route.transactionId
 
     init {
@@ -165,16 +188,18 @@ class AddEditTransactionViewModel @Inject constructor(
 
             is AddEditTransactionEvent.OnDateChange -> {
                 updateState {
+                    // tanggal diganti, jam/menit lama dipertahankan
                     it.copy(
-                        transactionAt = Instant.fromEpochMilliseconds(event.date),
+                        transactionAt = it.transactionAt.withDate(event.date.toPickedLocalDate()),
                     )
                 }
             }
 
             is AddEditTransactionEvent.OnTimeChange -> {
                 updateState {
+                    // jam diganti, tanggal lama dipertahankan
                     it.copy(
-                        transactionAt = event.time,
+                        transactionAt = it.transactionAt.withTime(event.hour, event.minute),
                     )
                 }
             }
@@ -196,12 +221,19 @@ class AddEditTransactionViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Simpan transaksi. Guard [AddEditTransactionState.isSaving] dipakai sebelum
+     * launch coroutine supaya tap kedua tidak menghasilkan transaksi kembar;
+     * kegagalan repository ditangkap lalu dilaporkan lewat [AddEditTransactionEffect.ShowSnackbar]
+     * (kalau dibiarkan bocor ke viewModelScope, exception-nya crash).
+     */
     private fun handleSave() {
-        if (!state.value.isValid) return
+        val currentState = state.value
+        if (!currentState.isValid || currentState.isSaving) return
+
+        updateState { it.copy(isSaving = true) }
 
         viewModelScope.launch {
-            val currentState = state.value
-
             val transaction = Transaction(
                 id = currentState.transactionId, // sesuaikan strategi ID-mu
                 title = currentState.nameTransaction,
@@ -209,18 +241,29 @@ class AddEditTransactionViewModel @Inject constructor(
                 categoryId = currentState.selectedCategoryId,
                 description = currentState.note,
                 typeTransaction = currentState.type,
-                accountId = currentState.selectedAccountId ?: "",
+                accountId = currentState.selectedAccountId,
                 dateTime = currentState.transactionAt,
             )
 
-            Log.d("transaciton", "handleSave: transaciton id = ${currentState.transactionId}")
-            if (currentState.transactionId != null) {
-                transactionRepository.updateTransaction(transaction)
-            } else {
-                transactionRepository.insertTransaction(transaction)
+            val result = runCatching {
+                if (currentState.transactionId != null) {
+                    transactionRepository.updateTransaction(transaction)
+                } else {
+                    transactionRepository.insertTransaction(transaction)
+                }
             }
 
-            sendEffect(AddEditTransactionEffect.NavigateBack)
+            updateState { it.copy(isSaving = false) }
+
+            if (result.isSuccess) {
+                sendEffect(AddEditTransactionEffect.NavigateBack)
+            } else {
+                sendEffect(
+                    AddEditTransactionEffect.ShowSnackbar(
+                        "Transaksi gagal disimpan. Coba lagi.",
+                    ),
+                )
+            }
         }
     }
 

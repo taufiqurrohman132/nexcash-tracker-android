@@ -5,5 +5,4 @@ package com.example.nexcashapplication.feature.transaction.presentation.addnew
 sealed interface AddEditTransactionEffect {
     data object NavigateBack : AddEditTransactionEffect
     data class ShowSnackbar(val message: String) : AddEditTransactionEffect
-    data object NavigateToAddEditCategory : AddEditTransactionEffect
 }

@@ -2,7 +2,6 @@ package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.TransactionCategoryItemModel
-import kotlin.time.Instant
 
 sealed interface AddEditTransactionEvent {
 
@@ -29,8 +28,14 @@ sealed interface AddEditTransactionEvent {
     ) : AddEditTransactionEvent
 
     data object OnTimeClick : AddEditTransactionEvent
+
+    /**
+     * Bawa jam saja (bukan `Instant`): tanggalnya diambil dari state saat ini di
+     * ViewModel, supaya memilih jam tidak mereset tanggal ke hari ini.
+     */
     data class OnTimeChange(
-        val time: Instant,
+        val hour: Int,
+        val minute: Int,
     ) : AddEditTransactionEvent
 
     data class OnNoteChange(

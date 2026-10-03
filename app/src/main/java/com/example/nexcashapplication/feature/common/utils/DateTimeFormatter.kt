@@ -3,6 +3,7 @@ package com.example.nexcashapplication.feature.common.utils
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
@@ -50,3 +51,47 @@ object TimeParser {
                 .toInstant()
                 .toKotlinInstant()
 }
+
+// ---- DatePicker & TimePicker ----
+// DatePicker Material3 selalu bekerja di "UTC midnight" dari tanggal yang dipilih,
+// bukan Instant bebas — kalau dikirim mentah (mis. 15 Apr 09:00 lokal = 14 Apr 23:00 UTC)
+// tanggalnya bisa meleset sehari. Titik konversinya cuma di sini.
+
+/** Tanggal lokal dari [this] -> millis UTC midnight untuk `AppDatePickerDialog.initialDateMillis`. */
+fun Instant.toDatePickerMillis(zoneId: ZoneId = ZoneId.systemDefault()): Long =
+    this.toZoned(zoneId).toLocalDate()
+        .atStartOfDay(ZoneOffset.UTC)
+        .toInstant()
+        .toEpochMilli()
+
+/** Millis hasil DatePicker -> tanggal lokal (dibaca sebagai UTC, sesuai konvensi Material3). */
+fun Long.toPickedLocalDate(): java.time.LocalDate =
+    java.time.Instant.ofEpochMilli(this).atZone(ZoneOffset.UTC).toLocalDate()
+
+/**
+ * Ganti tanggal [this] dengan [date], **jam/menit lama dipertahankan**.
+ * Dipakai OnDateChange supaya memilih tanggal tidak mereset jam yang sudah dipilih.
+ */
+fun Instant.withDate(
+    date: java.time.LocalDate,
+    zoneId: ZoneId = ZoneId.systemDefault(),
+): Instant =
+    date.atTime(this.toZoned(zoneId).toLocalTime())
+        .atZone(zoneId)
+        .toInstant()
+        .toKotlinInstant()
+
+/**
+ * Ganti jam [this] dengan [hour]:[minute], **tanggal lama dipertahankan**.
+ * Dipakai OnTimeChange supaya memilih jam tidak mereset tanggal ke hari ini.
+ */
+fun Instant.withTime(
+    hour: Int,
+    minute: Int,
+    zoneId: ZoneId = ZoneId.systemDefault(),
+): Instant =
+    this.toZoned(zoneId).toLocalDate()
+        .atTime(hour, minute)
+        .atZone(zoneId)
+        .toInstant()
+        .toKotlinInstant()

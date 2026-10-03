@@ -20,6 +20,9 @@ data class AddEditTransactionState(
     val attachmentName: String? = null,
     val isRecurring: Boolean = false,
 
+    // mencegah Save dobel saat proses insert/update masih berjalan
+    val isSaving: Boolean = false,
+
     val showDatePicker: Boolean = false,
     val showTimePicker: Boolean = false,
 

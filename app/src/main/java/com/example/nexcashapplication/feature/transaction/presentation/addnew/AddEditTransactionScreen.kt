@@ -22,31 +22,30 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Output
-import androidx.compose.material.icons.filled.ThumbUp
+import androidx.compose.material.icons.filled.TrendingDown
+import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
+import androidx.compose.material.icons.outlined.AddPhotoAlternate
 import androidx.compose.material.icons.outlined.Category
 import androidx.compose.material.icons.outlined.DateRange
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.outlined.Notes
+import androidx.compose.material.icons.outlined.Repeat
 import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -79,16 +78,16 @@ import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
 import com.example.nexcashapplication.feature.common.components.AppTimePickerDialog
 import com.example.nexcashapplication.feature.common.transformation.ThousandSeparatorTransformation
-import com.example.nexcashapplication.feature.common.utils.TimeParser
 import com.example.nexcashapplication.feature.common.utils.formatDate
 import com.example.nexcashapplication.feature.common.utils.formatTime
 import com.example.nexcashapplication.feature.common.utils.hour
 import com.example.nexcashapplication.feature.common.utils.minute
+import com.example.nexcashapplication.feature.common.utils.toDatePickerMillis
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.components.AccountBottomSheetContent
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.components.CategoryBottomSheetContent
 import com.example.nexcashapplication.ui.theme.BorderGray
+import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import kotlinx.coroutines.flow.collectLatest
 
 
 @Composable
@@ -98,21 +97,20 @@ fun AddEditTransactionScreen(
     navController: NavHostController,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
-        viewModel.effect.collectLatest { effect ->
+        // `collect`, bukan collectLatest: showSnackbar itu suspend, collectLatest
+        // bisa membatalkannya di tengah jalan kalau effect berikutnya datang.
+        viewModel.effect.collect { effect ->
             when (effect) {
                 is AddEditTransactionEffect.NavigateBack -> {
                     // Navigate back
                     navController.popBackStack()
                 }
 
-                AddEditTransactionEffect.NavigateToAddEditCategory -> {
-
-                }
-
                 is AddEditTransactionEffect.ShowSnackbar -> {
-
+                    snackbarHostState.showSnackbar(effect.message)
                 }
             }
         }
@@ -120,6 +118,7 @@ fun AddEditTransactionScreen(
     AddEditTransactionContent(
         state = state,
         onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
     )
 
@@ -131,23 +130,20 @@ fun AddEditTransactionContent(
     state: AddEditTransactionState,
     onEvent: (AddEditTransactionEvent) -> Unit,
     modifier: Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-    var detailExpanded by remember { mutableStateOf(false) }
     val accent = PrimaryCyan // light blue, matching the design
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
 
     Scaffold(
+        modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = { Text("Add Transaction", fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(AddEditTransactionEvent.OnBackClick) }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { /* notifications */ }) {
-                        Icon(Icons.Outlined.Notifications, contentDescription = "Notifications")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
             )
@@ -158,7 +154,7 @@ fun AddEditTransactionContent(
                 Box(modifier = Modifier.padding(16.dp)) {
                     Button(
                         onClick = { onEvent(AddEditTransactionEvent.OnSaveClick) },
-                        enabled = state.isValid,
+                        enabled = state.isValid && !state.isSaving,
                         modifier = Modifier
                                 .fillMaxWidth()
                                 .height(52.dp),
@@ -168,11 +164,19 @@ fun AddEditTransactionContent(
                             disabledContainerColor = accent.copy(alpha = 0.35f),
                         ),
                     ) {
-                        Text(
-                            "Save Transaction",
-                            fontWeight = FontWeight.Bold,
-                            color = Color.Black,
-                        )
+                        if (state.isSaving) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(20.dp),
+                                color = Color.Black,
+                                strokeWidth = 2.dp,
+                            )
+                        } else {
+                            Text(
+                                "Save Transaction",
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black,
+                            )
+                        }
                     }
                 }
             }
@@ -180,6 +184,7 @@ fun AddEditTransactionContent(
     ) { innerPadding ->
         Column(
             modifier = Modifier
+                    .fillMaxSize()
                     .padding(innerPadding)
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp),
@@ -308,7 +313,7 @@ fun AddEditTransactionContent(
                     placeholder = { Text("Add a note here...") },
                     leadingIcon = {
                         Icon(
-                            imageVector = Icons.Outlined.FavoriteBorder,
+                            imageVector = Icons.Outlined.Notes,
                             contentDescription = null,
                         )
                     },
@@ -338,7 +343,7 @@ fun AddEditTransactionContent(
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        Icons.Default.LocationOn,
+                        Icons.Outlined.Repeat,
                         contentDescription = null,
                         tint = accent,
                         modifier = Modifier.size(20.dp),
@@ -364,7 +369,7 @@ fun AddEditTransactionContent(
         if (state.showDatePicker) {
             // DatePickerDialog
             AppDatePickerDialog(
-                initialDateMillis = state.transactionAt.toEpochMilliseconds(),
+                initialDateMillis = state.transactionAt.toDatePickerMillis(),
                 onDateSelected = {
                     onEvent(AddEditTransactionEvent.OnDateChange(it))
                 },
@@ -379,14 +384,7 @@ fun AddEditTransactionContent(
                 initialHour = state.transactionAt.hour(),
                 initialMinute = state.transactionAt.minute(),
                 onTimeSelected = { hour, minute ->
-                    onEvent(
-                        AddEditTransactionEvent.OnTimeChange(
-                            TimeParser.timeToInstant(
-                                hour,
-                                minute,
-                            ),
-                        ),
-                    )
+                    onEvent(AddEditTransactionEvent.OnTimeChange(hour, minute))
                 },
                 onDismiss = {
                     onEvent(AddEditTransactionEvent.OnTimeClick)
@@ -445,7 +443,7 @@ private fun SegmentedTypeToggle(
     ) {
         ToggleChip(
             label = "Expense",
-            icon = Icons.Default.Output,
+            icon = Icons.Default.TrendingDown,
             selected = selected == TransactionType.EXPENSE,
             selectedColor = Color(0xFFE8433D),
             modifier = Modifier.weight(1f),
@@ -454,7 +452,7 @@ private fun SegmentedTypeToggle(
         Spacer(Modifier.width(4.dp))
         ToggleChip(
             label = "Income",
-            icon = Icons.Default.ThumbUp,
+            icon = Icons.Default.TrendingUp,
             selected = selected == TransactionType.INCOME,
             selectedColor = PrimaryCyan,
             modifier = Modifier.weight(1f),
@@ -633,7 +631,7 @@ private fun AttachmentBox(fileName: String?, onClick: () -> Unit) {
                     .border(BorderStroke(1.dp, Color(0xFFE6E6E6)), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Outlined.ShoppingCart, contentDescription = null, tint = Color.DarkGray)
+            Icon(Icons.Outlined.AddPhotoAlternate, contentDescription = null, tint = Color.DarkGray)
         }
         Spacer(Modifier.height(10.dp))
         Text(
@@ -646,34 +644,10 @@ private fun AttachmentBox(fileName: String?, onClick: () -> Unit) {
     }
 }
 
-@Composable
-private fun ExpandableDetailHeader(expanded: Boolean, onToggle: () -> Unit) {
-    Row(
-        modifier = Modifier
-                .fillMaxWidth()
-                .clickable { onToggle() }
-                .padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            "More Details (optional)",
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 13.sp,
-            color = Color(0xFF17C3E8),
-        )
-        Icon(
-            imageVector = if (expanded) Icons.Default.Email else Icons.Default.MoreVert,
-            contentDescription = null,
-            tint = Color(0xFF17C3E8),
-        )
-    }
-}
-
 @Preview(showBackground = true, heightDp = 800)
 @Composable
 private fun AddTransactionPreview() {
-    MaterialTheme {
+    NexCashApplicationTheme {
         AddEditTransactionContent(
             state = AddEditTransactionState(),
             onEvent = {},
