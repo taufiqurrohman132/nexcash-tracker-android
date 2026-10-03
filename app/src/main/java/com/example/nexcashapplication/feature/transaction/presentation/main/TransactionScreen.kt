@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.feature.transaction.presentation.main
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -20,24 +21,22 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBalanceWallet
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AttachMoney
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Directions
 import androidx.compose.material.icons.filled.Fastfood
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.LocalHospital
 import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.ShoppingBag
-import androidx.compose.material.icons.outlined.AccountBalanceWallet
-import androidx.compose.material.icons.outlined.Insights
+import androidx.compose.material.icons.filled.Today
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
@@ -69,7 +68,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconCircular
-import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.component.MonthNavigator
 import com.example.nexcashapplication.core.component.MonthPicker
 import com.example.nexcashapplication.core.component.TransactionItem
@@ -91,6 +89,12 @@ import com.example.nexcashapplication.ui.theme.SuccessGreen
 import com.example.nexcashapplication.ui.theme.TextTertiary
 import com.example.nexcashapplication.ui.theme.WarningAmber
 import java.time.YearMonth
+
+/** Durasi (ms) animasi fade in/out saat item transaksi muncul atau di-collapse. */
+private const val FADE_ANIMATION_DURATION = 180
+
+/** Durasi (ms) animasi pergeseran pelan saat item lain ditambah/dihapus. */
+private const val PLACEMENT_ANIMATION_DURATION = 220
 
 @Composable
 fun TransactionScreen(
@@ -146,6 +150,7 @@ fun TransactionContent(
                 },
                 actions = {
                     MonthNavigator(
+                        modifier = Modifier.padding(end = 16.dp),
                         month = state.selectedMonth,
                         onMonthSelected = { onEvent(TransactionEvent.OnMonthSelected(it)) },
                         onOpenPicker = { onEvent(TransactionEvent.OnOpenMonthPicker) },
@@ -262,40 +267,36 @@ fun TransactionContent(
                                 title = "Hari Ini",
                                 amount = state.todayTotal,
                                 modifier = Modifier.weight(1f),
-                                icon = Icons.Default.KeyboardArrowDown,
+                                icon = Icons.Default.Today,
                                 iconColor = Color.Red,
                             )
                             SummaryCard(
                                 title = "Minggu Ini",
                                 amount = state.weekTotal,
                                 modifier = Modifier.weight(1f),
-                                icon = Icons.Default.KeyboardArrowUp,
+                                icon = Icons.Default.CalendarMonth,
                                 iconColor = WarningAmber,
                             )
                             SummaryCard(
                                 title = "Sisa Budget",
                                 amount = state.remainingBudget,
                                 modifier = Modifier.weight(1f),
+                                icon = Icons.Default.AccountBalanceWallet,
                                 iconColor = SuccessGreen,
-                                icon = Icons.Default.QrCodeScanner,
-
-                                )
+                            )
                         }
                     }
 
                     if (state.groupedTransactions.isEmpty()) {
                         item(key = "loading_or_empty") {
                             if (state.isLoading) {
-                                // data belum sampai: tampil progres, jangan
+                                // data belum sampai: area kosong dulu, jangan
                                 // buru-buru bilang "tidak ada transaksi"
-                                Box(
+                                Spacer(
                                     modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(48.dp),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    CircularProgressIndicator()
-                                }
+                                            .height(96.dp),
+                                )
                             } else {
                                 TransactionEmptyScreen(
                                     onAddClick = {
@@ -324,7 +325,16 @@ fun TransactionContent(
                                     uiGroupModel.listTransaction,
                                     key = { it.id ?: it.hashCode() },
                                 ) { item ->
-                                    Column {
+                                    Column(
+                                        // animasi ringan: fade in saat muncul,
+                                        // geser pelan saat item lain ditambah/dihapus,
+                                        // fade out saat group di-collapse
+                                        modifier = Modifier.animateItem(
+                                            fadeInSpec = tween(FADE_ANIMATION_DURATION),
+                                            placementSpec = tween(PLACEMENT_ANIMATION_DURATION),
+                                            fadeOutSpec = tween(FADE_ANIMATION_DURATION),
+                                        ),
+                                    ) {
                                         TransactionItem(
                                             transaction = item,
                                             onClick = {
@@ -474,6 +484,7 @@ fun SummaryCard(
             Text(
                 text = stringResource(R.string.total_balance_format, amount.formatCompact()),
                 style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
                 fontWeight = FontWeight.SemiBold,
             )
         }
