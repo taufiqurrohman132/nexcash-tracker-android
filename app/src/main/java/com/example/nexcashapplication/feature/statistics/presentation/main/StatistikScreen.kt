@@ -33,7 +33,9 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SecondaryTabRow
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -123,6 +125,7 @@ fun StatistikContent(
                 ),
                 actions = {
                     MonthNavigator(
+                        modifier = Modifier.padding(end = 16.dp),
                         month = state.selectedMonth,
                         onMonthSelected = { onEvent(StatistikEvent.OnMonthSelected(it)) },
                         onOpenPicker = { onEvent(StatistikEvent.OnGantiBulanClick) },
@@ -274,14 +277,24 @@ fun AlokasiDanaCard(
         if (mode == AlokasiMode.REALISASI) {
             Spacer(Modifier.height(8.dp))
 
-            SegmentedTabRow(
-                selected = realisasiTipe,
-                options = listOf(
-                    RealisasiTipe.PENGELUARAN to "Pengeluaran",
-                    RealisasiTipe.PENDAPATAN to "Pendapatan",
-                ),
-                onSelect = onTipeChange,
+            val tipeOptions = listOf(
+                RealisasiTipe.PENGELUARAN to "Pengeluaran",
+                RealisasiTipe.PENDAPATAN to "Pendapatan",
             )
+            SecondaryTabRow(
+                selectedTabIndex = tipeOptions.indexOfFirst { it.first == realisasiTipe },
+                modifier = Modifier.fillMaxWidth(),
+                // tanpa garis pemisah bawah — kartu sudah punya paddingnya sendiri
+                divider = {},
+            ) {
+                tipeOptions.forEach { (value, label) ->
+                    Tab(
+                        selected = realisasiTipe == value,
+                        onClick = { onTipeChange(value) },
+                        text = { Text(label) },
+                    )
+                }
+            }
         }
 
         Spacer(Modifier.height(16.dp))
