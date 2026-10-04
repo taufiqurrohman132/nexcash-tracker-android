@@ -26,7 +26,7 @@ class SettingsPreferencesDataSource @Inject constructor(
         SettingsPreferences(
             themeMode = it[Keys.THEME] ?: "system",
             languageCode = it[Keys.LANGUAGE] ?: "en",
-            currency = it[Keys.CURRENCY] ?: "USD",
+            currency = it[Keys.CURRENCY] ?: "IDR",
             notificationMasterEnabled = it[Keys.NOTIFICATION_MASTER_ENABLED] ?: true,
         )
     }

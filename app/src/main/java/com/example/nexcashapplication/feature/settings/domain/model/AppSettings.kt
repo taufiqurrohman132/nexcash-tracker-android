@@ -6,6 +6,6 @@ data class AppSettings(
     val themeLight: Boolean = true,
     val color: String = "",
     val language: AppLanguage = AppLanguage.INDONESIA,
-    val currency: String = "",
+    val currency: String = "IDR",
     val notificationMasterEnabled: Boolean = true,
 )

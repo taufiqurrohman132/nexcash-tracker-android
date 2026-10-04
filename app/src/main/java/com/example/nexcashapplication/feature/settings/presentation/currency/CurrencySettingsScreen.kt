@@ -2,7 +2,6 @@ package com.example.nexcashapplication.feature.settings.presentation.currency
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,16 +14,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material.icons.outlined.Language
-import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material.icons.outlined.Palette
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -32,12 +25,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -45,22 +37,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.AppSearchBar
-import com.example.nexcashapplication.core.component.FormField
-import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.feature.settings.presentation.component.LanguageItem
-import com.example.nexcashapplication.feature.settings.presentation.language.LanguageSettingsEvent
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.*
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.BAHASA
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.MATA_UANG
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.NOTIFIKASI
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.PUSAT_BANTUAN
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.TEMA_WARNA
+import com.example.nexcashapplication.feature.settings.presentation.currency.model.CurrencyItemUiModel
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.TextSecondary
-import com.example.nexcashapplication.ui.theme.TextTertiary
 
 @Composable
 fun CurrencySettingsScreen(
@@ -68,28 +50,26 @@ fun CurrencySettingsScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 ) {
-    val state = viewModel.state.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
-                is CurrencySettingsEffect.NavigateTo -> {
-                    when (effect.destination) {
+                CurrencySettingsEffect.NavigateBack -> navController.popBackStack()
 
-
-                        TEMA_WARNA -> TODO()
-                        NOTIFIKASI -> TODO()
-                        PUSAT_BANTUAN -> TODO()
-                        BAHASA -> TODO()
-                        MATA_UANG -> TODO()
-                        KATEGORI -> TODO()
-                    }
+                // Scaffold ini belum punya SnackbarHost — TODO() akan melempar
+                // NotImplementedError begitu efeknya pernah dikirim.
+                is CurrencySettingsEffect.ShowSnackbar -> {
                 }
-
-                is CurrencySettingsEffect.ShowSnackbar -> TODO()
             }
         }
     }
+
+    CurrencySettingsContent(
+        state = state,
+        onEvent = viewModel::onEvent,
+        modifier = modifier,
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,7 +120,7 @@ fun CurrencySettingsContent(
                 onSearchQueryChange = {
                     onEvent(CurrencySettingsEvent.OnSearchQueryChange(it))
                 },
-                placeholder = "Cari Bahasa",
+                placeholder = "Cari Mata Uang",
                 onSearchClear = {
                     onEvent(CurrencySettingsEvent.OnSearchClear)
                 },
@@ -151,16 +131,17 @@ fun CurrencySettingsContent(
                 verticalArrangement = Arrangement.spacedBy(2.dp)
             ){
                 items(
-                    state.listLanguage,
+                    state.listCurrency,
                     key = { it.id },
                 ) {
                     LanguageItem(
-                        iconText = it.id.uppercase(),
+                        iconText = it.id,
                         title = it.name,
+                        subtitle = it.symbol,
                         onClick = {
                             onEvent(CurrencySettingsEvent.OnItemClick(it.id))
                         },
-                        isSelectable = it.id == state.selectedLanguageId,
+                        isSelectable = it.id == state.selectedCurrencyId,
                     )
                 }
 
@@ -197,7 +178,7 @@ private fun InformationCard(modifier: Modifier = Modifier) {
         )
 
         Text(
-            text = "Bahasa yang Anda pilih akan diterapkan ke seluruh antarmuka aplikasi KeuanganKu untuk memudahkan pengelolaan finansial Anda.",
+            text = "Mata uang yang Anda pilih dipakai untuk menampilkan seluruh nominal di aplikasi NexCash.",
             style = MaterialTheme.typography.bodySmall,
             color = TextSecondary,
             modifier = Modifier.padding(start = 16.dp),
@@ -211,7 +192,20 @@ private fun InformationCard(modifier: Modifier = Modifier) {
 private fun CurrencySettingsContentPreview() {
     NexCashApplicationTheme {
         CurrencySettingsContent(
-            state = CurrencySettingsState(),
+            state = CurrencySettingsState(
+                listCurrency = listOf(
+                    CurrencyItemUiModel(
+                        id = "IDR",
+                        name = "Rupiah Indonesia",
+                        symbol = "Rp",
+                    ),
+                    CurrencyItemUiModel(
+                        id = "USD",
+                        name = "Dolar Amerika Serikat",
+                        symbol = "$",
+                    ),
+                ),
+            ),
             onEvent = {},
         )
     }
