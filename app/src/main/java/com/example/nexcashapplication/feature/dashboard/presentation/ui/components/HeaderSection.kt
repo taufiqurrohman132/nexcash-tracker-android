@@ -30,7 +30,7 @@ import coil.compose.AsyncImage
 fun HeaderSection(
     userName: String,
     onClickNotification: () -> Unit,
-    onClickProfile: () -> Unit
+//    onClickProfile: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -62,17 +62,17 @@ fun HeaderSection(
                 )
             }
 
-            Spacer(
-                modifier = Modifier.width(8.dp)
-            )
-            AsyncImage(
-                model = "",
-                contentDescription = null,
-                modifier = Modifier
-                    .size(40.dp)
-                    .clip(CircleShape)
-                    .clickable{ onClickProfile()}
-            )
+//            Spacer(
+//                modifier = Modifier.width(8.dp)
+//            )
+//            AsyncImage(
+//                model = "",
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .size(40.dp)
+//                    .clip(CircleShape)
+//                    .clickable{ onClickProfile()}
+//            )
         }
     }
 }
@@ -80,5 +80,5 @@ fun HeaderSection(
 @Preview(showBackground = true)
 @Composable
 private fun Preview() {
-    HeaderSection("kdf", {}, {})
+    HeaderSection("kdf", {})
 }

@@ -129,9 +129,6 @@ fun DashboardContent(
                 onClickNotification = {
                     onEvent(DashboardEvent.OnNotificationClick)
                 },
-                onClickProfile = {
-                    onEvent(DashboardEvent.OnProfileClick)
-                }
             )
 
             BalanceCard(
