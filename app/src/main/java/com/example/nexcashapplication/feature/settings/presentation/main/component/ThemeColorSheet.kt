@@ -85,50 +85,50 @@ fun ThemeColorSheet(
             ) {
                 ColorOptionItem(
                     color = Color.Blue,
-                    name = "Red",
-                    isSelected = true,
+                    name = "Biru",
+                    isSelected = intitalColorSelected == Color.Blue,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Magenta,
-                    name = "Red",
-                    isSelected = false,
+                    name = "Magenta",
+                    isSelected = intitalColorSelected == Color.Magenta,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Green,
-                    name = "Red",
-                    isSelected = false,
+                    name = "Hijau",
+                    isSelected = intitalColorSelected == Color.Green,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Yellow,
-                    name = "Red",
-                    isSelected = true,
+                    name = "Kuning",
+                    isSelected = intitalColorSelected == Color.Yellow,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Cyan,
-                    name = "Red",
-                    isSelected = false,
+                    name = "Toska",
+                    isSelected = intitalColorSelected == Color.Cyan,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.LightGray,
-                    name = "Red",
-                    isSelected = false,
+                    name = "Abu Muda",
+                    isSelected = intitalColorSelected == Color.LightGray,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Black,
-                    name = "Red",
-                    isSelected = false,
+                    name = "Hitam",
+                    isSelected = intitalColorSelected == Color.Black,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Gray,
-                    name = "Red",
-                    isSelected = false,
+                    name = "Abu",
+                    isSelected = intitalColorSelected == Color.Gray,
                     oncClick = onColorClick,
                 )
             }

@@ -19,6 +19,7 @@ import com.example.nexcashapplication.feature.category.presentation.subcategoryl
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.DashboardScreen
 import com.example.nexcashapplication.feature.notification.presentation.edit.NotificationEditScreen
 import com.example.nexcashapplication.feature.notification.presentation.main.NotificationScreen
+import com.example.nexcashapplication.feature.settings.presentation.currency.CurrencySettingsScreen
 import com.example.nexcashapplication.feature.settings.presentation.language.LanguageSettingsScreen
 import com.example.nexcashapplication.feature.settings.presentation.main.SettingsScreen
 import com.example.nexcashapplication.feature.statistics.presentation.main.StatistikScreen
@@ -161,10 +162,9 @@ fun NavigationStack(
         }
 
         composable<Route.SettingsRoute.MataUang> {
-            // SettingsScreen()
-//            StatistikScreen(
-//                navController = navController,
-//            )
+            CurrencySettingsScreen(
+                navController = navController,
+            )
         }
         composable<Route.SettingsRoute.Notifikasi> {
             // SettingsScreen()

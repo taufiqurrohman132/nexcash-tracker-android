@@ -3,6 +3,7 @@ package com.example.nexcashapplication.feature.settings.presentation.main
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.feature.settings.domain.repository.SettingsRepository
+import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,9 +24,24 @@ class SettingsViewModel @Inject constructor(
             }
 
             is SettingsEvent.OnMenuItemClick -> {
-                viewModelScope.launch {
-                    sendEffect(SettingsEffect.NavigateTo(event.destination))
+                // Tema & Warna membuka bottom sheet di tempat, bukan pindah layar.
+                // Tanpa cabang ini showThemeColorSheet tak pernah jadi true dan
+                // sheet-nya tidak pernah muncul.
+                if (event.destination == SettingsDestinations.TEMA_WARNA) {
+                    updateState { it.copy(showThemeColorSheet = true) }
+                } else {
+                    viewModelScope.launch {
+                        sendEffect(SettingsEffect.NavigateTo(event.destination))
+                    }
                 }
+            }
+
+            SettingsEvent.OnThemeSheetDismiss -> {
+                updateState { it.copy(showThemeColorSheet = false) }
+            }
+
+            is SettingsEvent.OnColorSelected -> {
+                updateState { it.copy(color = event.color) }
             }
         }
     }

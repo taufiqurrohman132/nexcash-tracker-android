@@ -73,13 +73,16 @@ fun SettingsScreen(
                 is SettingsEffect.NavigateTo -> {
                     Log.d(TAG, "SettingsScreen: effect ${effect.destination}")
                     when (effect.destination) {
+                        // Tema & Warna tidak pindah layar: sheet-nya dibuka dan
+                        // ditutup lewat state.showThemeColorSheet di ViewModel.
                         TEMA_WARNA -> {
-
                         }
 
                         NOTIFIKASI -> {
+                            // layar edit notifikasi MVI; SettingsRoute.Notifikasi
+                            // body-nya masih kosong di NavigationStack
                             navController.navigate(
-                                Route.SettingsRoute.Notifikasi,
+                                Route.NotificationRoute.Edit,
                             )
                         }
 
@@ -107,7 +110,10 @@ fun SettingsScreen(
                     }
                 }
 
-                is SettingsEffect.ShowSnackbar -> TODO()
+                // Scaffold ini belum punya SnackbarHost — TODO() di sini akan melempar
+                // NotImplementedError dan men crash aplikasi kalau efeknya pernah dikirim.
+                is SettingsEffect.ShowSnackbar -> {
+                }
             }
         }
     }
@@ -225,7 +231,7 @@ fun SettingsContent(
                         title = "Notification",
                         subtitle = "Saldo, Budget",
                         onClick = {
-
+                            onEvent(SettingsEvent.OnMenuItemClick(SettingsDestinations.NOTIFIKASI))
                         },
                     )
                 }
@@ -270,19 +276,19 @@ fun SettingsContent(
         if (state.showThemeColorSheet) {
             ModalBottomSheet(
                 onDismissRequest = {
-                    onEvent(SettingsEvent.OnMenuItemClick(SettingsDestinations.TEMA_WARNA))
+                    onEvent(SettingsEvent.OnThemeSheetDismiss)
                 },
                 sheetState = sheetState,
             ) {
                 ThemeColorSheet(
-                    onColorClick = {
-
+                    onColorClick = { color ->
+                        onEvent(SettingsEvent.OnColorSelected(color))
                     },
                     onThemeClick = {
 
                     },
                     initialThemeSelected = "Default",
-                    intitalColorSelected = Color.Blue,
+                    intitalColorSelected = state.color,
                 )
             }
         }
