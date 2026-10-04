@@ -37,8 +37,7 @@ class SettingsPreferencesDataSource @Inject constructor(
 
     suspend fun setCurrency(currency: String) = dataStore.edit { it[Keys.CURRENCY] = currency }
 
-//    val notificationMasterEnabled: Flow<Boolean> =
-//        dataStore.data.map { it[Keys.NOTIFICATION_MASTER_ENABLED] ?: true }
-
+    suspend fun setNotificationMasterEnabled(enabled: Boolean) =
+        dataStore.edit { it[Keys.NOTIFICATION_MASTER_ENABLED] = enabled }
 
 }

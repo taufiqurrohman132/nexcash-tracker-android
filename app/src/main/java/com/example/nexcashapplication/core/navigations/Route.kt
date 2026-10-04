@@ -146,5 +146,20 @@ sealed interface Route {
 
     }
 
+    /**
+     * Layar notifikasi (daftar peringatan anggaran) dan pengaturannya.
+     * Terpisah dari [SettingsRoute] karena diakses dari lonceng dashboard, bukan dari Settings.
+     */
+    @Serializable
+    sealed interface NotificationRoute : Route {
+        /** Daftar notifikasi. */
+        @Serializable
+        data object Main : NotificationRoute
+
+        /** Pengaturan notifikasi (NotificationEditScreen). */
+        @Serializable
+        data object Edit : NotificationRoute
+    }
+
 
 }

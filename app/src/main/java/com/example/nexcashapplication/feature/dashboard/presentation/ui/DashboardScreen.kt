@@ -68,7 +68,7 @@ fun DashboardScreen(
                     navController.navigate(Route.TransactionRoute.AddEdit())
 
                 DashboardEffect.NavigateToNotifications ->
-                    navController.navigate(Route.SettingsRoute.Notifikasi)
+                    navController.navigate(Route.NotificationRoute.Main)
 
                 DashboardEffect.NavigateToProfile ->
                     navController.navigate(Route.SettingsRoute.EditProfile)

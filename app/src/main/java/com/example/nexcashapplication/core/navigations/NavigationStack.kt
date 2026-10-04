@@ -17,6 +17,8 @@ import com.example.nexcashapplication.feature.category.presentation.detail.Detai
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryScreen
 import com.example.nexcashapplication.feature.category.presentation.subcategorylist.SubCategoryListScreen
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.DashboardScreen
+import com.example.nexcashapplication.feature.notification.presentation.edit.NotificationEditScreen
+import com.example.nexcashapplication.feature.notification.presentation.main.NotificationScreen
 import com.example.nexcashapplication.feature.settings.presentation.language.LanguageSettingsScreen
 import com.example.nexcashapplication.feature.settings.presentation.main.SettingsScreen
 import com.example.nexcashapplication.feature.statistics.presentation.main.StatistikScreen
@@ -169,6 +171,24 @@ fun NavigationStack(
 //            StatistikScreen(
 //                navController = navController,
 //            )
+        }
+
+        // NOTIFICATION
+        composable<Route.NotificationRoute.Main> {
+            NotificationScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToSettings = { navController.navigate(Route.NotificationRoute.Edit) },
+                // budgetId sudah String (sama dengan Budget.id & route AddEdit)
+                onNavigateToBudget = { budgetId ->
+                    navController.navigate(Route.BudgetRoute.AddEdit(budgetId = budgetId))
+                },
+            )
+        }
+
+        composable<Route.NotificationRoute.Edit> {
+            NotificationEditScreen(
+                onNavigateBack = { navController.popBackStack() },
+            )
         }
 
     }

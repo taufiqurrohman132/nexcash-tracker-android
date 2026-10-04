@@ -37,4 +37,8 @@ class SettingsRepositoryImpl @Inject constructor(
     override suspend fun updateCurrency(currency: String) {
         settingsPreferencesDataSource.setCurrency(currency)
     }
+
+    override suspend fun updateNotificationEnabled(enabled: Boolean) {
+        settingsPreferencesDataSource.setNotificationMasterEnabled(enabled)
+    }
 }

@@ -44,7 +44,7 @@ import com.example.nexcashapplication.core.datasource.local.model.TransactionEnt
         NotificationEntity::class,
         NotificationPreferenceEntity::class
     ],
-    version = 3,
+    version = 4,
     exportSchema = false,
 )
 @TypeConverters(Converters::class)

@@ -9,4 +9,7 @@ interface SettingsRepository {
     suspend fun updateColor(color: String)
     suspend fun updateLanguage(languageId: String)
     suspend fun updateCurrency(currency: String)
+
+    /** Saklar master notifikasi (pengingat anggaran) — bukan preferensi per budget. */
+    suspend fun updateNotificationEnabled(enabled: Boolean)
 }

@@ -7,6 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.nexcashapplication.core.datasource.local.dao.AccountDao
 import com.example.nexcashapplication.core.datasource.local.dao.BudgetDao
 import com.example.nexcashapplication.core.datasource.local.dao.CategoryDao
+import com.example.nexcashapplication.core.datasource.local.dao.NotificationPreferenceDao
 import com.example.nexcashapplication.core.datasource.local.dao.TransactionDao
 import com.example.nexcashapplication.core.datasource.local.database.NexCashDatabase
 import dagger.Module
@@ -154,6 +155,29 @@ object DatabaseModule {
         }
     }
 
+    /**
+     * v3 → v4: preferensi notifikasi per budget.
+     *
+     * Murni ADD COLUMN (SQLite tidak bisa drop kolom tanpa bangun ulang tabel, jadi kolom lama
+     * `type`/`push_enabled`/`in_app_enabled` tetap ada). `id` diisi budgetId oleh repository,
+     * `budget_id` diisi sama — dipisah supaya query berintent jelas. DEFAULT diperlukan karena
+     * ADD COLUMN NOT NULL wajib punya nilai untuk baris lama (tabelnya sendiri masih kosong,
+     * belum pernah ada yang menulis).
+     */
+    private val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "ALTER TABLE notification_preferences ADD COLUMN budget_id TEXT NOT NULL DEFAULT ''",
+            )
+            db.execSQL(
+                "ALTER TABLE notification_preferences ADD COLUMN thresholds TEXT NOT NULL DEFAULT '80,100'",
+            )
+            db.execSQL(
+                "ALTER TABLE notification_preferences ADD COLUMN enabled INTEGER NOT NULL DEFAULT 1",
+            )
+        }
+    }
+
     @Provides
     @Singleton
     fun provideNexCashDatabase(@ApplicationContext context: Context): NexCashDatabase =
@@ -161,7 +185,7 @@ object DatabaseModule {
             context,
             NexCashDatabase::class.java,
             "nex_cash_db",
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
 
     @Provides
     @Singleton
@@ -182,6 +206,11 @@ object DatabaseModule {
     @Singleton
     fun provideBudgetDao(database: NexCashDatabase): BudgetDao =
         database.budgetDao()
+
+    @Provides
+    @Singleton
+    fun provideNotificationPreferenceDao(database: NexCashDatabase): NotificationPreferenceDao =
+        database.notificationPreferenceDao()
 
 
 }
