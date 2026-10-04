@@ -26,17 +26,32 @@ internal data class NotificationAlert(
 )
 
 /** Domain → presentation: teks Indonesia, severity, dan waktu pertama kali terlihat. */
-internal fun BudgetAlert.toNotificationAlert(seenAt: Long): NotificationAlert = NotificationAlert(
-    id = id,
-    budgetId = budgetId,
+internal fun BudgetAlert.toNotificationAlert(seenAt: Long): NotificationAlert {
+    val text = toNotificationText()
+    return NotificationAlert(
+        id = id,
+        budgetId = budgetId,
+        title = text.title,
+        message = text.body,
+        severity = if (threshold >= 100) AlertSeverity.Limit else AlertSeverity.Warning,
+        seenAt = seenAt,
+    )
+}
+
+/** Judul & badan sebuah alert. */
+data class AlertText(val title: String, val body: String)
+
+/**
+ * Teks alert — **satu sumber** untuk daftar in-app maupun notifikasi status bar, supaya isi
+ * keduanya tidak pernah berbeda. Publik karena dipakai `SystemAlertNotifier`.
+ */
+fun BudgetAlert.toNotificationText(): AlertText = AlertText(
     title = "$categoryName mencapai $threshold%",
-    message = if (threshold >= 100) {
+    body = if (threshold >= 100) {
         "Batas anggaran $periodLabel sudah tercapai."
     } else {
         "Anggaran $periodLabel hampir habis."
     },
-    severity = if (threshold >= 100) AlertSeverity.Limit else AlertSeverity.Warning,
-    seenAt = seenAt,
 )
 
 private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH.mm", Locale.getDefault())

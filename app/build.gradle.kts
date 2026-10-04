@@ -90,6 +90,11 @@ dependencies {
     ksp("com.google.dagger:hilt-android-compiler:2.59.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
 
+    // workmanager — penjadwal latar belakang (reminder harian) + injeksi Hilt ke worker
+    implementation("androidx.work:work-runtime-ktx:2.10.1")
+    implementation("androidx.hilt:hilt-work:1.3.0")
+    ksp("androidx.hilt:hilt-compiler:1.3.0")
+
     // Navigation 3 core
 //    implementation("androidx.navigation3:navigation3-ui:1.0.0")
     implementation("androidx.navigation:navigation-compose:2.9.8")

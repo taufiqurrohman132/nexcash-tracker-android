@@ -7,6 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.nexcashapplication.core.datasource.local.dao.AccountDao
 import com.example.nexcashapplication.core.datasource.local.dao.BudgetDao
 import com.example.nexcashapplication.core.datasource.local.dao.CategoryDao
+import com.example.nexcashapplication.core.datasource.local.dao.NotificationDao
 import com.example.nexcashapplication.core.datasource.local.dao.NotificationPreferenceDao
 import com.example.nexcashapplication.core.datasource.local.dao.TransactionDao
 import com.example.nexcashapplication.core.datasource.local.database.NexCashDatabase
@@ -211,6 +212,11 @@ object DatabaseModule {
     @Singleton
     fun provideNotificationPreferenceDao(database: NexCashDatabase): NotificationPreferenceDao =
         database.notificationPreferenceDao()
+
+    @Provides
+    @Singleton
+    fun provideNotificationDao(database: NexCashDatabase): NotificationDao =
+        database.notificationDao()
 
 
 }

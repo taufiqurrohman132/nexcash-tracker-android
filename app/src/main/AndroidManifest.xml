@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Wajib di API 33+ untuk menampilkan notifikasi. Diminta secara runtime di
+         NotificationEditScreen; tanpa izin ini notify() gagal diam-diam. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
     <application
         android:name=".MyApps"
         android:fullBackupContent="false"
@@ -16,6 +20,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.NexCashApplication">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,6 +28,20 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- MyApps mengimplementasikan Configuration.Provider (HiltWorkerFactory), jadi
+             initializer bawaan WorkManager harus dibuang — kalau keduanya ada, WorkManager
+             terinisialisasi dua kali dan crash saat start. -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
     </application>
 
 </manifest>

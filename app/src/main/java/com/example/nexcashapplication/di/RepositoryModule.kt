@@ -10,7 +10,9 @@ import com.example.nexcashapplication.core.domain.repository.PreferencesReposito
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.feature.account.data.AccountRepositoryImpl
 import com.example.nexcashapplication.feature.account.domain.repository.AccountRepository
+import com.example.nexcashapplication.feature.notification.data.NotificationHistoryRepositoryImpl
 import com.example.nexcashapplication.feature.notification.data.NotificationPreferenceRepositoryImpl
+import com.example.nexcashapplication.feature.notification.domain.repository.NotificationHistoryRepository
 import com.example.nexcashapplication.feature.notification.domain.repository.NotificationPreferenceRepository
 import com.example.nexcashapplication.feature.settings.data.SettingsRepositoryImpl
 import com.example.nexcashapplication.feature.settings.domain.repository.SettingsRepository
@@ -66,5 +68,11 @@ abstract class RepositoryModule {
     abstract fun bindNotificationPreferenceRepository(
         impl: NotificationPreferenceRepositoryImpl,
     ): NotificationPreferenceRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindNotificationHistoryRepository(
+        impl: NotificationHistoryRepositoryImpl,
+    ): NotificationHistoryRepository
 
 }

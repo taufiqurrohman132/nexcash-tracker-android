@@ -61,6 +61,10 @@ class TransactionRepositoryImpl @Inject constructor(
         return transactionDao.getCountTransactionsByAccount(accountId)
     }
 
+    override suspend fun countTransactionsInRange(start: Long, end: Long): Int {
+        return transactionDao.countInRange(start, end)
+    }
+
     override suspend fun getTransactionByIdOnce(id: String): TransactionEntity? {
         TODO("Not yet implemented")
     }

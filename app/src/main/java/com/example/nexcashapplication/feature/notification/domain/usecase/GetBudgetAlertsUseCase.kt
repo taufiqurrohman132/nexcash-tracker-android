@@ -177,6 +177,7 @@ class GetBudgetAlertsUseCase @Inject constructor(
             percentUsed = percentUsed,
             threshold = threshold,
             periodLabel = start.format(monthFormatter),
+            periodStart = start.toStartOfDayMillis(),
         )
     }
 

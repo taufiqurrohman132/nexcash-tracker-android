@@ -194,6 +194,15 @@ ORDER BY transaction_date DESC
 
     @Query(
         """
+        SELECT COUNT(*) FROM transactions 
+        WHERE deleted_at IS NULL
+        AND transaction_date BETWEEN :start AND :end
+    """,
+    )
+    suspend fun countInRange(start: Long, end: Long): Int
+
+    @Query(
+        """
         SELECT * FROM transactions 
         WHERE transaction_date BETWEEN :startOfMonth AND :endOfMonth
         ORDER BY transaction_date DESC

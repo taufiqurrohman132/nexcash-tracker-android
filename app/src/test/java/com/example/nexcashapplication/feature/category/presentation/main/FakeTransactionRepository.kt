@@ -171,6 +171,8 @@ class FakeTransactionRepository : TransactionRepository {
 
     override fun getCountTransactionsByAccount(accountId: String): Flow<Int> = unused()
 
+    override suspend fun countTransactionsInRange(start: Long, end: Long): Int = unused()
+
     override suspend fun getTransactionByIdOnce(id: String): TransactionEntity = unused()
 
     override fun searchTransactions(query: String): Flow<List<TransactionWithDetails>> =

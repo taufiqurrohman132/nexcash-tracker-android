@@ -65,6 +65,10 @@ interface TransactionRepository {
     fun getTransactionById(id: String): Flow<Transaction>
     fun getTransactionWithDetailsById(id: String): Flow<TransactionWithDetails?>
     fun getCountTransactionsByAccount(accountId: String): Flow<Int>
+
+    /** Jumlah transaksi belum terhapus pada rentang epoch millis — cek "sudah catat hari ini?". */
+    suspend fun countTransactionsInRange(start: Long, end: Long): Int
+
     suspend fun getTransactionByIdOnce(id: String): TransactionEntity?
 
     fun searchTransactions(query: String): Flow<List<TransactionWithDetails>>
