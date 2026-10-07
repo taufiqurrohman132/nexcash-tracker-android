@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,6 +70,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconRounded
@@ -76,6 +78,7 @@ import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.CategoryIconGroup
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
+import com.example.nexcashapplication.feature.category.presentation.addnew.constant.nameResId
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
@@ -122,14 +125,17 @@ fun AddCategoryContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Tambah Kategori",
+                        text = stringResource(R.string.cat_add_title),
                         fontSize = 17.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(AddCategoryEvent.OnBackClicked) }) {
-                        Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Kembali")
+                        Icon(
+                            Icons.Default.KeyboardArrowLeft,
+                            contentDescription = stringResource(R.string.cat_back),
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
@@ -157,12 +163,17 @@ fun AddCategoryContent(
 
             // nama kategori
             FormField(
-                title = "Nama Kategori",
+                title = stringResource(R.string.cat_name_label),
             ) {
                 OutlinedTextField(
                     value = state.name,
                     onValueChange = { onEvent(AddCategoryEvent.OnNameChanged(it)) },
-                    placeholder = { Text(text = "Misal: Langganan Film", color = TextTertiary) },
+                    placeholder = {
+                        Text(
+                            text = stringResource(R.string.cat_name_placeholder),
+                            color = TextTertiary,
+                        )
+                    },
                     singleLine = true,
                     shape = RoundedCornerShape(14.dp),
                     colors = OutlinedTextFieldDefaults.colors(
@@ -177,7 +188,7 @@ fun AddCategoryContent(
             }
 
             // Tipe Kategori
-            FormField(title = "Tipe Kategori") {
+            FormField(title = stringResource(R.string.cat_type_label)) {
 
                 TipeKategoriToggle(
                     selected = state.typeCategory,
@@ -202,13 +213,13 @@ fun AddCategoryContent(
             )
 
 
-            FormField("Catatan Tambahan") {
+            FormField(stringResource(R.string.cat_note_label)) {
                 OutlinedTextField(
                     value = state.note,
                     onValueChange = { onEvent(AddCategoryEvent.OnNotesChanged(it)) },
                     placeholder = {
                         Text(
-                            "Tambahkan deskripsi atau catatan khusus untuk kategori ini...",
+                            stringResource(R.string.cat_note_placeholder),
                             color = TextTertiary,
                         )
                     },
@@ -227,14 +238,14 @@ fun AddCategoryContent(
 
             // Tombol Aksi
             AppButton(
-                title = "Selesaikan Pembuatan",
+                title = stringResource(R.string.cat_finish_action),
                 onClick = {
                     onEvent(AddCategoryEvent.OnSaveClicked)
                 },
             )
 
             AppButton(
-                title = "Batal & Kembali",
+                title = stringResource(R.string.cat_cancel_back_action),
                 textColor = TextSecondary,
                 backgroundColor = Color.White,
                 onClick = { onEvent(AddCategoryEvent.OnBackClicked) },
@@ -317,7 +328,7 @@ fun ParentCategoryBanner(
 
             ) {
                 Text(
-                    text = "Subkategori Dari",
+                    text = stringResource(R.string.cat_subcategory_of),
                     style = MaterialTheme.typography.titleSmall,
                     color = TextSecondary,
                 )
@@ -391,7 +402,7 @@ fun TipeKategoriToggle(
                     Text(
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Center,
-                        text = typeCategory.label,
+                        text = stringResource(typeCategory.labelResId),
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                     )
                 },
@@ -455,7 +466,7 @@ fun IconPreviewRow(
             icon = Icons.Default.GridView,
             isSelected = false,
             onClick = { onMenuIconClick() },
-            contentDescription = "Lihat semua icon",
+            contentDescription = stringResource(R.string.cat_see_all_icons_desc),
             iconColor = Color.White,
             backgroundColor = PrimaryCyan,
         )
@@ -545,7 +556,7 @@ fun MenuIcons(
     ) {
         groups.forEach { group ->
             Text(
-                text = group.categoryName,
+                text = stringResource(group.nameResId),
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(vertical = 8.dp),
             )
@@ -596,7 +607,7 @@ private fun AddColorButton(onClick: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
-                contentDescription = "Tambah warna",
+                contentDescription = stringResource(R.string.cat_add_color_desc),
                 tint = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(20.dp),
             )

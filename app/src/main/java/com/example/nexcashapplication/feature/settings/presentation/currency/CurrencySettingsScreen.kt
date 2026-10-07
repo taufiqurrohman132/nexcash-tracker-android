@@ -29,12 +29,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.AppSearchBar
 import com.example.nexcashapplication.feature.settings.presentation.component.LanguageItem
@@ -85,7 +87,7 @@ fun CurrencySettingsContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Settings",
+                        text = stringResource(R.string.settings_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -95,14 +97,17 @@ fun CurrencySettingsContent(
                 ),
                 navigationIcon = {
                     IconButton(onClick = { onEvent(CurrencySettingsEvent.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.settings_back),
+                        )
                     }
                 },
             )
         },
         bottomBar = {
             AppButton(
-                title = "Simpan",
+                title = stringResource(R.string.settings_save),
                 onClick = { onEvent(CurrencySettingsEvent.OnSaveClick) },
                 modifier = Modifier.padding(16.dp),
                 isEnabled = state.hasChange,
@@ -120,7 +125,7 @@ fun CurrencySettingsContent(
                 onSearchQueryChange = {
                     onEvent(CurrencySettingsEvent.OnSearchQueryChange(it))
                 },
-                placeholder = "Cari Mata Uang",
+                placeholder = stringResource(R.string.settings_search_currency),
                 onSearchClear = {
                     onEvent(CurrencySettingsEvent.OnSearchClear)
                 },
@@ -136,7 +141,7 @@ fun CurrencySettingsContent(
                 ) {
                     LanguageItem(
                         iconText = it.id,
-                        title = it.name,
+                        title = stringResource(it.nameRes),
                         subtitle = it.symbol,
                         onClick = {
                             onEvent(CurrencySettingsEvent.OnItemClick(it.id))
@@ -178,7 +183,7 @@ private fun InformationCard(modifier: Modifier = Modifier) {
         )
 
         Text(
-            text = "Mata uang yang Anda pilih dipakai untuk menampilkan seluruh nominal di aplikasi NexCash.",
+            text = stringResource(R.string.settings_currency_info),
             style = MaterialTheme.typography.bodySmall,
             color = TextSecondary,
             modifier = Modifier.padding(start = 16.dp),
@@ -198,11 +203,13 @@ private fun CurrencySettingsContentPreview() {
                         id = "IDR",
                         name = "Rupiah Indonesia",
                         symbol = "Rp",
+                        nameRes = R.string.settings_currency_idr,
                     ),
                     CurrencyItemUiModel(
                         id = "USD",
                         name = "Dolar Amerika Serikat",
                         symbol = "$",
+                        nameRes = R.string.settings_currency_usd,
                     ),
                 ),
             ),

@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.category.presentation.addnew.constant
 
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.CardGiftcard
@@ -36,6 +37,7 @@ import androidx.compose.material.icons.filled.Train
 import androidx.compose.material.icons.filled.TwoWheeler
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.WineBar
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.CategoryIconGroup
 
@@ -119,3 +121,20 @@ object CategoryIcons {
         return flatMap[id] ?: lainnya[0] // fallback default: icon "location"
     }
 }
+
+/**
+ * Kunci string resource untuk judul kelompok ikon.
+ *
+ * `CategoryIconGroup.categoryName` (core) adalah data internal, bukan teks tampilan —
+ * resolve di composable dengan `stringResource(group.nameResId)` agar ikut bahasa aktif.
+ */
+@get:StringRes
+val CategoryIconGroup.nameResId: Int
+    get() = when (categoryName) {
+        "Transportasi" -> R.string.cat_icon_group_transportasi
+        "Makanan & Minuman" -> R.string.cat_icon_group_makanan
+        "Hiburan" -> R.string.cat_icon_group_hiburan
+        "Tagihan" -> R.string.cat_icon_group_tagihan
+        "Kesehatan" -> R.string.cat_icon_group_kesehatan
+        else -> R.string.cat_icon_group_lainnya
+    }

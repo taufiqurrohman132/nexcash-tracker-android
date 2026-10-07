@@ -86,6 +86,7 @@ import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.SuccessGreen
+import com.example.nexcashapplication.ui.theme.TextSecondary
 import com.example.nexcashapplication.ui.theme.TextTertiary
 import com.example.nexcashapplication.ui.theme.WarningAmber
 import java.time.YearMonth
@@ -143,7 +144,7 @@ fun TransactionContent(
                 title = {
 
                     Text(
-                        text = "Transaction",
+                        text = stringResource(R.string.tx_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -176,7 +177,7 @@ fun TransactionContent(
             OutlinedTextField(
                 value = state.searchQuery,
                 onValueChange = { onEvent(TransactionEvent.OnSearchQueryChange(it)) },
-                placeholder = { Text("Cari Transaksi...") },
+                placeholder = { Text(stringResource(R.string.tx_search_hint)) },
                 leadingIcon = {
                     Icon(Icons.Outlined.Search, contentDescription = null)
                 },
@@ -261,24 +262,24 @@ fun TransactionContent(
                             modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             SummaryCard(
-                                title = "Hari Ini",
+                                title = stringResource(R.string.tx_today),
                                 amount = state.todayTotal,
                                 modifier = Modifier.weight(1f),
                                 icon = Icons.Default.Today,
                                 iconColor = Color.Red,
                             )
                             SummaryCard(
-                                title = "Minggu Ini",
+                                title = stringResource(R.string.tx_this_week),
                                 amount = state.weekTotal,
                                 modifier = Modifier.weight(1f),
                                 icon = Icons.Default.CalendarMonth,
                                 iconColor = WarningAmber,
                             )
                             SummaryCard(
-                                title = "Sisa Budget",
+                                title = stringResource(R.string.tx_remaining_budget),
                                 amount = state.remainingBudget,
                                 modifier = Modifier.weight(1f),
                                 icon = Icons.Default.AccountBalanceWallet,
@@ -417,7 +418,12 @@ fun TransactionGroupHeader(
 
             val isPositive = total >= 0
             Text(
-                text = "${if (isPositive) "+" else "-"} Rp ${Math.abs(total).formatCurrency()}",
+                text = stringResource(
+                    R.string.tx_group_net_format,
+                    if (isPositive) "+" else "-",
+                    stringResource(R.string.tx_currency_prefix),
+                    Math.abs(total).formatCurrency(),
+                ),
                 color = if (isPositive) AccentTealGreen else Color.Red,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
@@ -475,16 +481,19 @@ fun SummaryCard(
                 iconColor = iconColor,
                 backgroundColor = iconColor.copy(alpha = 0.1f),
                 iconSize = 26.dp,
+                iconToCountainerRatio = 2,
             )
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
                 text = title,
+                color = TextSecondary,
                 style = MaterialTheme.typography.bodySmall,
             )
             Text(
                 text = stringResource(R.string.total_balance_format, amount.formatCompact()),
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
+                softWrap = false,
                 fontWeight = FontWeight.SemiBold,
             )
         }

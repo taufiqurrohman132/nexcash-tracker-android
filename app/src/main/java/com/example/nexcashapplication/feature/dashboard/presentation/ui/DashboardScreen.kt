@@ -25,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
@@ -73,8 +75,17 @@ fun DashboardScreen(
                 DashboardEffect.NavigateToProfile ->
                     navController.navigate(Route.SettingsRoute.EditProfile)
 
-                // Efek lain (transfer, tagihan, scan, lainnya) belum punya tujuan
-                else -> Unit
+                DashboardEffect.NavigateToCategories ->
+                    navController.navigate(Route.CategoryRoute.Main)
+
+                DashboardEffect.NavigateToAddAccount ->
+                    navController.navigate(Route.AccountRoute.AddEditTypeAccount)
+
+                DashboardEffect.NavigateToStatistics ->
+                    navController.navigate(Route.StatisticRoute.Main)
+
+                // Snackbar host belum ada di layar ini; effect belum dipakai VM.
+                is DashboardEffect.ShowError -> Unit
             }
         }
     }
@@ -143,10 +154,9 @@ fun DashboardContent(
 
             QuickActionSection(
                 modifier = Modifier.padding(vertical = 16.dp),
-                onTransferClick = { onEvent(DashboardEvent.OnTransferClick) },
-                onTagihanClick = { onEvent(DashboardEvent.OnTagihanClick) },
-                onScanClick = { onEvent(DashboardEvent.OnScanClick) },
-                onLainnyaClick = { onEvent(DashboardEvent.OnLainnyaClick) },
+                onKategoriClick = { onEvent(DashboardEvent.OnKategoriClick) },
+                onTambahAkunClick = { onEvent(DashboardEvent.OnTambahAkunClick) },
+                onStatistikClick = { onEvent(DashboardEvent.OnStatistikClick) },
             )
 
             BudgetCard(
@@ -156,8 +166,8 @@ fun DashboardContent(
             )
 
             FormField(
-                title = "Transaksi Terakhir",
-                actionText = "Semua",
+                title = stringResource(R.string.dash_recent_transactions),
+                actionText = stringResource(R.string.semua),
                 onActionClick = { onEvent(DashboardEvent.OnSemuaTransaksiClick) },
                 modifier = Modifier.padding(horizontal = 16.dp)
             ) {
@@ -182,7 +192,7 @@ fun DashboardContent(
                         )
                     } else if (state.transactions.isEmpty()) {
                         Text(
-                            text = "Belum ada transaksi",
+                            text = stringResource(R.string.dash_no_transactions),
                             modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 24.dp),

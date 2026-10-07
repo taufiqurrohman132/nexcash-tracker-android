@@ -1,9 +1,11 @@
 package com.example.nexcashapplication.feature.budgets.domain.usecase
 
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.getWeeklyPeriodByLocale
 import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import com.example.nexcashapplication.feature.category.presentation.main.FakeCategoryRepository
 import kotlinx.coroutines.runBlocking
@@ -140,9 +142,10 @@ class SaveBudgetUseCaseTest {
         )
 
         assertInstanceOf(SaveBudgetUseCase.Result.Failure::class.java, result)
-        assertTrue(
-            (result as SaveBudgetUseCase.Result.Failure).message
-                .contains("pengeluaran", ignoreCase = true),
+        // Pesan gagal kini berupa UiText (resource), bukan String literal
+        assertEquals(
+            UiText.Res(R.string.budget_error_expense_category_only),
+            (result as SaveBudgetUseCase.Result.Failure).message,
         )
         assertTrue(repo.stored.isEmpty()) // tidak ada baris budget pemasukan yang tersimpan
     }

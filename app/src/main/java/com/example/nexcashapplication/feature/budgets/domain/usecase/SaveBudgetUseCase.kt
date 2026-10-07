@@ -1,9 +1,12 @@
 package com.example.nexcashapplication.feature.budgets.domain.usecase
 
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -37,7 +40,7 @@ class SaveBudgetUseCase @Inject constructor(
 
     sealed interface Result {
         data object Success : Result
-        data class Failure(val message: String) : Result
+        data class Failure(val message: UiText) : Result
     }
 
     data class Request(
@@ -53,22 +56,22 @@ class SaveBudgetUseCase @Inject constructor(
 
     suspend operator fun invoke(request: Request): Result {
         val catId = request.categoryId
-            ?: return Result.Failure("Kategori tidak ditemukan")
+            ?: return Result.Failure(uiText(R.string.budget_error_category_not_found))
 
         // Anggaran hanya untuk kategori pengeluaran. Kategori yang tidak ditemukan
         // diteruskan ke validasi berikutnya seperti biasa — yang ditolak hanya pemasukan.
         val category = categoryRepository.getCategoryById(catId).first()
         if (category?.type == TypeCategory.INCOME) {
-            return Result.Failure("Anggaran hanya bisa diset untuk kategori pengeluaran")
+            return Result.Failure(uiText(R.string.budget_error_expense_category_only))
         }
 
         if (request.amount <= 0L) {
-            return Result.Failure("Batas anggaran harus lebih dari 0")
+            return Result.Failure(uiText(R.string.budget_error_amount_must_be_positive))
         }
         if (request.periodType == RecurrenceType.CUSTOM &&
             !request.customEnd.isAfter(request.customStart)
         ) {
-            return Result.Failure("Tanggal berakhir harus setelah tanggal mulai")
+            return Result.Failure(uiText(R.string.budget_error_end_after_start))
         }
 
         val active = request.budgetId?.let { budgetRepository.getById(it) }
@@ -147,7 +150,9 @@ class SaveBudgetUseCase @Inject constructor(
         } catch (e: kotlinx.coroutines.CancellationException) {
             throw e
         } catch (e: Exception) {
-            Result.Failure("Gagal menyimpan anggaran: ${e.message}")
+            // Detail exception teknis (Inggris) tetap ditampilkan sebagai argumen,
+            // prefix-nya tetap terikat bahasa aktif lewat string resource.
+            Result.Failure(uiText(R.string.budget_save_failed, e.message ?: e.toString()))
         }
     }
 

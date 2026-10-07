@@ -50,8 +50,10 @@ class TransactionStateMapperTest {
     fun `toItemUiModel - tanpa kategori dan tanpa akun memakai label cadangan`() {
         val item = sample(category = null, account = null).toItemUiModel()
 
-        assertEquals("Tanpa Kategori", item.category)
-        assertEquals("Akun Dihapus", item.account)
+        // null = cadangan ditentukan layer UI (TransactionItem → string resource),
+        // jadi mapper tidak lagi menyimpan teks berbahasa Indonesia.
+        assertEquals(null, item.category)
+        assertEquals(null, item.account)
         assertEquals(Icons.Default.Pets, item.icon, "iconId default kategori hilang = pet")
     }
 

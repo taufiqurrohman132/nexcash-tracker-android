@@ -46,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -56,6 +57,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.nexcashapplication.R
 
 @Composable
 fun NotificationEditScreen(
@@ -111,10 +113,18 @@ fun NotificationSettingsContent(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Pengaturan Notifikasi", fontWeight = FontWeight.Bold) },
+                title = {
+                    Text(
+                        stringResource(R.string.notif_settings_title),
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(NotificationSettingsEvent.BackClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.notif_back),
+                        )
                     }
                 },
             )
@@ -134,7 +144,7 @@ fun NotificationSettingsContent(
             }
             item(key = "label") {
                 Text(
-                    "ANGGARAN AKTIF",
+                    stringResource(R.string.notif_active_budgets_label),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 4.dp, top = 4.dp),
@@ -165,7 +175,7 @@ fun NotificationSettingsContent(
             }
             item(key = "footnote") {
                 Text(
-                    "Pengingat muncul sebagai notifikasi di perangkat ini, satu kali per batas dalam setiap periode anggaran.",
+                    stringResource(R.string.notif_footnote),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(horizontal = 4.dp),
@@ -195,12 +205,12 @@ private fun MasterToggleCard(
                 CategoryIconBox(Icons.Outlined.Notifications)
                 Column(Modifier.weight(1f)) {
                     Text(
-                        "Aktifkan pengingat",
+                        stringResource(R.string.notif_enable_reminders),
                         style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.Bold,
                     )
                     Text(
-                        "Beri tahu saat pengeluaran mendekati batas",
+                        stringResource(R.string.notif_enable_reminders_desc),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -210,7 +220,7 @@ private fun MasterToggleCard(
         }
         if (showPermissionHint) {
             Text(
-                "Izin notifikasi belum diberikan. Aktifkan lewat pengaturan sistem.",
+                stringResource(R.string.notif_permission_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.error,
                 modifier = Modifier.padding(horizontal = 4.dp),
@@ -238,11 +248,12 @@ private fun BudgetAlertCard(
             ) {
                 CategoryIconBox(categoryIcon(item.iconKey))
                 Text(item.name, Modifier.weight(1f), style = MaterialTheme.typography.titleSmall)
+                val switchDescription = stringResource(R.string.notif_reminder_switch_desc_format, item.name)
                 Switch(
                     checked = item.enabled,
                     onCheckedChange = onToggle,
                     enabled = controlsEnabled,
-                    modifier = Modifier.semantics { contentDescription = "Pengingat ${item.name}" },
+                    modifier = Modifier.semantics { contentDescription = switchDescription },
                 )
             }
             Row(
@@ -250,7 +261,7 @@ private fun BudgetAlertCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    "Ingatkan di",
+                    stringResource(R.string.notif_remind_at),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -260,7 +271,9 @@ private fun BudgetAlertCard(
                         selected = selected,
                         onClick = { onThreshold(percent, !selected) },
                         enabled = controlsEnabled && item.enabled,
-                        label = { Text("$percent%") },
+                        label = {
+                            Text(stringResource(R.string.notif_threshold_percent_format, percent))
+                        },
                         // centang = state tidak hanya bergantung warna
                         leadingIcon = if (selected) {
                             {

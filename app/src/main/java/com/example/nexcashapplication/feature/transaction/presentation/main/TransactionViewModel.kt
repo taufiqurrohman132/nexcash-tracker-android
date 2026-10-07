@@ -3,8 +3,10 @@ package com.example.nexcashapplication.feature.transaction.presentation.main
 import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.category.presentation.mapper.toCategoryNameItemUiModel
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetAllCategoryUsecase
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetMonthlySummaryUseCase
@@ -118,7 +120,11 @@ class TransactionViewModel @Inject constructor(
             is TransactionEvent.OnTransactionClick -> {
                 viewModelScope.launch {
                     if (event.transactionId == null) {
-                        sendEffect(TransactionEffect.ShowSnackbar("Transaksi tidak tersedia"))
+                        sendEffect(
+                            TransactionEffect.ShowSnackbar(
+                                uiText(R.string.tx_transaction_unavailable),
+                            ),
+                        )
                     } else
                         sendEffect(TransactionEffect.NavigateToDetail(event.transactionId))
                 }

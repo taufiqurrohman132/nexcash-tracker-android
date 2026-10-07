@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.feature.account.presentation.main
 
 import androidx.compose.runtime.Immutable
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiGroupModel
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
 
@@ -16,5 +17,5 @@ data class AccountAssetState(
     val bankAccounts: List<AccountUiGroupModel> = emptyList(),
     val eWallets: List<AccountUiModel> = emptyList(),
 //    val investments: List<InvestmentUiModel> = emptyList(),
-    val error: String? = null,
+    val error: UiText? = null,
 )

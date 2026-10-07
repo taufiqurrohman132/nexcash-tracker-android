@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.feature.account.presentation.addedit.form
 
 import androidx.compose.runtime.Immutable
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.form.model.AccountProviderUiModel
 
@@ -13,7 +14,7 @@ data class AddEditInfoAccountState(
     val providers: List<AccountProviderUiModel> = emptyList(),
     val selectedProviderId: String? = null,
     val isSaving: Boolean = false,
-    val namaAsetError: String? = null,
+    val namaAsetError: UiText? = null,
 
     // edit
     // snapshot awal, diisi pas data ke-load

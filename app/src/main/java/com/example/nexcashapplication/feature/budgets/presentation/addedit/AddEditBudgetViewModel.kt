@@ -3,9 +3,11 @@ package com.example.nexcashapplication.feature.budgets.presentation.addedit
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import com.example.nexcashapplication.feature.budgets.domain.usecase.DeleteBudgetUseCase
@@ -191,7 +193,7 @@ class AddEditBudgetViewModel @Inject constructor(
         updateState { it.copy(isSaving = true) }
         val existing = budgetRepository.getById(id)
         val result = if (existing == null) {
-            DeleteBudgetUseCase.Result.Failure("Anggaran tidak ditemukan")
+            DeleteBudgetUseCase.Result.Failure(uiText(R.string.budget_error_budget_not_found))
         } else {
             deleteBudgetUseCase(existing)
         }

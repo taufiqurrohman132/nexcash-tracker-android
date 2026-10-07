@@ -1,7 +1,9 @@
 package com.example.nexcashapplication.feature.transaction.domain.usecase
 
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.category.presentation.main.FakeCategoryRepository
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionFilter
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
@@ -116,7 +118,7 @@ class GetTransactionsByFilterUseCaseTest {
     fun `judul None adalah Semua Transaksi`() = runTest {
         val title = useCase.topBarTitle(TransactionFilter.None).first()
 
-        assertEquals("Semua Transaksi", title)
+        assertEquals(uiText(R.string.tx_title_all), title)
     }
 
     @Test
@@ -125,7 +127,7 @@ class GetTransactionsByFilterUseCaseTest {
 
         val title = useCase.topBarTitle(TransactionFilter.ByCategory("food")).first()
 
-        assertEquals("Transaksi · Makanan", title)
+        assertEquals(uiText(R.string.tx_title_filter, "Makanan"), title)
     }
 
     @Test
@@ -134,7 +136,7 @@ class GetTransactionsByFilterUseCaseTest {
 
         val title = useCase.topBarTitle(TransactionFilter.ByAccount("bca")).first()
 
-        assertEquals("Transaksi · BCA", title)
+        assertEquals(uiText(R.string.tx_title_filter, "BCA"), title)
     }
 
     // ── fixtures ────────────────────────────────────────────────────────────

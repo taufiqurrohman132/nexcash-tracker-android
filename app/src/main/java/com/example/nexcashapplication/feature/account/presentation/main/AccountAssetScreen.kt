@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.account.presentation.main
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +52,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,15 +66,27 @@ import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.extension.toFormatCurrencyVisibility
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.form.model.AccountProviderUiModel
+import com.example.nexcashapplication.feature.account.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiGroupModel
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.SecondaryDeepPurple
 import com.example.nexcashapplication.ui.theme.TextTertiary
 import kotlinx.coroutines.flow.collectLatest
+
+/**
+ * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
+ * yang hanya bersifat suspend sehingga `UiText.asString` tidak bisa dipanggil).
+ */
+private fun UiText.resolve(context: Context): String = when (this) {
+    is UiText.Res -> context.getString(resId, *args.toTypedArray())
+    is UiText.Raw -> value
+}
 
 @Composable
 fun AccountAssetScreen(
@@ -82,6 +96,7 @@ fun AccountAssetScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -95,7 +110,8 @@ fun AccountAssetScreen(
                 )
 
                 // Snackbar host sudah terpasang di Content — tidak perlu Toast
-                is AccountAssetEffect.ShowError -> snackbarHostState.showSnackbar(effect.message)
+                is AccountAssetEffect.ShowError ->
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
             }
         }
     }
@@ -124,7 +140,7 @@ fun AccountAssetContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Account",
+                        text = stringResource(R.string.acct_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -134,7 +150,7 @@ fun AccountAssetContent(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         onClick = { onEvent(AccountAssetEvent.OnAddAccountClick) },
                     ) {
-                        Icon(Icons.Filled.Add, contentDescription = "Tambah akun")
+                        Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.acct_add_content_desc))
                     }
                 },
             )
@@ -163,9 +179,12 @@ fun AccountAssetContent(
                     contentAlignment = Alignment.Center,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(state.error, color = MaterialTheme.colorScheme.error)
+                        // `state.error` dipastikan non-null oleh kondisi cabang di atas
+                        Text(state.error.asString(), color = MaterialTheme.colorScheme.error)
                         Spacer(Modifier.height(8.dp))
-                        Button(onClick = { onEvent(AccountAssetEvent.OnRetry) }) { Text("Coba lagi") }
+                        Button(onClick = { onEvent(AccountAssetEvent.OnRetry) }) {
+                            Text(stringResource(R.string.acct_retry))
+                        }
                     }
                 }
             }
@@ -180,16 +199,16 @@ fun AccountAssetContent(
                     contentAlignment = Alignment.Center,
                 ) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Belum ada akun")
+                        Text(stringResource(R.string.acct_empty_title))
                         Spacer(Modifier.height(4.dp))
                         Text(
-                            text = "Tambahkan rekening atau e-wallet untuk mulai mencatat aset.",
+                            text = stringResource(R.string.acct_empty_subtitle),
                             style = MaterialTheme.typography.bodySmall,
                             color = Color.Gray,
                         )
                         Spacer(Modifier.height(12.dp))
                         Button(onClick = { onEvent(AccountAssetEvent.OnAddAccountClick) }) {
-                            Text("Tambah Akun")
+                            Text(stringResource(R.string.acct_add_account))
                         }
                     }
                 }
@@ -214,7 +233,7 @@ fun AccountAssetContent(
                             )
                         }
                         state.bankAccounts.forEach { group ->
-                            stickyHeader(key = group.nameGroup) {
+                            stickyHeader(key = group.nameGroupRes) {
                                 Box(
                                     modifier = Modifier
                                             .fillMaxWidth()
@@ -224,7 +243,7 @@ fun AccountAssetContent(
                                     // belum ada layar tujuan untuk "semua akun per tipe" →
                                     // action "Lihat Semua" sengaja tidak ditampilkan dulu.
                                     FormField(
-                                        title = group.nameGroup,
+                                        title = stringResource(group.nameGroupRes),
                                         icon = Icons.Outlined.AccountBalanceWallet,
                                     )
                                 }
@@ -232,7 +251,7 @@ fun AccountAssetContent(
                             items(
                                 group.listAccount,
                                 key = {
-                                    it.id ?: "${group.nameGroup}_${it.name}_${it.provider}"
+                                    it.id ?: "${group.nameGroupRes}_${it.name}_${it.provider}"
                                 },
                             ) { items ->
                                 AccountRow(
@@ -281,7 +300,7 @@ fun TotalBalanceCard(
         Column {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    "Total Saldo Gabungan",
+                    stringResource(R.string.acct_total_balance_combined),
                     color = Color.White.copy(alpha = 0.9f),
                     fontSize = 13.sp,
                 )
@@ -292,7 +311,12 @@ fun TotalBalanceCard(
                             .background(Color.White.copy(alpha = 0.25f))
                             .padding(horizontal = 10.dp, vertical = 4.dp),
                 ) {
-                    Text("IDR", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Text(
+                        stringResource(R.string.acct_currency_code),
+                        color = Color.White,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
                 }
             }
 
@@ -334,7 +358,11 @@ fun TotalBalanceCard(
 
             Row {
                 Column {
-                    Text("BULAN INI", color = Color.White.copy(alpha = 0.75f), fontSize = 10.sp)
+                    Text(
+                        stringResource(R.string.acct_this_month),
+                        color = Color.White.copy(alpha = 0.75f),
+                        fontSize = 10.sp,
+                    )
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         // Naik = hijau mint, turun = merah muda; ikon & angka pakai warna yang sama
                         val isUp = monthlyChangePercent >= 0.0
@@ -357,9 +385,13 @@ fun TotalBalanceCard(
                 }
                 Spacer(Modifier.width(24.dp))
                 Column {
-                    Text("ASET AKTIF", color = Color.White.copy(alpha = 0.75f), fontSize = 10.sp)
                     Text(
-                        "$activeAssetCount Akun",
+                        stringResource(R.string.acct_active_assets),
+                        color = Color.White.copy(alpha = 0.75f),
+                        fontSize = 10.sp,
+                    )
+                    Text(
+                        stringResource(R.string.acct_active_account_count, activeAssetCount),
                         color = Color.White,
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
@@ -422,7 +454,7 @@ private fun AccountRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(account.name, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                 Text(
-                    account.provider?.name ?: "Undefined",
+                    account.provider?.name ?: stringResource(R.string.acct_provider_undefined),
                     fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -467,7 +499,7 @@ private fun AccountAssetContentLoadedPreview() {
             activeAssetCount = 5,
             bankAccounts = listOf(
                 AccountUiGroupModel(
-                    nameGroup = TypeAccount.BANK.name,
+                    nameGroupRes = TypeAccount.BANK.labelResId,
                     listAccount = listOf(
                         AccountUiModel(
                             id = "1",
@@ -495,7 +527,7 @@ private fun AccountAssetContentLoadedPreview() {
                     ),
                 ),
                 AccountUiGroupModel(
-                    nameGroup = TypeAccount.CARD.name,
+                    nameGroupRes = TypeAccount.CARD.labelResId,
                     listAccount = listOf(
                         AccountUiModel(
                             id = "3",
@@ -564,7 +596,7 @@ private fun AccountAssetContentErrorPreview() {
     AccountAssetContent(
         state = AccountAssetState(
             isLoading = false,
-            error = "Gagal memuat data akun. Periksa koneksi internet.",
+            error = UiText.Raw("Gagal memuat data akun. Periksa koneksi internet."),
             totalBalance = 0L,
             isBalanceVisible = true,
             monthlyChangePercent = 0.0,

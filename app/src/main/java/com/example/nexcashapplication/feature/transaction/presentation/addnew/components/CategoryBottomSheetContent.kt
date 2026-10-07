@@ -18,8 +18,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Coffee
+import androidx.compose.material.icons.filled.DirectionsCar
+import androidx.compose.material.icons.filled.Fastfood
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Icecream
+import androidx.compose.material.icons.filled.LocalHospital
+import androidx.compose.material.icons.filled.Movie
 import androidx.compose.material.icons.filled.NavigateNext
+import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.Shop
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -31,11 +40,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.TransactionCategoryItemModel
@@ -59,7 +70,7 @@ fun CategoryBottomSheetContent(
     ) {
         // heading: judul dibaca screen reader saat sheet dibuka
         Text(
-            text = "Pilih Kategori",
+            text = stringResource(R.string.tx_select_category),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 12.dp),
@@ -83,7 +94,7 @@ fun CategoryBottomSheetContent(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "Belum ada kategori",
+                    text = stringResource(R.string.tx_no_categories),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -114,7 +125,7 @@ fun CategoryBottomSheetContent(
                         .padding(horizontal = 8.dp)
                         .fillMaxHeight(),
                     thickness = 1.dp,
-                    color = BorderGray.copy(alpha = 0.3f),
+                    color = BorderGray,
                 )
 
                 if (subCategories.isEmpty()) {
@@ -126,7 +137,7 @@ fun CategoryBottomSheetContent(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(
-                            text = "Pilih kategori utama",
+                            text = stringResource(R.string.tx_pick_parent_category),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             textAlign = TextAlign.Center,
@@ -289,6 +300,160 @@ private fun SubCategoryItemPreview() {
             onClick = {
 
             },
+        )
+    }
+}
+
+// ---------------------------------------------------------------------------
+// PREVIEWS — CategoryBottomSheetContent (satu untuk tiap cabang `when`)
+// ---------------------------------------------------------------------------
+// Konten ber-height(450.dp) fixed, jadi preview pakai heightDp 500 supaya tidak
+// terpotong; widthDp 360 supaya grid 2 kolom muat seperti di perangkat nyata.
+
+private fun sampleParentCategories() = listOf(
+    TransactionCategoryItemModel(
+        id = "makanan",
+        name = "Makanan & Minuman",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcon("restaurant", Icons.Default.Restaurant),
+        iconColor = Color(0xFFE8433D),
+    ),
+    TransactionCategoryItemModel(
+        id = "transport",
+        name = "Transportasi",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcon("car", Icons.Default.DirectionsCar),
+        iconColor = Color(0xFF1E88E5),
+    ),
+    TransactionCategoryItemModel(
+        id = "belanja",
+        name = "Belanja",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcon("cart", Icons.Default.ShoppingCart),
+        iconColor = Color(0xFFFB8C00),
+    ),
+    TransactionCategoryItemModel(
+        id = "rumah",
+        name = "Kebutuhan Rumah",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcon("home", Icons.Default.Home),
+        iconColor = Color(0xFF43A047),
+    ),
+    TransactionCategoryItemModel(
+        id = "hiburan",
+        name = "Hiburan",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcon("movie", Icons.Default.Movie),
+        iconColor = Color(0xFF8E24AA),
+    ),
+    TransactionCategoryItemModel(
+        id = "kesehatan",
+        name = "Kesehatan",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcon("health", Icons.Default.LocalHospital),
+        iconColor = Color(0xFF00ACC1),
+    ),
+)
+
+private fun sampleSubCategories() = listOf(
+    TransactionCategoryItemModel(
+        id = "sarapan",
+        name = "Sarapan",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcon("fastfood", Icons.Default.Fastfood),
+        iconColor = Color(0xFFE8433D),
+    ),
+    TransactionCategoryItemModel(
+        id = "kopi",
+        name = "Kopi",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcon("coffee", Icons.Default.Coffee),
+        iconColor = Color(0xFF795548),
+    ),
+    TransactionCategoryItemModel(
+        id = "gorengan",
+        name = "Gorengan",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcon("restaurant", Icons.Default.Restaurant),
+        iconColor = Color(0xFFFDD835),
+    ),
+    TransactionCategoryItemModel(
+        id = "dessert",
+        name = "Dessert",
+        tipe = TypeCategory.EXPENSE,
+        icon = CategoryIcon("icecream", Icons.Default.Icecream),
+        iconColor = Color(0xFFEC407A),
+    ),
+)
+
+@Preview(
+    showBackground = true,
+    widthDp = 360,
+    heightDp = 500,
+    name = "Content - Parent terpilih, belum ada sub",
+)
+@Composable
+private fun CategoryBottomSheetParentSelectedPreview() {
+    NexCashApplicationTheme {
+        CategoryBottomSheetContent(
+            parentCategories = sampleParentCategories(),
+            subCategories = emptyList(),
+            selectedParentId = "makanan",
+            onCategorySelected = {},
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    widthDp = 360,
+    heightDp = 500,
+    name = "Content - Sub terpilih",
+)
+@Composable
+private fun CategoryBottomSheetSubSelectedPreview() {
+    NexCashApplicationTheme {
+        CategoryBottomSheetContent(
+            parentCategories = sampleParentCategories(),
+            subCategories = sampleSubCategories(),
+            selectedParentId = "makanan",
+            selectedSubId = "kopi",
+            onCategorySelected = {},
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    widthDp = 360,
+    heightDp = 500,
+    name = "Content - Loading",
+)
+@Composable
+private fun CategoryBottomSheetLoadingPreview() {
+    NexCashApplicationTheme {
+        CategoryBottomSheetContent(
+            parentCategories = emptyList(),
+            subCategories = emptyList(),
+            isLoading = true,
+            onCategorySelected = {},
+        )
+    }
+}
+
+@Preview(
+    showBackground = true,
+    widthDp = 360,
+    heightDp = 500,
+    name = "Content - Empty",
+)
+@Composable
+private fun CategoryBottomSheetEmptyPreview() {
+    NexCashApplicationTheme {
+        CategoryBottomSheetContent(
+            parentCategories = emptyList(),
+            subCategories = emptyList(),
+            onCategorySelected = {},
         )
     }
 }

@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,9 +50,11 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.typeoption.model.TypeAccountItem
+import com.example.nexcashapplication.feature.account.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import kotlinx.coroutines.flow.collectLatest
 
@@ -99,10 +102,10 @@ fun AddEditTypeAccountContent(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Akun & Aset", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.acct_title_assets), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(AddEditTypeAccountEvent.OnBackClick) }) {
-                        Icon(Icons.Filled.KeyboardArrowLeft, contentDescription = "Kembali")
+                        Icon(Icons.Filled.KeyboardArrowLeft, contentDescription = stringResource(R.string.acct_back))
                     }
                 },
             )
@@ -122,7 +125,7 @@ fun AddEditTypeAccountContent(
                             .height(52.dp),
                     shape = RoundedCornerShape(16.dp),
                 ) {
-                    Text("Lanjutkan")
+                    Text(stringResource(R.string.acct_continue))
                     Spacer(Modifier.width(8.dp))
                     Icon(
                         Icons.AutoMirrored.Outlined.ArrowForward,
@@ -132,7 +135,7 @@ fun AddEditTypeAccountContent(
                 }
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    "Langkah 1 dari 2: Identifikasi Aset",
+                    stringResource(R.string.acct_step_1_of_2),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
@@ -152,7 +155,7 @@ fun AddEditTypeAccountContent(
                 ) {
                     Spacer(Modifier.height(24.dp))
                     Text(
-                        "Pilih Tipe Aset",
+                        stringResource(R.string.acct_choose_asset_type),
                         style = MaterialTheme.typography.headlineSmall,
                         fontWeight = FontWeight.Bold,
                     )
@@ -212,7 +215,7 @@ private fun HintBox() {
         )
         Spacer(Modifier.width(8.dp))
         Text(
-            "Anda dapat menambahkan beberapa aset dari tipe yang sama di langkah berikutnya.",
+            stringResource(R.string.acct_asset_type_hint),
             style = MaterialTheme.typography.bodySmall,
             fontStyle = FontStyle.Italic,
             color = Color(0xFF2B7EBF),
@@ -265,13 +268,13 @@ fun AssetTypeCard(
             }
             Spacer(Modifier.height(8.dp))
             Text(
-                text = type.type.name,
+                text = stringResource(type.type.labelResId),
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.bodyMedium,
             )
             if (type.listProviders.isNotEmpty()) {
                 Text(
-                    text = type.type.name,
+                    text = stringResource(type.type.labelResId),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center,

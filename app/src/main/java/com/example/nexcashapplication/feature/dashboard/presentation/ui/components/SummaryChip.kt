@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -83,12 +84,15 @@ fun SummaryChip(
 
             Spacer(modifier = Modifier.height(4.dp))
 
+            // nilai diformat dulu, prefiks "Rp"-nya baru diambil dari resource
+            val shownAmount = if (isTextOverflow) {
+                value.formatCompact()
+            } else {
+                value.formatCurrency()
+            }
+
             Text(
-                text = if (isTextOverflow) {
-                    "Rp ${value.formatCompact()}"
-                } else {
-                    "Rp ${value.formatCurrency()}"
-                },
+                text = stringResource(R.string.total_balance_format, shownAmount),
                 maxLines = 1,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,

@@ -1,6 +1,8 @@
 package com.example.nexcashapplication.feature.transaction.presentation.detail.mapper
 
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.toAccountUiModel
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiModel
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
@@ -26,13 +28,18 @@ fun TransactionWithDetails.toDetailTransactionUiModel(): DetailTransactionUiMode
 
 // dialog
 fun DetailTransactionUiModel.toDeleteDialogUiState(): DeleteTransactionDialogUiState {
-    val effectVerb = if (type == TransactionType.EXPENSE) "bertambah" else "berkurang"
+    val accountName = account?.name ?: ""
     val formattedAmount = amount.formatCurrency()
     return DeleteTransactionDialogUiState(
         title = name,
         formattedAmount = formattedAmount,
-        typeLabel = type.name, // masih perlu lo putusin: mentah atau di-lokalisasi?
-        accountName = account?.name ?: "",
-        balanceEffectText = "Saldo akun \"${account?.name}\" akan $effectVerb $formattedAmount setelah transaksi ini dihapus.",
+        // label tipe: kunci resource (bukan `type.name` mentah) — di-resolve di Composable
+        typeLabelRes = type.labelResId,
+        accountName = accountName,
+        balanceEffectText = if (type == TransactionType.EXPENSE) {
+            uiText(R.string.tx_balance_effect_expense, accountName, formattedAmount)
+        } else {
+            uiText(R.string.tx_balance_effect_income, accountName, formattedAmount)
+        },
     )
 }

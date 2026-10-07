@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
@@ -32,10 +33,9 @@ import com.example.nexcashapplication.ui.theme.PrimaryCyan
 @Composable
 fun QuickActionSection(
     modifier: Modifier = Modifier,
-    onTransferClick: () -> Unit = {},
-    onTagihanClick: () -> Unit = {},
-    onScanClick: () -> Unit = {},
-    onLainnyaClick: () -> Unit = {},
+    onKategoriClick: () -> Unit = {},
+    onTambahAkunClick: () -> Unit = {},
+    onStatistikClick: () -> Unit = {},
 ) {
 
     Row(
@@ -44,28 +44,24 @@ fun QuickActionSection(
             Arrangement.SpaceEvenly
     ) {
 
+        // Hanya pintu yang benar-benar ada (semua route terdaftar di NavHost).
+        // Transfer/Tagihan/Scan dibuang — fiturnya tidak ada, tombolnya jadi mati.
         QuickActionItem(
-            icon = painterResource(R.drawable.transfer),
-            label = "Transfer",
-            onClick = onTransferClick,
+            icon = painterResource(R.drawable.category_list),
+            label = stringResource(R.string.dash_quick_action_category),
+            onClick = onKategoriClick,
         )
 
         QuickActionItem(
-            icon = painterResource(R.drawable.bill_dollar),
-            label = "Tagihan",
-            onClick = onTagihanClick,
+            icon = painterResource(R.drawable.account_balance_bank),
+            label = stringResource(R.string.dash_quick_action_add_account),
+            onClick = onTambahAkunClick,
         )
 
         QuickActionItem(
-            icon = painterResource(R.drawable.scan),
-            label = "Scan",
-            onClick = onScanClick,
-        )
-
-        QuickActionItem(
-            icon = painterResource(R.drawable.more_horizontal),
-            label = "Lainnya",
-            onClick = onLainnyaClick,
+            icon = painterResource(R.drawable.insights),
+            label = stringResource(R.string.dash_quick_action_statistics),
+            onClick = onStatistikClick,
         )
     }
 }

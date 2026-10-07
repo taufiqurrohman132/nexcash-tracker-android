@@ -107,6 +107,7 @@ class CurrencySettingsViewModel @Inject constructor(
                                     id = currency.code,
                                     name = currency.displayName,
                                     symbol = currency.symbol,
+                                    nameRes = currency.displayNameRes,
                                 )
                             },
                         )

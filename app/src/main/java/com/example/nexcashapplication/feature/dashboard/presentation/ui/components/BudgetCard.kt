@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
@@ -28,9 +29,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.ui.theme.LightCyan
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
+import java.time.YearMonth
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun BudgetCard(
@@ -49,13 +54,13 @@ fun BudgetCard(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Sisa Anggaran",
+                text = stringResource(R.string.dash_remaining_budget),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             TextButton(onClick = { onDetailClick() }) {
                 Text(
-                    text = "Lihat Detail",
+                    text = stringResource(R.string.dash_see_detail),
                     color = PrimaryCyan
                 )
             }
@@ -73,9 +78,16 @@ fun BudgetCard(
                     .background(LightCyan)
                     .padding(16.dp)
             ) {
-                // Periode (optional dari UI kamu: "Oktober 2023")
+                // Periode bulan/tahun berjalan, terlokalisasi (bukan placeholder
+                // hardcoded "Oktober 2023")
+                val now = YearMonth.now()
+                val period = stringResource(
+                    R.string.dash_budget_period,
+                    now.month.getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault()),
+                    now.year,
+                )
                 Text(
-                    text = "Oktober 2023",
+                    text = period,
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )
@@ -83,9 +95,14 @@ fun BudgetCard(
                 Spacer(modifier = Modifier.height(2.dp))
 
                 // Remaining budget — format nilai sekali, bukan tiap recomposition
-                val formattedRemaining = remember(remainingBudget) {
-                    "Rp ${remainingBudget.formatCurrency()}"
+                val remainingAmount = remember(remainingBudget) {
+                    remainingBudget.formatCurrency()
                 }
+                val formattedRemaining = stringResource(
+                    R.string.total_balance_format,
+                    remainingAmount,
+                )
+                val remainingSuffix = stringResource(R.string.dash_remaining_suffix)
                 Text(
                     text = buildAnnotatedString {
                         withStyle(
@@ -104,7 +121,7 @@ fun BudgetCard(
                                 fontSize = MaterialTheme.typography.bodySmall.fontSize
                             )
                         ) {
-                            append("tersisa")
+                            append(remainingSuffix)
                         }
                     }
                 )
@@ -118,7 +135,10 @@ fun BudgetCard(
                         .align(Alignment.End),
                 ) {
                     Text(
-                        text = "${(progress * 100).toInt()}% Terpakai",
+                        text = stringResource(
+                            R.string.dash_budget_used_format,
+                            (progress * 100).toInt(),
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = PrimaryCyan,
                     )
@@ -141,7 +161,7 @@ fun BudgetCard(
 
                 // Tip text
                 Text(
-                    text = "Tip: Pengeluaran makan Anda naik 15% minggu ini.",
+                    text = stringResource(R.string.dash_budget_tip),
                     style = MaterialTheme.typography.bodySmall,
                     fontStyle = FontStyle.Italic,
                     color = Color.Gray

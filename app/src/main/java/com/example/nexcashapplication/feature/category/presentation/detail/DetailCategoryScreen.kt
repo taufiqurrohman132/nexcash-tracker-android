@@ -64,6 +64,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -74,6 +75,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
@@ -200,8 +202,8 @@ val dummyTransactions = listOf(
         time = "14:05",
         amount = 200_000,
         typeTransaction = TransactionType.INCOME,
-        category = "Tanpa Kategori",
-        account = "Akun Dihapus",
+        category = null,
+        account = null,
         icon = Icons.Default.Category,
         iconColor = Color.Black,
     ),
@@ -330,7 +332,7 @@ fun DetailCategoryContent(
                             )
                         }
                         Text(
-                            text = state.category?.name ?: "Detail",
+                            text = state.category?.name ?: stringResource(R.string.cat_detail_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                         )
@@ -338,7 +340,10 @@ fun DetailCategoryContent(
                 },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(DetailCategoryEvent.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.cat_back),
+                        )
                     }
                 },
                 actions = {
@@ -346,7 +351,10 @@ fun DetailCategoryContent(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         onClick = { showActionMenu = true },
                     ) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "Menu")
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = stringResource(R.string.cat_menu_desc),
+                        )
                     }
 
                     DropdownMenu(
@@ -356,7 +364,7 @@ fun DetailCategoryContent(
                         containerColor = Color.White
                     ) {
                         DropdownMenuItem(
-                            text = { Text("Edit Category") },
+                            text = { Text(stringResource(R.string.cat_edit_category)) },
                             leadingIcon = {
                                 Icon(Icons.Default.Edit, contentDescription = null)
                             },
@@ -366,7 +374,7 @@ fun DetailCategoryContent(
                             },
                         )
                         DropdownMenuItem(
-                            text = { Text("Hapus Category") },
+                            text = { Text(stringResource(R.string.cat_delete_category)) },
                             leadingIcon = {
                                 Icon(Icons.Default.Delete, contentDescription = null)
                             },
@@ -394,7 +402,7 @@ fun DetailCategoryContent(
                     },
                     text = {
                         Text(
-                            text = "Subkategori",
+                            text = stringResource(R.string.cat_fab_subcategory),
                             color = Color.White,
                         )
                     },
@@ -439,11 +447,11 @@ fun DetailCategoryContent(
 
             FormField(
                 title = if (state.category?.typeCategory == TypeCategory.INCOME) {
-                    "Tren Pemasukan"
+                    stringResource(R.string.cat_income_trend)
                 } else {
-                    "Tren Pengeluaran"
+                    stringResource(R.string.cat_expense_trend)
                 },
-                actionText = "7 Hari Terakhir",
+                actionText = stringResource(R.string.cat_last_7_days),
                 onActionClick = { },
             ) {
                 WeeklyTrendChart(
@@ -454,8 +462,8 @@ fun DetailCategoryContent(
 
             if (state.category?.parentId == null && state.subCategories.isNotEmpty()) {
                 FormField(
-                    title = "Sub Kategori",
-                    actionText = "Lihat Semua",
+                    title = stringResource(R.string.cat_subcategory_section),
+                    actionText = stringResource(R.string.cat_see_all),
                     onActionClick = { onEvent(DetailCategoryEvent.OnSeeAllSubCategoryClick) },
                 ) {
                     SubcategoryGrid(
@@ -474,9 +482,9 @@ fun DetailCategoryContent(
             }
 
             FormField(
-                title = "Transaksi Terakhir",
+                title = stringResource(R.string.cat_recent_transactions),
                 icon = Icons.Default.Replay,
-                actionText = "Lihat Semua",
+                actionText = stringResource(R.string.cat_see_all),
                 onActionClick = { onEvent(DetailCategoryEvent.OnLoadMoreTransactionsClick) },
             )
 
@@ -591,8 +599,8 @@ fun SubcategoryCard(
     }
 
     val badgeText = when {
-        hasBudget -> "${subcategory.usedPercentage}%"
-        !isEmpty && parentTotalBudget > 0L -> "$contribution%"
+        hasBudget -> stringResource(R.string.cat_percent_format, subcategory.usedPercentage)
+        !isEmpty && parentTotalBudget > 0L -> stringResource(R.string.cat_percent_format, contribution)
         else -> null
     }
 
@@ -650,20 +658,27 @@ fun SubcategoryCard(
                 )
 
                 isEmpty -> Text(
-                    text = "Belum ada transaksi",
+                    text = stringResource(R.string.cat_no_transactions),
                     style = MaterialTheme.typography.bodySmall,
                     color = TextTertiary,
                 )
 
                 else -> {
                     Text(
-                        text = "${subcategory.usedBudget.formatCurrency()} terpakai",
+                        text = stringResource(
+                            R.string.cat_used_amount_format,
+                            subcategory.usedBudget.formatCurrency(),
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = TextTertiary,
                     )
                     if (parentTotalBudget > 0L && parentName.isNotBlank()) {
                         Text(
-                            text = "$contribution% dari budget $parentName",
+                            text = stringResource(
+                                R.string.cat_percent_of_budget_format,
+                                contribution,
+                                parentName,
+                            ),
                             style = MaterialTheme.typography.labelSmall,
                             color = TextTertiary,
                         )
@@ -731,7 +746,7 @@ fun SubCategoryBudgetCard(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Anggaran ${parentInfo.name}",
+                    text = stringResource(R.string.cat_budget_title_format, parentInfo.name),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White,
                     letterSpacing = 0.5.sp,
@@ -744,7 +759,10 @@ fun SubCategoryBudgetCard(
                                 .padding(horizontal = 12.dp, vertical = 4.dp),
                     ) {
                         Text(
-                            text = "$contribution% Kontribusi",
+                            text = stringResource(
+                                R.string.cat_contribution_percent_format,
+                                contribution,
+                            ),
                             color = Color.White,
                             style = MaterialTheme.typography.labelSmall,
                             fontWeight = FontWeight.SemiBold,
@@ -757,14 +775,17 @@ fun SubCategoryBudgetCard(
 
             if (!hasBudget) {
                 Text(
-                    text = "Budget ${parentInfo.name} belum diatur",
+                    text = stringResource(R.string.cat_budget_not_set_format, parentInfo.name),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White,
                 )
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    text = "Budget sub mengikuti induk — atur di kategori ${parentInfo.name}.",
+                    text = stringResource(
+                        R.string.cat_budget_follows_parent_format,
+                        parentInfo.name,
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White.copy(alpha = 0.8f),
                 )
@@ -782,7 +803,7 @@ fun SubCategoryBudgetCard(
                 ) {
                     Row {
                         Text(
-                            text = "Terpakai: ",
+                            text = stringResource(R.string.cat_used_label),
                             style = MaterialTheme.typography.bodySmall,
                             color = Color.White.copy(alpha = 0.8f),
                         )
@@ -796,7 +817,7 @@ fun SubCategoryBudgetCard(
 
                     Row {
                         Text(
-                            text = "Sisa induk: ",
+                            text = stringResource(R.string.cat_parent_remaining_label),
                             style = MaterialTheme.typography.bodySmall,
                             color = Color.White.copy(alpha = 0.8f),
                         )
@@ -847,7 +868,7 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "Total Anggaran",
+                    text = stringResource(R.string.cat_total_budget),
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White,
                     letterSpacing = 0.5.sp,
@@ -859,7 +880,7 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
                             .padding(horizontal = 12.dp, vertical = 4.dp),
                 ) {
                     Text(
-                        text = "$usedPersentage% Terpakai",
+                        text = stringResource(R.string.cat_used_percent_format, usedPersentage),
                         color = Color.White,
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.SemiBold,
@@ -882,7 +903,7 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
             ) {
                 Row {
                     Text(
-                        text = "Terpakai: ",
+                        text = stringResource(R.string.cat_used_label),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.8f),
                     )
@@ -896,7 +917,7 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
 
                 Row {
                     Text(
-                        text = "Sisa: ",
+                        text = stringResource(R.string.cat_remaining_label),
                         style = MaterialTheme.typography.bodySmall,
                         color = Color.White.copy(alpha = 0.8f),
                     )
@@ -948,19 +969,22 @@ private val CurrencyFormatter = CartesianValueFormatter { _, value, _ ->
 @Composable
 private fun rememberMarkerValueFormatter(
     labels: List<String>,
-): DefaultCartesianMarker.ValueFormatter = remember(labels) {
-    DefaultCartesianMarker.ValueFormatter { _, targets ->
-        targets.joinToString { target ->
-            val amount = (target as? LineCartesianLayerMarkerTarget)
-                    ?.points
-                    ?.firstOrNull()
-                    ?.entry
-                    ?.y
-                    ?.toLong()
-                ?: target.x.toLong()
-            val formatted = amount.formatCompact()
-            val dayLabel = labels.getOrNull(target.x.toInt())
-            if (dayLabel != null) "$dayLabel • $formatted" else formatted
+): DefaultCartesianMarker.ValueFormatter {
+    val markerSeparator = stringResource(R.string.cat_chart_marker_separator)
+    return remember(labels, markerSeparator) {
+        DefaultCartesianMarker.ValueFormatter { _, targets ->
+            targets.joinToString { target ->
+                val amount = (target as? LineCartesianLayerMarkerTarget)
+                        ?.points
+                        ?.firstOrNull()
+                        ?.entry
+                        ?.y
+                        ?.toLong()
+                    ?: target.x.toLong()
+                val formatted = amount.formatCompact()
+                val dayLabel = labels.getOrNull(target.x.toInt())
+                if (dayLabel != null) "$dayLabel $markerSeparator $formatted" else formatted
+            }
         }
     }
 }
@@ -1003,7 +1027,7 @@ private fun WeeklyTrendEmptyState(modifier: Modifier = Modifier) {
             )
             Spacer(Modifier.height(8.dp))
             Text(
-                text = "Belum ada data transaksi minggu ini",
+                text = stringResource(R.string.cat_no_weekly_data),
                 style = MaterialTheme.typography.bodySmall,
                 color = TextTertiary,
             )
@@ -1116,20 +1140,20 @@ fun QuickActionsRow(
         if (showEditBudget) {
             QuickActionItem(
                 icon = Icons.Outlined.Edit,
-                label = "Edit Budget",
+                label = stringResource(R.string.cat_edit_budget_action),
                 onClick = onEditBudgetClick,
                 modifier = Modifier.weight(1f),
             )
         }
         QuickActionItem(
             icon = Icons.Outlined.Notifications,
-            label = "Set Notification",
+            label = stringResource(R.string.cat_set_notification_action),
             onClick = onSetNotificationClick,
             modifier = Modifier.weight(1f),
         )
         QuickActionItem(
             icon = Icons.Outlined.Description,
-            label = "Add Note",
+            label = stringResource(R.string.cat_add_note_action),
             onClick = onAddNoteClick,
             modifier = Modifier.weight(1f),
         )

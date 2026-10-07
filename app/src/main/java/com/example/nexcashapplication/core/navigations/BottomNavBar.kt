@@ -11,12 +11,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.ui.theme.BackgroundLight
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
@@ -47,6 +49,8 @@ fun BottomNavBar(
                     ?.hierarchy
                     ?.any { it.hasRoute(item.route::class) } == true
 
+            val title = stringResource(item.titleRes)
+
             NavigationBarItem(
                 selected = selectedRoute,
                 onClick = {
@@ -64,11 +68,11 @@ fun BottomNavBar(
                     Icon(
                         imageVector = if (selectedRoute)
                             item.selectedIcon else item.unselectedIcon,
-                        contentDescription = item.title,
+                        contentDescription = title,
                     )
                 },
                 label = {
-                    Text(item.title)
+                    Text(title)
                 },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = PrimaryCyan,    // icon aktif

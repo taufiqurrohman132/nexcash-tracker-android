@@ -24,9 +24,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
 import com.example.nexcashapplication.ui.theme.BorderGray
 
@@ -44,7 +46,7 @@ fun AccountBottomSheetContent(
     ) {
         item {
             Text(
-                text = "Pilih Rekening",
+                text = stringResource(R.string.tx_select_account),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -113,7 +115,7 @@ private fun AccountItem(
         }
 
         Text(
-            text = "Rp ${account.balance}",
+            text = stringResource(R.string.total_balance_format, account.balance),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary

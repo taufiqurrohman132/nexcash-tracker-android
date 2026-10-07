@@ -52,7 +52,7 @@ class SettingsViewModel @Inject constructor(
                 updateState {
                     it.copy(
 //                        colors = appSettings.color,
-                        language = appSettings.language.displayNmae,
+                        language = appSettings.language.code,
                         currency = appSettings.currency,
                     )
                 }

@@ -3,8 +3,11 @@ package com.example.nexcashapplication.feature.category.presentation.delete
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
+import com.example.nexcashapplication.core.i18n.toUiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.domain.model.CategoryDeleteResolution
 import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
@@ -55,7 +58,9 @@ class DeleteCategoryViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 updateState { it.copy(isLoading = false) }
-                sendEffect(DeleteCategoryEffect.ShowError("Gagal memuat data"))
+                sendEffect(
+                    DeleteCategoryEffect.ShowError(uiText(R.string.cat_load_failed)),
+                )
             }
         }
     }
@@ -121,9 +126,7 @@ class DeleteCategoryViewModel @Inject constructor(
             } catch (e: Exception) {
                 updateState { it.copy(isSubmitting = false) }
                 sendEffect(
-                    DeleteCategoryEffect.ShowError(
-                        e.message ?: "Gagal menghapus kategori",
-                    ),
+                    DeleteCategoryEffect.ShowError(e.toUiText(R.string.cat_delete_failed)),
                 )
             }
         }

@@ -38,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -46,6 +47,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.i18n.asString
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.notification.presentation.main.model.AlertSeverity
 import com.example.nexcashapplication.feature.notification.presentation.main.model.NotificationGroupUi
 import com.example.nexcashapplication.feature.notification.presentation.main.model.NotificationUiModel
@@ -88,15 +92,21 @@ fun NotificationContent(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text("Notifikasi", fontWeight = FontWeight.Bold) },
+                title = { Text(stringResource(R.string.notif_title), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(NotificationEvent.BackClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.notif_back),
+                        )
                     }
                 },
                 actions = {
                     IconButton(onClick = { onEvent(NotificationEvent.SettingsClicked) }) {
-                        Icon(Icons.Outlined.Settings, contentDescription = "Pengaturan notifikasi")
+                        Icon(
+                            Icons.Outlined.Settings,
+                            contentDescription = stringResource(R.string.notif_settings_content_desc),
+                        )
                     }
                 },
             )
@@ -137,21 +147,24 @@ private fun NotificationList(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = if (state.unreadCount > 0) "${state.unreadCount} belum dibaca"
-                    else "Semua sudah dibaca",
+                    text = if (state.unreadCount > 0) {
+                        stringResource(R.string.notif_unread_count_format, state.unreadCount)
+                    } else {
+                        stringResource(R.string.notif_all_read)
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 TextButton(
                     onClick = { onEvent(NotificationEvent.MarkAllReadClicked) },
                     enabled = state.unreadCount > 0,
-                ) { Text("Tandai semua dibaca") }
+                ) { Text(stringResource(R.string.notif_mark_all_read)) }
             }
         }
-        state.groups.forEach { group ->
-            item(key = "header-${group.header}") {
+        state.groups.forEachIndexed { index, group ->
+            item(key = "header-$index") {
                 Text(
-                    text = group.header.uppercase(),
+                    text = group.header.asString().uppercase(),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(start = 4.dp, top = 8.dp),
@@ -183,29 +196,30 @@ private fun NotificationItem(item: NotificationUiModel, onClick: () -> Unit) {
             SeverityIcon(item.severity)
             Column(Modifier.weight(1f)) {
                 Text(
-                    text = item.title,
+                    text = item.title.asString(),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = if (item.isRead) FontWeight.Medium else FontWeight.Bold,
                 )
                 Text(
-                    text = item.message,
+                    text = item.message.asString(),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = item.timeLabel,
+                    text = item.timeLabel.asString(),
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             if (!item.isRead) {
+                val unreadDescription = stringResource(R.string.notif_unread_dot_desc)
                 Box(
                     Modifier
                             .padding(top = 6.dp)
                             .size(8.dp)
                             .background(MaterialTheme.colorScheme.primary, CircleShape)
-                            .semantics { contentDescription = "Belum dibaca" },
+                            .semantics { contentDescription = unreadDescription },
                 )
             }
         }
@@ -249,9 +263,12 @@ private fun NotificationEmptyState(modifier: Modifier = Modifier) {
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(12.dp))
-        Text("Belum ada notifikasi", style = MaterialTheme.typography.titleMedium)
         Text(
-            "Pengingat akan muncul di sini saat pengeluaran mencapai batas anggaran.",
+            stringResource(R.string.notif_empty_title),
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text(
+            stringResource(R.string.notif_empty_subtitle),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -269,21 +286,25 @@ private fun NotificationContentPreview() {
                 unreadCount = 1,
                 groups = listOf(
                     NotificationGroupUi(
-                        "Hari ini",
+                        uiText(R.string.notif_group_today),
                         listOf(
                             NotificationUiModel(
-                                "1", "1", "Belanja Bulanan mencapai 100%",
-                                "Batas anggaran Oktober sudah tercapai.", "1 jam lalu",
+                                "1", "1",
+                                uiText(R.string.notif_alert_title_format, "Belanja Bulanan", 100),
+                                uiText(R.string.notif_alert_limit_body_format, "Oktober"),
+                                uiText(R.string.notif_time_hours_ago_format, 1L),
                                 AlertSeverity.Limit, isRead = false,
                             ),
                         ),
                     ),
                     NotificationGroupUi(
-                        "Kemarin",
+                        uiText(R.string.notif_group_yesterday),
                         listOf(
                             NotificationUiModel(
-                                "2", "2", "Transportasi mencapai 80%",
-                                "Anggaran Oktober hampir habis.", "Kemarin, 18.40",
+                                "2", "2",
+                                uiText(R.string.notif_alert_title_format, "Transportasi", 80),
+                                uiText(R.string.notif_alert_warning_body_format, "Oktober"),
+                                uiText(R.string.notif_time_yesterday_format, "18.40"),
                                 AlertSeverity.Warning, isRead = true,
                             ),
                         ),

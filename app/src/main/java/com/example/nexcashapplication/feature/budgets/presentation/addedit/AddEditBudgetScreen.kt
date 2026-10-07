@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.budgets.presentation.addedit
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -60,6 +61,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -69,10 +72,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.toEpochMillis
 import com.example.nexcashapplication.core.common.toLocalDate
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.AmountOutlinedTextField
@@ -82,6 +88,15 @@ import com.example.nexcashapplication.ui.theme.TextSecondary
 import java.time.LocalDate
 import java.time.ZoneOffset
 
+/**
+ * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
+ * yang hanya bersifat suspend sehingga `UiText.asString()` tidak bisa dipanggil).
+ */
+private fun UiText.resolve(context: Context): String = when (this) {
+    is UiText.Res -> context.getString(resId, *args.toTypedArray())
+    is UiText.Raw -> value
+}
+
 @Composable
 fun AddEditBudgetScreen(
     viewModel: AddEditBudgetViewModel = hiltViewModel(),
@@ -90,12 +105,14 @@ fun AddEditBudgetScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 AddEditBudgetEffect.NavigateBack -> navController.popBackStack()
-                is AddEditBudgetEffect.ShowSnackbar -> snackbarHostState.showSnackbar(effect.message)
+                is AddEditBudgetEffect.ShowSnackbar ->
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
                 AddEditBudgetEffect.ShowDiscardConfirmation -> navController.popBackStack()
             }
         }
@@ -125,12 +142,12 @@ fun AddEditBudgetContent(
                 title = {
                     Column {
                         Text(
-                            "Ubah Anggaran",
+                            stringResource(R.string.budget_edit_title),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                         )
                         Text(
-                            "Kategori: ${state.kategoriNama}",
+                            stringResource(R.string.budget_category_label, state.kategoriNama),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
@@ -138,7 +155,10 @@ fun AddEditBudgetContent(
                 },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(AddEditBudgetEvent.BatalClicked) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.budget_back_cd),
+                        )
                     }
                 },
                 actions = {
@@ -147,7 +167,8 @@ fun AddEditBudgetContent(
                         IconButton(onClick = { onEvent(AddEditBudgetEvent.HapusClicked) }) {
                             Icon(
                                 Icons.Outlined.Delete,
-                                contentDescription = "Hapus Anggaran",
+                                contentDescription =
+                                    stringResource(R.string.budget_delete_content_description),
                                 tint = MaterialTheme.colorScheme.error,
                             )
                         }
@@ -176,7 +197,7 @@ fun AddEditBudgetContent(
         ) {
 
             FormField(
-                title = "Batas Anggaran Baru",
+                title = stringResource(R.string.budget_new_limit_title),
                 icon = Icons.Outlined.AccountBalanceWallet,
             ) {
                 AmountOutlinedTextField(
@@ -205,7 +226,10 @@ fun AddEditBudgetContent(
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
-                    "Batas sebelumnya adalah ${state.batasSebelumnya.formatCurrency()}",
+                    stringResource(
+                        R.string.budget_previous_limit,
+                        state.batasSebelumnya.formatCurrency(),
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -218,20 +242,20 @@ fun AddEditBudgetContent(
             )
 
             FormField(
-                title = "Periode Efektif",
+                title = stringResource(R.string.budget_effective_period_title),
                 icon = Icons.Outlined.CalendarMonth,
             ) {
                 Column {
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         DateField(
-                            label = "MULAI",
+                            label = stringResource(R.string.budget_start_label),
                             date = state.tanggalMulai.toString(),
                             enabled = state.periodeTipe == RecurrenceType.CUSTOM,
                             onClick = { onEvent(AddEditBudgetEvent.TanggalMulaiClicked(state.tanggalMulai)) },
                             modifier = Modifier.weight(1f),
                         )
                         DateField(
-                            label = "BERAKHIR",
+                            label = stringResource(R.string.budget_end_label),
                             date = state.tanggalBerakhir.toString(),
                             enabled = state.periodeTipe == RecurrenceType.CUSTOM,
                             onClick = {
@@ -246,7 +270,7 @@ fun AddEditBudgetContent(
                     }
 
                     Text(
-                        text = "Durasi ${state.durasiHari} Hari",
+                        text = stringResource(R.string.budget_duration_days, state.durasiHari),
                         style = MaterialTheme.typography.bodySmall,
                         color = TextSecondary,
                     )
@@ -262,14 +286,16 @@ fun AddEditBudgetContent(
 
             }
             FormField(
-                title = "Pengaturna Berulang",
+                title = stringResource(R.string.budget_recurring_settings_title),
                 icon = Icons.Outlined.AreaChart,
             ) {
                 RecurringBudgetCard(
                     isRecurring = state.isBerulang,
                     enabled = state.isBerulangToggleEnabled,
                     onToggle = { onEvent(AddEditBudgetEvent.BerulangToggled(it)) },
-                    previewText = state.previewTeksBerulang,
+                    previewText = state
+                            .previewTeksBerulang(stringResource(R.string.budget_this_category))
+                            .asString(),
                 )
             }
         }
@@ -300,22 +326,26 @@ fun AddEditBudgetContent(
         if (state.showDeleteConfirmation) {
             AlertDialog(
                 onDismissRequest = { onEvent(AddEditBudgetEvent.BatalHapusClicked) },
-                title = { Text("Hapus Anggaran?") },
+                title = { Text(stringResource(R.string.budget_delete_dialog_title)) },
                 text = {
                     Text(
-                        "Anggaran \"${state.kategoriNama}\" untuk periode berjalan dan " +
-                                "periode berikutnya akan dihapus. Riwayat periode lampau " +
-                                "tetap tersimpan.",
+                        stringResource(
+                            R.string.budget_delete_dialog_message,
+                            state.kategoriNama,
+                        ),
                     )
                 },
                 confirmButton = {
                     TextButton(onClick = { onEvent(AddEditBudgetEvent.KonfirmasiHapusClicked) }) {
-                        Text("Hapus", color = MaterialTheme.colorScheme.error)
+                        Text(
+                            stringResource(R.string.budget_delete_action),
+                            color = MaterialTheme.colorScheme.error,
+                        )
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { onEvent(AddEditBudgetEvent.BatalHapusClicked) }) {
-                        Text("Batal")
+                        Text(stringResource(R.string.budget_cancel_action))
                     }
                 },
             )
@@ -351,7 +381,7 @@ private fun PeriodTypeChipRow(selected: RecurrenceType, onSelect: (RecurrenceTyp
                 shape = CircleShape,
                 selected = selected == type,
                 onClick = { onSelect(type) },
-                label = { Text(type.name) },
+                label = { Text(stringResource(type.labelResId)) },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
                     selectedLabelColor = MaterialTheme.colorScheme.primary,
@@ -428,12 +458,12 @@ private fun RecurringBudgetCard(
         ) {
             Column(Modifier.weight(1f)) {
                 Text(
-                    "Anggaran Berulang",
+                    stringResource(R.string.budget_recurring_card_title),
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    "Otomatis perbarui anggaran ini setiap awal periode",
+                    stringResource(R.string.budget_recurring_card_subtitle),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
@@ -480,7 +510,7 @@ private fun ChangeSummaryCard(oldValue: String, newValue: String) {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
-                "RINGKASAN PERUBAHAN",
+                stringResource(R.string.budget_change_summary_title),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.error,
@@ -489,7 +519,7 @@ private fun ChangeSummaryCard(oldValue: String, newValue: String) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        "Lama",
+                        stringResource(R.string.budget_old_value_label),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -506,7 +536,7 @@ private fun ChangeSummaryCard(oldValue: String, newValue: String) {
                 )
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Text(
-                        "Baru",
+                        stringResource(R.string.budget_new_value_label),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
@@ -536,14 +566,17 @@ private fun EditBudgetBottomBar(onCancel: () -> Unit, onSave: () -> Unit) {
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(24.dp),
             ) {
-                Text("Batal")
+                Text(stringResource(R.string.budget_cancel_action))
             }
             Button(
                 onClick = onSave,
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(24.dp),
             ) {
-                Text("Simpan Perubahan", fontWeight = FontWeight.Bold)
+                Text(
+                    stringResource(R.string.budget_save_changes_action),
+                    fontWeight = FontWeight.Bold,
+                )
             }
         }
     }

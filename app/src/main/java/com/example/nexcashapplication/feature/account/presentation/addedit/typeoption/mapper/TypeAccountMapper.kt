@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.account.presentation.addedit.typeoption.mapper
 
+import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.AccountBalance
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
@@ -14,21 +15,15 @@ import androidx.compose.material.icons.outlined.TrendingUp
 import androidx.compose.ui.graphics.Color
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.typeoption.model.TypeAccountItem
+import com.example.nexcashapplication.feature.account.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
-fun TypeAccount.toLabel(): String = when (this) {
-    TypeAccount.CASH -> "Tunai"
-    TypeAccount.BANK -> "Bank"
-    TypeAccount.CARD -> "Kartu"
-    TypeAccount.DEBIT_CARD -> "Kartu Debit"
-    TypeAccount.SAVINGS -> "Tabungan"
-    TypeAccount.PREPAID_CARD -> "Kartu Prabayar"
-    TypeAccount.INVESTMENT -> "Investasi"
-    TypeAccount.EWALLET -> "E-Wallet"
-    TypeAccount.LOAN -> "Pinjaman"
-    TypeAccount.INSURANCE -> "Asuransi"
-    TypeAccount.OTHER -> "Lainnya"
-}
+/**
+ * Label tipe akun berupa string resource `account_type_*` supaya mengikuti bahasa aktif —
+ * resolve di UI lewat `stringResource`.
+ */
+@StringRes
+fun TypeAccount.toLabelRes(): Int = labelResId
 
 fun TypeAccount.toUiItem(): TypeAccountItem = when (this) {
     TypeAccount.CASH -> TypeAccountItem(

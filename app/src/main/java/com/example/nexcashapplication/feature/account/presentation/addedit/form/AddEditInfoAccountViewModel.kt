@@ -4,7 +4,10 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.i18n.toUiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.model.AccountModel
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
@@ -67,7 +70,7 @@ class AddEditInfoAccountViewModel @Inject constructor(
         val current = state.value
 
         if (current.namaAset.isBlank()) {
-            updateState { it.copy(namaAsetError = "Nama aset wajib diisi") }
+            updateState { it.copy(namaAsetError = uiText(R.string.acct_name_required)) }
             return
         }
 
@@ -92,7 +95,7 @@ class AddEditInfoAccountViewModel @Inject constructor(
                 }.onFailure { throwable ->
                     sendEffect(
                         AddEditInfoAccountEffect.ShowError(
-                            throwable.message ?: "Gagal menyimpan aset",
+                            throwable.toUiText(R.string.acct_save_failed),
                         ),
                     )
                 }
@@ -112,7 +115,7 @@ class AddEditInfoAccountViewModel @Inject constructor(
             }.onFailure { throwable ->
                 sendEffect(
                     AddEditInfoAccountEffect.ShowError(
-                        throwable.message ?: "Gagal menyimpan aset",
+                        throwable.toUiText(R.string.acct_save_failed),
                     ),
                 )
             }

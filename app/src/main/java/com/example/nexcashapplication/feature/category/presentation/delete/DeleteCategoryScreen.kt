@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,8 +49,10 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.feature.category.presentation.delete.model.CategoryDeleteItemUI
 import com.example.nexcashapplication.feature.category.presentation.delete.model.DeleteOption
 import com.example.nexcashapplication.ui.theme.BorderGray
@@ -66,9 +69,19 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.key
 import androidx.compose.ui.platform.LocalContext
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.HorizontalDivider
+
+/**
+ * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
+ * yang hanya bersifat suspend sehingga `UiText.asString` tidak bisa dipanggil).
+ */
+private fun UiText.resolve(context: Context): String = when (this) {
+    is UiText.Res -> context.getString(resId, *args.toTypedArray())
+    is UiText.Raw -> value
+}
 
 @Composable
 fun DeleteCategoryScreen(
@@ -79,19 +92,20 @@ fun DeleteCategoryScreen(
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val deleteSuccessText = stringResource(R.string.cat_delete_success)
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
             when (effect) {
                 DeleteCategoryEffect.DeleteSuccess -> {
-                    Toast.makeText(context, "Kategori berhasil dihapus", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, deleteSuccessText, Toast.LENGTH_SHORT).show()
                     navController.popBackStack()
                 }
                 DeleteCategoryEffect.NavigateBack -> {
                     navController.popBackStack()
                 }
                 is DeleteCategoryEffect.ShowError -> {
-                    snackbarHostState.showSnackbar(effect.message)
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
                 }
             }
         }
@@ -115,10 +129,18 @@ fun DeleteCategoryContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Hapus Kategori?", fontWeight = FontWeight.Bold) },
+                title = {
+                    Text(
+                        stringResource(R.string.cat_delete_title),
+                        fontWeight = FontWeight.Bold,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(DeleteCategoryEvent.Cancel) }) {
-                        Icon(Icons.Filled.ArrowBackIosNew, contentDescription = "Kembali")
+                        Icon(
+                            Icons.Filled.ArrowBackIosNew,
+                            contentDescription = stringResource(R.string.cat_back),
+                        )
                     }
                 },
             )
@@ -145,7 +167,11 @@ fun DeleteCategoryContent(
                             disabledContainerColor = Color.Red.copy(alpha = 0.3f)
                         )
                     ) {
-                        Text("Hapus Kategori", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        Text(
+                            stringResource(R.string.cat_delete_action),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                        )
                     }
                 }
             }
@@ -174,17 +200,17 @@ fun DeleteCategoryContent(
 
                 Spacer(Modifier.height(16.dp))
                 Text(
-                    "Konfirmasi Penghapusan",
+                    stringResource(R.string.cat_delete_confirm_heading),
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    buildString {
-                        append("Kategori \"${state.categoryName}\" masih memiliki ")
-                        append("${state.transactionCount} transaksi terkait. ")
-                        append("Apa yang ingin Anda lakukan?")
-                    },
+                    stringResource(
+                        R.string.cat_delete_description_format,
+                        state.categoryName,
+                        state.transactionCount,
+                    ),
                     textAlign = TextAlign.Center,
                     fontSize = 13.sp,
                     color = Color(0xFF888888),
@@ -194,8 +220,8 @@ fun DeleteCategoryContent(
 
                 OptionCard(
                     icon = Icons.Filled.Delete,
-                    title = "Hapus Semua Transaksi",
-                    description = "Semua data transaksi di kategori ini akan ikut terhapus secara permanen.",
+                    title = stringResource(R.string.cat_option_delete_all_title),
+                    description = stringResource(R.string.cat_option_delete_all_desc),
                     selected = state.selectedOption == DeleteOption.DELETE_ALL_TRANSACTIONS,
                     onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.DELETE_ALL_TRANSACTIONS)) },
                 )
@@ -204,8 +230,8 @@ fun DeleteCategoryContent(
 
                 OptionCard(
                     icon = Icons.AutoMirrored.Filled.ArrowForward,
-                    title = "Pindahkan ke Kategori Lain",
-                    description = "Alihkan transaksi ke kategori yang sudah ada agar laporan tetap akurat.",
+                    title = stringResource(R.string.cat_option_move_title),
+                    description = stringResource(R.string.cat_option_move_desc),
                     selected = state.selectedOption == DeleteOption.MOVE_TO_CATEGORY,
                     onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.MOVE_TO_CATEGORY)) },
                 )
@@ -226,8 +252,8 @@ fun DeleteCategoryContent(
 
                 OptionCard(
                     icon = Icons.Filled.HelpOutline,
-                    title = "Biarkan Tidak Berkategori",
-                    description = "Transaksi akan tetap ada namun tidak memiliki label kategori.",
+                    title = stringResource(R.string.cat_option_uncategorized_title),
+                    description = stringResource(R.string.cat_option_uncategorized_desc),
                     selected = state.selectedOption == DeleteOption.UNCATEGORIZED,
                     onClick = { onEvent(DeleteCategoryEvent.SelectOption(DeleteOption.UNCATEGORIZED)) },
                 )
@@ -302,16 +328,17 @@ private fun CategoryDropdown(
     onSelect: (CategoryDeleteItemUI) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val pickTargetLabel = stringResource(R.string.cat_pick_target_category)
     ExposedDropdownMenuBox(
         modifier = modifier,
         expanded = expanded,
         onExpandedChange = { onExpandedChange() },
     ) {
         OutlinedTextField(
-            value = selected?.name ?: "Pilih kategori tujuan",
+            value = selected?.name ?: pickTargetLabel,
             onValueChange = {},
             readOnly = true,
-            placeholder = { Text("Pilih kategori tujuan") },
+            placeholder = { Text(pickTargetLabel) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier

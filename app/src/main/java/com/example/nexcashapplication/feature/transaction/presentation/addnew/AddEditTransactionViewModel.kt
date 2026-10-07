@@ -3,10 +3,12 @@ package com.example.nexcashapplication.feature.transaction.presentation.addnew
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.repository.AccountRepository
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.toAccountUiModel
@@ -306,7 +308,7 @@ class AddEditTransactionViewModel internal constructor(
             } else {
                 sendEffect(
                     AddEditTransactionEffect.ShowSnackbar(
-                        "Transaksi gagal disimpan. Coba lagi.",
+                        uiText(R.string.tx_save_failed),
                     ),
                 )
             }

@@ -3,7 +3,9 @@ package com.example.nexcashapplication.feature.account.presentation.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.usecase.DeleteAccountUseCase
 import com.example.nexcashapplication.feature.account.domain.usecase.GetAccountDetailUseCase
@@ -52,7 +54,7 @@ class DetailAccountViewModel @Inject constructor(
             DetailAccountEvent.OnDeleteAccountClick -> {
                 viewModelScope.launch {
                     if (accountId == null) {
-                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                        sendEffect(DetailAccountEffect.ShowToast(uiText(R.string.acct_account_not_loaded)))
                         return@launch
                     }
 
@@ -65,7 +67,7 @@ class DetailAccountViewModel @Inject constructor(
             DetailAccountEvent.OnLihatSemuaClick -> {
                 viewModelScope.launch {
                     if (accountId == null) {
-                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                        sendEffect(DetailAccountEffect.ShowToast(uiText(R.string.acct_account_not_loaded)))
                         return@launch
                     }
 
@@ -77,7 +79,7 @@ class DetailAccountViewModel @Inject constructor(
             is DetailAccountEvent.OnTransactionClick -> {
                 viewModelScope.launch {
                     if (event.transactionId == null) {
-                        sendEffect(DetailAccountEffect.ShowSnackbar("Transaksi tidak tersedia"))
+                        sendEffect(DetailAccountEffect.ShowSnackbar(uiText(R.string.acct_transaction_unavailable)))
                     } else
                         sendEffect(DetailAccountEffect.NavigateToTransactionDetail(event.transactionId))
                 }
@@ -87,7 +89,7 @@ class DetailAccountViewModel @Inject constructor(
                 viewModelScope.launch {
 
                     if (accountId == null) {
-                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                        sendEffect(DetailAccountEffect.ShowToast(uiText(R.string.acct_account_not_loaded)))
                         return@launch
                     }
 
@@ -102,7 +104,7 @@ class DetailAccountViewModel @Inject constructor(
 
                 viewModelScope.launch {
                     if (accountId == null) {
-                        sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                        sendEffect(DetailAccountEffect.ShowToast(uiText(R.string.acct_account_not_loaded)))
                         return@launch
                     }
 
@@ -115,7 +117,7 @@ class DetailAccountViewModel @Inject constructor(
     private fun observerDetailAccount() {
         viewModelScope.launch {
             if (accountId == null) {
-                sendEffect(DetailAccountEffect.ShowToast("Akun belum termuat, coba lagi"))
+                sendEffect(DetailAccountEffect.ShowToast(uiText(R.string.acct_account_not_loaded)))
                 return@launch
             }
             getAccountDetailUseCase(accountId = accountId).collect { detailData ->

@@ -1,8 +1,11 @@
 package com.example.nexcashapplication.feature.transaction.presentation.detail
 
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.model.AccountModel
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
@@ -105,7 +108,7 @@ class DetailTransactionViewModelTest {
             assertFalse(vm.state.value.isLoading)
             assertNull(vm.state.value.transaction)
             assertEquals(
-                "Transaksi gagal dimuat",
+                uiText(R.string.tx_detail_load_failed),
                 (effects.single() as DetailTransactionEffect.ShowSnackbar).message,
             )
         }
@@ -122,12 +125,17 @@ class DetailTransactionViewModelTest {
 
             val dialog = vm.state.value.deleteDialogState
             assertEquals("Kopi pagi", dialog?.title)
-            assertEquals("EXPENSE", dialog?.typeLabel)
+            assertEquals(R.string.tx_type_expense, dialog?.typeLabelRes)
             assertEquals("BCA", dialog?.accountName)
             assertEquals(150_000L.formatCurrency(), dialog?.formattedAmount)
-            assertTrue(
-                dialog!!.balanceEffectText.contains("bertambah"),
-                "pengeluaran dihapus → saldo bertambah: ${dialog.balanceEffectText}",
+            assertEquals(
+                uiText(
+                    R.string.tx_balance_effect_expense,
+                    "BCA",
+                    150_000L.formatCurrency(),
+                ),
+                dialog?.balanceEffectText,
+                "pengeluaran dihapus → saldo bertambah: ${dialog?.balanceEffectText}",
             )
         }
 
@@ -183,7 +191,7 @@ class DetailTransactionViewModelTest {
             assertNull(vm.state.value.deleteDialogState, "dialog ditutup supaya bisa dicoba lagi")
             assertFalse(vm.state.value.isDeleting)
             assertEquals(
-                "Transaksi gagal dihapus. Coba lagi.",
+                uiText(R.string.tx_delete_failed),
                 (effects.single() as DetailTransactionEffect.ShowSnackbar).message,
             )
             assertEquals(emptyList<String>(), repository.deletedIds)
@@ -199,13 +207,35 @@ class DetailTransactionViewModelTest {
             vm.onEvent(DetailTransactionEvent.OnShareClick)
             runCurrent()
 
-            val share = (effects.single() as DetailTransactionEffect.ShareTransaction).shareText
-            assertTrue(share.contains("Kopi pagi"), share)
-            assertTrue(share.contains(150_000L.formatCurrency()), share)
-            assertTrue(share.contains("Makanan"), share)
-            assertTrue(share.contains("BCA"), share)
-            assertTrue(share.contains("Sumber Dana"), "label sumber dana ikut: $share")
-            assertTrue(share.contains("Rapat tim"), share)
+            val lines = (effects.single() as DetailTransactionEffect.ShareTransaction).lines
+            val argsOf = { resId: Int ->
+                lines.filterIsInstance<UiText.Res>().find { it.resId == resId }?.args
+            }
+
+            assertEquals(
+                listOf("Kopi pagi", "- ${150_000L.formatCurrency()}"),
+                argsOf(R.string.tx_share_headline),
+                "baris judul memuat nama + nominal: $lines",
+            )
+            assertEquals(
+                listOf("Makanan"),
+                argsOf(R.string.tx_share_category_line),
+                "kategori ikut: $lines",
+            )
+            assertEquals(
+                listOf("BCA"),
+                argsOf(R.string.tx_share_funding_line),
+                "label sumber dana ikut: $lines",
+            )
+            assertEquals(
+                listOf("Rapat tim"),
+                argsOf(R.string.tx_share_note_line),
+                "catatan ikut: $lines",
+            )
+            assertTrue(
+                lines.any { it is UiText.Res && it.resId == R.string.tx_share_date_line },
+                "tanggal & jam ikut: $lines",
+            )
         }
 
     @Test
@@ -225,7 +255,7 @@ class DetailTransactionViewModelTest {
             assertEquals(source.transaction.accountId, copy.accountId)
             assertEquals(source.transaction.dateTime, copy.dateTime)
             assertEquals(
-                "Transaksi disalin",
+                uiText(R.string.tx_duplicated),
                 (effects.single() as DetailTransactionEffect.ShowSnackbar).message,
             )
         }
@@ -241,7 +271,7 @@ class DetailTransactionViewModelTest {
 
             assertEquals(emptyList<Transaction>(), repository.insertedTransactions)
             assertEquals(
-                "Transaksi gagal disalin. Coba lagi.",
+                uiText(R.string.tx_duplicate_failed),
                 (effects.single() as DetailTransactionEffect.ShowSnackbar).message,
             )
         }
@@ -255,7 +285,7 @@ class DetailTransactionViewModelTest {
             runCurrent()
 
             assertEquals(
-                "Pratinjau lampiran belum tersedia",
+                uiText(R.string.tx_attachment_preview_unavailable),
                 (effects.single() as DetailTransactionEffect.ShowSnackbar).message,
             )
         }

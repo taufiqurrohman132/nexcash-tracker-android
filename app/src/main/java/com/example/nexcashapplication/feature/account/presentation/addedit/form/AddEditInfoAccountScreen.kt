@@ -56,9 +56,12 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.form.catalog.ProviderCatalog
@@ -121,14 +124,14 @@ fun AddEditAccountContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Tambah Account",
+                        text = stringResource(R.string.acct_add_account),
                         fontSize = 17.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(AddEditInfoAccountEvent.BackClicked) }) {
-                        Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Kembali")
+                        Icon(Icons.Default.KeyboardArrowLeft, contentDescription = stringResource(R.string.acct_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
@@ -166,12 +169,12 @@ fun AddEditAccountContent(
                     )
 
                     FormField(
-                        title = "Pilih Provider (Opsional)",
+                        title = stringResource(R.string.acct_choose_provider),
                         icon = Icons.Outlined.AccountBalanceWallet,
                     ) {
                         if (state.providers.isEmpty()) {
                             Text(
-                                "Tidak tersedia",
+                                stringResource(R.string.acct_provider_unavailable),
                                 modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(16.dp),
@@ -250,7 +253,9 @@ private fun SimpanAsetButton(
                 label = "saveButtonText",
             ) { editMode ->
                 Text(
-                    if (editMode) "Simpan Perubahan" else "Simpan Aset",
+                    stringResource(
+                        if (editMode) R.string.acct_save_changes else R.string.acct_save_asset,
+                    ),
                     color = Color.White,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
@@ -270,12 +275,12 @@ fun FormFieldEdit(
     typeAccountName: String,
     onAsetNameChange: (String) -> Unit,
     onSaldoAwalChange: (String) -> Unit,
-    error: String? = null,
+    error: UiText? = null,
 ) {
     Column(
     ) {
         FormField(
-            "Nama Aset (Alias)",
+            stringResource(R.string.acct_asset_name),
             icon = Icons.Outlined.AccountBalanceWallet,
 
             ) {
@@ -284,7 +289,7 @@ fun FormFieldEdit(
                 onValueChange = onAsetNameChange,
                 placeholder = {
                     Text(
-                        "Contoh: Tabungan Darurat",
+                        stringResource(R.string.acct_name_placeholder),
                         color = TextSecondary.copy(alpha = 0.6f),
                     )
                 },
@@ -301,14 +306,14 @@ fun FormFieldEdit(
             )
             Spacer(Modifier.height(6.dp))
             Text(
-                error ?: "Gunakan nama yang mudah diingat",
+                error?.asString() ?: stringResource(R.string.acct_name_hint),
                 color = if (error != null) MaterialTheme.colorScheme.error else TextSecondary,
                 fontSize = 12.sp,
             )
         }
 
         FormField(
-            "Tipe Aset",
+            stringResource(R.string.acct_asset_type),
             icon = Icons.Outlined.AccountBalanceWallet,
 
             ) {
@@ -325,7 +330,7 @@ fun FormFieldEdit(
                         modifier = Modifier.padding(end = 16.dp),
                     ) {
                         Text(
-                            text = "TERKUNCI",
+                            text = stringResource(R.string.acct_locked),
                             style = MaterialTheme.typography.labelSmall,
                             color = Color.Gray,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -344,7 +349,7 @@ fun FormFieldEdit(
         }
 
         FormField(
-            "Saldo Awal",
+            stringResource(R.string.acct_initial_balance),
             icon = Icons.Outlined.AccountBalanceWallet,
         ) {
             AmountOutlinedTextField(
@@ -355,11 +360,15 @@ fun FormFieldEdit(
                 },
                 textStyle = MaterialTheme.typography.bodyMedium,
                 prefix = {
-                    Text("Rp ")
+                    Text(stringResource(R.string.acct_currency_prefix))
                 },
             )
             Spacer(Modifier.height(6.dp))
-            Text("Saldo saat ini dalam aset tersebut", color = TextSecondary, fontSize = 12.sp)
+            Text(
+                stringResource(R.string.acct_balance_hint),
+                color = TextSecondary,
+                fontSize = 12.sp,
+            )
 
         }
     }
@@ -413,14 +422,14 @@ private fun LangkahTerakhirBanner() {
         Spacer(Modifier.width(12.dp))
         Column {
             Text(
-                "Langkah Terakhir",
+                stringResource(R.string.acct_step_last),
                 color = PrimaryCyan,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                "Lengkapi detail aset Anda untuk mulai mencatat transaksi secara otomatis.",
+                stringResource(R.string.acct_step_last_desc),
                 color = TextSecondary,
                 fontSize = 13.sp,
             )

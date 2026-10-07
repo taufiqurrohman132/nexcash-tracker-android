@@ -1,7 +1,10 @@
 package com.example.nexcashapplication.feature.transaction.presentation.alltransactions
 
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.presentation.main.FakeCategoryRepository
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
@@ -80,7 +83,7 @@ class AllTransactionsViewModelTest {
     fun `judul - tanpa filter memakai Semua Transaksi`() = runTest(testDispatcher) {
         val (vm, _) = createViewModel()
 
-        assertEquals("Semua Transaksi", vm.state.value.title)
+        assertEquals(uiText(R.string.tx_title_all), vm.state.value.title)
     }
 
     @Test
@@ -91,7 +94,7 @@ class AllTransactionsViewModelTest {
                 categories = listOf(food),
             )
 
-            assertEquals("Transaksi · Makanan", vm.state.value.title)
+            assertEquals(uiText(R.string.tx_title_filter, "Makanan"), vm.state.value.title)
         }
 
     // ── Daftar ─────────────────────────────────────────────────────────
@@ -127,8 +130,11 @@ class AllTransactionsViewModelTest {
             val (vm, _) = createViewModel()
 
             assertFalse(vm.state.value.isLoading)
-            assertNotNull(vm.state.value.error)
-            assertTrue(vm.state.value.error!!.contains("query rusak"))
+            val error = vm.state.value.error
+            assertTrue(
+                error is UiText.Raw && error.value.contains("query rusak"),
+                "pesan teknis query tetap dibawa: $error",
+            )
             assertTrue(vm.state.value.groupedTransactions.isEmpty())
         }
 

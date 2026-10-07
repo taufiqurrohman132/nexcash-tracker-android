@@ -1,5 +1,7 @@
 package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
+import androidx.annotation.StringRes
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.TransactionCategoryAndSubModel
@@ -109,8 +111,13 @@ data class AddEditTransactionState(
         get() = availableAccounts.find { it.id == selectedAccountId }
 }
 
-enum class TransactionType {
-    INCOME,
-    EXPENSE
+/**
+ * Tipe transaksi. [labelResId] adalah kunci string resource untuk teks tampilan —
+ * resolve di UI dengan `stringResource(type.labelResId)`, jangan tampilkan `.name`
+ * (mentah, tidak ikut bahasa aktif).
+ */
+enum class TransactionType(@StringRes val labelResId: Int) {
+    INCOME(R.string.tx_type_income),
+    EXPENSE(R.string.tx_type_expense)
 }
 

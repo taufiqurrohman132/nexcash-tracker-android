@@ -3,7 +3,9 @@ package com.example.nexcashapplication.feature.transaction.presentation.alltrans
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionFilter
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetTransactionsByFilterUseCase
@@ -111,7 +113,7 @@ class AllTransactionsViewModel internal constructor(
                 updateState {
                     it.copy(
                         isLoading = false,
-                        error = e.message ?: "Gagal memuat transaksi",
+                        error = e.toUiText(R.string.tx_load_failed),
                     )
                 }
             }

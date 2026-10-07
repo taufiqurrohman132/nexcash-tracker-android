@@ -3,7 +3,9 @@ package com.example.nexcashapplication.feature.account.presentation.main
 import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.feature.account.domain.repository.AccountRepository
 import com.example.nexcashapplication.feature.account.domain.usecase.GetMonthlySummaryUseCase
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.toAccountUiModelList
@@ -96,7 +98,7 @@ class AccountAssetViewModel @Inject constructor(
                     }
                 }
                 .catch { e ->
-                    updateState { it.copy(error = e.message) }
+                    updateState { it.copy(error = e.toUiText(R.string.acct_load_failed)) }
                 }
                 .launchIn(viewModelScope)
     }
@@ -113,10 +115,15 @@ class AccountAssetViewModel @Inject constructor(
                 .map { accounts -> accounts.toAccountUiModelList() }
                 .flowOn(Dispatchers.Default)
                 .catch { throwable ->
-                    updateState { it.copy(isLoading = false, error = throwable.message) }
+                    updateState {
+                        it.copy(
+                            isLoading = false,
+                            error = throwable.toUiText(R.string.acct_load_failed),
+                        )
+                    }
                     sendEffect(
                         AccountAssetEffect.ShowError(
-                            throwable.message ?: "Gagal memuat data",
+                            throwable.toUiText(R.string.acct_load_failed),
                         ),
                     )
                 }

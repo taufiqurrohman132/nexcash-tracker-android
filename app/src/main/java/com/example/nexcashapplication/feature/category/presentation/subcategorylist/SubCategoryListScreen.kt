@@ -20,11 +20,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.domain.model.TypeCategory.EXPENSE
@@ -73,10 +75,20 @@ fun SubCategoryListContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Subkategori · ${state.parentCategoryName}") },
+                title = {
+                    Text(
+                        stringResource(
+                            R.string.cat_subcategory_list_title,
+                            state.parentCategoryName,
+                        )
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(SubCategoryListEvent.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.cat_back),
+                        )
                     }
                 },
             )

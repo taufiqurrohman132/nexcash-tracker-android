@@ -2,6 +2,7 @@ package com.example.nexcashapplication.feature.budgets.presentation.editmultiple
 
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.viewModelScope
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.common.toEndOfMonthMillis
 import com.example.nexcashapplication.core.common.toEpochMillis
@@ -11,6 +12,8 @@ import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import com.example.nexcashapplication.feature.budgets.domain.usecase.DeleteBudgetUseCase
 import com.example.nexcashapplication.feature.budgets.domain.usecase.SaveBudgetUseCase
@@ -151,7 +154,9 @@ class EditPresentageBudgetViewModel @Inject constructor(
         when {
             st.budgets.isEmpty() -> {
                 sendEffectDirect(
-                    EditPresentageBudgetEffect.ShowSnackbar("Minimal satu kategori dialokasikan"),
+                    EditPresentageBudgetEffect.ShowSnackbar(
+                        uiText(R.string.budget_error_min_one_category),
+                    ),
                 )
                 return
             }
@@ -159,8 +164,7 @@ class EditPresentageBudgetViewModel @Inject constructor(
             !st.isValid -> {
                 sendEffectDirect(
                     EditPresentageBudgetEffect.ShowSnackbar(
-                        "Total alokasi ${st.totalPercentage}% (maks 100%) — " +
-                                "tiap kategori harus lebih dari 0",
+                        uiText(R.string.budget_error_allocation_total, st.totalPercentage),
                     ),
                 )
                 return
@@ -175,7 +179,7 @@ class EditPresentageBudgetViewModel @Inject constructor(
                 minOf(LocalDate.now().dayOfMonth, st.period.lengthOfMonth()),
             )
 
-            var firstError: String? = null
+            var firstError: UiText? = null
             for (item in st.budgets) {
                 if (item.totalBudget <= 0L) continue
                 val result = saveBudgetUseCase(
@@ -223,7 +227,9 @@ class EditPresentageBudgetViewModel @Inject constructor(
                     .first()
 
             val result = if (active == null) {
-                DeleteBudgetUseCase.Result.Failure("Anggaran tidak ditemukan")
+                DeleteBudgetUseCase.Result.Failure(
+                    uiText(R.string.budget_error_budget_not_found),
+                )
             } else {
                 deleteBudgetUseCase(active, today = anchor)
             }
@@ -231,7 +237,11 @@ class EditPresentageBudgetViewModel @Inject constructor(
             updateState { it.copy(deleteConfirmationId = null) }
             when (result) {
                 is DeleteBudgetUseCase.Result.Success ->
-                    sendEffect(EditPresentageBudgetEffect.ShowSnackbar("Alokasi kategori dihapus"))
+                    sendEffect(
+                        EditPresentageBudgetEffect.ShowSnackbar(
+                            uiText(R.string.budget_allocation_deleted),
+                        ),
+                    )
 
                 is DeleteBudgetUseCase.Result.Failure ->
                     sendEffect(EditPresentageBudgetEffect.ShowSnackbar(result.message))

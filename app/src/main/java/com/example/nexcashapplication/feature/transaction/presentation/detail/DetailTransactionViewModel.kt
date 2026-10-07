@@ -3,12 +3,16 @@ package com.example.nexcashapplication.feature.transaction.presentation.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.common.utils.formatDate
 import com.example.nexcashapplication.feature.common.utils.formatTime
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.feature.transaction.presentation.detail.mapper.toDeleteDialogUiState
 import com.example.nexcashapplication.feature.transaction.presentation.detail.mapper.toDetailTransactionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,7 +60,9 @@ class DetailTransactionViewModel internal constructor(
                 // (sekarang selalu null). Sengaja bukan TODO() — baris ini bisa diklik.
                 viewModelScope.launch {
                     sendEffect(
-                        DetailTransactionEffect.ShowSnackbar("Pratinjau lampiran belum tersedia"),
+                        DetailTransactionEffect.ShowSnackbar(
+                            uiText(R.string.tx_attachment_preview_unavailable),
+                        ),
                     )
                 }
             }
@@ -127,7 +133,11 @@ class DetailTransactionViewModel internal constructor(
                 // query gagal: jangan bocor ke viewModelScope (crash), lapor ke layar
                 .catch {
                     updateState { state -> state.copy(isLoading = false) }
-                    sendEffect(DetailTransactionEffect.ShowSnackbar("Transaksi gagal dimuat"))
+                    sendEffect(
+                        DetailTransactionEffect.ShowSnackbar(
+                            uiText(R.string.tx_detail_load_failed),
+                        ),
+                    )
                 }
                 .launchIn(viewModelScope)
     }
@@ -153,7 +163,9 @@ class DetailTransactionViewModel internal constructor(
             } else {
                 updateState { it.copy(isDeleting = false, deleteDialogState = null) }
                 sendEffect(
-                    DetailTransactionEffect.ShowSnackbar("Transaksi gagal dihapus. Coba lagi."),
+                    DetailTransactionEffect.ShowSnackbar(
+                        uiText(R.string.tx_delete_failed),
+                    ),
                 )
             }
         }
@@ -181,30 +193,54 @@ class DetailTransactionViewModel internal constructor(
 
             sendEffect(
                 if (result.isSuccess) {
-                    DetailTransactionEffect.ShowSnackbar("Transaksi disalin")
+                    DetailTransactionEffect.ShowSnackbar(uiText(R.string.tx_duplicated))
                 } else {
-                    DetailTransactionEffect.ShowSnackbar("Transaksi gagal disalin. Coba lagi.")
+                    DetailTransactionEffect.ShowSnackbar(
+                        uiText(R.string.tx_duplicate_failed),
+                    )
                 },
             )
         }
     }
 
-    /** Teks yang dibagikan tombol BAGIKAN — satu blok, siap ditempel ke chat. */
+    /**
+     * Teks yang dibagikan tombol BAGIKAN — satu blok, siap ditempel ke chat.
+     * Per baris berupa [UiText] supaya labelnya (Tanggal, Kategori, Sumber Dana,
+     * Catatan) di-resolve mengikuti bahasa aktif saat share sheet dibuka.
+     */
     private fun handleShare() {
         val transaction = state.value.transaction ?: return
 
-        val shareText = buildString {
-            appendLine("${transaction.name} • ${transaction.signedAmountText}")
-            appendLine(
-                "Tanggal: ${transaction.dateTime.formatDate()} ${transaction.dateTime.formatTime()}",
+        val lines = buildList<UiText> {
+            add(
+                uiText(
+                    R.string.tx_share_headline,
+                    transaction.name,
+                    transaction.signedAmountText,
+                ),
             )
-            transaction.category?.name?.let { appendLine("Kategori: $it") }
-            transaction.account?.name?.let { appendLine("${transaction.accountLabel}: $it") }
-            transaction.note?.takeIf { it.isNotBlank() }?.let { appendLine("Catatan: $it") }
+            add(
+                uiText(
+                    R.string.tx_share_date_line,
+                    transaction.dateTime.formatDate(),
+                    transaction.dateTime.formatTime(),
+                ),
+            )
+            transaction.category?.name?.let { add(uiText(R.string.tx_share_category_line, it)) }
+            transaction.account?.name?.let { name ->
+                val lineRes = if (transaction.type == TransactionType.EXPENSE) {
+                    R.string.tx_share_funding_line
+                } else {
+                    R.string.tx_share_received_line
+                }
+                add(uiText(lineRes, name))
+            }
+            transaction.note?.takeIf { it.isNotBlank() }
+                    ?.let { add(uiText(R.string.tx_share_note_line, it)) }
         }
 
         viewModelScope.launch {
-            sendEffect(DetailTransactionEffect.ShareTransaction(shareText.trimEnd()))
+            sendEffect(DetailTransactionEffect.ShareTransaction(lines))
         }
     }
 }

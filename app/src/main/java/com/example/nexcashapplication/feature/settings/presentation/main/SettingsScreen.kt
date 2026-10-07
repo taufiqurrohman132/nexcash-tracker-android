@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,9 +46,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
+import com.example.nexcashapplication.core.domain.model.AppCurrency
+import com.example.nexcashapplication.core.domain.model.AppLanguage
 import com.example.nexcashapplication.core.navigations.Route
+import com.example.nexcashapplication.feature.settings.presentation.language.model.nameResId
 import com.example.nexcashapplication.feature.settings.presentation.main.component.ThemeColorSheet
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.BAHASA
@@ -138,7 +143,7 @@ fun SettingsContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Settings",
+                        text = stringResource(R.string.settings_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -157,7 +162,7 @@ fun SettingsContent(
                     .padding(horizontal = 16.dp),
         ) {
             FormField(
-                title = "Preferensi",
+                title = stringResource(R.string.settings_section_preferences),
                 textColor = TextTertiary,
             ) {
                 Column(
@@ -170,13 +175,16 @@ fun SettingsContent(
 
                     SettingsItem(
                         icon = Icons.Outlined.Language,
-                        title = "Bahasa",
+                        title = stringResource(R.string.settings_language),
                         onClick = {
                             onEvent(SettingsEvent.OnMenuItemClick(SettingsDestinations.BAHASA))
                         },
                         content = {
                             Text(
-                                text = state.language,
+                                text = stringResource(
+                                    R.string.settings_language_format,
+                                    stringResource(AppLanguage.fromCode(state.language).nameResId),
+                                ),
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                                 color = TextTertiary,
                             )
@@ -188,13 +196,18 @@ fun SettingsContent(
                     )
                     SettingsItem(
                         icon = Icons.Outlined.CurrencyExchange,
-                        title = "Mata Uang",
+                        title = stringResource(R.string.settings_currency),
                         onClick = {
                             onEvent(SettingsEvent.OnMenuItemClick(SettingsDestinations.MATA_UANG))
                         },
                         content = {
+                            val currency = AppCurrency.fromCode(state.currency)
                             Text(
-                                text = state.currency,
+                                text = stringResource(
+                                    R.string.settings_currency_format,
+                                    stringResource(currency.displayNameRes),
+                                    currency.code,
+                                ),
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                                 color = TextTertiary,
                             )
@@ -206,7 +219,7 @@ fun SettingsContent(
                     )
                     SettingsItem(
                         icon = Icons.Outlined.Palette,
-                        title = "Tema & Warna",
+                        title = stringResource(R.string.settings_theme_color),
                         onClick = {
                             onEvent(SettingsEvent.OnMenuItemClick(SettingsDestinations.TEMA_WARNA))
                         },
@@ -228,8 +241,8 @@ fun SettingsContent(
                     )
                     SettingsItem(
                         icon = Icons.Outlined.Notifications,
-                        title = "Notification",
-                        subtitle = "Saldo, Budget",
+                        title = stringResource(R.string.settings_notifications),
+                        subtitle = stringResource(R.string.settings_notification_summary),
                         onClick = {
                             onEvent(SettingsEvent.OnMenuItemClick(SettingsDestinations.NOTIFIKASI))
                         },
@@ -238,7 +251,7 @@ fun SettingsContent(
             }
 
             FormField(
-                title = "Kelola Data",
+                title = stringResource(R.string.settings_section_manage_data),
                 textColor = TextTertiary,
 
                 ) {
@@ -251,7 +264,7 @@ fun SettingsContent(
                 ){
                     SettingsItem(
                         icon = Icons.Outlined.Category,
-                        title = "Kategori",
+                        title = stringResource(R.string.settings_category),
                         onClick = {
                             onEvent(SettingsEvent.OnMenuItemClick(SettingsDestinations.KATEGORI))
                         },
@@ -261,7 +274,7 @@ fun SettingsContent(
             }
 
             Text(
-                text = "Versi Aplikasi ${state.appVersion}",
+                text = stringResource(R.string.settings_app_version_format, state.appVersion),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 textAlign = TextAlign.Center,

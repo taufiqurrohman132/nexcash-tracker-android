@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.budgets.presentation.editmultiple
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -46,18 +47,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.budgets.presentation.editmultiple.model.EditPresentageBudgetItemUiModel
 import com.example.nexcashapplication.feature.category.presentation.main.AddCategoryButton
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
+
+/**
+ * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
+ * yang hanya bersifat suspend sehingga `UiText.asString()` tidak bisa dipanggil).
+ */
+private fun UiText.resolve(context: Context): String = when (this) {
+    is UiText.Res -> context.getString(resId, *args.toTypedArray())
+    is UiText.Raw -> value
+}
 
 @Composable
 fun EditPresentageBudgetScreen(
@@ -68,6 +82,7 @@ fun EditPresentageBudgetScreen(
 
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -78,7 +93,7 @@ fun EditPresentageBudgetScreen(
                     navController.navigate(Route.CategoryRoute.AddNew())
 
                 is EditPresentageBudgetEffect.ShowSnackbar ->
-                    snackbarHostState.showSnackbar(effect.message)
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
             }
         }
     }
@@ -103,10 +118,13 @@ fun EditPresentageBudgetContent(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Edit Anggaran") },
+                title = { Text(stringResource(R.string.budget_edit_allocations_title)) },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(EditPresentageBudgetEvent.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Kembali")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.budget_back_cd),
+                        )
                     }
                 },
                 actions = {
@@ -114,7 +132,13 @@ fun EditPresentageBudgetContent(
                         onClick = { onEvent(EditPresentageBudgetEvent.OnSaveClick) },
                         enabled = !state.isSaving,
                     ) {
-                        Text(if (state.isSaving) "Menyimpan…" else "Simpan")
+                        Text(
+                            if (state.isSaving) {
+                                stringResource(R.string.budget_saving_action)
+                            } else {
+                                stringResource(R.string.budget_save_action)
+                            },
+                        )
                     }
                 },
             )
@@ -142,10 +166,12 @@ fun EditPresentageBudgetContent(
             item {
                 Text(
                     text = if (state.isValid) {
-                        "Total alokasi ${state.totalPercentage}% — siap disimpan"
+                        stringResource(R.string.budget_allocation_ready, state.totalPercentage)
                     } else {
-                        "Total alokasi ${state.totalPercentage}% (maks 100%) • " +
-                                "setiap kategori harus lebih dari 0"
+                        stringResource(
+                            R.string.budget_allocation_invalid_hint,
+                            state.totalPercentage,
+                        )
                     },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (state.isValid) {
@@ -168,9 +194,15 @@ fun EditPresentageBudgetContent(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                 ) {
-                    Text("Kategori Pengeluaran", style = MaterialTheme.typography.titleMedium)
                     Text(
-                        "${state.budgets.size} KATEGORI AKTIF",
+                        stringResource(R.string.budget_expense_categories_title),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        stringResource(
+                            R.string.budget_active_categories_count,
+                            state.budgets.size,
+                        ),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.outline,
                     )
@@ -207,25 +239,30 @@ fun EditPresentageBudgetContent(
 
         // Konfirmasi hapus alokasi per kategori (tutup seri, riwayat tetap)
         state.deleteConfirmationId?.let { deleteId ->
-            val categoryName = state.budgets.firstOrNull { it.id == deleteId }?.name ?: "kategori ini"
+            val categoryName = state.budgets.firstOrNull { it.id == deleteId }
+                    ?.name ?: stringResource(R.string.budget_this_category)
             AlertDialog(
                 onDismissRequest = { onEvent(EditPresentageBudgetEvent.OnDismissDeleteClick) },
-                title = { Text("Hapus Alokasi?") },
+                title = { Text(stringResource(R.string.budget_delete_allocation_dialog_title)) },
                 text = {
                     Text(
-                        "Alokasi \"$categoryName\" untuk periode berjalan dan periode " +
-                                "berikutnya akan dihapus. Riwayat periode lampau tetap " +
-                                "tersimpan.",
+                        stringResource(
+                            R.string.budget_delete_allocation_dialog_message,
+                            categoryName,
+                        ),
                     )
                 },
                 confirmButton = {
                     TextButton(onClick = { onEvent(EditPresentageBudgetEvent.OnConfirmDeleteClick) }) {
-                        Text("Hapus", color = MaterialTheme.colorScheme.error)
+                        Text(
+                            stringResource(R.string.budget_delete_action),
+                            color = MaterialTheme.colorScheme.error,
+                        )
                     }
                 },
                 dismissButton = {
                     TextButton(onClick = { onEvent(EditPresentageBudgetEvent.OnDismissDeleteClick) }) {
-                        Text("Batal")
+                        Text(stringResource(R.string.budget_cancel_action))
                     }
                 },
             )
@@ -240,18 +277,18 @@ fun BudgetSummaryRow(budget: Long, used: Long, remaining: Long) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         SummaryBudgetCard(
-            "Total Budget",
+            stringResource(R.string.budget_summary_total),
             budget,
             modifier = Modifier.weight(1f),
         )
         SummaryBudgetCard(
-            "Terpakai",
+            stringResource(R.string.budget_summary_used),
             used,
             modifier = Modifier.weight(1f),
 
         )
         SummaryBudgetCard(
-            "Sisa",
+            stringResource(R.string.budget_summary_remaining),
             remaining,
             modifier = Modifier.weight(1f),
 
@@ -289,7 +326,7 @@ fun CategoryAllocationCard(
             Column(Modifier.weight(1f)) {
                 Text(category.name, style = MaterialTheme.typography.titleSmall)
                 Text(
-                    "${category.percentage}% dari total",
+                    stringResource(R.string.budget_percentage_of_total, category.percentage),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline,
                 )
@@ -308,7 +345,7 @@ fun CategoryAllocationCard(
             IconButton(onClick = onDeleteClick) {
                 Icon(
                     Icons.Outlined.Delete,
-                    contentDescription = "Hapus Alokasi ${category.name}",
+                    contentDescription = stringResource(R.string.budget_delete_allocation_cd, category.name),
                     tint = MaterialTheme.colorScheme.error,
                 )
             }
@@ -349,7 +386,7 @@ fun CategoryAllocationCard(
             )
             Spacer(Modifier.width(8.dp))
             Text(
-                "${category.percentage}%",
+                stringResource(R.string.budget_percentage_value, category.percentage),
                 color = MaterialTheme.colorScheme.primary,
                 style = MaterialTheme.typography.labelLarge,
             )

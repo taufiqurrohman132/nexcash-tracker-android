@@ -60,6 +60,7 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -68,6 +69,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
@@ -152,7 +154,7 @@ fun CategoryContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Kategori",
+                        text = stringResource(R.string.cat_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -166,7 +168,7 @@ fun CategoryContent(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Tambah",
+                            contentDescription = stringResource(R.string.cat_action_add),
                             tint = PrimaryCyan,
                         )
                     }
@@ -238,7 +240,7 @@ fun CategorySearchBar(
                 .height(50.dp),
         singleLine = true,
         placeholder = {
-            Text("Cari kategori...")
+            Text(stringResource(R.string.cat_search_hint))
         },
         leadingIcon = {
             Icon(
@@ -301,16 +303,27 @@ fun BudgetSummaryCard(
 
         if (selectedTab == TypeCategory.EXPENSE) {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Total Anggaran", fontSize = 12.sp, color = Color(0xFF7A8A99))
                 Text(
-                    text = "Rp ${(totalBudget).formatCurrency()}",
+                    stringResource(R.string.cat_total_budget),
+                    fontSize = 12.sp,
+                    color = Color(0xFF7A8A99),
+                )
+                Text(
+                    text = stringResource(
+                        R.string.total_balance_format,
+                        totalBudget.formatCurrency(),
+                    ),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
-                Text("Sisa", fontSize = 12.sp, color = Color(0xFF7A8A99))
+                Text(
+                    stringResource(R.string.cat_remaining_short),
+                    fontSize = 12.sp,
+                    color = Color(0xFF7A8A99),
+                )
                 Text(
                     text = (remainingBudget).formatCurrency(),
                     fontSize = 16.sp,
@@ -320,9 +333,16 @@ fun BudgetSummaryCard(
             }
         } else {
             Column(modifier = Modifier.weight(1f)) {
-                Text("Total Pemasukan Bulan Ini", fontSize = 12.sp, color = Color(0xFF7A8A99))
                 Text(
-                    text = "Rp ${(totalPemasukan).formatCurrency()}",
+                    stringResource(R.string.cat_total_income_month),
+                    fontSize = 12.sp,
+                    color = Color(0xFF7A8A99),
+                )
+                Text(
+                    text = stringResource(
+                        R.string.total_balance_format,
+                        totalPemasukan.formatCurrency(),
+                    ),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
@@ -368,7 +388,7 @@ fun CategoryPager(
                     onClick = { onTabCategoryClick(type) },
                     text = {
                         Text(
-                            text = type.label,
+                            text = stringResource(type.labelResId),
                             fontSize = 14.sp,
                             fontWeight = if (tabs[pagerState.currentPage] == type) FontWeight.Bold else FontWeight.Medium,
                         )
@@ -421,7 +441,7 @@ fun CategoryGrid(
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
-                    text = "Tidak ada kategori",
+                    text = stringResource(R.string.cat_empty_no_category),
                     color = Color(0xFF9E9E9E),
                     fontSize = 14.sp,
                 )
@@ -495,7 +515,7 @@ fun CategoryCard(
                         .padding(horizontal = 8.dp, vertical = 3.dp),
             ) {
                 Text(
-                    text = "${item.persentase}%",
+                    text = stringResource(R.string.cat_percent_format, item.persentase),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.SemiBold,
                     color = badgeText,
@@ -505,7 +525,11 @@ fun CategoryCard(
 
         Spacer(Modifier.height(10.dp))
         Text(item.nama, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
-        Text(item.tipe.label, fontSize = 12.sp, color = Color(0xFF9E9E9E))
+        Text(
+            stringResource(item.tipe.labelResId),
+            fontSize = 12.sp,
+            color = Color(0xFF9E9E9E),
+        )
 
         Spacer(Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.Bottom) {
@@ -516,7 +540,7 @@ fun CategoryCard(
                 color = Color.Black,
             )
             Text(
-                text = " / ${(item.budget).formatCurrency()}",
+                text = stringResource(R.string.cat_used_of_budget_format, item.budget.formatCurrency()),
                 fontSize = 11.sp,
                 color = Color(0xFF9E9E9E),
             )
@@ -565,7 +589,7 @@ fun AddCategoryButton(onClick: () -> Unit) {
             )
             Spacer(Modifier.width(6.dp))
             Text(
-                "Tambah Kategori Baru",
+                stringResource(R.string.cat_add_new_category),
                 color = Color(0xFF757575),
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,

@@ -22,9 +22,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
@@ -71,7 +73,8 @@ fun TransactionItem(
         },
         supportingContent = {
             Text(
-                text = "${transaction.account} - ${transaction.time}",
+                // account null = akun sudah dihapus → teks cadangan dari resource
+                text = "${transaction.account ?: stringResource(R.string.common_account_deleted)} - ${transaction.time}",
                 color = TextSecondary,
             )
         },
@@ -98,7 +101,9 @@ fun TransactionItem(
                             .padding(horizontal = 8.dp, vertical = 2.dp),
                 ) {
                     Text(
-                        text = transaction.category, // teks biasa di bawah
+                        // category null = kategori sudah dihapus → teks cadangan dari resource
+                        text = transaction.category
+                                ?: stringResource(R.string.common_no_category),
                         style = MaterialTheme.typography.bodySmall,
                         color = TextSecondary,
                     )

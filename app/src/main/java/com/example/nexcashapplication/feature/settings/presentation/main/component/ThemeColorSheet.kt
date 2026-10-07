@@ -25,9 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.ui.theme.BorderGray
@@ -47,7 +49,7 @@ fun ThemeColorSheet(
         modifier = modifier.padding(horizontal = 16.dp)
     ) {
         FormField(
-            title = "Pilih Tema",
+            title = stringResource(R.string.settings_theme_choose_title),
             icon = Icons.Outlined.LightMode,
         ) {
             Row(
@@ -57,25 +59,25 @@ fun ThemeColorSheet(
                 ThemeCardOption(
                     modifier = Modifier.weight(1f),
                     icon = Icons.Outlined.LightMode,
-                    title = "Default",
+                    title = stringResource(R.string.settings_theme_default),
                     isSelected = true,
                 )
                 ThemeCardOption(
                     modifier = Modifier.weight(1f),
                     icon = Icons.Outlined.ModeNight,
-                    title = "Default",
+                    title = stringResource(R.string.settings_theme_default),
                     isSelected = false,
                 )
                 ThemeCardOption(
                     modifier = Modifier.weight(1f),
                     icon = Icons.Outlined.Smartphone,
-                    title = "Default",
+                    title = stringResource(R.string.settings_theme_default),
                     isSelected = false,
                 )
             }
         }
         FormField(
-            title = "Pilih Warna",
+            title = stringResource(R.string.settings_theme_choose_color),
             icon = Icons.Outlined.Palette,
         ) {
             Row(
@@ -85,49 +87,49 @@ fun ThemeColorSheet(
             ) {
                 ColorOptionItem(
                     color = Color.Blue,
-                    name = "Biru",
+                    name = stringResource(R.string.settings_color_blue),
                     isSelected = intitalColorSelected == Color.Blue,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Magenta,
-                    name = "Magenta",
+                    name = stringResource(R.string.settings_color_magenta),
                     isSelected = intitalColorSelected == Color.Magenta,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Green,
-                    name = "Hijau",
+                    name = stringResource(R.string.settings_color_green),
                     isSelected = intitalColorSelected == Color.Green,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Yellow,
-                    name = "Kuning",
+                    name = stringResource(R.string.settings_color_yellow),
                     isSelected = intitalColorSelected == Color.Yellow,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Cyan,
-                    name = "Toska",
+                    name = stringResource(R.string.settings_color_cyan),
                     isSelected = intitalColorSelected == Color.Cyan,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.LightGray,
-                    name = "Abu Muda",
+                    name = stringResource(R.string.settings_color_light_gray),
                     isSelected = intitalColorSelected == Color.LightGray,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Black,
-                    name = "Hitam",
+                    name = stringResource(R.string.settings_color_black),
                     isSelected = intitalColorSelected == Color.Black,
                     oncClick = onColorClick,
                 )
                 ColorOptionItem(
                     color = Color.Gray,
-                    name = "Abu",
+                    name = stringResource(R.string.settings_color_gray),
                     isSelected = intitalColorSelected == Color.Gray,
                     oncClick = onColorClick,
                 )

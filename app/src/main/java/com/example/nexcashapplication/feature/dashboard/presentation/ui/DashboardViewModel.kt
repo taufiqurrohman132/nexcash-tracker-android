@@ -39,9 +39,9 @@ internal data class DashboardSnapshot(
  * - "Transaksi terakhir": tanpa filter kategori (baru [getRecentTransactions]),
  *   terbaru, maks [RECENT_LIMIT].
  * - Semua event punya penanganan — `TODO()` di sini berarti crash begitu tombol ditekan.
- * - Tujuan notifikasi/profil/transfer/tagihan/scan/lainnya belum dipetakan di
- *   [DashboardScreen] (efeknya diterima lalu diabaikan `else -> Unit`), tapi VM sudah
- *   mengirim effect yang benar agar UI tinggal menyambungkan navigasinya.
+ * - Semua effect punya tujuan di [DashboardScreen]; `when` di sana sengaja dibuat
+ *   tanpa `else` supaya efek baru yang lupa dipetakan gagal compile, bukan jadi
+ *   tombol yang diam saat ditekan (celah yang dulu bikin quick action mati).
  */
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
@@ -83,18 +83,17 @@ class DashboardViewModel @Inject constructor(
             DashboardEvent.OnAddTransactionClick ->
                 navigate(DashboardEffect.NavigateToAddTransaction)
 
-            DashboardEvent.OnLainnyaClick -> navigate(DashboardEffect.NavigateToMoreMenu)
+            DashboardEvent.OnKategoriClick -> navigate(DashboardEffect.NavigateToCategories)
             DashboardEvent.OnLihatDetailBudgetClick ->
                 navigate(DashboardEffect.NavigateToBudgetDetail)
 
             DashboardEvent.OnNotificationClick -> navigate(DashboardEffect.NavigateToNotifications)
             DashboardEvent.OnProfileClick -> navigate(DashboardEffect.NavigateToProfile)
-            DashboardEvent.OnScanClick -> navigate(DashboardEffect.NavigateToScan)
             DashboardEvent.OnSemuaTransaksiClick ->
                 navigate(DashboardEffect.NavigateToAllTransactions)
 
-            DashboardEvent.OnTagihanClick -> navigate(DashboardEffect.NavigateToTagihan)
-            DashboardEvent.OnTransferClick -> navigate(DashboardEffect.NavigateToTransfer)
+            DashboardEvent.OnStatistikClick -> navigate(DashboardEffect.NavigateToStatistics)
+            DashboardEvent.OnTambahAkunClick -> navigate(DashboardEffect.NavigateToAddAccount)
 
             DashboardEvent.OnRefresh,
             DashboardEvent.OnScreenLoad,

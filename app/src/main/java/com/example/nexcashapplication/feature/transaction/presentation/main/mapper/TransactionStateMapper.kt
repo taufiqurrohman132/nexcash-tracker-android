@@ -25,8 +25,10 @@ fun TransactionWithDetails.toItemUiModel() = TransactionItemUiModel(
     time = transaction.dateTime.formatTime(),
     amount = transaction.amount,
     typeTransaction = transaction.typeTransaction,
-    category = category?.name ?: "Tanpa Kategori",
-    account = account?.name ?: "Akun Dihapus",
+    // null saat kategori/akun sudah dihapus — teks cadangan dipilih di layer UI
+    // (lihat TransactionItem) supaya bisa ikut bahasa aplikasi.
+    category = category?.name,
+    account = account?.name,
     icon = CategoryIcons.fromId(category?.iconId ?: "pet").icon,
     iconColor = category?.color?.toColor() ?: Color.Black,
 )

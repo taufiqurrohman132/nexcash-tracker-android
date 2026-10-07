@@ -29,13 +29,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.component.TransactionItem
+import com.example.nexcashapplication.core.i18n.asString
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionGroupHeader
@@ -89,18 +93,19 @@ fun AllTransactionsContent(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(state.title) },
+                title = { Text(state.title.asString()) },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(AllTransactionsEvent.OnBackClick) }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Kembali",
+                            contentDescription = stringResource(R.string.tx_back),
                         )
                     }
                 },
             )
         },
     ) { padding ->
+        val error = state.error
         when {
             state.isLoading -> Spacer(
                 modifier = Modifier
@@ -108,7 +113,7 @@ fun AllTransactionsContent(
                         .padding(padding),
             )
 
-            state.error != null -> Column(
+            error != null -> Column(
                 modifier = Modifier
                         .fillMaxSize()
                         .padding(padding)
@@ -117,12 +122,12 @@ fun AllTransactionsContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = state.error.orEmpty(),
+                    text = error.asString(),
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Spacer(Modifier.height(12.dp))
                 TextButton(onClick = { onEvent(AllTransactionsEvent.OnRetryClick) }) {
-                    Text("Coba Lagi")
+                    Text(stringResource(R.string.tx_retry))
                 }
             }
 
@@ -220,7 +225,7 @@ private fun AllTransactionsContentPreview() {
         AllTransactionsContent(
             state = AllTransactionsState(
                 isLoading = false,
-                title = "Transaksi · Makanan",
+                title = uiText(R.string.tx_title_filter, "Makanan"),
                 groupedTransactions = sampleGroups,
             ),
             onEvent = {},

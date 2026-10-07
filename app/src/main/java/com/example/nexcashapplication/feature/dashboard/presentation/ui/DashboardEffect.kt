@@ -3,10 +3,16 @@ package com.example.nexcashapplication.feature.dashboard.presentation.ui
 sealed interface DashboardEffect {
     data object NavigateToNotifications : DashboardEffect
     data object NavigateToProfile : DashboardEffect
-    data object NavigateToTransfer : DashboardEffect
-    data object NavigateToTagihan : DashboardEffect
-    data object NavigateToScan : DashboardEffect
-    data object NavigateToMoreMenu : DashboardEffect
+
+    /** Kelola kategori (Route.CategoryRoute.Main) — satu-satunya pintu cepat ke sana. */
+    data object NavigateToCategories : DashboardEffect
+
+    /** Tambah akun (Route.AccountRoute.AddEditTypeAccount). */
+    data object NavigateToAddAccount : DashboardEffect
+
+    /** Statistik/insight (Route.StatisticRoute.Main). */
+    data object NavigateToStatistics : DashboardEffect
+
     data object NavigateToBudgetDetail : DashboardEffect
     data object NavigateToAllTransactions : DashboardEffect
     data class NavigateToTransactionDetail(val transactionId: String) : DashboardEffect

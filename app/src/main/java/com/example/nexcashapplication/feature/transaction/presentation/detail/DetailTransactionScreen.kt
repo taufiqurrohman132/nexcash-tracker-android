@@ -1,6 +1,8 @@
 package com.example.nexcashapplication.feature.transaction.presentation.detail
 
+import android.content.Context
 import android.content.Intent
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -65,6 +67,7 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.common.extentions.toAmountColor
 import com.example.nexcashapplication.feature.common.utils.formatDate
@@ -76,7 +79,19 @@ import com.example.nexcashapplication.feature.transaction.presentation.detail.mo
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.TextSecondary
+import java.time.ZoneId
+import java.time.format.TextStyle
+import java.util.Locale
 import kotlin.time.Clock
+
+/**
+ * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
+ * yang hanya bersifat suspend sehingga `UiText.asString()` tidak bisa dipanggil).
+ */
+private fun UiText.resolve(context: Context): String = when (this) {
+    is UiText.Res -> context.getString(resId, *args.toTypedArray())
+    is UiText.Raw -> value
+}
 
 @Composable
 fun DetailTransactionScreen(
@@ -105,20 +120,29 @@ fun DetailTransactionScreen(
 
                 is DetailTransactionEffect.ShareTransaction -> {
                     // Bagikan lewat share sheet bawaan Android; aplikasi lain yang
-                    // menangani teks (WA, Gmail, dst.)
+                    // menangani teks (WA, Gmail, dst.). Label tiap baris di-resolve
+                    // di sini (bukan composable) supaya ikut bahasa aktif.
+                    val shareText = effect.lines.joinToString(separator = "\n") { line ->
+                        line.resolve(context)
+                    }
                     val sendIntent = Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
-                        putExtra(Intent.EXTRA_TEXT, effect.shareText)
+                        putExtra(Intent.EXTRA_TEXT, shareText)
                     }
-                    val chooser = Intent.createChooser(sendIntent, "Bagikan transaksi")
+                    val chooser = Intent.createChooser(
+                        sendIntent,
+                        context.getString(R.string.tx_share_chooser),
+                    )
                     runCatching { context.startActivity(chooser) }
                         .onFailure {
-                            snackbarHostState.showSnackbar("Tidak ada aplikasi untuk membagikan")
+                            snackbarHostState.showSnackbar(
+                                context.getString(R.string.tx_no_share_app),
+                            )
                         }
                 }
 
                 is DetailTransactionEffect.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(effect.message)
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
                 }
             }
         }
@@ -148,14 +172,17 @@ fun DetailTransactionContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Detail Transaksi",
+                        text = stringResource(R.string.tx_detail_title),
                         fontSize = 17.sp,
                         fontWeight = FontWeight.SemiBold,
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(DetailTransactionEvent.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Kembali")
+                        Icon(
+                            Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                            contentDescription = stringResource(R.string.tx_back),
+                        )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
@@ -181,7 +208,7 @@ fun DetailTransactionContent(
                         CircularProgressIndicator()
                     } else {
                         Text(
-                            text = "Transaksi tidak ditemukan",
+                            text = stringResource(R.string.tx_not_found),
                             color = TextSecondary,
                         )
                     }
@@ -201,17 +228,19 @@ fun DetailTransactionContent(
                 DetailContent(
                     date = transaction.dateTime.formatDate(),
                     time = transaction.dateTime.formatTime(),
-                    categoryName = transaction.category?.name ?: "Unknown Category",
-                    accountName = transaction.account?.name ?: "Unknown Account",
+                    categoryName = transaction.category?.name
+                        ?: stringResource(R.string.tx_unknown_category),
+                    accountName = transaction.account?.name
+                        ?: stringResource(R.string.tx_unknown_account),
                     catatan = transaction.note ?: "",
-                    type = transaction.type,
+                    accountLabelRes = transaction.accountLabelRes,
                 )
 
                 if (transaction.attachment != null) {
                     Spacer(Modifier.height(24.dp))
 
                     Text(
-                        text = "Lampiran",
+                        text = stringResource(R.string.tx_attachment),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.Black,
@@ -268,7 +297,7 @@ fun DetailTransactionContent(
                                 color = Color(0xFF999999),
                             )
                             Text(
-                                text = "Lihat Fullscreen",
+                                text = stringResource(R.string.tx_view_fullscreen),
                                 fontSize = 12.sp,
                                 color = Color(0xFF2B9FE8),
                                 fontWeight = FontWeight.Medium,
@@ -291,22 +320,22 @@ fun DetailTransactionContent(
                 ) {
                     ActionButton(
                         icon = Icons.Default.Edit,
-                        label = "UBAH",
+                        label = stringResource(R.string.tx_action_edit),
                         onClick = { onEvent(DetailTransactionEvent.OnEditClick) },
                     )
                     ActionButton(
                         icon = Icons.Default.ContentCopy,
-                        label = "SALIN",
+                        label = stringResource(R.string.tx_action_duplicate),
                         onClick = { onEvent(DetailTransactionEvent.OnDuplicateClick) },
                     )
                     ActionButton(
                         icon = Icons.Default.Share,
-                        label = "BAGIKAN",
+                        label = stringResource(R.string.tx_action_share),
                         onClick = { onEvent(DetailTransactionEvent.OnShareClick) },
                     )
                     ActionButton(
                         icon = Icons.Default.Delete,
-                        label = "HAPUS",
+                        label = stringResource(R.string.tx_action_delete),
                         onClick = { onEvent(DetailTransactionEvent.OnDeleteClick) },
                         iconTint = Color(0xFFE94057),
                         labelColor = Color(0xFFE94057),
@@ -317,7 +346,10 @@ fun DetailTransactionContent(
                 Spacer(Modifier.height(20.dp))
 
                 Text(
-                    text = "ID TRANSAKSI: ${transaction.transactionId ?: "-"}",
+                    text = stringResource(
+                        R.string.tx_transaction_id,
+                        transaction.transactionId ?: "-",
+                    ),
                     fontSize = 11.sp,
                     color = Color(0xFFB0B0B0),
                     modifier = Modifier
@@ -376,37 +408,41 @@ private fun ActionButton(
 @Composable
 fun DetailContent(
     modifier: Modifier = Modifier,
-    type: TransactionType,
     date: String,
     time: String,
     categoryName: String,
     accountName: String,
     catatan: String,
+    @StringRes accountLabelRes: Int,
 ) {
+    // Zona waktu mengikuti locale perangkat (bukan teks "WIB" hardcode)
+    val zoneLabel = ZoneId.systemDefault()
+            .getDisplayName(TextStyle.SHORT, Locale.getDefault())
+
     Column(
         modifier = modifier,
     ) {
         DetailContentRow(
             icon = Icons.Outlined.DateRange,
-            label = "Tanggal & Waktu",
-            value = "$date, $time WIB",
+            label = stringResource(R.string.tx_date_time),
+            value = stringResource(R.string.tx_date_time_value, date, time, zoneLabel),
         )
         HorizontalDivider(color = BorderGray)
         DetailContentRow(
             icon = Icons.Outlined.Label,
-            label = "Kategori",
+            label = stringResource(R.string.tx_category),
             value = categoryName,
         )
         HorizontalDivider(color = BorderGray)
         DetailContentRow(
             icon = Icons.Outlined.AccountBalanceWallet,
-            label = if (type == TransactionType.EXPENSE) "Sumber Dana" else "Diterima di",
+            label = stringResource(accountLabelRes),
             value = accountName,
         )
         HorizontalDivider(color = BorderGray)
         DetailContentRow(
             icon = Icons.Outlined.NoteAlt,
-            label = "Catatan",
+            label = stringResource(R.string.tx_note),
             value = catatan,
         )
 

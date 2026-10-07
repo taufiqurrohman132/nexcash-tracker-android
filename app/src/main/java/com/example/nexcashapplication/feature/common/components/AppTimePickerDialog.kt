@@ -9,6 +9,8 @@ import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.SecondaryDeepPurple
 
@@ -27,7 +29,7 @@ fun AppTimePickerDialog(
     )
 
     TimePickerDialog(
-        title = { Text("Pilih Waktu") },
+        title = { Text(stringResource(R.string.core_time_picker_title)) },
         onDismissRequest = onDismiss,
         confirmButton = {
             TextButton(
@@ -36,11 +38,11 @@ fun AppTimePickerDialog(
                     onDismiss()
                 },
             ) {
-                Text("OK")
+                Text(stringResource(R.string.common_ok))
             }
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Batal") }
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.common_cancel)) }
         },
 
         ) {

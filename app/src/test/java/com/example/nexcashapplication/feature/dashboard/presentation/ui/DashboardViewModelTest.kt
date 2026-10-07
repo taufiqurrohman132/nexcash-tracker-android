@@ -117,10 +117,9 @@ class DashboardViewModelTest {
 
             vm.onEvent(DashboardEvent.OnNotificationClick)
             vm.onEvent(DashboardEvent.OnProfileClick)
-            vm.onEvent(DashboardEvent.OnTransferClick)
-            vm.onEvent(DashboardEvent.OnTagihanClick)
-            vm.onEvent(DashboardEvent.OnScanClick)
-            vm.onEvent(DashboardEvent.OnLainnyaClick)
+            vm.onEvent(DashboardEvent.OnKategoriClick)
+            vm.onEvent(DashboardEvent.OnTambahAkunClick)
+            vm.onEvent(DashboardEvent.OnStatistikClick)
             vm.onEvent(DashboardEvent.OnSemuaTransaksiClick)
             vm.onEvent(DashboardEvent.OnAddTransactionClick)
             vm.onEvent(DashboardEvent.OnLihatDetailBudgetClick)
@@ -131,10 +130,9 @@ class DashboardViewModelTest {
                 listOf<DashboardEffect>(
                     DashboardEffect.NavigateToNotifications,
                     DashboardEffect.NavigateToProfile,
-                    DashboardEffect.NavigateToTransfer,
-                    DashboardEffect.NavigateToTagihan,
-                    DashboardEffect.NavigateToScan,
-                    DashboardEffect.NavigateToMoreMenu,
+                    DashboardEffect.NavigateToCategories,
+                    DashboardEffect.NavigateToAddAccount,
+                    DashboardEffect.NavigateToStatistics,
                     DashboardEffect.NavigateToAllTransactions,
                     DashboardEffect.NavigateToAddTransaction,
                     DashboardEffect.NavigateToBudgetDetail,

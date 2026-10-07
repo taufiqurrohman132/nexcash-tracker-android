@@ -1,5 +1,8 @@
 package com.example.nexcashapplication.feature.notification.presentation.main
 
+import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.notification.domain.model.BudgetAlert
 import com.example.nexcashapplication.feature.notification.presentation.main.model.AlertSeverity
 import com.example.nexcashapplication.feature.notification.presentation.main.model.NotificationGroupUi
@@ -19,13 +22,13 @@ import java.util.Locale
 internal data class NotificationAlert(
     val id: String,
     val budgetId: String,
-    val title: String,
-    val message: String,
+    val title: UiText,
+    val message: UiText,
     val severity: AlertSeverity,
     val seenAt: Long,
 )
 
-/** Domain → presentation: teks Indonesia, severity, dan waktu pertama kali terlihat. */
+/** Domain → presentation: teks (belum di-resolve), severity, dan waktu pertama kali terlihat. */
 internal fun BudgetAlert.toNotificationAlert(seenAt: Long): NotificationAlert {
     val text = toNotificationText()
     return NotificationAlert(
@@ -38,19 +41,23 @@ internal fun BudgetAlert.toNotificationAlert(seenAt: Long): NotificationAlert {
     )
 }
 
-/** Judul & badan sebuah alert. */
-data class AlertText(val title: String, val body: String)
+/** Judul & badan sebuah alert — masih berupa [UiText], bukan [String] jadi. */
+data class AlertText(val title: UiText, val body: UiText)
 
 /**
  * Teks alert — **satu sumber** untuk daftar in-app maupun notifikasi status bar, supaya isi
  * keduanya tidak pernah berbeda. Publik karena dipakai `SystemAlertNotifier`.
+ *
+ * Berupa [UiText] (kunci resource + argumen), bukan teks jadi: mapper berjalan di luar
+ * composable, jadi teksnya baru di-resolve — dengan bahasa aplikasi — di layar dan di
+ * pengirim notifikasi.
  */
 fun BudgetAlert.toNotificationText(): AlertText = AlertText(
-    title = "$categoryName mencapai $threshold%",
+    title = uiText(R.string.notif_alert_title_format, categoryName, threshold),
     body = if (threshold >= 100) {
-        "Batas anggaran $periodLabel sudah tercapai."
+        uiText(R.string.notif_alert_limit_body_format, periodLabel)
     } else {
-        "Anggaran $periodLabel hampir habis."
+        uiText(R.string.notif_alert_warning_body_format, periodLabel)
     },
 )
 
@@ -58,7 +65,7 @@ private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("HH.m
 private val dayFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("d MMM", Locale.getDefault())
 
 /**
- * Kelompokkan alert per hari ("Hari ini" / "Kemarin" / "3 Okt") dan petakan ke model UI.
+ * Kelompokkan alert per hari dan petakan ke model UI.
  *
  * Terbaru di atas, lalu di dalam grup terbaru di atas. Mapping dilakukan di background
  * (lihat `flowOn(Dispatchers.Default)` di ViewModel), bukan di dalam `updateState`.
@@ -93,26 +100,35 @@ internal fun List<NotificationAlert>.toGroupedUi(
             }
 }
 
-private fun headerFor(day: LocalDate, today: LocalDate, yesterday: LocalDate): String = when (day) {
-    today -> "Hari ini"
-    yesterday -> "Kemarin"
-    else -> day.format(dayFormatter)
+private fun headerFor(day: LocalDate, today: LocalDate, yesterday: LocalDate): UiText = when (day) {
+    today -> uiText(R.string.notif_group_today)
+    yesterday -> uiText(R.string.notif_group_yesterday)
+    // Tanggal sudah jadi data (terformat Locale aktif), bukan terjemahan.
+    else -> UiText.Raw(day.format(dayFormatter))
 }
 
-/** "Baru saja" / "5 menit lalu" / "3 jam lalu" / "Kemarin, 18.40" / "3 Okt, 18.40". */
-private fun timeLabelFor(seenAt: Long, now: Long, zone: ZoneId): String {
+/** Label waktu relatif — semua teksnya lewat resource. Tanggal/jam tetap data. */
+private fun timeLabelFor(seenAt: Long, now: Long, zone: ZoneId): UiText {
     val elapsed = now - seenAt
-    if (elapsed < 60_000L) return "Baru saja"
+    if (elapsed < 60_000L) return uiText(R.string.notif_time_just_now)
 
     val seenZone = Instant.ofEpochMilli(seenAt).atZone(zone)
     val today = Instant.ofEpochMilli(now).atZone(zone).toLocalDate()
     return when (seenZone.toLocalDate()) {
         today -> when {
-            elapsed < 60 * 60_000L -> "${elapsed / 60_000L} menit lalu"
-            else -> "${elapsed / (60 * 60_000L)} jam lalu"
+            elapsed < 60 * 60_000L -> uiText(R.string.notif_time_minutes_ago_format, elapsed / 60_000L)
+            else -> uiText(R.string.notif_time_hours_ago_format, elapsed / (60 * 60_000L))
         }
 
-        today.minusDays(1) -> "Kemarin, ${seenZone.format(timeFormatter)}"
-        else -> "${seenZone.format(dayFormatter)}, ${seenZone.format(timeFormatter)}"
+        today.minusDays(1) -> uiText(
+            R.string.notif_time_yesterday_format,
+            seenZone.format(timeFormatter),
+        )
+
+        else -> uiText(
+            R.string.notif_time_date_format,
+            seenZone.format(dayFormatter),
+            seenZone.format(timeFormatter),
+        )
     }
 }

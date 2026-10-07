@@ -1,6 +1,9 @@
 package com.example.nexcashapplication.feature.budgets.presentation.addedit
 
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
@@ -42,25 +45,34 @@ data class AddEditBudgetState(
     val durasiHari: Long
         get() = ChronoUnit.DAYS.between(tanggalMulai, tanggalBerakhir) + 1
 
-    val previewTeksBerulang: String
-        get() {
-            val nominal = "Rp ${batasBaruParsed.formatCurrency()}"
-            val nama = kategoriNama.ifBlank { "kategori ini" }
-            return when (periodeTipe) {
-                RecurrenceType.MONTHLY ->
-                    "Sistem akan membuat anggaran $nama sebesar $nominal " +
-                            "secara otomatis pada tanggal 1 setiap bulannya."
+    /**
+     * Pratinjau anggaran berulang, masih berupa [UiText] (resolve di composable
+     * dengan `.asString()`).
+     *
+     * @param fallbackNamaKategori nama kategori pengganti bila [kategoriNama] kosong —
+     *   sudah berupa teks ter-resolve dari UI (`stringResource`) karena kelas ini
+     *   tidak membawa Context.
+     */
+    fun previewTeksBerulang(fallbackNamaKategori: String): UiText {
+        val nominal = batasBaruParsed.formatCurrency()
+        val nama = kategoriNama.ifBlank { fallbackNamaKategori }
+        return when (periodeTipe) {
+            RecurrenceType.MONTHLY ->
+                uiText(R.string.budget_recurring_preview_monthly, nama, nominal)
 
-                RecurrenceType.WEEKLY ->
-                    "Sistem akan membuat anggaran $nama sebesar $nominal " +
-                            "secara otomatis setiap awal minggu."
+            RecurrenceType.WEEKLY ->
+                uiText(R.string.budget_recurring_preview_weekly, nama, nominal)
 
-                RecurrenceType.CUSTOM ->
-                    "Sistem akan membuat anggaran $nama sebesar $nominal " +
-                            "secara otomatis setiap $durasiHari hari sejak " +
-                            "${tanggalMulai}."
-            }
+            RecurrenceType.CUSTOM ->
+                uiText(
+                    R.string.budget_recurring_preview_custom,
+                    nama,
+                    nominal,
+                    durasiHari,
+                    tanggalMulai,
+                )
         }
+    }
 }
 
 // di State

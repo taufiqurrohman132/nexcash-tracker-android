@@ -4,6 +4,8 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.feature.account.domain.model.DeleteAccountDesision
 
@@ -17,10 +19,17 @@ fun DeleteAccountDialog(
         is DeleteAccountDesision.Blocked -> {
             AlertDialog(
                 onDismissRequest = onDismiss,
-                title = { Text("Tidak Dapat Dihapus") },
-                text = { Text("Akun masih memiliki saldo Rp ${dialogDesision.balance.formatCompact()}. Kosongkan saldo terlebih dahulu.") },
+                title = { Text(stringResource(R.string.acct_delete_blocked_title)) },
+                text = {
+                    Text(
+                        stringResource(
+                            R.string.acct_delete_blocked_message,
+                            dialogDesision.balance.formatCompact(),
+                        ),
+                    )
+                },
                 confirmButton = {
-                    TextButton(onClick = { onDismiss() }) { Text("Tutup") }
+                    TextButton(onClick = { onDismiss() }) { Text(stringResource(R.string.acct_close)) }
                 },
             )
         }
@@ -28,20 +37,35 @@ fun DeleteAccountDialog(
         is DeleteAccountDesision.ConfirmWithHistory -> {
             AlertDialog(
                 onDismissRequest = onDismiss,
-                title = { Text("Hapus Akun?") },
-                text = { Text("${dialogDesision.transactionCount} transaksi terkait akan tetap tersimpan di riwayat.") },
-                confirmButton = { TextButton(onClick = onConfirm) { Text("Hapus Akun") } },
-                dismissButton = { TextButton(onClick = onDismiss) { Text("Batal") } },
+                title = { Text(stringResource(R.string.acct_delete_confirm_title)) },
+                text = {
+                    Text(
+                        stringResource(
+                            R.string.acct_delete_history_message,
+                            dialogDesision.transactionCount,
+                        ),
+                    )
+                },
+                confirmButton = {
+                    TextButton(onClick = onConfirm) { Text(stringResource(R.string.acct_delete_confirm)) }
+                },
+                dismissButton = {
+                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.acct_cancel)) }
+                },
             )
         }
 
         DeleteAccountDesision.ConfirmSimple -> {
             AlertDialog(
                 onDismissRequest = onDismiss,
-                title = { Text("Hapus Akun?") },
-                text = { Text("Akun akan dihapus secara permanen.") },
-                confirmButton = { TextButton(onClick = onConfirm) { Text("Hapus Akun") } },
-                dismissButton = { TextButton(onClick = onDismiss) { Text("Batal") } },
+                title = { Text(stringResource(R.string.acct_delete_confirm_title)) },
+                text = { Text(stringResource(R.string.acct_delete_simple_message)) },
+                confirmButton = {
+                    TextButton(onClick = onConfirm) { Text(stringResource(R.string.acct_delete_confirm)) }
+                },
+                dismissButton = {
+                    TextButton(onClick = onDismiss) { Text(stringResource(R.string.acct_cancel)) }
+                },
             )
         }
     }

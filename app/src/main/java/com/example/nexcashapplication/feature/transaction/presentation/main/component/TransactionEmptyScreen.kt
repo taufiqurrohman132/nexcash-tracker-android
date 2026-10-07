@@ -21,10 +21,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -65,13 +67,13 @@ fun TransactionEmptyScreen(
         }
 
         Text(
-            "Belum ada transaksi",
+            stringResource(R.string.tx_empty_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
         )
 
         Text(
-            "Mulai catat pengeluaran dan pemasukanmu hari ini agar keuangan lebih terkontrol dan tujuan finansialmu tercapai.",
+            stringResource(R.string.tx_empty_description),
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Center,
         )
@@ -94,7 +96,7 @@ fun TransactionEmptyScreen(
             ),
         ) {
             Text(
-                "Tambah Transaksi Pertama",
+                stringResource(R.string.tx_empty_action),
                 fontWeight = FontWeight.Bold,
                 color = Color.White,
             )

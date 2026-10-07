@@ -1,8 +1,9 @@
 package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
+import android.content.Context
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -71,8 +72,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
@@ -88,9 +91,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
 import com.example.nexcashapplication.feature.common.components.AppTimePickerDialog
 import com.example.nexcashapplication.feature.common.transformation.ThousandSeparatorTransformation
@@ -107,6 +112,16 @@ import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.launch
 
 
+/**
+ * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
+ * yang hanya bersifat suspend sehingga `UiText.asString()` tidak bisa dipanggil).
+ */
+private fun UiText.resolve(context: Context): String = when (this) {
+    is UiText.Res -> context.getString(resId, *args.toTypedArray())
+    is UiText.Raw -> value
+}
+
+
 @Composable
 fun AddEditTransactionScreen(
     modifier: Modifier = Modifier,
@@ -115,6 +130,7 @@ fun AddEditTransactionScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         // `collect`, bukan collectLatest: showSnackbar itu suspend, collectLatest
@@ -127,7 +143,7 @@ fun AddEditTransactionScreen(
                 }
 
                 is AddEditTransactionEffect.ShowSnackbar -> {
-                    snackbarHostState.showSnackbar(effect.message)
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
                 }
             }
         }
@@ -163,15 +179,15 @@ fun AddEditTransactionContent(
     // dan SheetState kembali `Hidden`, jadi buka berikutnya juga ikut animasi.
     val dismissCategorySheet: () -> Unit = {
         sheetScope.launch { categorySheetState.hide() }
-            .invokeOnCompletion { cause ->
-                if (cause == null) onEvent(AddEditTransactionEvent.OnCategoryDismiss)
-            }
+                .invokeOnCompletion { cause ->
+                    if (cause == null) onEvent(AddEditTransactionEvent.OnCategoryDismiss)
+                }
     }
     val dismissAccountSheet: () -> Unit = {
         sheetScope.launch { accountSheetState.hide() }
-            .invokeOnCompletion { cause ->
-                if (cause == null) onEvent(AddEditTransactionEvent.OnAccountDismiss)
-            }
+                .invokeOnCompletion { cause ->
+                    if (cause == null) onEvent(AddEditTransactionEvent.OnAccountDismiss)
+                }
     }
 
     // dibungkus remember: daftar ini dihitung dari filter tipe, buang biar tidak
@@ -200,10 +216,18 @@ fun AddEditTransactionContent(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text("Add Transaction", fontWeight = FontWeight.SemiBold) },
+                title = {
+                    Text(
+                        stringResource(R.string.tx_add_title),
+                        fontWeight = FontWeight.SemiBold,
+                    )
+                },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(AddEditTransactionEvent.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.tx_back),
+                        )
                     }
                 },
             )
@@ -211,14 +235,18 @@ fun AddEditTransactionContent(
         bottomBar = {
             // STICKY — does not scroll with the content
             // imePadding: ikut terangkat saat keyboard muncul, jadi tidak tertimpa
-            Surface(shadowElevation = 8.dp, modifier = Modifier.imePadding()) {
+            Surface(shadowElevation = 8.dp) {
                 Box(modifier = Modifier.padding(16.dp)) {
                     // AppButton sudah fillMaxWidth + 52.dp + radius 16.dp,
                     // warna default PrimaryCyan sama dengan `accent` di layar ini
                     AppButton(
                         isEnabled = state.isValid && !state.isSaving,
                         // AppButton belum punya state simpan, jadi teksnya yang menandai proses
-                        title = if (state.isSaving) "Saving..." else "Save Transaction",
+                        title = if (state.isSaving) {
+                            stringResource(R.string.tx_saving)
+                        } else {
+                            stringResource(R.string.tx_save_transaction)
+                        },
                         onClick = { onEvent(AddEditTransactionEvent.OnSaveClick) },
                     )
                 }
@@ -229,9 +257,6 @@ fun AddEditTransactionContent(
             modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    // imePadding SEBELUM verticalScroll: viewport mengecil saat
-                    // keyboard muncul, jadi field fokus ikut terlihat ke atas
-                    .imePadding()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 20.dp),
         ) {
@@ -257,13 +282,21 @@ fun AddEditTransactionContent(
                 focusRequester = amountFocus,
                 label = {
                     Text(
-                        text = if (state.type == TransactionType.EXPENSE) "AMOUNT (OUT)" else "AMOUNT (IN)",
+                        text = if (state.type == TransactionType.EXPENSE) {
+                            stringResource(R.string.tx_amount_out)
+                        } else {
+                            stringResource(R.string.tx_amount_in)
+                        },
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                     )
                 },
                 prefix = {
-                    Text("Rp", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                    Text(
+                        stringResource(R.string.tx_currency_prefix),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                    )
                 },
                 textStyle = TextStyle(
                     fontSize = 32.sp,
@@ -276,7 +309,7 @@ fun AddEditTransactionContent(
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Box(modifier = Modifier.weight(1f)) {
                     FormField(
-                        title = "Date",
+                        title = stringResource(R.string.tx_date),
                     ) {
                         CompactSelector(
                             icon = Icons.Outlined.DateRange,
@@ -288,7 +321,7 @@ fun AddEditTransactionContent(
                 }
                 Box(modifier = Modifier.weight(1f)) {
                     FormField(
-                        title = "Time",
+                        title = stringResource(R.string.tx_time),
                     ) {
                         CompactSelector(
                             icon = Icons.Outlined.Timer,
@@ -301,7 +334,7 @@ fun AddEditTransactionContent(
             }
 
             FormField(
-                title = "Nama",
+                title = stringResource(R.string.tx_name),
             ) {
                 OutlinedTextField(
                     value = state.nameTransaction,
@@ -310,7 +343,7 @@ fun AddEditTransactionContent(
                             .fillMaxWidth()
                             .focusRequester(nameFocus),
                     shape = RoundedCornerShape(16.dp),
-                    placeholder = { Text("Nama Transaksi") },
+                    placeholder = { Text(stringResource(R.string.tx_name_placeholder)) },
                     singleLine = true,
                     // Next di sini: tutup keyboard lalu langsung buka sheet Category
                     keyboardOptions = KeyboardOptions(
@@ -319,6 +352,7 @@ fun AddEditTransactionContent(
                     ),
                     keyboardActions = KeyboardActions(
                         onNext = {
+                            nameFocus.freeFocus()
                             keyboard?.hide()
                             // jalur cepat: setelah kategori dipilih lanjut ke sheet Account
                             onEvent(AddEditTransactionEvent.OnCategoryClick(autoAdvance = true))
@@ -335,15 +369,16 @@ fun AddEditTransactionContent(
 
             // ---- Category (required field #2) ----
             FormField(
-                "Category",
+                stringResource(R.string.tx_category),
             ) {
                 SelectorRow(
                     icon = state.selectedCategory?.icon?.icon ?: Icons.Outlined.Category,
                     iconBg = state.selectedCategory?.iconColor?.copy(alpha = 0.2f) ?: Color(
                         0xFFDDF4FF,
                     ),
-                    title = state.selectedCategory?.name ?: "Select Category",
-                    subtitle = "e.g. Food, Transportation...",
+                    title = state.selectedCategory?.name
+                        ?: stringResource(R.string.tx_select_category),
+                    subtitle = stringResource(R.string.tx_select_category_hint),
                     onClick = { onEvent(AddEditTransactionEvent.OnCategoryClick()) },
                 )
             }
@@ -351,16 +386,17 @@ fun AddEditTransactionContent(
 
             // ---- Funding Source / Account (required field #3) ----
             FormField(
-                "Funding Source",
+                stringResource(R.string.tx_funding_source),
             ) {
                 SelectorRow(
                     icon = Icons.Outlined.AccountBalanceWallet,
                     iconBg = state.selectedAccount?.provider?.color?.copy(alpha = 0.2f) ?: Color(
                         0xFFEDE7FF,
                     ),
-                    title = state.selectedAccount?.name ?: "Select Account",
+                    title = state.selectedAccount?.name
+                        ?: stringResource(R.string.tx_select_account),
                     subtitle = state.selectedAccount?.provider?.name
-                        ?: "Cash, Bank BCA, E-Wallet...",
+                        ?: stringResource(R.string.tx_select_account_hint),
                     onClick = { onEvent(AddEditTransactionEvent.OnAccountClick) },
                 )
             }
@@ -369,12 +405,12 @@ fun AddEditTransactionContent(
 
 
             FormField(
-                "Note",
+                stringResource(R.string.tx_note),
             ) {
                 OutlinedTextField(
                     value = state.note,
                     onValueChange = { onEvent(AddEditTransactionEvent.OnNoteChange(it)) },
-                    placeholder = { Text("Add a note here...") },
+                    placeholder = { Text(stringResource(R.string.tx_note_placeholder)) },
                     // Done: tutup keyboard, selesai mengisi
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Text,
@@ -398,7 +434,7 @@ fun AddEditTransactionContent(
 
 
             FormField(
-                "Attachment",
+                stringResource(R.string.tx_attachment),
             ) {
                 AttachmentBox(
                     fileName = state.attachmentName,
@@ -422,7 +458,7 @@ fun AddEditTransactionContent(
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(
-                        "Recurring Transaction",
+                        stringResource(R.string.tx_recurring),
                         fontWeight = FontWeight.Medium,
                         fontSize = 14.sp,
                     )
@@ -485,11 +521,11 @@ fun AddEditTransactionContent(
                             onEvent(AddEditTransactionEvent.OnCategorySelected(item))
                         } else {
                             sheetScope.launch { categorySheetState.hide() }
-                                .invokeOnCompletion { cause ->
-                                    if (cause == null) {
-                                        onEvent(AddEditTransactionEvent.OnCategorySelected(item))
+                                    .invokeOnCompletion { cause ->
+                                        if (cause == null) {
+                                            onEvent(AddEditTransactionEvent.OnCategorySelected(item))
+                                        }
                                     }
-                                }
                         }
                     },
                 )
@@ -507,11 +543,11 @@ fun AddEditTransactionContent(
                     onAccountSelected = { account ->
                         // sama seperti kategori: animasi keluar dulu, baru state
                         sheetScope.launch { accountSheetState.hide() }
-                            .invokeOnCompletion { cause ->
-                                if (cause == null) {
-                                    onEvent(AddEditTransactionEvent.OnAccountSelected(account))
+                                .invokeOnCompletion { cause ->
+                                    if (cause == null) {
+                                        onEvent(AddEditTransactionEvent.OnAccountSelected(account))
+                                    }
                                 }
-                            }
                     },
                 )
             }
@@ -535,7 +571,7 @@ private fun SegmentedTypeToggle(
     ) {
         // Sama dengan hasil Modifier.weight(1f) di Row bawah:
         // (lebar track - padding kiri/kanan - jarak antar chip) / 2
-        val chipWidth = (maxWidth - inset * 2f - gap) / 2f
+        val chipWidth = ((maxWidth - inset * 2f - gap) / 2f).coerceAtLeast(0.dp)
 
         // Composable terpisah supaya hanya pil ini yang rekomposisi tiap frame
         // animasi; Row di bawahnya ikut membaca nilai animasi kalau disatukan.
@@ -554,7 +590,7 @@ private fun SegmentedTypeToggle(
             horizontalArrangement = Arrangement.spacedBy(gap),
         ) {
             ToggleChip(
-                label = "Expense",
+                label = stringResource(TransactionType.EXPENSE.labelResId),
                 icon = Icons.Default.TrendingDown,
                 selected = selected == TransactionType.EXPENSE,
                 selectedColor = Color(0xFFE8433D),
@@ -562,7 +598,7 @@ private fun SegmentedTypeToggle(
                 onClick = { onSelect(TransactionType.EXPENSE) },
             )
             ToggleChip(
-                label = "Income",
+                label = stringResource(TransactionType.INCOME.labelResId),
                 icon = Icons.Default.TrendingUp,
                 selected = selected == TransactionType.INCOME,
                 selectedColor = PrimaryCyan,
@@ -605,14 +641,19 @@ private fun BoxScope.ToggleIndicator(
         label = "typeToggleIndicator",
     )
 
+    val safeStart = startPadding.coerceAtLeast(0.dp)
+    val safeEnd = (trackWidth - chipWidth - startPadding).coerceAtLeast(0.dp)
+    val safeTop = inset.coerceAtLeast(0.dp)
+    val safeBottom = inset.coerceAtLeast(0.dp)
+
     Box(
         modifier = Modifier
                 .matchParentSize()
                 .padding(
-                    start = startPadding,
-                    end = trackWidth - chipWidth - startPadding,
-                    top = inset,
-                    bottom = inset,
+                    start = safeStart,
+                    end = safeEnd,
+                    top = safeTop,
+                    bottom = safeBottom,
                 )
                 .shadow(2.dp, RoundedCornerShape(16.dp))
                 .background(Color.White, RoundedCornerShape(16.dp)),
@@ -820,12 +861,16 @@ private fun AttachmentBox(fileName: String?, onClick: () -> Unit) {
         }
         Spacer(Modifier.height(10.dp))
         Text(
-            fileName ?: "Take a photo or choose a file",
+            fileName ?: stringResource(R.string.tx_take_photo),
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
         )
         Spacer(Modifier.height(4.dp))
-        Text("JPG, PNG OR PDF (MAX. 5MB)", fontSize = 10.sp, color = Color.Gray)
+        Text(
+            stringResource(R.string.tx_attachment_hint),
+            fontSize = 10.sp,
+            color = Color.Gray,
+        )
     }
 }
 

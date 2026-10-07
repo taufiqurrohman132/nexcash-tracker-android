@@ -31,6 +31,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -96,7 +97,7 @@ fun BalanceCard(
             ) {
 
                 Text(
-                    text = "Total Saldo Anda",
+                    text = stringResource(R.string.dash_total_balance_label),
                     color = Color.White,
                 )
 
@@ -109,20 +110,20 @@ fun BalanceCard(
                 ) {
                     // format sekali per nilai, bukan tiap recomposition
                     val formattedBalance = remember(totalBalance) {
-                        "Rp ${totalBalance.formatCurrency()}"
+                        totalBalance.formatCurrency()
                     }
                     val compactBalance = remember(totalBalance) {
-                        "Rp ${totalBalance.formatCompact()}"
+                        totalBalance.formatCompact()
                     }
                     Text(
                         modifier = Modifier
                                 .weight(1f),
                         text = if (!isVisible) {
-                            "Rp ••••••••"
+                            stringResource(R.string.dash_balance_hidden)
                         } else if (isTotalSaldoOverflow) {
-                            compactBalance
+                            stringResource(R.string.total_balance_format, compactBalance)
                         } else {
-                            formattedBalance
+                            stringResource(R.string.total_balance_format, formattedBalance)
                         },
                         style =
                             MaterialTheme.typography.headlineLarge,
@@ -166,7 +167,7 @@ fun BalanceCard(
                 Row {
 
                     SummaryChip(
-                        title = "PEMASUKAN",
+                        title = stringResource(R.string.dash_income_label),
                         value = income,
                         modifier = Modifier.weight(1f),
                         icon = painterResource(R.drawable.down),
@@ -178,7 +179,7 @@ fun BalanceCard(
                     )
 
                     SummaryChip(
-                        title = "PENGELUARAN",
+                        title = stringResource(R.string.dash_expense_label),
                         value = expense,
                         modifier = Modifier.weight(1f),
                         icon = painterResource(R.drawable.up),

@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.account.presentation.detail
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -74,6 +75,7 @@ import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.core.navigations.Route.AccountRoute.*
 import com.example.nexcashapplication.core.navigations.Route.TransactionRoute.*
@@ -85,6 +87,15 @@ import com.example.nexcashapplication.feature.transaction.presentation.addnew.Tr
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.collectLatest
+
+/**
+ * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
+ * yang hanya bersifat suspend sehingga `UiText.asString` tidak bisa dipanggil).
+ */
+private fun UiText.resolve(context: Context): String = when (this) {
+    is UiText.Res -> context.getString(resId, *args.toTypedArray())
+    is UiText.Raw -> value
+}
 
 @Composable
 fun DetailAccountScreen(
@@ -128,7 +139,7 @@ fun DetailAccountScreen(
 
                 is DetailAccountEffect.ShowSnackbar -> TODO()
                 is DetailAccountEffect.ShowToast -> {
-                    Toast.makeText(context, effect.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, effect.message.resolve(context), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -163,7 +174,7 @@ fun DetailAssetContent(
                 },
                 navigationIcon = {
                     IconButton(onClick = { onEvent(DetailAccountEvent.OnBackClick) }) {
-                        Icon(Icons.Default.KeyboardArrowLeft, contentDescription = "Kembali")
+                        Icon(Icons.Default.KeyboardArrowLeft, contentDescription = stringResource(R.string.acct_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
@@ -192,14 +203,14 @@ fun DetailAssetContent(
                     BalanceCard(state)
                     Spacer(Modifier.height(16.dp))
                     AppButton(
-                        title = "Transaksi",
+                        title = stringResource(R.string.acct_transaction),
                         onClick = { onEvent(DetailAccountEvent.OnAddTransactionClick) },
                         modifier = Modifier.fillMaxWidth(),
                     )
                     FormField(
-                        title = "Transaksi terakhir",
+                        title = stringResource(R.string.acct_recent_transactions),
                         icon = Icons.Default.Replay,
-                        actionText = "Lihat Semua",
+                        actionText = stringResource(R.string.acct_see_all),
                         onActionClick = { onEvent(DetailAccountEvent.OnLihatSemuaClick) },
                     ) {
                         RecentTransactionsSection(
@@ -247,11 +258,16 @@ fun DetailAssetContent(
 @Composable
 fun AssetSettingsSection(onEvent: (DetailAccountEvent) -> Unit) {
     Column {
-        Text("PENGATURAN ASET", fontSize = 11.sp, color = Color(0xFF999999), letterSpacing = 0.5.sp)
+        Text(
+            stringResource(R.string.acct_asset_settings),
+            fontSize = 11.sp,
+            color = Color(0xFF999999),
+            letterSpacing = 0.5.sp,
+        )
         Spacer(Modifier.height(8.dp))
         SettingsRow(
             icon = Icons.Default.Edit,
-            label = "Ubah Aset",
+            label = stringResource(R.string.acct_edit_asset),
             tint = PrimaryCyan,
             background = PrimaryCyan.copy(alpha = 0.1f),
             onClick = { onEvent(DetailAccountEvent.OnEditAccountClick) },
@@ -259,7 +275,7 @@ fun AssetSettingsSection(onEvent: (DetailAccountEvent) -> Unit) {
         Spacer(Modifier.height(10.dp))
         SettingsRow(
             icon = Icons.Default.DeleteOutline,
-            label = "Hapus Aset Ini",
+            label = stringResource(R.string.acct_delete_this_asset),
             tint = Color(0xFFE6455B),
             background = Color(0xFFFCEEF0),
             onClick = { onEvent(DetailAccountEvent.OnDeleteAccountClick) },
@@ -339,7 +355,7 @@ private fun ActionButtons(onEvent: (DetailAccountEvent) -> Unit) {
         Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(6.dp))
         Text(
-            "Transaksi",
+            stringResource(R.string.acct_transaction),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold,
         )
@@ -363,7 +379,7 @@ fun BalanceCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Total Saldo", fontSize = 13.sp, color = Color(0xFF5B6B70))
+            Text(stringResource(R.string.acct_total_balance), fontSize = 13.sp, color = Color(0xFF5B6B70))
             AssistChip(
                 onClick = {},
                 shape = CircleShape,
@@ -394,7 +410,11 @@ fun BalanceCard(
         )
         Spacer(Modifier.height(4.dp))
         Text(
-            text = "${state.typeAccount.name} • ${state.providers?.name}",
+            text = stringResource(
+                R.string.acct_type_provider_format,
+                stringResource(state.typeAccount.labelResId),
+                state.providers?.name.orEmpty(),
+            ),
             fontSize = 12.sp,
             color = Color(0xFF5B6B70),
         )
@@ -487,8 +507,8 @@ val dummyTransactions = listOf(
         time = "14:05",
         amount = 200_000,
         typeTransaction = TransactionType.INCOME,
-        category = "Tanpa Kategori",
-        account = "Akun Dihapus",
+        category = null,
+        account = null,
         icon = Icons.Default.Category,
         iconColor = Color.Black,
     ),

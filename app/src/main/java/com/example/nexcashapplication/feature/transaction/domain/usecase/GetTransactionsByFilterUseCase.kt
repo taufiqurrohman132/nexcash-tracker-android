@@ -1,8 +1,11 @@
 package com.example.nexcashapplication.feature.transaction.domain.usecase
 
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.account.domain.repository.AccountRepository
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionFilter
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
@@ -30,9 +33,12 @@ class GetTransactionsByFilterUseCase @Inject constructor(
     /**
      * Judul TopAppBar. Nama kategori/akun di-fetch dari repository (bukan argumen route)
      * supaya ikut berubah saat entitas diedit di layar lain.
+     *
+     * Berupa [UiText] (bukan `String`) — sumbernya kunci string resource, jadi judul
+     * baru di-resolve ke teks saat ditampilkan dan ikut bahasa aktif.
      */
-    fun topBarTitle(filter: TransactionFilter): Flow<String> = when (filter) {
-        TransactionFilter.None -> flowOf(TITLE_ALL)
+    fun topBarTitle(filter: TransactionFilter): Flow<UiText> = when (filter) {
+        TransactionFilter.None -> flowOf(uiText(R.string.tx_title_all))
 
         is TransactionFilter.ByCategory ->
             categoryRepository.getCategoryById(filter.categoryId)
@@ -83,10 +89,6 @@ class GetTransactionsByFilterUseCase @Inject constructor(
         return result.toList()
     }
 
-    private fun titleOr(name: String?): String = name?.let { "$TITLE_PREFIX$it" } ?: TITLE_ALL
-
-    private companion object {
-        const val TITLE_ALL = "Semua Transaksi"
-        const val TITLE_PREFIX = "Transaksi · "
-    }
+    private fun titleOr(name: String?): UiText =
+        name?.let { uiText(R.string.tx_title_filter, it) } ?: uiText(R.string.tx_title_all)
 }

@@ -1,8 +1,10 @@
 package com.example.nexcashapplication.feature.transaction.presentation.detail.mapper
 
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.account.domain.model.AccountModel
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
@@ -10,7 +12,6 @@ import com.example.nexcashapplication.feature.transaction.domain.model.Transacti
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
-import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.ZoneId
 import kotlin.time.Instant
@@ -55,14 +56,18 @@ class DetailTransactionMapperTest {
         val dialog = sample().toDetailTransactionUiModel().toDeleteDialogUiState()
 
         assertEquals("Kopi pagi", dialog.title)
-        assertEquals("EXPENSE", dialog.typeLabel)
+        assertEquals(R.string.tx_type_expense, dialog.typeLabelRes)
         assertEquals("BCA", dialog.accountName)
         assertEquals(150_000L.formatCurrency(), dialog.formattedAmount)
-        assertTrue(
-            dialog.balanceEffectText.contains("bertambah"),
+        assertEquals(
+            uiText(
+                R.string.tx_balance_effect_expense,
+                "BCA",
+                150_000L.formatCurrency(),
+            ),
+            dialog.balanceEffectText,
             "saldo harus bertambah setelah pengeluaran dihapus: ${dialog.balanceEffectText}",
         )
-        assertTrue(dialog.balanceEffectText.contains("BCA"), dialog.balanceEffectText)
     }
 
     @Test
@@ -71,10 +76,15 @@ class DetailTransactionMapperTest {
                 .toDetailTransactionUiModel()
                 .toDeleteDialogUiState()
 
-        assertEquals("INCOME", dialog.typeLabel)
+        assertEquals(R.string.tx_type_income, dialog.typeLabelRes)
         assertEquals("", dialog.accountName)
-        assertTrue(
-            dialog.balanceEffectText.contains("berkurang"),
+        assertEquals(
+            uiText(
+                R.string.tx_balance_effect_income,
+                "",
+                150_000L.formatCurrency(),
+            ),
+            dialog.balanceEffectText,
             "saldo harus berkurang setelah pemasukan dihapus: ${dialog.balanceEffectText}",
         )
     }

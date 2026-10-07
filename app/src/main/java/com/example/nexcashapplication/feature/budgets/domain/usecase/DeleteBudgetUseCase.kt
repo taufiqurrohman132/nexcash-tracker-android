@@ -1,7 +1,10 @@
 package com.example.nexcashapplication.feature.budgets.domain.usecase
 
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.uiText
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -30,7 +33,7 @@ class DeleteBudgetUseCase @Inject constructor(
 
     sealed interface Result {
         data object Success : Result
-        data class Failure(val message: String) : Result
+        data class Failure(val message: UiText) : Result
     }
 
     /**
@@ -43,7 +46,7 @@ class DeleteBudgetUseCase @Inject constructor(
         today: LocalDate = LocalDate.now(),
     ): Result {
         val groupId = target.recurringGroupId ?: target.id
-            ?: return Result.Failure("Anggaran tidak valid")
+            ?: return Result.Failure(uiText(R.string.budget_error_invalid_budget))
 
         return try {
             val rows = budgetRepository.getByCategory(target.categoryId).first()
@@ -63,7 +66,9 @@ class DeleteBudgetUseCase @Inject constructor(
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
-            Result.Failure("Gagal menghapus anggaran: ${e.message}")
+            // Detail exception teknis (Inggris) tetap ditampilkan sebagai argumen,
+            // prefix-nya tetap terikat bahasa aktif lewat string resource.
+            Result.Failure(uiText(R.string.budget_delete_failed, e.message ?: e.toString()))
         }
     }
 }

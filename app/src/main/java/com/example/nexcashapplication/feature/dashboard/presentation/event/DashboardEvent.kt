@@ -7,10 +7,11 @@ sealed interface DashboardEvent {
     data object OnNotificationClick : DashboardEvent
     data object OnProfileClick : DashboardEvent
 
-    data object OnTransferClick : DashboardEvent
-    data object OnTagihanClick : DashboardEvent
-    data object OnScanClick : DashboardEvent
-    data object OnLainnyaClick : DashboardEvent
+    // Quick action — hanya fitur yang benar-benar ada (punya route terdaftar).
+    // Transfer/Tagihan/Scan/Lainnya dibuang: tidak ada fiturnya, tombolnya mati.
+    data object OnKategoriClick : DashboardEvent
+    data object OnTambahAkunClick : DashboardEvent
+    data object OnStatistikClick : DashboardEvent
 
     data object OnLihatDetailBudgetClick : DashboardEvent
     data object OnSemuaTransaksiClick : DashboardEvent

@@ -1,5 +1,7 @@
 package com.example.nexcashapplication.feature.statistics.presentation.main
 
+import androidx.annotation.StringRes
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.feature.statistics.presentation.main.model.AlokasiKategoriUi
 import java.time.YearMonth
 
@@ -21,7 +23,15 @@ data class StatistikState(
     val showMonthPicker: Boolean = false,
 )
 
-enum class BudgetStatus { AMAN, WASPADA, OVER }
+/**
+ * Status kesehatan anggaran. [labelResId] dipakai di UI (`stringResource(...)`)
+ * supaya badge tidak memakai `.name` mentah yang tidak ikut terjemahan.
+ */
+enum class BudgetStatus(@StringRes val labelResId: Int) {
+    AMAN(R.string.stat_status_safe),
+    WASPADA(R.string.stat_status_warning),
+    OVER(R.string.stat_status_over),
+}
 enum class AlokasiMode { ALOKASI, REALISASI }
 
 /**
