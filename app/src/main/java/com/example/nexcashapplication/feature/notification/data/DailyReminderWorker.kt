@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.i18n.withAppLocale
 import com.example.nexcashapplication.core.notification.NotificationHelper
 import com.example.nexcashapplication.feature.notification.domain.repository.NotificationHistoryRepository
 import com.example.nexcashapplication.feature.notification.domain.usecase.HasTransactionTodayUseCase
@@ -40,8 +42,11 @@ class DailyReminderWorker @AssistedInject constructor(
         if (notificationHistoryRepository.hasBeenSent(id)) return@runCatching
         if (!notificationHelper.canPost()) return@runCatching
 
-        val title = "Belum ada transaksi hari ini"
-        val body = "Catat pemasukan atau pengeluaranmu supaya anggaranmu tetap akurat."
+        // Context Worker = Application context (ikut bahasa perangkat); bungkus withAppLocale
+        // supaya pengingat ikut bahasa aplikasi yang dipilih pengguna.
+        val localizedContext = applicationContext.withAppLocale()
+        val title = localizedContext.getString(R.string.notif_daily_reminder_title)
+        val body = localizedContext.getString(R.string.notif_daily_reminder_body)
 
         notificationHelper.post(
             id = id.hashCode(),

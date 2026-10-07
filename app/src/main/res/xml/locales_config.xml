@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Bahasa yang didukung aplikasi — daftar ini yang muncul di System Settings → App languages
+  (API 33+) dan wajib ada supaya sistem memperlakukan NexCash sebagai aplikasi multibahasa.
+  Harus sinkron dengan enum AppLanguage.
+  res/values (default) berisi Bahasa Indonesia, jadi "id" tidak perlu folder values-in sendiri.
+-->
+<locale-config xmlns:android="http://schemas.android.com/apk/res/android">
+    <locale android:name="id" />
+    <locale android:name="en" />
+    <locale android:name="fr" />
+    <locale android:name="de" />
+    <locale android:name="es" />
+    <locale android:name="pt" />
+    <locale android:name="ru" />
+    <locale android:name="zh" />
+    <locale android:name="ja" />
+</locale-config>

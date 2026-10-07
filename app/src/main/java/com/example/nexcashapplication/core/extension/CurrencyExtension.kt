@@ -1,15 +1,21 @@
 package com.example.nexcashapplication.core.extension
 
-import androidx.compose.ui.res.stringResource
-import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.i18n.LocaleCached
 import java.text.NumberFormat
 import java.util.Locale
 
-private val currencyFormatter = NumberFormat
-        .getNumberInstance(Locale("id", "ID"))
+/**
+ * Pemisah ribuan/desimal mengikuti bahasa aplikasi saat ini (1.000 di id, 1,000 di en),
+ * bukan di-pin ke locale Indonesia. Di-cache per-locale karena bahasa bisa berganti saat
+ * runtime — lihat [LocaleCached].
+ *
+ * Simbol mata uang ("Rp", "US$", ...) TIDAK ada di sini: itu urusan settings Mata Uang dan
+ * ditambahkan oleh pemanggil.
+ */
+private val numberFormatter = LocaleCached { locale: Locale -> NumberFormat.getNumberInstance(locale) }
 
 fun Long.formatCurrency(): String {
-    return currencyFormatter.format(this)
+    return numberFormatter.get().format(this)
 }
 
 // Untuk currency formatted string
@@ -68,7 +74,9 @@ fun Long.formatCompact(): String {
 }
 
 private fun formatDecimal(value: Double): String {
-    return String.format(Locale("id", "ID"), "%.2f", value)
+    // Pemisah desimal mengikuti bahasa aplikasi; parseCurrencyCompact sudah menampung
+    // pemisah koma maupun titik.
+    return String.format(Locale.getDefault(), "%.2f", value)
             .trimEnd('0')  // hapus 0 di belakang → 1.50 jadi 1.5
             .trimEnd('.')  // hapus titik kalau tidak ada desimal → 1. jadi 1
 }

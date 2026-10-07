@@ -17,8 +17,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.format.TextStyle
+import java.util.Locale
 import javax.inject.Inject
 
 class CategoryRepositoryImpl @Inject constructor(
@@ -92,7 +95,12 @@ class CategoryRepositoryImpl @Inject constructor(
         // Batas akhir = akhir hari ini (−1 ms) supaya transaksi tengah malam besok tidak ikut.
         val endDateMillis = today.plusDays(1).atStartOfDay(zone).toInstant().toEpochMilli() - 1
 
-        val dayNames = arrayOf("Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab") // index 0 = Minggu
+        // Nama hari singkat mengikuti bahasa aplikasi (dulu hardcoded "Min","Sen",...).
+        // Index tetap 0 = Minggu karena dipakai sebagai dayOfWeek.value % 7 di bawah.
+        val dayNames = Array(7) { index ->
+            val day = if (index == 0) DayOfWeek.SUNDAY else DayOfWeek.of(index)
+            day.getDisplayName(TextStyle.SHORT, Locale.getDefault())
+        }
 
         return transactionDao.getWeeklyTrend(
             startDate = startDateMillis,

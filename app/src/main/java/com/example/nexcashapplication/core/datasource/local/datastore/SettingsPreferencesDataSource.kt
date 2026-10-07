@@ -6,9 +6,11 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.nexcashapplication.core.datasource.local.datastore.model.SettingsPreferences
+import com.example.nexcashapplication.core.domain.model.AppLanguage
 import com.example.nexcashapplication.di.SettingsDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.util.Locale
 import javax.inject.Inject
 
 class SettingsPreferencesDataSource @Inject constructor(
@@ -25,7 +27,9 @@ class SettingsPreferencesDataSource @Inject constructor(
     val settingsPreferences: Flow<SettingsPreferences> = dataStore.data.map {
         SettingsPreferences(
             themeMode = it[Keys.THEME] ?: "system",
-            languageCode = it[Keys.LANGUAGE] ?: "en",
+            // Bahasa pertama kali: ikut bahasa perangkat kalau didukung, kalau tidak
+            // jatuh ke default aplikasi (Bahasa Indonesia, isi dari res/values).
+            languageCode = it[Keys.LANGUAGE] ?: defaultLanguageCode(),
             currency = it[Keys.CURRENCY] ?: "IDR",
             notificationMasterEnabled = it[Keys.NOTIFICATION_MASTER_ENABLED] ?: true,
         )
@@ -39,5 +43,15 @@ class SettingsPreferencesDataSource @Inject constructor(
 
     suspend fun setNotificationMasterEnabled(enabled: Boolean) =
         dataStore.edit { it[Keys.NOTIFICATION_MASTER_ENABLED] = enabled }
+
+    /**
+     * Bahasa saat pengguna belum pernah memilih: ikut bahasa perangkat kalau didukung
+     * aplikasi, selain itu Bahasa Indonesia (default res/values).
+     */
+    private fun defaultLanguageCode(): String {
+        val device = Locale.getDefault().language
+        return if (AppLanguage.entries.any { it.code == device }) device
+        else AppLanguage.INDONESIA.code
+    }
 
 }

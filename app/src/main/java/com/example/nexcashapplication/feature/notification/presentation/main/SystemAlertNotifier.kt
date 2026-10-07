@@ -1,9 +1,13 @@
 package com.example.nexcashapplication.feature.notification.presentation.main
 
+import android.content.Context
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.withAppLocale
 import com.example.nexcashapplication.core.notification.NotificationHelper
 import com.example.nexcashapplication.feature.notification.domain.model.BudgetAlert
 import com.example.nexcashapplication.feature.notification.domain.repository.NotificationHistoryRepository
 import com.example.nexcashapplication.feature.notification.domain.usecase.GetBudgetAlertsUseCase
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -24,6 +28,7 @@ import javax.inject.Inject
  * `GetBudgetAlertsUseCase` memfilternya di dalam.
  */
 class SystemAlertNotifier @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getBudgetAlertsUseCase: GetBudgetAlertsUseCase,
     private val notificationHistoryRepository: NotificationHistoryRepository,
     private val notificationHelper: NotificationHelper,
@@ -46,18 +51,20 @@ class SystemAlertNotifier @Inject constructor(
         if (!notificationHelper.canPost()) return
 
         val text = alert.toNotificationText()
+        val title = text.title.asString(context)
+        val body = text.body.asString(context)
         notificationHelper.post(
             id = key.hashCode(),
             channelId = NotificationHelper.CHANNEL_BUDGET_ALERT,
-            title = text.title,
-            body = text.body,
+            title = title,
+            body = body,
             destination = NotificationHelper.DEST_NOTIFICATIONS,
         )
         notificationHistoryRepository.record(
             id = key,
             type = "budget_alert",
-            title = text.title,
-            body = text.body,
+            title = title,
+            body = body,
             deepLink = NotificationHelper.DEST_NOTIFICATIONS,
             refId = alert.budgetId,
         )
@@ -73,4 +80,13 @@ class SystemAlertNotifier @Inject constructor(
          */
         fun dedupKey(alert: BudgetAlert): String = "${alert.id}@${alert.periodStart}"
     }
+}
+
+/**
+ * Resolve [UiText] di luar composable dengan **bahasa aplikasi** (bukan bahasa perangkat):
+ * context class NotificationHelper adalah Application context yang tidak ikut AppLocale.
+ */
+private fun UiText.asString(context: Context): String = when (this) {
+    is UiText.Res -> context.withAppLocale().getString(resId, *args.toTypedArray())
+    is UiText.Raw -> value
 }

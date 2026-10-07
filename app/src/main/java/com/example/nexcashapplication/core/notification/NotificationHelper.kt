@@ -13,6 +13,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.example.nexcashapplication.MainActivity
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.i18n.withAppLocale
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -32,17 +33,20 @@ class NotificationHelper @Inject constructor(
 
     fun ensureChannels() {
         val manager = context.getSystemService(NotificationManager::class.java) ?: return
+        // Nama channel tampil ke user, jadi harus mengikuti bahasa aplikasi —
+        // Application context tidak ikut berbahasa, jadi di-wrap dulu.
+        val localizedContext = context.withAppLocale()
         manager.createNotificationChannel(
             NotificationChannel(
                 CHANNEL_BUDGET_ALERT,
-                "Peringatan anggaran",
+                localizedContext.getString(R.string.core_channel_budget_alert_name),
                 NotificationManager.IMPORTANCE_HIGH,
             ),
         )
         manager.createNotificationChannel(
             NotificationChannel(
                 CHANNEL_REMINDER,
-                "Pengingat harian",
+                localizedContext.getString(R.string.core_channel_reminder_name),
                 NotificationManager.IMPORTANCE_DEFAULT,
             ),
         )

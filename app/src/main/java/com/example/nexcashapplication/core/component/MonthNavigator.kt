@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.TextTertiary
 import java.time.YearMonth
@@ -49,7 +50,7 @@ fun MonthNavigator(
     Row(
         modifier = modifier
                 .clip(RoundedCornerShape(50))
-                .border(2.dp, TextTertiary, RoundedCornerShape(50))
+                .border(2.dp, BorderGray, RoundedCornerShape(50))
                 .background(Color.White)
                 .height(40.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -82,7 +83,7 @@ fun MonthNavigator(
                 text = "${
                     month.month.getDisplayName(
                         TextStyle.SHORT,
-                        Locale.forLanguageTag("id"),
+                        Locale.getDefault(),
                     )
                 } ${month.year}",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),

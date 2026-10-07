@@ -1,5 +1,11 @@
 package com.example.nexcashapplication.feature.settings.presentation.language
 
+import android.app.Activity
+import android.app.LocaleManager
+import android.content.Context
+import android.content.ContextWrapper
+import android.os.Build
+import android.os.LocaleList
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -32,12 +38,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.AppSearchBar
 import com.example.nexcashapplication.core.component.IconCircular
@@ -54,6 +63,7 @@ import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.TextSecondary
 import com.example.nexcashapplication.ui.theme.TextTertiary
+import java.util.Locale
 
 @Composable
 fun LanguageSettingsScreen(
@@ -62,6 +72,7 @@ fun LanguageSettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -79,6 +90,13 @@ fun LanguageSettingsScreen(
 
                 is LanguageSettingsEffect.ShowSnackbar -> TODO()
                 LanguageSettingsEffect.NavigateBack -> navController.popBackStack()
+
+                // Bahasa sudah tersimpan & AppLocale diterapkan: tutup layar, lalu paksa
+                // Activity dibuat ulang supaya resources (string resource) ikut berbahasa baru.
+                is LanguageSettingsEffect.Saved -> {
+                    navController.popBackStack()
+                    applyLanguage(context, effect.languageCode)
+                }
             }
         }
     }
@@ -103,7 +121,7 @@ fun LanguageSettingsContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Settings",
+                        text = stringResource(R.string.settings_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -113,14 +131,17 @@ fun LanguageSettingsContent(
                 ),
                 navigationIcon = {
                     IconButton(onClick = { onEvent(LanguageSettingsEvent.OnBackClick) }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.settings_back),
+                        )
                     }
                 },
             )
         },
         bottomBar = {
             AppButton(
-                title = "Simpan",
+                title = stringResource(R.string.settings_save),
                 onClick = { onEvent(LanguageSettingsEvent.OnSaveClick) },
                 modifier = Modifier.padding(16.dp),
                 isEnabled = state.hasChange,
@@ -138,7 +159,7 @@ fun LanguageSettingsContent(
                 onSearchQueryChange = {
                     onEvent(LanguageSettingsEvent.OnSearchQueryChange(it))
                 },
-                placeholder = "Cari Bahasa",
+                placeholder = stringResource(R.string.settings_search_language),
                 onSearchClear = {
                     onEvent(LanguageSettingsEvent.OnSearchClear)
                 },
@@ -154,7 +175,7 @@ fun LanguageSettingsContent(
                 ) {
                     LanguageItem(
                         iconText = it.id.uppercase(),
-                        title = it.name,
+                        title = stringResource(it.nameRes),
                         onClick = {
                             onEvent(LanguageSettingsEvent.OnItemClick(it.id))
                         },
@@ -195,7 +216,7 @@ private fun InformationCard(modifier: Modifier = Modifier) {
         )
 
         Text(
-            text = "Bahasa yang Anda pilih akan diterapkan ke seluruh antarmuka aplikasi KeuanganKu untuk memudahkan pengelolaan finansial Anda.",
+            text = stringResource(R.string.settings_language_info),
             style = MaterialTheme.typography.bodySmall,
             color = TextSecondary,
             modifier = Modifier.padding(start = 16.dp),
@@ -214,15 +235,45 @@ private fun LanguageSettingsContentPreview() {
                 listLanguage = listOf(
                     LanguageItemUiModel(
                         id = "df",
-                        name = "Indonesia",
+                        nameRes = R.string.settings_lang_id,
                     ),
                     LanguageItemUiModel(
                         id = "en",
-                        name = "English",
+                        nameRes = R.string.settings_lang_en,
                     ),
                 ),
             ),
             onEvent = {},
         )
     }
+}
+
+
+/**
+ * Terapkan [languageCode] ke sistem lalu pastikan Activity dibuat ulang.
+ *
+ * - API 33+: dicatat lewat [LocaleManager.setApplicationLocales] sehingga ikut muncul di
+ *   System Settings → App languages, dan sistem sendiri me-recreate Activity (konfigurasi
+ *   berubah) — recreate manual tidak perlu.
+ * - API < 33: tidak ada jalur sistem, jadi Activity di-recreate manual; bahasa tetap benar
+ *   karena `AppLocale.apply` sudah mengganti Locale default dan `attachBaseContext` membungkus
+ *   resources dari [com.example.nexcashapplication.core.i18n.AppLocale.locale].
+ */
+private fun applyLanguage(context: Context, languageCode: String) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        val manager = runCatching { context.getSystemService(LocaleManager::class.java) }.getOrNull()
+        if (manager != null) {
+            val applied = runCatching {
+                manager.applicationLocales = LocaleList(Locale.forLanguageTag(languageCode))
+            }.isSuccess
+            if (applied) return
+        }
+    }
+    context.findActivity()?.recreate()
+}
+
+private tailrec fun Context.findActivity(): Activity? = when (this) {
+    is Activity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

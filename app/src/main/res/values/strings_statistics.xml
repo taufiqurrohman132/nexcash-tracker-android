@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Header layar -->
+    <string name="stat_title">Statistik</string>
+
+    <!-- Kartu ringkasan -->
+    <string name="stat_remaining_budget">Sisa Anggaran</string>
+    <string name="stat_savings_rate_title">Tingkat Tabungan</string>
+
+    <!-- Badge status anggaran (BudgetStatus) -->
+    <string name="stat_status_safe">AMAN</string>
+    <string name="stat_status_warning">WASPADA</string>
+    <string name="stat_status_over">OVER</string>
+
+    <!-- Kartu Alokasi Dana -->
+    <string name="stat_allocation_title">Alokasi Dana</string>
+    <string name="stat_basis_target">Berdasarkan Target</string>
+    <string name="stat_basis_actual_expense">Berdasarkan Realisasi (Pengeluaran)</string>
+    <string name="stat_basis_actual_income">Berdasarkan Realisasi (Pendapatan)</string>
+    <string name="stat_basis_value_format">%1$s · %2$s</string>
+    <string name="stat_tab_allocation">Alokasi</string>
+    <string name="stat_tab_actual">Realisasi</string>
+    <string name="stat_tipe_expense">Pengeluaran</string>
+    <string name="stat_tipe_income">Pendapatan</string>
+
+    <!-- Kartu Tindakan Cepat -->
+    <string name="stat_quick_actions">Tindakan Cepat</string>
+    <string name="stat_help">bantuan</string>
+    <string name="stat_edit_allocation">Ubah Alokasi Dana</string>
+    <string name="stat_edit_allocation_desc">Sesuaikan target anggaranmu agar finansial tetap sehat.</string>
+
+    <!-- Kartu Total Pengeluaran -->
+    <string name="stat_total_expense">Total Pengeluaran</string>
+</resources>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- NotificationMapper: judul & badan alert budget -->
+    <string name="notif_alert_title_format">%1$s mencapai %2$d%%</string>
+    <string name="notif_alert_limit_body_format">Batas anggaran %1$s sudah tercapai.</string>
+    <string name="notif_alert_warning_body_format">Anggaran %1$s hampir habis.</string>
+
+    <!-- NotificationMapper: grup per hari & label waktu relatif -->
+    <string name="notif_group_today">Hari ini</string>
+    <string name="notif_group_yesterday">Kemarin</string>
+    <string name="notif_time_just_now">Baru saja</string>
+    <string name="notif_time_minutes_ago_format">%1$d menit lalu</string>
+    <string name="notif_time_hours_ago_format">%1$d jam lalu</string>
+    <string name="notif_time_yesterday_format">Kemarin, %1$s</string>
+    <string name="notif_time_date_format">%1$s, %2$s</string>
+
+    <!-- NotificationScreen (daftar notifikasi) -->
+    <string name="notif_title">Notifikasi</string>
+    <string name="notif_back">Kembali</string>
+    <string name="notif_settings_content_desc">Pengaturan notifikasi</string>
+    <string name="notif_unread_count_format">%1$d belum dibaca</string>
+    <string name="notif_all_read">Semua sudah dibaca</string>
+    <string name="notif_mark_all_read">Tandai semua dibaca</string>
+    <string name="notif_unread_dot_desc">Belum dibaca</string>
+    <string name="notif_empty_title">Belum ada notifikasi</string>
+    <string name="notif_empty_subtitle">Pengingat akan muncul di sini saat pengeluaran mencapai batas anggaran.</string>
+
+    <!-- NotificationEditScreen (pengaturan notifikasi) -->
+    <string name="notif_settings_title">Pengaturan Notifikasi</string>
+    <string name="notif_active_budgets_label">ANGGARAN AKTIF</string>
+    <string name="notif_footnote">Pengingat muncul sebagai notifikasi di perangkat ini, satu kali per batas dalam setiap periode anggaran.</string>
+    <string name="notif_enable_reminders">Aktifkan pengingat</string>
+    <string name="notif_enable_reminders_desc">Beri tahu saat pengeluaran mendekati batas</string>
+    <string name="notif_permission_hint">Izin notifikasi belum diberikan. Aktifkan lewat pengaturan sistem.</string>
+    <string name="notif_reminder_switch_desc_format">Pengingat %1$s</string>
+    <string name="notif_remind_at">Ingatkan di</string>
+    <string name="notif_threshold_percent_format">%1$d%%</string>
+
+    <!-- DailyReminderWorker (context aplikasi → wajib withAppLocale) -->
+    <string name="notif_daily_reminder_title">Belum ada transaksi hari ini</string>
+    <string name="notif_daily_reminder_body">Catat pemasukan atau pengeluaranmu supaya anggaranmu tetap akurat.</string>
+</resources>

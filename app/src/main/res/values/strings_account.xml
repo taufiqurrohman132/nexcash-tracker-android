@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Daftar akun / aset (AccountAssetScreen) -->
+    <string name="acct_title">Akun</string>
+    <string name="acct_add_account">Tambah Akun</string>
+    <string name="acct_add_content_desc">Tambah akun</string>
+    <string name="acct_load_failed">Gagal memuat data</string>
+    <string name="acct_retry">Coba lagi</string>
+    <string name="acct_empty_title">Belum ada akun</string>
+    <string name="acct_empty_subtitle">Tambahkan rekening atau e-wallet untuk mulai mencatat aset.</string>
+    <string name="acct_total_balance_combined">Total Saldo Gabungan</string>
+    <string name="acct_currency_code">IDR</string>
+    <string name="acct_this_month">BULAN INI</string>
+    <string name="acct_active_assets">ASET AKTIF</string>
+    <string name="acct_active_account_count">%1$d Akun</string>
+    <string name="acct_provider_undefined">Tidak ditentukan</string>
+
+    <!-- Detail akun (DetailAccountScreen) -->
+    <string name="acct_back">Kembali</string>
+    <string name="acct_transaction">Transaksi</string>
+    <string name="acct_recent_transactions">Transaksi terakhir</string>
+    <string name="acct_see_all">Lihat Semua</string>
+    <string name="acct_asset_settings">PENGATURAN ASET</string>
+    <string name="acct_edit_asset">Ubah Aset</string>
+    <string name="acct_delete_this_asset">Hapus Aset Ini</string>
+    <string name="acct_total_balance">Total Saldo</string>
+    <string name="acct_type_provider_format">%1$s • %2$s</string>
+    <string name="acct_account_not_loaded">Akun belum termuat, coba lagi</string>
+    <string name="acct_transaction_unavailable">Transaksi tidak tersedia</string>
+
+    <!-- Tambah / edit informasi akun (AddEditInfoAccountScreen) -->
+    <string name="acct_choose_provider">Pilih Provider (Opsional)</string>
+    <string name="acct_provider_unavailable">Tidak tersedia</string>
+    <string name="acct_save_changes">Simpan Perubahan</string>
+    <string name="acct_save_asset">Simpan Aset</string>
+    <string name="acct_save_failed">Gagal menyimpan aset</string>
+    <string name="acct_asset_name">Nama Aset (Alias)</string>
+    <string name="acct_name_placeholder">Contoh: Tabungan Darurat</string>
+    <string name="acct_name_hint">Gunakan nama yang mudah diingat</string>
+    <string name="acct_name_required">Nama aset wajib diisi</string>
+    <string name="acct_asset_type">Tipe Aset</string>
+    <string name="acct_locked">TERKUNCI</string>
+    <string name="acct_initial_balance">Saldo Awal</string>
+    <string name="acct_currency_prefix">"Rp "</string>
+    <string name="acct_balance_hint">Saldo saat ini dalam aset tersebut</string>
+    <string name="acct_step_last">Langkah Terakhir</string>
+    <string name="acct_step_last_desc">Lengkapi detail aset Anda untuk mulai mencatat transaksi secara otomatis.</string>
+
+    <!-- Pilih tipe akun (AddEditTypeAccountScreen) -->
+    <string name="acct_title_assets">Akun &amp; Aset</string>
+    <string name="acct_continue">Lanjutkan</string>
+    <string name="acct_step_1_of_2">Langkah 1 dari 2: Identifikasi Aset</string>
+    <string name="acct_choose_asset_type">Pilih Tipe Aset</string>
+    <string name="acct_asset_type_hint">Anda dapat menambahkan beberapa aset dari tipe yang sama di langkah berikutnya.</string>
+
+    <!-- Dialog hapus akun (DeleteAccountDialog) -->
+    <string name="acct_delete_blocked_title">Tidak Dapat Dihapus</string>
+    <string name="acct_delete_blocked_message">Akun masih memiliki saldo Rp %1$s. Kosongkan saldo terlebih dahulu.</string>
+    <string name="acct_delete_history_message">%1$d transaksi terkait akan tetap tersimpan di riwayat.</string>
+    <string name="acct_delete_simple_message">Akun akan dihapus secara permanen.</string>
+    <string name="acct_delete_confirm_title">Hapus Akun?</string>
+    <string name="acct_delete_confirm">Hapus Akun</string>
+    <string name="acct_close">Tutup</string>
+    <string name="acct_cancel">Batal</string>
+</resources>

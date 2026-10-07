@@ -16,4 +16,8 @@
     <string name="account_type_insurance">Asuransi</string>
     <string name="account_type_other">Lainnya</string>
     <string name="semua">Semua</string>
+
+    <!-- Label cadangan baris transaksi (lihat TransactionItem) -->
+    <string name="common_no_category">Tanpa Kategori</string>
+    <string name="common_account_deleted">Akun Dihapus</string>
 </resources>

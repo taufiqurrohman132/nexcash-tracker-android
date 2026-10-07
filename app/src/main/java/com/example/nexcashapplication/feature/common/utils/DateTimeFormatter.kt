@@ -1,27 +1,35 @@
 package com.example.nexcashapplication.feature.common.utils
 
+import com.example.nexcashapplication.core.i18n.LocaleCached
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.util.Locale
 import kotlin.time.Instant
 import kotlin.time.toJavaInstant
 import kotlin.time.toKotlinInstant
 import java.time.format.DateTimeFormatter as JavaDateTimeFormatter
 
-private val dateFormatter: JavaDateTimeFormatter = JavaDateTimeFormatter.ofPattern("d MMM yyyy")
-private val timeFormatter: JavaDateTimeFormatter = JavaDateTimeFormatter.ofPattern("HH:mm")
+// Nama bulan dalam pola "d MMM yyyy" mengikuti bahasa aplikasi (Apr / Apr / avr ...).
+// Di-cache per-locale karena bahasa bisa berganti saat runtime — lihat LocaleCached.
+private val dateFormatter = LocaleCached { locale: Locale ->
+    JavaDateTimeFormatter.ofPattern("d MMM yyyy", locale)
+}
+private val timeFormatter = LocaleCached { locale: Locale ->
+    JavaDateTimeFormatter.ofPattern("HH:mm", locale)
+}
 
 // satu titik konversi, dipakai semua fungsi Instant di bawah
 private fun Instant.toZoned(zoneId: ZoneId): ZonedDateTime =
     this.toJavaInstant().atZone(zoneId)
 
 fun Instant.formatDate(zoneId: ZoneId = ZoneId.systemDefault()): String =
-    this.toZoned(zoneId).format(dateFormatter)
+    this.toZoned(zoneId).format(dateFormatter.get())
 
 fun Instant.formatTime(zoneId: ZoneId = ZoneId.systemDefault()): String =
-    this.toZoned(zoneId).format(timeFormatter)
+    this.toZoned(zoneId).format(timeFormatter.get())
 
 fun Instant.formatDateTime(zoneId: ZoneId = ZoneId.systemDefault()): String =
     "${formatDate(zoneId)} • ${formatTime(zoneId)}"
@@ -34,7 +42,7 @@ fun Instant.minute(zoneId: ZoneId = ZoneId.systemDefault()): Int =
 
 // LocalDate gak butuh zoneId sama sekali
 fun LocalDate.formatDate(): String =
-    this.toJavaLocalDate().format(dateFormatter)
+    this.toJavaLocalDate().format(dateFormatter.get())
 
 fun java.time.LocalDate.toStartOfDayMillis(zone: ZoneId = ZoneId.systemDefault()): Long =
     atStartOfDay(zone).toInstant().toEpochMilli()

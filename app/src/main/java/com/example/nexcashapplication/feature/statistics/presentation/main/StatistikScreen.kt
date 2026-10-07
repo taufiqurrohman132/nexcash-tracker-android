@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -58,6 +59,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.component.MonthNavigator
 import com.example.nexcashapplication.core.component.MonthPicker
@@ -76,10 +78,6 @@ import com.example.nexcashapplication.ui.theme.TextTertiary
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
-
-/** Locale dibentuk sekali di top-level — jangan per `String.format` per frame. */
-private val idLocale = Locale.forLanguageTag("id")
-
 
 @Composable
 fun StatistikScreen(
@@ -115,7 +113,7 @@ fun StatistikContent(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Statistik",
+                        text = stringResource(R.string.stat_title),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                     )
@@ -156,21 +154,21 @@ fun StatistikContent(
 
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     SummaryStatCard(
-                        title = "Sisa Anggaran",
+                        title = stringResource(R.string.stat_remaining_budget),
                         value = state.sisaAnggaran.formatCompact(),
-                        badge = state.statusAnggaran.name,
+                        badge = stringResource(state.statusAnggaran.labelResId),
                         icon = Icons.Outlined.ShoppingBag,
                         modifier = Modifier.weight(1f),
                     )
                     SummaryStatCard(
-                        title = "Tingkat Tabungan",
+                        title = stringResource(R.string.stat_savings_rate_title),
                         value = String.format(
-                            idLocale,
+                            Locale.getDefault(),
                             "%.1f%%",
                             state.tingkatTabungan,
                         ),
                         badge = String.format(
-                            idLocale,
+                            Locale.getDefault(),
                             "%+.1f%%",
                             state.tabunganTrendPercent,
                         ),
@@ -246,16 +244,20 @@ fun AlokasiDanaCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column {
-                Text("Alokasi Dana", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.stat_allocation_title), style = MaterialTheme.typography.titleMedium)
                 val basis = when {
-                    mode == AlokasiMode.ALOKASI -> "Berdasarkan Target"
+                    mode == AlokasiMode.ALOKASI -> stringResource(R.string.stat_basis_target)
                     realisasiTipe == RealisasiTipe.PENGELUARAN ->
-                        "Berdasarkan Realisasi (Pengeluaran)"
+                        stringResource(R.string.stat_basis_actual_expense)
 
-                    else -> "Berdasarkan Realisasi (Pendapatan)"
+                    else -> stringResource(R.string.stat_basis_actual_income)
                 }
                 Text(
-                    text = "$basis · ${total.formatCurrency()}",
+                    text = stringResource(
+                        R.string.stat_basis_value_format,
+                        basis,
+                        total.formatCurrency(),
+                    ),
                     style = MaterialTheme.typography.bodySmall,
                 )
             }
@@ -266,8 +268,8 @@ fun AlokasiDanaCard(
         SegmentedTabRow(
             selected = mode,
             options = listOf(
-                AlokasiMode.ALOKASI to "Alokasi",
-                AlokasiMode.REALISASI to "Realisasi",
+                AlokasiMode.ALOKASI to stringResource(R.string.stat_tab_allocation),
+                AlokasiMode.REALISASI to stringResource(R.string.stat_tab_actual),
             ),
             onSelect = onTabChange,
         )
@@ -278,8 +280,8 @@ fun AlokasiDanaCard(
             Spacer(Modifier.height(8.dp))
 
             val tipeOptions = listOf(
-                RealisasiTipe.PENGELUARAN to "Pengeluaran",
-                RealisasiTipe.PENDAPATAN to "Pendapatan",
+                RealisasiTipe.PENGELUARAN to stringResource(R.string.stat_tipe_expense),
+                RealisasiTipe.PENDAPATAN to stringResource(R.string.stat_tipe_income),
             )
             SecondaryTabRow(
                 selectedTabIndex = tipeOptions.indexOfFirst { it.first == realisasiTipe },
@@ -415,9 +417,9 @@ fun TindakanCepatCard(onClick: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text("Tindakan Cepat", style = MaterialTheme.typography.titleMedium)
+            Text(stringResource(R.string.stat_quick_actions), style = MaterialTheme.typography.titleMedium)
             Text(
-                text = "bantuan",
+                text = stringResource(R.string.stat_help),
                 color = PrimaryCyan,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
@@ -457,12 +459,12 @@ fun TindakanCepatCard(onClick: () -> Unit) {
 
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Ubah Alokasi Dana",
+                        text = stringResource(R.string.stat_edit_allocation),
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp,
                     )
                     Text(
-                        text = "Sesuaikan target anggaranmu agar finansial tetap sehat.",
+                        text = stringResource(R.string.stat_edit_allocation_desc),
                         fontSize = 12.sp,
                         color = Color.Gray,
                     )
@@ -560,7 +562,7 @@ fun TotalPengeluaranCard(totalPengeluaran: Long, deltaPercent: Float) {
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(
-                        String.format(idLocale, "%+.1f%%", deltaPercent),
+                        String.format(Locale.getDefault(), "%+.1f%%", deltaPercent),
                         color = trendColor,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,
@@ -568,7 +570,7 @@ fun TotalPengeluaranCard(totalPengeluaran: Long, deltaPercent: Float) {
                 }
             }
             Spacer(Modifier.height(16.dp))
-            Text("Total Pengeluaran", fontSize = 13.sp, color = Color.Gray)
+            Text(stringResource(R.string.stat_total_expense), fontSize = 13.sp, color = Color.Gray)
             Text(totalPengeluaran.formatCurrency(), fontSize = 24.sp, fontWeight = FontWeight.Bold)
         }
     }

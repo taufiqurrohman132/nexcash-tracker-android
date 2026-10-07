@@ -36,9 +36,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.nexcashapplication.R
+import java.time.format.TextStyle
+import java.util.Locale
 
 @Composable
 fun MonthPicker(
@@ -48,8 +52,13 @@ fun MonthPicker(
     confirmButtonCLicked: (Int, Int) -> Unit,
     cancelClicked: () -> Unit,
 ) {
-    val months =
-        listOf("JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC")
+    // Nama bulan singkat mengikuti bahasa aplikasi (dulu hardcoded "JAN".."DEC").
+    // Urutan tetap Jan..Des sehingga months[currentMonth] dan indexOf(month) tetap valid.
+    val months = (1..12).map { month ->
+        java.time.Month.of(month)
+                .getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault())
+                .uppercase(Locale.getDefault())
+    }
 
     var month by remember { mutableStateOf(months[currentMonth]) }
     var year by remember { mutableIntStateOf(currentYear) } // Use mutableIntStateOf for efficiency
@@ -60,19 +69,19 @@ fun MonthPicker(
             onDismissRequest = cancelClicked,
             confirmButton = {
                 TextButton(onClick = { confirmButtonCLicked(months.indexOf(month), year) }) {
-                    Text("OK")
+                    Text(stringResource(R.string.common_ok))
                 }
             },
             dismissButton = {
                 TextButton(onClick = cancelClicked) {
-                    Text("CANCEL")
+                    Text(stringResource(R.string.common_cancel))
                 }
             },
             containerColor = Color.White,
             shape = RoundedCornerShape(10.dp),
             title = {
                 Text(
-                    text = "Select Month",
+                    text = stringResource(R.string.core_month_picker_title),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                 )

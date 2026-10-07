@@ -4,8 +4,10 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.model.AppLanguage
+import com.example.nexcashapplication.core.i18n.AppLocale
 import com.example.nexcashapplication.feature.settings.domain.repository.SettingsRepository
 import com.example.nexcashapplication.feature.settings.presentation.language.model.LanguageItemUiModel
+import com.example.nexcashapplication.feature.settings.presentation.language.model.nameResId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -68,7 +70,7 @@ class LanguageSettingsViewModel @Inject constructor(
                     Log.d(TAG, "onEvent: selected lacnguage = ${state.value.selectedLanguageId}")
                     handleSave(state.value.selectedLanguageId)
                     sendEffect(
-                        LanguageSettingsEffect.NavigateBack,
+                        LanguageSettingsEffect.Saved(state.value.selectedLanguageId),
                     )
                 }
             }
@@ -109,7 +111,7 @@ class LanguageSettingsViewModel @Inject constructor(
                                 listLanguage = listLanguage.map { language ->
                                     LanguageItemUiModel(
                                         id = language.code,
-                                        name = language.displayNmae,
+                                        nameRes = language.nameResId,
                                     )
                                 },
                             )
@@ -119,10 +121,15 @@ class LanguageSettingsViewModel @Inject constructor(
 
     }
 
-    private fun handleSave(selectedLanguageId: String) {
-        viewModelScope.launch {
-            settingsRepository.updateLanguage(selectedLanguageId)
-        }
+    /**
+     * Simpan pilihan ke DataStore lalu terapkan sekarang juga. [AppLocale.apply] mengganti
+     * Locale default JVM (`java.time`, `NumberFormat`); resources Activity baru berubah setelah
+     * Activity di-recreate oleh penerima [LanguageSettingsEffect.Saved]. Sengaja suspend —
+     * efek boleh dikirim hanya setelah persistensi selesai.
+     */
+    private suspend fun handleSave(selectedLanguageId: String) {
+        settingsRepository.updateLanguage(selectedLanguageId)
+        AppLocale.apply(selectedLanguageId)
     }
 
     companion object {
