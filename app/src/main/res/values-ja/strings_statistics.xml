@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Header layar -->
+    <string name="stat_title">統計</string>
+
+    <!-- Kartu ringkasan -->
+    <string name="stat_remaining_budget">残り予算</string>
+    <string name="stat_savings_rate_title">貯蓄率</string>
+
+    <!-- Badge status anggaran (BudgetStatus) -->
+    <string name="stat_status_safe">安全</string>
+    <string name="stat_status_warning">警戒</string>
+    <string name="stat_status_over">超過</string>
+
+    <!-- Kartu Alokasi Dana -->
+    <string name="stat_allocation_title">資金配分</string>
+    <string name="stat_basis_target">目標に基づく</string>
+    <string name="stat_basis_actual_expense">実績に基づく（支出）</string>
+    <string name="stat_basis_actual_income">実績に基づく（収入）</string>
+    <string name="stat_basis_value_format">%1$s · %2$s</string>
+    <string name="stat_tab_allocation">配分</string>
+    <string name="stat_tab_actual">実績</string>
+    <string name="stat_tipe_expense">支出</string>
+    <string name="stat_tipe_income">収入</string>
+
+    <!-- Kartu Tindakan Cepat -->
+    <string name="stat_quick_actions">クイックアクション</string>
+    <string name="stat_help">ヘルプ</string>
+    <string name="stat_edit_allocation">資金配分を編集</string>
+    <string name="stat_edit_allocation_desc">予算の目標を調整して、健全な家計管理を保ちましょう。</string>
+
+    <!-- Kartu Total Pengeluaran -->
+    <string name="stat_total_expense">支出合計</string>
+</resources>

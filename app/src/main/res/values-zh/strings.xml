@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">NexCashApplication</string>
+
+    <string name="total_balance_format">Rp %1$s</string>
+
+    <!-- Type Account Labels -->
+    <string name="account_type_cash">现金</string>
+    <string name="account_type_bank">银行</string>
+    <string name="account_type_card">银行卡</string>
+    <string name="account_type_debit_card">借记卡</string>
+    <string name="account_type_savings">储蓄</string>
+    <string name="account_type_prepaid_card">预付卡</string>
+    <string name="account_type_investment">投资</string>
+    <string name="account_type_e_wallet">E-Wallet</string>
+    <string name="account_type_loan">贷款</string>
+    <string name="account_type_insurance">保险</string>
+    <string name="account_type_other">其他</string>
+    <string name="semua">全部</string>
+
+    <!-- Label cadangan baris transaksi (lihat TransactionItem) -->
+    <string name="common_no_category">无分类</string>
+    <string name="common_account_deleted">账户已删除</string>
+</resources>

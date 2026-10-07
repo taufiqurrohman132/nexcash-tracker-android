@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- BalanceCard -->
+    <string name="dash_total_balance_label">Saldo total</string>
+    <string name="dash_balance_hidden">Rp ••••••••</string>
+    <string name="dash_income_label">INGRESOS</string>
+    <string name="dash_expense_label">GASTOS</string>
+
+    <!-- HeaderSection -->
+    <string name="dash_greeting_format">Hola, %1$s</string>
+
+    <!-- QuickActionSection -->
+    <string name="dash_quick_action_category">Categorías</string>
+    <string name="dash_quick_action_add_account">Añadir cuenta</string>
+    <string name="dash_quick_action_statistics">Estadísticas</string>
+
+    <!-- BudgetCard -->
+    <string name="dash_remaining_budget">Presupuesto restante</string>
+    <string name="dash_see_detail">Ver detalle</string>
+    <string name="dash_budget_period">%1$s %2$d</string>
+    <string name="dash_remaining_suffix">restante</string>
+    <string name="dash_budget_used_format">%1$d%% usado</string>
+    <string name="dash_budget_tip">Consejo: tus gastos en comida han subido un 15% esta semana.</string>
+
+    <!-- DashboardScreen -->
+    <string name="dash_recent_transactions">Transacciones recientes</string>
+    <string name="dash_no_transactions">Aún no hay transacciones</string>
+</resources>

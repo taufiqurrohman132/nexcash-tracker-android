@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- SettingsScreen (layar utama Pengaturan) -->
+    <string name="settings_title">设置</string>
+    <string name="settings_section_preferences">偏好设置</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_currency">货币</string>
+    <string name="settings_theme_color">主题 &amp; 颜色</string>
+    <string name="settings_notifications">通知</string>
+    <string name="settings_notification_summary">余额、预算</string>
+    <string name="settings_section_manage_data">数据管理</string>
+    <string name="settings_category">分类</string>
+    <string name="settings_app_version_format">应用版本 %1$s</string>
+
+    <!-- Baris ringkasan Bahasa & Mata Uang di SettingsScreen -->
+    <string name="settings_language_format">语言（%1$s）</string>
+    <string name="settings_currency_format">%1$s (%2$s)</string>
+
+    <!-- ThemeColorSheet -->
+    <string name="settings_theme_choose_title">选择主题</string>
+    <string name="settings_theme_choose_color">选择颜色</string>
+    <string name="settings_theme_default">默认</string>
+    <string name="settings_color_blue">蓝色</string>
+    <string name="settings_color_magenta">洋红色</string>
+    <string name="settings_color_green">绿色</string>
+    <string name="settings_color_yellow">黄色</string>
+    <string name="settings_color_cyan">青色</string>
+    <string name="settings_color_light_gray">浅灰色</string>
+    <string name="settings_color_black">黑色</string>
+    <string name="settings_color_gray">灰色</string>
+
+    <!-- LanguageSettingsScreen -->
+    <string name="settings_back">返回</string>
+    <string name="settings_save">保存</string>
+    <string name="settings_search_language">搜索语言</string>
+    <string name="settings_language_info">您选择的语言将应用于 NexCash 应用的整个界面，让您的财务管理更轻松。</string>
+
+    <!-- CurrencySettingsScreen -->
+    <string name="settings_search_currency">搜索货币</string>
+    <string name="settings_currency_info">您选择的货币用于显示 NexCash 应用中的所有金额。</string>
+
+    <!-- Nama bahasa dalam bahasanya sendiri — daftar bahasa & baris ringkasan Bahasa -->
+    <string name="settings_lang_id">印度尼西亚语</string>
+    <string name="settings_lang_en">英语</string>
+    <string name="settings_lang_fr">法语</string>
+    <string name="settings_lang_de">德语</string>
+    <string name="settings_lang_es">西班牙语</string>
+    <string name="settings_lang_pt">葡萄牙语</string>
+    <string name="settings_lang_ru">俄语</string>
+    <string name="settings_lang_zh">中文</string>
+    <string name="settings_lang_ja">日语</string>
+
+    <!-- Nama mata uang — AppCurrency.displayNameRes -->
+    <string name="settings_currency_idr">印度尼西亚盾</string>
+    <string name="settings_currency_usd">美元</string>
+    <string name="settings_currency_eur">欧元</string>
+    <string name="settings_currency_sgd">新加坡元</string>
+    <string name="settings_currency_jpy">日元</string>
+    <string name="settings_currency_myr">马来西亚林吉特</string>
+    <string name="settings_currency_gbp">英镑</string>
+    <string name="settings_currency_aud">澳大利亚元</string>
+</resources>

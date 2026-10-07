@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- SettingsScreen (layar utama Pengaturan) -->
+    <string name="settings_title">Einstellungen</string>
+    <string name="settings_section_preferences">Präferenzen</string>
+    <string name="settings_language">Sprache</string>
+    <string name="settings_currency">Währung</string>
+    <string name="settings_theme_color">Thema &amp; Farbe</string>
+    <string name="settings_notifications">Benachrichtigungen</string>
+    <string name="settings_notification_summary">Guthaben, Budgets</string>
+    <string name="settings_section_manage_data">Daten verwalten</string>
+    <string name="settings_category">Kategorien</string>
+    <string name="settings_app_version_format">App-Version %1$s</string>
+
+    <!-- Baris ringkasan Bahasa & Mata Uang di SettingsScreen -->
+    <string name="settings_language_format">Sprache (%1$s)</string>
+    <string name="settings_currency_format">%1$s (%2$s)</string>
+
+    <!-- ThemeColorSheet -->
+    <string name="settings_theme_choose_title">Thema wählen</string>
+    <string name="settings_theme_choose_color">Farbe wählen</string>
+    <string name="settings_theme_default">Standard</string>
+    <string name="settings_color_blue">Blau</string>
+    <string name="settings_color_magenta">Magenta</string>
+    <string name="settings_color_green">Grün</string>
+    <string name="settings_color_yellow">Gelb</string>
+    <string name="settings_color_cyan">Türkis</string>
+    <string name="settings_color_light_gray">Hellgrau</string>
+    <string name="settings_color_black">Schwarz</string>
+    <string name="settings_color_gray">Grau</string>
+
+    <!-- LanguageSettingsScreen -->
+    <string name="settings_back">Zurück</string>
+    <string name="settings_save">Speichern</string>
+    <string name="settings_search_language">Sprache suchen</string>
+    <string name="settings_language_info">Die gewählte Sprache wird auf die gesamte Benutzeroberfläche der NexCash-App angewendet, um die Verwaltung Ihrer Finanzen zu erleichtern.</string>
+
+    <!-- CurrencySettingsScreen -->
+    <string name="settings_search_currency">Währung suchen</string>
+    <string name="settings_currency_info">Die gewählte Währung wird verwendet, um alle Beträge in der NexCash-App anzuzeigen.</string>
+
+    <!-- Nama bahasa dalam bahasanya sendiri — daftar bahasa & baris ringkasan Bahasa -->
+    <string name="settings_lang_id">Indonesisch</string>
+    <string name="settings_lang_en">Englisch</string>
+    <string name="settings_lang_fr">Französisch</string>
+    <string name="settings_lang_de">Deutsch</string>
+    <string name="settings_lang_es">Spanisch</string>
+    <string name="settings_lang_pt">Portugiesisch</string>
+    <string name="settings_lang_ru">Russisch</string>
+    <string name="settings_lang_zh">Chinesisch</string>
+    <string name="settings_lang_ja">Japanisch</string>
+
+    <!-- Nama mata uang — AppCurrency.displayNameRes -->
+    <string name="settings_currency_idr">Indonesische Rupiah</string>
+    <string name="settings_currency_usd">US-Dollar</string>
+    <string name="settings_currency_eur">Euro</string>
+    <string name="settings_currency_sgd">Singapur-Dollar</string>
+    <string name="settings_currency_jpy">Japanischer Yen</string>
+    <string name="settings_currency_myr">Malaysischer Ringgit</string>
+    <string name="settings_currency_gbp">Britisches Pfund</string>
+    <string name="settings_currency_aud">Australischer Dollar</string>
+</resources>

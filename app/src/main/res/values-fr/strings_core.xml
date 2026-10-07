@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tombol dialog generik -->
+    <string name="common_ok">OK</string>
+    <string name="common_cancel">Annuler</string>
+
+    <!-- MonthPicker -->
+    <string name="core_month_picker_title">Choisir le mois</string>
+
+    <!-- InteractiveDonutChart: label slice terpilih di lubang tengah -->
+    <string name="core_donut_slice_percent">%1$s : %2$d%%</string>
+
+    <!-- Nama channel notifikasi (bukan ID channel) -->
+    <string name="core_channel_budget_alert_name">Alertes de budget</string>
+    <string name="core_channel_reminder_name">Rappels quotidiens</string>
+
+    <!-- AppTimePickerDialog -->
+    <string name="core_time_picker_title">Choisir l\'heure</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">Accueil</string>
+    <string name="nav_transaction">Transactions</string>
+    <string name="nav_asset">Actifs</string>
+    <string name="nav_insight">Analyses</string>
+    <string name="nav_settings">Paramètres</string>
+</resources>

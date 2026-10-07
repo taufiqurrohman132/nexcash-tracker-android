@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Label tipe periode (RecurrenceType.labelResId) -->
+    <string name="budget_recurrence_monthly">每月</string>
+    <string name="budget_recurrence_weekly">每周</string>
+    <string name="budget_recurrence_custom">自定义</string>
+
+    <!-- Layar tambah/ubah anggaran (AddEditBudgetScreen) -->
+    <string name="budget_edit_title">编辑预算</string>
+    <string name="budget_category_label">分类：%1$s</string>
+    <string name="budget_back_cd">返回</string>
+    <string name="budget_delete_content_description">删除预算</string>
+    <string name="budget_new_limit_title">新预算限额</string>
+    <string name="budget_previous_limit">之前的限额为 %1$s</string>
+    <string name="budget_effective_period_title">生效周期</string>
+    <string name="budget_start_label">开始</string>
+    <string name="budget_end_label">结束</string>
+    <string name="budget_duration_days">为期 %1$d 天</string>
+    <string name="budget_recurring_settings_title">重复设置</string>
+
+    <!-- Kartu anggaran berulang (RecurringBudgetCard + AddEditBudgetState.previewTeksBerulang) -->
+    <string name="budget_recurring_card_title">周期性预算</string>
+    <string name="budget_recurring_card_subtitle">每个周期开始时自动更新此预算</string>
+    <string name="budget_recurring_preview_monthly">系统将在每月 1 日自动生成 %1$s 预算，金额为 Rp %2$s。</string>
+    <string name="budget_recurring_preview_weekly">系统将在每周开始时自动生成 %1$s 预算，金额为 Rp %2$s。</string>
+    <string name="budget_recurring_preview_custom">系统将自动生成 %1$s 预算（金额为 Rp %2$s），每 %3$d 天一次，自 %4$s 起。</string>
+    <string name="budget_this_category">这个分类</string>
+
+    <!-- Ringkasan perubahan (ChangeSummaryCard) -->
+    <string name="budget_change_summary_title">变更摘要</string>
+    <string name="budget_old_value_label">旧</string>
+    <string name="budget_new_value_label">新</string>
+
+    <!-- Tombol -->
+    <string name="budget_save_changes_action">保存更改</string>
+    <string name="budget_save_action">保存</string>
+    <string name="budget_saving_action">保存中…</string>
+    <string name="budget_delete_action">删除</string>
+    <string name="budget_cancel_action">取消</string>
+
+    <!-- Dialog konfirmasi hapus anggaran (AddEditBudgetScreen) -->
+    <string name="budget_delete_dialog_title">删除预算？</string>
+    <string name="budget_delete_dialog_message">预算 \"%1$s\" 的当前周期及后续周期将被删除。过去周期的记录将保留。</string>
+
+    <!-- Layar edit alokasi banyak kategori (EditPresentageBudgetScreen) -->
+    <string name="budget_edit_allocations_title">编辑预算</string>
+    <string name="budget_expense_categories_title">支出分类</string>
+    <string name="budget_active_categories_count">%1$d 个启用分类</string>
+    <string name="budget_allocation_ready">分配总额 %1$d%% — 可以保存</string>
+    <string name="budget_allocation_invalid_hint">分配总额 %1$d%%（上限 100%%）• 每个分类必须大于 0</string>
+    <string name="budget_delete_allocation_cd">删除 %1$s 的分配</string>
+
+    <!-- Dialog konfirmasi hapus alokasi (EditPresentageBudgetScreen) -->
+    <string name="budget_delete_allocation_dialog_title">删除分配？</string>
+    <string name="budget_delete_allocation_dialog_message">分配 \"%1$s\" 的当前周期及后续周期将被删除。过去周期的记录将保留。</string>
+
+    <!-- Kartu ringkasan & kartu alokasi kategori -->
+    <string name="budget_summary_total">预算总额</string>
+    <string name="budget_summary_used">已使用</string>
+    <string name="budget_summary_remaining">剩余</string>
+    <string name="budget_percentage_of_total">占总额的 %1$s%%</string>
+    <string name="budget_percentage_value">%1$s%%</string>
+
+    <!-- Pesan validasi & hasil aksi (SaveBudgetUseCase / DeleteBudgetUseCase / ViewModel) -->
+    <string name="budget_error_category_not_found">未找到分类</string>
+    <string name="budget_error_expense_category_only">预算只能设置在支出分类上</string>
+    <string name="budget_error_amount_must_be_positive">预算限额必须大于 0</string>
+    <string name="budget_error_end_after_start">结束日期必须晚于开始日期</string>
+    <string name="budget_error_invalid_budget">无效的预算</string>
+    <string name="budget_error_budget_not_found">未找到预算</string>
+    <string name="budget_error_min_one_category">至少分配一个分类</string>
+    <string name="budget_error_allocation_total">分配总额 %1$d%%（上限 100%%）— 每个分类必须大于 0</string>
+    <string name="budget_save_failed">保存预算失败：%1$s</string>
+    <string name="budget_delete_failed">删除预算失败：%1$s</string>
+    <string name="budget_allocation_deleted">分类分配已删除</string>
+</resources>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Umum / navigasi (fitur transaksi) -->
+    <string name="tx_back">Back</string>
+    <string name="tx_cancel">Cancel</string>
+    <string name="tx_retry">Try Again</string>
+    <string name="tx_load_failed">Failed to load transactions</string>
+    <string name="tx_transaction_unavailable">Transactions not available</string>
+
+    <!-- Tambah / edit transaksi (AddEditTransactionScreen) -->
+    <string name="tx_add_title">Add Transaction</string>
+    <string name="tx_save_transaction">Save Transaction</string>
+    <string name="tx_saving">Saving...</string>
+    <string name="tx_amount_out">AMOUNT (OUT)</string>
+    <string name="tx_amount_in">AMOUNT (IN)</string>
+    <string name="tx_currency_prefix">Rp</string>
+    <string name="tx_date">Date</string>
+    <string name="tx_time">Time</string>
+    <string name="tx_name">Name</string>
+    <string name="tx_name_placeholder">Transaction Name</string>
+    <string name="tx_category">Category</string>
+    <string name="tx_select_category">Select Category</string>
+    <string name="tx_select_category_hint">e.g. Food, Transportation...</string>
+    <string name="tx_funding_source">Funding Source</string>
+    <string name="tx_received_at">Received at</string>
+    <string name="tx_select_account">Select Account</string>
+    <string name="tx_select_account_hint">Cash, Bank BCA, E-Wallet...</string>
+    <string name="tx_note">Note</string>
+    <string name="tx_note_placeholder">Add a note here...</string>
+    <string name="tx_attachment">Attachment</string>
+    <string name="tx_attachment_hint">JPG, PNG OR PDF (MAX. 5MB)</string>
+    <string name="tx_take_photo">Take a photo or choose a file</string>
+    <string name="tx_recurring">Recurring Transaction</string>
+    <string name="tx_save_failed">Transaction failed to save. Try again.</string>
+
+    <!-- Tipe transaksi (TransactionType.labelResId) -->
+    <string name="tx_type_expense">Expenses</string>
+    <string name="tx_type_income">Revenues</string>
+
+    <!-- Layar kosong (TransactionEmptyScreen) -->
+    <string name="tx_empty_title">No transactions yet</string>
+    <string name="tx_empty_description">Start logging your expenses and revenues today to gain better control of your finances and reach your financial goals.</string>
+    <string name="tx_empty_action">Add First Transaction</string>
+
+    <!-- Bottom sheet kategori &amp; rekening -->
+    <string name="tx_no_categories">No categories yet</string>
+    <string name="tx_pick_parent_category">Select main category</string>
+
+    <!-- Tab Transaksi (TransactionScreen) -->
+    <string name="tx_title">Transactions</string>
+    <string name="tx_search_hint">Search transactions...</string>
+    <string name="tx_today">Today</string>
+    <string name="tx_this_week">This Week</string>
+    <string name="tx_remaining_budget">Remaining Budget</string>
+    <string name="tx_group_net_format">%1$s %2$s %3$s</string>
+
+    <!-- Semua Transaksi (GetTransactionsByFilterUseCase / AllTransactionsScreen) -->
+    <string name="tx_title_all">All Transactions</string>
+    <string name="tx_title_filter">Transactions · %1$s</string>
+
+    <!-- Detail transaksi (DetailTransactionScreen) -->
+    <string name="tx_detail_title">Transaction Details</string>
+    <string name="tx_not_found">Transaction not found</string>
+    <string name="tx_unknown_category">Unknown Category</string>
+    <string name="tx_unknown_account">Unknown Account</string>
+    <string name="tx_view_fullscreen">View Fullscreen</string>
+    <string name="tx_action_edit">EDIT</string>
+    <string name="tx_action_duplicate">DUPLICATE</string>
+    <string name="tx_action_share">SHARE</string>
+    <string name="tx_action_delete">DELETE</string>
+    <string name="tx_transaction_id">TRANSACTION ID: %1$s</string>
+    <string name="tx_date_time">Date &amp; Time</string>
+    <string name="tx_date_time_value">%1$s, %2$s %3$s</string>
+    <string name="tx_share_chooser">Share transaction</string>
+    <string name="tx_no_share_app">No app available to share</string>
+    <string name="tx_detail_load_failed">Transaction failed to load</string>
+    <string name="tx_delete_failed">Transaction failed to delete. Try again.</string>
+    <string name="tx_duplicated">Transaction duplicated</string>
+    <string name="tx_duplicate_failed">Transaction failed to duplicate. Try again.</string>
+    <string name="tx_attachment_preview_unavailable">Attachment preview not available yet</string>
+
+    <!-- Dialog hapus transaksi (DeleteTransactionDialog) -->
+    <string name="tx_delete_title">Delete Transaction?</string>
+    <string name="tx_delete">Delete</string>
+    <string name="tx_balance_effect_expense">The balance of account \"%1$s\" will increase by %2$s after this transaction is deleted.</string>
+    <string name="tx_balance_effect_income">The balance of account \"%1$s\" will decrease by %2$s after this transaction is deleted.</string>
+
+    <!-- Teks yang dibagikan (DetailTransactionViewModel.handleShare) -->
+    <string name="tx_share_headline">%1$s • %2$s</string>
+    <string name="tx_share_date_line">Date: %1$s %2$s</string>
+    <string name="tx_share_category_line">Category: %1$s</string>
+    <string name="tx_share_funding_line">Funding Source: %1$s</string>
+    <string name="tx_share_received_line">Received at: %1$s</string>
+    <string name="tx_share_note_line">Note: %1$s</string>
+</resources>

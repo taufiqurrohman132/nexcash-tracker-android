@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- SettingsScreen (layar utama Pengaturan) -->
+    <string name="settings_title">設定</string>
+    <string name="settings_section_preferences">環境設定</string>
+    <string name="settings_language">言語</string>
+    <string name="settings_currency">通貨</string>
+    <string name="settings_theme_color">テーマ &amp; カラー</string>
+    <string name="settings_notifications">通知</string>
+    <string name="settings_notification_summary">残高、予算</string>
+    <string name="settings_section_manage_data">データの管理</string>
+    <string name="settings_category">カテゴリ</string>
+    <string name="settings_app_version_format">アプリのバージョン %1$s</string>
+
+    <!-- Baris ringkasan Bahasa & Mata Uang di SettingsScreen -->
+    <string name="settings_language_format">言語（%1$s）</string>
+    <string name="settings_currency_format">%1$s (%2$s)</string>
+
+    <!-- ThemeColorSheet -->
+    <string name="settings_theme_choose_title">テーマを選択</string>
+    <string name="settings_theme_choose_color">カラーを選択</string>
+    <string name="settings_theme_default">デフォルト</string>
+    <string name="settings_color_blue">青</string>
+    <string name="settings_color_magenta">マゼンタ</string>
+    <string name="settings_color_green">緑</string>
+    <string name="settings_color_yellow">黄</string>
+    <string name="settings_color_cyan">シアン</string>
+    <string name="settings_color_light_gray">ライトグレー</string>
+    <string name="settings_color_black">黒</string>
+    <string name="settings_color_gray">グレー</string>
+
+    <!-- LanguageSettingsScreen -->
+    <string name="settings_back">戻る</string>
+    <string name="settings_save">保存</string>
+    <string name="settings_search_language">言語を検索</string>
+    <string name="settings_language_info">選択した言語は、NexCash アプリのすべてのインターフェースに適用され、家計管理をより簡単にします。</string>
+
+    <!-- CurrencySettingsScreen -->
+    <string name="settings_search_currency">通貨を検索</string>
+    <string name="settings_currency_info">選択した通貨は、NexCash アプリ内のすべての金額表示に使用されます。</string>
+
+    <!-- Nama bahasa dalam bahasanya sendiri — daftar bahasa & baris ringkasan Bahasa -->
+    <string name="settings_lang_id">インドネシア語</string>
+    <string name="settings_lang_en">英語</string>
+    <string name="settings_lang_fr">フランス語</string>
+    <string name="settings_lang_de">ドイツ語</string>
+    <string name="settings_lang_es">スペイン語</string>
+    <string name="settings_lang_pt">ポルトガル語</string>
+    <string name="settings_lang_ru">ロシア語</string>
+    <string name="settings_lang_zh">中国語</string>
+    <string name="settings_lang_ja">日本語</string>
+
+    <!-- Nama mata uang — AppCurrency.displayNameRes -->
+    <string name="settings_currency_idr">インドネシアルピア</string>
+    <string name="settings_currency_usd">米国ドル</string>
+    <string name="settings_currency_eur">ユーロ</string>
+    <string name="settings_currency_sgd">シンガポールドル</string>
+    <string name="settings_currency_jpy">日本円</string>
+    <string name="settings_currency_myr">マレーシアリンギット</string>
+    <string name="settings_currency_gbp">イギリスポンド</string>
+    <string name="settings_currency_aud">オーストラリアドル</string>
+</resources>

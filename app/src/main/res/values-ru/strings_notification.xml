@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- NotificationMapper: judul & badan alert budget -->
+    <string name="notif_alert_title_format">%1$s: достигнуто %2$d%%</string>
+    <string name="notif_alert_limit_body_format">Лимит бюджета %1$s исчерпан.</string>
+    <string name="notif_alert_warning_body_format">Бюджет %1$s скоро закончится.</string>
+
+    <!-- NotificationMapper: grup per hari & label waktu relatif -->
+    <string name="notif_group_today">Сегодня</string>
+    <string name="notif_group_yesterday">Вчера</string>
+    <string name="notif_time_just_now">Только что</string>
+    <string name="notif_time_minutes_ago_format">%1$d мин назад</string>
+    <string name="notif_time_hours_ago_format">%1$d ч назад</string>
+    <string name="notif_time_yesterday_format">Вчера, %1$s</string>
+    <string name="notif_time_date_format">%1$s, %2$s</string>
+
+    <!-- NotificationScreen (daftar notifikasi) -->
+    <string name="notif_title">Уведомления</string>
+    <string name="notif_back">Назад</string>
+    <string name="notif_settings_content_desc">Настройки уведомлений</string>
+    <string name="notif_unread_count_format">Непрочитанных: %1$d</string>
+    <string name="notif_all_read">Все прочитано</string>
+    <string name="notif_mark_all_read">Отметить все как прочитанные</string>
+    <string name="notif_unread_dot_desc">Не прочитано</string>
+    <string name="notif_empty_title">Уведомлений пока нет</string>
+    <string name="notif_empty_subtitle">Напоминания появятся здесь, когда расходы достигнут лимита бюджета.</string>
+
+    <!-- NotificationEditScreen (pengaturan notifikasi) -->
+    <string name="notif_settings_title">Настройки уведомлений</string>
+    <string name="notif_active_budgets_label">АКТИВНЫЕ БЮДЖЕТЫ</string>
+    <string name="notif_footnote">Напоминания приходят в виде уведомлений на этом устройстве: один раз на каждый лимит за каждый период бюджета.</string>
+    <string name="notif_enable_reminders">Включить напоминания</string>
+    <string name="notif_enable_reminders_desc">Сообщать, когда расходы приближаются к лимиту</string>
+    <string name="notif_permission_hint">Разрешение на уведомления не выдано. Включите его в настройках системы.</string>
+    <string name="notif_reminder_switch_desc_format">Напоминание %1$s</string>
+    <string name="notif_remind_at">Напомнить в</string>
+    <string name="notif_threshold_percent_format">%1$d%%</string>
+
+    <!-- DailyReminderWorker (context aplikasi → wajib withAppLocale) -->
+    <string name="notif_daily_reminder_title">Сегодня ещё нет транзакций</string>
+    <string name="notif_daily_reminder_body">Запишите свои доходы и расходы, чтобы бюджет оставался точным.</string>
+</resources>

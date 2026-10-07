@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Daftar akun / aset (AccountAssetScreen) -->
+    <string name="acct_title">Accounts</string>
+    <string name="acct_add_account">Add Account</string>
+    <string name="acct_add_content_desc">Add account</string>
+    <string name="acct_load_failed">Failed to load data</string>
+    <string name="acct_retry">Try again</string>
+    <string name="acct_empty_title">No accounts yet</string>
+    <string name="acct_empty_subtitle">Add a bank account or e-wallet to start tracking your assets.</string>
+    <string name="acct_total_balance_combined">Combined Total Balance</string>
+    <string name="acct_currency_code">IDR</string>
+    <string name="acct_this_month">THIS MONTH</string>
+    <string name="acct_active_assets">ACTIVE ASSETS</string>
+    <string name="acct_active_account_count">%1$d Accounts</string>
+    <string name="acct_provider_undefined">Not specified</string>
+
+    <!-- Detail akun (DetailAccountScreen) -->
+    <string name="acct_back">Back</string>
+    <string name="acct_transaction">Transaction</string>
+    <string name="acct_recent_transactions">Recent transactions</string>
+    <string name="acct_see_all">See all</string>
+    <string name="acct_asset_settings">ASSET SETTINGS</string>
+    <string name="acct_edit_asset">Edit Asset</string>
+    <string name="acct_delete_this_asset">Delete This Asset</string>
+    <string name="acct_total_balance">Total Balance</string>
+    <string name="acct_type_provider_format">%1$s • %2$s</string>
+    <string name="acct_account_not_loaded">Account not loaded, try again</string>
+    <string name="acct_transaction_unavailable">Transactions not available</string>
+
+    <!-- Tambah / edit informasi akun (AddEditInfoAccountScreen) -->
+    <string name="acct_choose_provider">Select Provider (Optional)</string>
+    <string name="acct_provider_unavailable">Not available</string>
+    <string name="acct_save_changes">Save Changes</string>
+    <string name="acct_save_asset">Save Asset</string>
+    <string name="acct_save_failed">Failed to save asset</string>
+    <string name="acct_asset_name">Asset Name (Alias)</string>
+    <string name="acct_name_placeholder">e.g. Emergency Savings</string>
+    <string name="acct_name_hint">Use a name that is easy to remember</string>
+    <string name="acct_name_required">Asset name is required</string>
+    <string name="acct_asset_type">Asset Type</string>
+    <string name="acct_locked">LOCKED</string>
+    <string name="acct_initial_balance">Opening Balance</string>
+    <string name="acct_currency_prefix">"Rp "</string>
+    <string name="acct_balance_hint">Current balance in this asset</string>
+    <string name="acct_step_last">Final Step</string>
+    <string name="acct_step_last_desc">Complete your asset details to start recording transactions automatically.</string>
+
+    <!-- Pilih tipe akun (AddEditTypeAccountScreen) -->
+    <string name="acct_title_assets">Accounts &amp; Assets</string>
+    <string name="acct_continue">Continue</string>
+    <string name="acct_step_1_of_2">Step 1 of 2: Identify Asset</string>
+    <string name="acct_choose_asset_type">Select Asset Type</string>
+    <string name="acct_asset_type_hint">You can add several assets of the same type in the next step.</string>
+
+    <!-- Dialog hapus akun (DeleteAccountDialog) -->
+    <string name="acct_delete_blocked_title">Cannot Be Deleted</string>
+    <string name="acct_delete_blocked_message">This account still has a balance of Rp %1$s. Clear the balance first.</string>
+    <string name="acct_delete_history_message">%1$d related transactions will remain in your history.</string>
+    <string name="acct_delete_simple_message">The account will be deleted permanently.</string>
+    <string name="acct_delete_confirm_title">Delete Account?</string>
+    <string name="acct_delete_confirm">Delete Account</string>
+    <string name="acct_close">Close</string>
+    <string name="acct_cancel">Cancel</string>
+</resources>

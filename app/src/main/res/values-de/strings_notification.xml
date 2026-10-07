@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- NotificationMapper: judul & badan alert budget -->
+    <string name="notif_alert_title_format">%1$s hat %2$d%% erreicht</string>
+    <string name="notif_alert_limit_body_format">Das Budgetlimit von %1$s wurde erreicht.</string>
+    <string name="notif_alert_warning_body_format">Das Budget %1$s ist fast aufgebraucht.</string>
+
+    <!-- NotificationMapper: grup per hari & label waktu relatif -->
+    <string name="notif_group_today">Heute</string>
+    <string name="notif_group_yesterday">Gestern</string>
+    <string name="notif_time_just_now">Gerade eben</string>
+    <string name="notif_time_minutes_ago_format">vor %1$d Minuten</string>
+    <string name="notif_time_hours_ago_format">vor %1$d Stunden</string>
+    <string name="notif_time_yesterday_format">Gestern, %1$s</string>
+    <string name="notif_time_date_format">%1$s, %2$s</string>
+
+    <!-- NotificationScreen (daftar notifikasi) -->
+    <string name="notif_title">Benachrichtigungen</string>
+    <string name="notif_back">Zurück</string>
+    <string name="notif_settings_content_desc">Benachrichtigungseinstellungen</string>
+    <string name="notif_unread_count_format">%1$d ungelesen</string>
+    <string name="notif_all_read">Alle gelesen</string>
+    <string name="notif_mark_all_read">Alle als gelesen markieren</string>
+    <string name="notif_unread_dot_desc">Ungelesen</string>
+    <string name="notif_empty_title">Noch keine Benachrichtigungen</string>
+    <string name="notif_empty_subtitle">Erinnerungen erscheinen hier, wenn Ihre Ausgaben das Budgetlimit erreichen.</string>
+
+    <!-- NotificationEditScreen (pengaturan notifikasi) -->
+    <string name="notif_settings_title">Benachrichtigungseinstellungen</string>
+    <string name="notif_active_budgets_label">AKTIVE BUDGETS</string>
+    <string name="notif_footnote">Erinnerungen erscheinen als Benachrichtigungen auf diesem Gerät, einmal pro Limit in jedem Budgetzeitraum.</string>
+    <string name="notif_enable_reminders">Erinnerungen aktivieren</string>
+    <string name="notif_enable_reminders_desc">Benachrichtigen, wenn sich die Ausgaben dem Limit nähern</string>
+    <string name="notif_permission_hint">Die Benachrichtigungsberechtigung wurde nicht erteilt. Aktivieren Sie sie in den Systemeinstellungen.</string>
+    <string name="notif_reminder_switch_desc_format">Erinnerung %1$s</string>
+    <string name="notif_remind_at">Erinnern um</string>
+    <string name="notif_threshold_percent_format">%1$d%%</string>
+
+    <!-- DailyReminderWorker (context aplikasi → wajib withAppLocale) -->
+    <string name="notif_daily_reminder_title">Heute noch keine Transaktionen</string>
+    <string name="notif_daily_reminder_body">Erfasse deine Einnahmen oder Ausgaben, damit deine Budgets aktuell bleiben.</string>
+</resources>

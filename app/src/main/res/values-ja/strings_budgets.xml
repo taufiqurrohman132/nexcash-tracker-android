@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Label tipe periode (RecurrenceType.labelResId) -->
+    <string name="budget_recurrence_monthly">毎月</string>
+    <string name="budget_recurrence_weekly">毎週</string>
+    <string name="budget_recurrence_custom">カスタム</string>
+
+    <!-- Layar tambah/ubah anggaran (AddEditBudgetScreen) -->
+    <string name="budget_edit_title">予算を編集</string>
+    <string name="budget_category_label">カテゴリ: %1$s</string>
+    <string name="budget_back_cd">戻る</string>
+    <string name="budget_delete_content_description">予算を削除</string>
+    <string name="budget_new_limit_title">新しい予算上限</string>
+    <string name="budget_previous_limit">以前の上限は %1$s です</string>
+    <string name="budget_effective_period_title">適用期間</string>
+    <string name="budget_start_label">開始</string>
+    <string name="budget_end_label">終了</string>
+    <string name="budget_duration_days">%1$d日間</string>
+    <string name="budget_recurring_settings_title">繰り返し設定</string>
+
+    <!-- Kartu anggaran berulang (RecurringBudgetCard + AddEditBudgetState.previewTeksBerulang) -->
+    <string name="budget_recurring_card_title">繰り返し予算</string>
+    <string name="budget_recurring_card_subtitle">期間の開始時にこの予算を自動で更新します</string>
+    <string name="budget_recurring_preview_monthly">%1$s の予算 Rp %2$s を毎月1日に自動的に作成します。</string>
+    <string name="budget_recurring_preview_weekly">%1$s の予算 Rp %2$s を毎週の開始時に自動的に作成します。</string>
+    <string name="budget_recurring_preview_custom">%1$s の予算 Rp %2$s を %3$d 日ごとに自動作成します（開始日: %4$s）。</string>
+    <string name="budget_this_category">このカテゴリ</string>
+
+    <!-- Ringkasan perubahan (ChangeSummaryCard) -->
+    <string name="budget_change_summary_title">変更内容の要約</string>
+    <string name="budget_old_value_label">変更前</string>
+    <string name="budget_new_value_label">変更後</string>
+
+    <!-- Tombol -->
+    <string name="budget_save_changes_action">変更を保存</string>
+    <string name="budget_save_action">保存</string>
+    <string name="budget_saving_action">保存中…</string>
+    <string name="budget_delete_action">削除</string>
+    <string name="budget_cancel_action">キャンセル</string>
+
+    <!-- Dialog konfirmasi hapus anggaran (AddEditBudgetScreen) -->
+    <string name="budget_delete_dialog_title">予算を削除しますか？</string>
+    <string name="budget_delete_dialog_message">現在の期間と次の期間の予算 \"%1$s\" を削除します。過去の期間の履歴は保存されたまま残ります。</string>
+
+    <!-- Layar edit alokasi banyak kategori (EditPresentageBudgetScreen) -->
+    <string name="budget_edit_allocations_title">予算を編集</string>
+    <string name="budget_expense_categories_title">支出カテゴリ</string>
+    <string name="budget_active_categories_count">アクティブカテゴリ %1$d件</string>
+    <string name="budget_allocation_ready">割合合計 %1$d%% — 保存できます</string>
+    <string name="budget_allocation_invalid_hint">割合合計 %1$d%%（最大 100%%）• 各カテゴリは 0 より大きい必要があります</string>
+    <string name="budget_delete_allocation_cd">%1$s の割り当てを削除</string>
+
+    <!-- Dialog konfirmasi hapus alokasi (EditPresentageBudgetScreen) -->
+    <string name="budget_delete_allocation_dialog_title">割り当てを削除しますか？</string>
+    <string name="budget_delete_allocation_dialog_message">現在の期間と次の期間の割り当て \"%1$s\" を削除します。過去の期間の履歴は保存されたまま残ります。</string>
+
+    <!-- Kartu ringkasan & kartu alokasi kategori -->
+    <string name="budget_summary_total">予算合計</string>
+    <string name="budget_summary_used">使用済み</string>
+    <string name="budget_summary_remaining">残り</string>
+    <string name="budget_percentage_of_total">合計の %1$s%%</string>
+    <string name="budget_percentage_value">%1$s%%</string>
+
+    <!-- Pesan validasi & hasil aksi (SaveBudgetUseCase / DeleteBudgetUseCase / ViewModel) -->
+    <string name="budget_error_category_not_found">カテゴリが見つかりません</string>
+    <string name="budget_error_expense_category_only">予算は支出カテゴリにのみ設定できます</string>
+    <string name="budget_error_amount_must_be_positive">予算上限は 0 より大きい必要があります</string>
+    <string name="budget_error_end_after_start">終了日は開始日より後にしてください</string>
+    <string name="budget_error_invalid_budget">無効な予算です</string>
+    <string name="budget_error_budget_not_found">予算が見つかりません</string>
+    <string name="budget_error_min_one_category">少なくとも 1 つのカテゴリを割り当ててください</string>
+    <string name="budget_error_allocation_total">割合合計 %1$d%%（最大 100%%）— 各カテゴリは 0 より大きい必要があります</string>
+    <string name="budget_save_failed">予算の保存に失敗しました: %1$s</string>
+    <string name="budget_delete_failed">予算の削除に失敗しました: %1$s</string>
+    <string name="budget_allocation_deleted">カテゴリの割り当てを削除しました</string>
+</resources>

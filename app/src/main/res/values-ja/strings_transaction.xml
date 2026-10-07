@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Umum / navigasi (fitur transaksi) -->
+    <string name="tx_back">戻る</string>
+    <string name="tx_cancel">キャンセル</string>
+    <string name="tx_retry">再試行</string>
+    <string name="tx_load_failed">取引の読み込みに失敗しました</string>
+    <string name="tx_transaction_unavailable">取引は利用できません</string>
+
+    <!-- Tambah / edit transaksi (AddEditTransactionScreen) -->
+    <string name="tx_add_title">取引を追加</string>
+    <string name="tx_save_transaction">取引を保存</string>
+    <string name="tx_saving">保存中...</string>
+    <string name="tx_amount_out">金額（支出）</string>
+    <string name="tx_amount_in">金額（収入）</string>
+    <string name="tx_currency_prefix">Rp</string>
+    <string name="tx_date">日付</string>
+    <string name="tx_time">時刻</string>
+    <string name="tx_name">名前</string>
+    <string name="tx_name_placeholder">取引名</string>
+    <string name="tx_category">カテゴリ</string>
+    <string name="tx_select_category">カテゴリを選択</string>
+    <string name="tx_select_category_hint">例: 食事、交通...</string>
+    <string name="tx_funding_source">資金源</string>
+    <string name="tx_received_at">受取先</string>
+    <string name="tx_select_account">口座を選択</string>
+    <string name="tx_select_account_hint">現金、Bank BCA、E-Wallet...</string>
+    <string name="tx_note">メモ</string>
+    <string name="tx_note_placeholder">メモをここに追加...</string>
+    <string name="tx_attachment">添付ファイル</string>
+    <string name="tx_attachment_hint">JPG、PNG または PDF（最大 5MB）</string>
+    <string name="tx_take_photo">写真を撮るかファイルを選択</string>
+    <string name="tx_recurring">繰り返し取引</string>
+    <string name="tx_save_failed">取引を保存できませんでした。再試行してください。</string>
+
+    <!-- Tipe transaksi (TransactionType.labelResId) -->
+    <string name="tx_type_expense">支出</string>
+    <string name="tx_type_income">収入</string>
+
+    <!-- Layar kosong (TransactionEmptyScreen) -->
+    <string name="tx_empty_title">まだ取引がありません</string>
+    <string name="tx_empty_description">今日から支出と収入を記録して、家計をコントロールし、金融目標を達成しましょう。</string>
+    <string name="tx_empty_action">最初の取引を追加</string>
+
+    <!-- Bottom sheet kategori &amp; rekening -->
+    <string name="tx_no_categories">カテゴリがまだありません</string>
+    <string name="tx_pick_parent_category">親カテゴリを選択</string>
+
+    <!-- Tab Transaksi (TransactionScreen) -->
+    <string name="tx_title">取引</string>
+    <string name="tx_search_hint">取引を検索...</string>
+    <string name="tx_today">今日</string>
+    <string name="tx_this_week">今週</string>
+    <string name="tx_remaining_budget">残り予算</string>
+    <string name="tx_group_net_format">%1$s %2$s %3$s</string>
+
+    <!-- Semua Transaksi (GetTransactionsByFilterUseCase / AllTransactionsScreen) -->
+    <string name="tx_title_all">すべての取引</string>
+    <string name="tx_title_filter">取引 · %1$s</string>
+
+    <!-- Detail transaksi (DetailTransactionScreen) -->
+    <string name="tx_detail_title">取引の詳細</string>
+    <string name="tx_not_found">取引が見つかりません</string>
+    <string name="tx_unknown_category">不明なカテゴリ</string>
+    <string name="tx_unknown_account">不明な口座</string>
+    <string name="tx_view_fullscreen">フルスクリーンで表示</string>
+    <string name="tx_action_edit">編集</string>
+    <string name="tx_action_duplicate">複製</string>
+    <string name="tx_action_share">共有</string>
+    <string name="tx_action_delete">削除</string>
+    <string name="tx_transaction_id">取引ID: %1$s</string>
+    <string name="tx_date_time">日付 &amp; 時刻</string>
+    <string name="tx_date_time_value">%1$s, %2$s %3$s</string>
+    <string name="tx_share_chooser">取引を共有</string>
+    <string name="tx_no_share_app">共有できるアプリがありません</string>
+    <string name="tx_detail_load_failed">取引を読み込めませんでした</string>
+    <string name="tx_delete_failed">取引を削除できませんでした。再試行してください。</string>
+    <string name="tx_duplicated">取引を複製しました</string>
+    <string name="tx_duplicate_failed">取引を複製できませんでした。再試行してください。</string>
+    <string name="tx_attachment_preview_unavailable">添付ファイルのプレビューはまだ利用できません</string>
+
+    <!-- Dialog hapus transaksi (DeleteTransactionDialog) -->
+    <string name="tx_delete_title">取引を削除しますか？</string>
+    <string name="tx_delete">削除</string>
+    <string name="tx_balance_effect_expense">口座 \"%1$s\" の残高は、この取引を削除すると %2$s 増えます。</string>
+    <string name="tx_balance_effect_income">口座 \"%1$s\" の残高は、この取引を削除すると %2$s 減ります。</string>
+
+    <!-- Teks yang dibagikan (DetailTransactionViewModel.handleShare) -->
+    <string name="tx_share_headline">%1$s • %2$s</string>
+    <string name="tx_share_date_line">日付: %1$s %2$s</string>
+    <string name="tx_share_category_line">カテゴリ: %1$s</string>
+    <string name="tx_share_funding_line">資金源: %1$s</string>
+    <string name="tx_share_received_line">受取先: %1$s</string>
+    <string name="tx_share_note_line">メモ: %1$s</string>
+</resources>

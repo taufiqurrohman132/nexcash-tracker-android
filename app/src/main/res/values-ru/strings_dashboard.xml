@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- BalanceCard -->
+    <string name="dash_total_balance_label">Общий баланс</string>
+    <string name="dash_balance_hidden">Rp ••••••••</string>
+    <string name="dash_income_label">ДОХОДЫ</string>
+    <string name="dash_expense_label">РАСХОДЫ</string>
+
+    <!-- HeaderSection -->
+    <string name="dash_greeting_format">Привет, %1$s</string>
+
+    <!-- QuickActionSection -->
+    <string name="dash_quick_action_category">Категории</string>
+    <string name="dash_quick_action_add_account">Добавить счёт</string>
+    <string name="dash_quick_action_statistics">Статистика</string>
+
+    <!-- BudgetCard -->
+    <string name="dash_remaining_budget">Остаток бюджета</string>
+    <string name="dash_see_detail">Подробнее</string>
+    <string name="dash_budget_period">%1$s %2$d</string>
+    <string name="dash_remaining_suffix">осталось</string>
+    <string name="dash_budget_used_format">%1$d%% израсходовано</string>
+    <string name="dash_budget_tip">Совет: расходы на еду выросли на 15% на этой неделе.</string>
+
+    <!-- DashboardScreen -->
+    <string name="dash_recent_transactions">Последние транзакции</string>
+    <string name="dash_no_transactions">Транзакций пока нет</string>
+</resources>

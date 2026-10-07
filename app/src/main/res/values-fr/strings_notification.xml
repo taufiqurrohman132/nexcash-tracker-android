@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- NotificationMapper: judul & badan alert budget -->
+    <string name="notif_alert_title_format">%1$s a atteint %2$d%%</string>
+    <string name="notif_alert_limit_body_format">Le plafond du budget %1$s est atteint.</string>
+    <string name="notif_alert_warning_body_format">Le budget %1$s est bientôt épuisé.</string>
+
+    <!-- NotificationMapper: grup per hari & label waktu relatif -->
+    <string name="notif_group_today">Aujourd\'hui</string>
+    <string name="notif_group_yesterday">Hier</string>
+    <string name="notif_time_just_now">À l\'instant</string>
+    <string name="notif_time_minutes_ago_format">Il y a %1$d min</string>
+    <string name="notif_time_hours_ago_format">Il y a %1$d h</string>
+    <string name="notif_time_yesterday_format">Hier, %1$s</string>
+    <string name="notif_time_date_format">%1$s, %2$s</string>
+
+    <!-- NotificationScreen (daftar notifikasi) -->
+    <string name="notif_title">Notifications</string>
+    <string name="notif_back">Retour</string>
+    <string name="notif_settings_content_desc">Paramètres des notifications</string>
+    <string name="notif_unread_count_format">%1$d non lus</string>
+    <string name="notif_all_read">Toutes sont lues</string>
+    <string name="notif_mark_all_read">Tout marquer comme lu</string>
+    <string name="notif_unread_dot_desc">Non lu</string>
+    <string name="notif_empty_title">Aucune notification</string>
+    <string name="notif_empty_subtitle">Les rappels apparaîtront ici lorsque les dépenses atteindront le plafond du budget.</string>
+
+    <!-- NotificationEditScreen (pengaturan notifikasi) -->
+    <string name="notif_settings_title">Paramètres des notifications</string>
+    <string name="notif_active_budgets_label">BUDGETS ACTIFS</string>
+    <string name="notif_footnote">Les rappels s\'affichent sous forme de notifications sur cet appareil, une fois par plafond et par période de budget.</string>
+    <string name="notif_enable_reminders">Activer les rappels</string>
+    <string name="notif_enable_reminders_desc">Alerter lorsque les dépenses approchent du plafond</string>
+    <string name="notif_permission_hint">L\'autorisation de notification n\'a pas été accordée. Activez-la dans les paramètres du système.</string>
+    <string name="notif_reminder_switch_desc_format">Rappel %1$s</string>
+    <string name="notif_remind_at">Rappeler à</string>
+    <string name="notif_threshold_percent_format">%1$d%%</string>
+
+    <!-- DailyReminderWorker (context aplikasi → wajib withAppLocale) -->
+    <string name="notif_daily_reminder_title">Aucune transaction aujourd\'hui</string>
+    <string name="notif_daily_reminder_body">Notez vos revenus et vos dépenses pour que votre budget reste à jour.</string>
+</resources>

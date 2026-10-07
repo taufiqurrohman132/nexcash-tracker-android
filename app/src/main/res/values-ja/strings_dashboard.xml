@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- BalanceCard -->
+    <string name="dash_total_balance_label">合計残高</string>
+    <string name="dash_balance_hidden">Rp ••••••••</string>
+    <string name="dash_income_label">収入</string>
+    <string name="dash_expense_label">支出</string>
+
+    <!-- HeaderSection -->
+    <string name="dash_greeting_format">こんにちは、%1$s</string>
+
+    <!-- QuickActionSection -->
+    <string name="dash_quick_action_category">カテゴリ</string>
+    <string name="dash_quick_action_add_account">口座を追加</string>
+    <string name="dash_quick_action_statistics">統計</string>
+
+    <!-- BudgetCard -->
+    <string name="dash_remaining_budget">残り予算</string>
+    <string name="dash_see_detail">詳細表示</string>
+    <string name="dash_budget_period">%1$s %2$d</string>
+    <string name="dash_remaining_suffix">残り</string>
+    <string name="dash_budget_used_format">%1$d%% 使用</string>
+    <string name="dash_budget_tip">ヒント: 今週、食費の支出が15%増加しました。</string>
+
+    <!-- DashboardScreen -->
+    <string name="dash_recent_transactions">最近の取引</string>
+    <string name="dash_no_transactions">まだ取引がありません</string>
+</resources>

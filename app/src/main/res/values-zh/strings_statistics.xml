@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Header layar -->
+    <string name="stat_title">统计</string>
+
+    <!-- Kartu ringkasan -->
+    <string name="stat_remaining_budget">剩余预算</string>
+    <string name="stat_savings_rate_title">储蓄率</string>
+
+    <!-- Badge status anggaran (BudgetStatus) -->
+    <string name="stat_status_safe">安全</string>
+    <string name="stat_status_warning">警告</string>
+    <string name="stat_status_over">超支</string>
+
+    <!-- Kartu Alokasi Dana -->
+    <string name="stat_allocation_title">资金分配</string>
+    <string name="stat_basis_target">基于目标</string>
+    <string name="stat_basis_actual_expense">基于实际（支出）</string>
+    <string name="stat_basis_actual_income">基于实际（收入）</string>
+    <string name="stat_basis_value_format">%1$s · %2$s</string>
+    <string name="stat_tab_allocation">分配</string>
+    <string name="stat_tab_actual">实际</string>
+    <string name="stat_tipe_expense">支出</string>
+    <string name="stat_tipe_income">收入</string>
+
+    <!-- Kartu Tindakan Cepat -->
+    <string name="stat_quick_actions">快捷操作</string>
+    <string name="stat_help">帮助</string>
+    <string name="stat_edit_allocation">编辑资金分配</string>
+    <string name="stat_edit_allocation_desc">调整预算目标，保持财务健康。</string>
+
+    <!-- Kartu Total Pengeluaran -->
+    <string name="stat_total_expense">总支出</string>
+</resources>

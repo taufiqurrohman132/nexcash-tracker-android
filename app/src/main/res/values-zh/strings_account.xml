@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Daftar akun / aset (AccountAssetScreen) -->
+    <string name="acct_title">账户</string>
+    <string name="acct_add_account">添加账户</string>
+    <string name="acct_add_content_desc">添加账户</string>
+    <string name="acct_load_failed">数据加载失败</string>
+    <string name="acct_retry">重试</string>
+    <string name="acct_empty_title">暂无账户</string>
+    <string name="acct_empty_subtitle">添加银行账户或电子钱包，开始记录您的资产。</string>
+    <string name="acct_total_balance_combined">合并总余额</string>
+    <string name="acct_currency_code">IDR</string>
+    <string name="acct_this_month">本月</string>
+    <string name="acct_active_assets">启用资产</string>
+    <string name="acct_active_account_count">%1$d 个账户</string>
+    <string name="acct_provider_undefined">未指定</string>
+
+    <!-- Detail akun (DetailAccountScreen) -->
+    <string name="acct_back">返回</string>
+    <string name="acct_transaction">交易</string>
+    <string name="acct_recent_transactions">最近交易</string>
+    <string name="acct_see_all">查看全部</string>
+    <string name="acct_asset_settings">资产设置</string>
+    <string name="acct_edit_asset">编辑资产</string>
+    <string name="acct_delete_this_asset">删除此资产</string>
+    <string name="acct_total_balance">总余额</string>
+    <string name="acct_type_provider_format">%1$s • %2$s</string>
+    <string name="acct_account_not_loaded">账户尚未加载，请重试</string>
+    <string name="acct_transaction_unavailable">交易不可用</string>
+
+    <!-- Tambah / edit informasi akun (AddEditInfoAccountScreen) -->
+    <string name="acct_choose_provider">选择服务商（可选）</string>
+    <string name="acct_provider_unavailable">不可用</string>
+    <string name="acct_save_changes">保存更改</string>
+    <string name="acct_save_asset">保存资产</string>
+    <string name="acct_save_failed">保存资产失败</string>
+    <string name="acct_asset_name">资产名称（别名）</string>
+    <string name="acct_name_placeholder">例如：应急储蓄</string>
+    <string name="acct_name_hint">使用容易记住的名称</string>
+    <string name="acct_name_required">请填写资产名称</string>
+    <string name="acct_asset_type">资产类型</string>
+    <string name="acct_locked">已锁定</string>
+    <string name="acct_initial_balance">初始余额</string>
+    <string name="acct_currency_prefix">"Rp "</string>
+    <string name="acct_balance_hint">该资产的当前余额</string>
+    <string name="acct_step_last">最后一步</string>
+    <string name="acct_step_last_desc">完善您的资产详情，即可开始自动记录交易。</string>
+
+    <!-- Pilih tipe akun (AddEditTypeAccountScreen) -->
+    <string name="acct_title_assets">账户 &amp; 资产</string>
+    <string name="acct_continue">继续</string>
+    <string name="acct_step_1_of_2">第 1 步，共 2 步：识别资产</string>
+    <string name="acct_choose_asset_type">选择资产类型</string>
+    <string name="acct_asset_type_hint">您可以在下一步中添加同一类型的多个资产。</string>
+
+    <!-- Dialog hapus akun (DeleteAccountDialog) -->
+    <string name="acct_delete_blocked_title">无法删除</string>
+    <string name="acct_delete_blocked_message">该账户仍有 Rp %1$s 余额。请先清空余额。</string>
+    <string name="acct_delete_history_message">%1$d 笔相关交易仍会保留在历史记录中。</string>
+    <string name="acct_delete_simple_message">该账户将被永久删除。</string>
+    <string name="acct_delete_confirm_title">删除账户？</string>
+    <string name="acct_delete_confirm">删除账户</string>
+    <string name="acct_close">关闭</string>
+    <string name="acct_cancel">取消</string>
+</resources>

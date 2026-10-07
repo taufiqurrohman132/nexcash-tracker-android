@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Umum / navigasi (fitur transaksi) -->
+    <string name="tx_back">返回</string>
+    <string name="tx_cancel">取消</string>
+    <string name="tx_retry">重试</string>
+    <string name="tx_load_failed">交易加载失败</string>
+    <string name="tx_transaction_unavailable">交易不可用</string>
+
+    <!-- Tambah / edit transaksi (AddEditTransactionScreen) -->
+    <string name="tx_add_title">添加交易</string>
+    <string name="tx_save_transaction">保存交易</string>
+    <string name="tx_saving">保存中...</string>
+    <string name="tx_amount_out">金额（支出）</string>
+    <string name="tx_amount_in">金额（收入）</string>
+    <string name="tx_currency_prefix">Rp</string>
+    <string name="tx_date">日期</string>
+    <string name="tx_time">时间</string>
+    <string name="tx_name">名称</string>
+    <string name="tx_name_placeholder">交易名称</string>
+    <string name="tx_category">分类</string>
+    <string name="tx_select_category">选择分类</string>
+    <string name="tx_select_category_hint">例如：餐饮、交通...</string>
+    <string name="tx_funding_source">资金来源</string>
+    <string name="tx_received_at">收款地点</string>
+    <string name="tx_select_account">选择账户</string>
+    <string name="tx_select_account_hint">现金、BCA 银行、电子钱包...</string>
+    <string name="tx_note">备注</string>
+    <string name="tx_note_placeholder">在此添加备注...</string>
+    <string name="tx_attachment">附件</string>
+    <string name="tx_attachment_hint">JPG、PNG 或 PDF（最大 5MB）</string>
+    <string name="tx_take_photo">拍照或选择文件</string>
+    <string name="tx_recurring">周期性交易</string>
+    <string name="tx_save_failed">交易保存失败。请重试。</string>
+
+    <!-- Tipe transaksi (TransactionType.labelResId) -->
+    <string name="tx_type_expense">支出</string>
+    <string name="tx_type_income">收入</string>
+
+    <!-- Layar kosong (TransactionEmptyScreen) -->
+    <string name="tx_empty_title">暂无交易</string>
+    <string name="tx_empty_description">从今天开始记录支出与收入，更好地掌控财务，实现您的财务目标。</string>
+    <string name="tx_empty_action">添加第一笔交易</string>
+
+    <!-- Bottom sheet kategori &amp; rekening -->
+    <string name="tx_no_categories">暂无分类</string>
+    <string name="tx_pick_parent_category">选择主分类</string>
+
+    <!-- Tab Transaksi (TransactionScreen) -->
+    <string name="tx_title">交易</string>
+    <string name="tx_search_hint">搜索交易...</string>
+    <string name="tx_today">今天</string>
+    <string name="tx_this_week">本周</string>
+    <string name="tx_remaining_budget">剩余预算</string>
+    <string name="tx_group_net_format">%1$s %2$s %3$s</string>
+
+    <!-- Semua Transaksi (GetTransactionsByFilterUseCase / AllTransactionsScreen) -->
+    <string name="tx_title_all">所有交易</string>
+    <string name="tx_title_filter">交易 · %1$s</string>
+
+    <!-- Detail transaksi (DetailTransactionScreen) -->
+    <string name="tx_detail_title">交易详情</string>
+    <string name="tx_not_found">未找到交易</string>
+    <string name="tx_unknown_category">未知分类</string>
+    <string name="tx_unknown_account">未知账户</string>
+    <string name="tx_view_fullscreen">全屏查看</string>
+    <string name="tx_action_edit">编辑</string>
+    <string name="tx_action_duplicate">复制</string>
+    <string name="tx_action_share">分享</string>
+    <string name="tx_action_delete">删除</string>
+    <string name="tx_transaction_id">交易 ID：%1$s</string>
+    <string name="tx_date_time">日期 &amp; 时间</string>
+    <string name="tx_date_time_value">%1$s, %2$s %3$s</string>
+    <string name="tx_share_chooser">分享交易</string>
+    <string name="tx_no_share_app">没有可用于分享的应用</string>
+    <string name="tx_detail_load_failed">交易加载失败</string>
+    <string name="tx_delete_failed">交易删除失败。请重试。</string>
+    <string name="tx_duplicated">交易已复制</string>
+    <string name="tx_duplicate_failed">交易复制失败。请重试。</string>
+    <string name="tx_attachment_preview_unavailable">附件预览暂不可用</string>
+
+    <!-- Dialog hapus transaksi (DeleteTransactionDialog) -->
+    <string name="tx_delete_title">删除交易？</string>
+    <string name="tx_delete">删除</string>
+    <string name="tx_balance_effect_expense">删除此交易后，账户 \"%1$s\" 的余额将增加 %2$s。</string>
+    <string name="tx_balance_effect_income">删除此交易后，账户 \"%1$s\" 的余额将减少 %2$s。</string>
+
+    <!-- Teks yang dibagikan (DetailTransactionViewModel.handleShare) -->
+    <string name="tx_share_headline">%1$s • %2$s</string>
+    <string name="tx_share_date_line">日期：%1$s %2$s</string>
+    <string name="tx_share_category_line">分类：%1$s</string>
+    <string name="tx_share_funding_line">资金来源：%1$s</string>
+    <string name="tx_share_received_line">收款地点：%1$s</string>
+    <string name="tx_share_note_line">备注：%1$s</string>
+</resources>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Daftar akun / aset (AccountAssetScreen) -->
+    <string name="acct_title">Comptes</string>
+    <string name="acct_add_account">Ajouter un compte</string>
+    <string name="acct_add_content_desc">Ajouter un compte</string>
+    <string name="acct_load_failed">Échec du chargement des données</string>
+    <string name="acct_retry">Réessayer</string>
+    <string name="acct_empty_title">Aucun compte pour le moment</string>
+    <string name="acct_empty_subtitle">Ajoutez un compte bancaire ou un e-wallet pour commencer à enregistrer vos actifs.</string>
+    <string name="acct_total_balance_combined">Solde total combiné</string>
+    <string name="acct_currency_code">IDR</string>
+    <string name="acct_this_month">CE MOIS-CI</string>
+    <string name="acct_active_assets">COMPTES ACTIFS</string>
+    <string name="acct_active_account_count">%1$d comptes</string>
+    <string name="acct_provider_undefined">Non défini</string>
+
+    <!-- Detail akun (DetailAccountScreen) -->
+    <string name="acct_back">Retour</string>
+    <string name="acct_transaction">Transaction</string>
+    <string name="acct_recent_transactions">Transactions récentes</string>
+    <string name="acct_see_all">Tout afficher</string>
+    <string name="acct_asset_settings">PARAMÈTRES DES ACTIFS</string>
+    <string name="acct_edit_asset">Modifier l\'actif</string>
+    <string name="acct_delete_this_asset">Supprimer cet actif</string>
+    <string name="acct_total_balance">Solde total</string>
+    <string name="acct_type_provider_format">%1$s • %2$s</string>
+    <string name="acct_account_not_loaded">Compte non chargé, réessayez</string>
+    <string name="acct_transaction_unavailable">Transactions indisponibles</string>
+
+    <!-- Tambah / edit informasi akun (AddEditInfoAccountScreen) -->
+    <string name="acct_choose_provider">Choisir le fournisseur (facultatif)</string>
+    <string name="acct_provider_unavailable">Indisponible</string>
+    <string name="acct_save_changes">Enregistrer les modifications</string>
+    <string name="acct_save_asset">Enregistrer l\'actif</string>
+    <string name="acct_save_failed">Échec de l\'enregistrement de l\'actif</string>
+    <string name="acct_asset_name">Nom de l\'actif (alias)</string>
+    <string name="acct_name_placeholder">Ex. : Épargne d\'urgence</string>
+    <string name="acct_name_hint">Utilisez un nom facile à retenir</string>
+    <string name="acct_name_required">Le nom de l\'actif est obligatoire</string>
+    <string name="acct_asset_type">Type d\'actif</string>
+    <string name="acct_locked">VERROUILLÉ</string>
+    <string name="acct_initial_balance">Solde initial</string>
+    <string name="acct_currency_prefix">"Rp "</string>
+    <string name="acct_balance_hint">Solde actuel de cet actif</string>
+    <string name="acct_step_last">Dernière étape</string>
+    <string name="acct_step_last_desc">Complétez les informations de votre actif pour enregistrer automatiquement vos transactions.</string>
+
+    <!-- Pilih tipe akun (AddEditTypeAccountScreen) -->
+    <string name="acct_title_assets">Comptes &amp; actifs</string>
+    <string name="acct_continue">Continuer</string>
+    <string name="acct_step_1_of_2">Étape 1 sur 2 : Identification de l\'actif</string>
+    <string name="acct_choose_asset_type">Choisir le type d\'actif</string>
+    <string name="acct_asset_type_hint">Vous pourrez ajouter d\'autres actifs du même type à l\'étape suivante.</string>
+
+    <!-- Dialog hapus akun (DeleteAccountDialog) -->
+    <string name="acct_delete_blocked_title">Suppression impossible</string>
+    <string name="acct_delete_blocked_message">Le compte possède encore un solde de Rp %1$s. Videz d\'abord le solde.</string>
+    <string name="acct_delete_history_message">%1$d transactions associées resteront dans l\'historique.</string>
+    <string name="acct_delete_simple_message">Le compte sera définitivement supprimé.</string>
+    <string name="acct_delete_confirm_title">Supprimer le compte ?</string>
+    <string name="acct_delete_confirm">Supprimer le compte</string>
+    <string name="acct_close">Fermer</string>
+    <string name="acct_cancel">Annuler</string>
+</resources>

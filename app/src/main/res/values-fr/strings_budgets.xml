@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Label tipe periode (RecurrenceType.labelResId) -->
+    <string name="budget_recurrence_monthly">Mensuel</string>
+    <string name="budget_recurrence_weekly">Hebdomadaire</string>
+    <string name="budget_recurrence_custom">Personnalisé</string>
+
+    <!-- Layar tambah/ubah anggaran (AddEditBudgetScreen) -->
+    <string name="budget_edit_title">Modifier le budget</string>
+    <string name="budget_category_label">Catégorie : %1$s</string>
+    <string name="budget_back_cd">Retour</string>
+    <string name="budget_delete_content_description">Supprimer le budget</string>
+    <string name="budget_new_limit_title">Nouveau plafond de budget</string>
+    <string name="budget_previous_limit">Le plafond précédent était de %1$s</string>
+    <string name="budget_effective_period_title">Période effective</string>
+    <string name="budget_start_label">DÉBUT</string>
+    <string name="budget_end_label">FIN</string>
+    <string name="budget_duration_days">Durée : %1$d jours</string>
+    <string name="budget_recurring_settings_title">Réglages récurrents</string>
+
+    <!-- Kartu anggaran berulang (RecurringBudgetCard + AddEditBudgetState.previewTeksBerulang) -->
+    <string name="budget_recurring_card_title">Budget récurrent</string>
+    <string name="budget_recurring_card_subtitle">Renouvelle automatiquement ce budget au début de chaque période</string>
+    <string name="budget_recurring_preview_monthly">Le système créera automatiquement un budget %1$s de Rp %2$s le 1er de chaque mois.</string>
+    <string name="budget_recurring_preview_weekly">Le système créera automatiquement un budget %1$s de Rp %2$s au début de chaque semaine.</string>
+    <string name="budget_recurring_preview_custom">Le système créera automatiquement un budget %1$s de Rp %2$s tous les %3$d jours à partir du %4$s.</string>
+    <string name="budget_this_category">cette catégorie</string>
+
+    <!-- Ringkasan perubahan (ChangeSummaryCard) -->
+    <string name="budget_change_summary_title">RÉSUMÉ DES MODIFICATIONS</string>
+    <string name="budget_old_value_label">Ancien</string>
+    <string name="budget_new_value_label">Nouveau</string>
+
+    <!-- Tombol -->
+    <string name="budget_save_changes_action">Enregistrer les modifications</string>
+    <string name="budget_save_action">Enregistrer</string>
+    <string name="budget_saving_action">Enregistrement…</string>
+    <string name="budget_delete_action">Supprimer</string>
+    <string name="budget_cancel_action">Annuler</string>
+
+    <!-- Dialog konfirmasi hapus anggaran (AddEditBudgetScreen) -->
+    <string name="budget_delete_dialog_title">Supprimer le budget ?</string>
+    <string name="budget_delete_dialog_message">Le budget \"%1$s\" de la période en cours et de la période suivante sera supprimé. L\'historique des périodes passées est conservé.</string>
+
+    <!-- Layar edit alokasi banyak kategori (EditPresentageBudgetScreen) -->
+    <string name="budget_edit_allocations_title">Modifier les budgets</string>
+    <string name="budget_expense_categories_title">Catégories de dépenses</string>
+    <string name="budget_active_categories_count">%1$d CATÉGORIES ACTIVES</string>
+    <string name="budget_allocation_ready">Allocation totale : %1$d%% — prêt à enregistrer</string>
+    <string name="budget_allocation_invalid_hint">Allocation totale : %1$d%% (max 100%%) • chaque catégorie doit être supérieure à 0</string>
+    <string name="budget_delete_allocation_cd">Supprimer l\'allocation %1$s</string>
+
+    <!-- Dialog konfirmasi hapus alokasi (EditPresentageBudgetScreen) -->
+    <string name="budget_delete_allocation_dialog_title">Supprimer l\'allocation ?</string>
+    <string name="budget_delete_allocation_dialog_message">L\'allocation \"%1$s\" de la période en cours et de la période suivante sera supprimée. L\'historique des périodes passées est conservé.</string>
+
+    <!-- Kartu ringkasan & kartu alokasi kategori -->
+    <string name="budget_summary_total">Budget total</string>
+    <string name="budget_summary_used">Utilisé</string>
+    <string name="budget_summary_remaining">Restant</string>
+    <string name="budget_percentage_of_total">%1$s%% du total</string>
+    <string name="budget_percentage_value">%1$s%%</string>
+
+    <!-- Pesan validasi & hasil aksi (SaveBudgetUseCase / DeleteBudgetUseCase / ViewModel) -->
+    <string name="budget_error_category_not_found">Catégorie introuvable</string>
+    <string name="budget_error_expense_category_only">Un budget ne peut être défini que pour des catégories de dépenses</string>
+    <string name="budget_error_amount_must_be_positive">Le plafond du budget doit être supérieur à 0</string>
+    <string name="budget_error_end_after_start">La date de fin doit être postérieure à la date de début</string>
+    <string name="budget_error_invalid_budget">Budget invalide</string>
+    <string name="budget_error_budget_not_found">Budget introuvable</string>
+    <string name="budget_error_min_one_category">Au moins une catégorie doit être allouée</string>
+    <string name="budget_error_allocation_total">Allocation totale : %1$d%% (max 100%%) — chaque catégorie doit être supérieure à 0</string>
+    <string name="budget_save_failed">Échec de l\'enregistrement du budget : %1$s</string>
+    <string name="budget_delete_failed">Échec de la suppression du budget : %1$s</string>
+    <string name="budget_allocation_deleted">Allocation de catégorie supprimée</string>
+</resources>

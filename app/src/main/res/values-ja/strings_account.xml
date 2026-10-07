@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Daftar akun / aset (AccountAssetScreen) -->
+    <string name="acct_title">口座</string>
+    <string name="acct_add_account">口座を追加</string>
+    <string name="acct_add_content_desc">口座を追加</string>
+    <string name="acct_load_failed">データの読み込みに失敗しました</string>
+    <string name="acct_retry">再試行</string>
+    <string name="acct_empty_title">まだ口座がありません</string>
+    <string name="acct_empty_subtitle">口座やE-Walletを追加して、資産の記録を始めましょう。</string>
+    <string name="acct_total_balance_combined">合算の合計残高</string>
+    <string name="acct_currency_code">IDR</string>
+    <string name="acct_this_month">今月</string>
+    <string name="acct_active_assets">アクティブな資産</string>
+    <string name="acct_active_account_count">%1$d件の口座</string>
+    <string name="acct_provider_undefined">未設定</string>
+
+    <!-- Detail akun (DetailAccountScreen) -->
+    <string name="acct_back">戻る</string>
+    <string name="acct_transaction">取引</string>
+    <string name="acct_recent_transactions">最近の取引</string>
+    <string name="acct_see_all">すべて表示</string>
+    <string name="acct_asset_settings">資産設定</string>
+    <string name="acct_edit_asset">資産を編集</string>
+    <string name="acct_delete_this_asset">この資産を削除</string>
+    <string name="acct_total_balance">合計残高</string>
+    <string name="acct_type_provider_format">%1$s • %2$s</string>
+    <string name="acct_account_not_loaded">口座が読み込まれていません。再試行してください</string>
+    <string name="acct_transaction_unavailable">取引は利用できません</string>
+
+    <!-- Tambah / edit informasi akun (AddEditInfoAccountScreen) -->
+    <string name="acct_choose_provider">プロバイダを選択（任意）</string>
+    <string name="acct_provider_unavailable">利用できません</string>
+    <string name="acct_save_changes">変更を保存</string>
+    <string name="acct_save_asset">資産を保存</string>
+    <string name="acct_save_failed">資産の保存に失敗しました</string>
+    <string name="acct_asset_name">資産名（エイリアス）</string>
+    <string name="acct_name_placeholder">例: 緊急用預金</string>
+    <string name="acct_name_hint">覚えやすい名前を入力してください</string>
+    <string name="acct_name_required">資産名は必須です</string>
+    <string name="acct_asset_type">資産の種類</string>
+    <string name="acct_locked">ロック中</string>
+    <string name="acct_initial_balance">初期残高</string>
+    <string name="acct_currency_prefix">"Rp "</string>
+    <string name="acct_balance_hint">その資産の現在の残高</string>
+    <string name="acct_step_last">最後のステップ</string>
+    <string name="acct_step_last_desc">資産の詳細を入力して、取引の自動記録を始めましょう。</string>
+
+    <!-- Pilih tipe akun (AddEditTypeAccountScreen) -->
+    <string name="acct_title_assets">口座 &amp; 資産</string>
+    <string name="acct_continue">次へ</string>
+    <string name="acct_step_1_of_2">ステップ 1/2: 資産を特定</string>
+    <string name="acct_choose_asset_type">資産の種類を選択</string>
+    <string name="acct_asset_type_hint">次のステップで、同じ種類の資産を複数追加できます。</string>
+
+    <!-- Dialog hapus akun (DeleteAccountDialog) -->
+    <string name="acct_delete_blocked_title">削除できません</string>
+    <string name="acct_delete_blocked_message">この口座には Rp %1$s の残高があります。先に残高を空にしてください。</string>
+    <string name="acct_delete_history_message">関連する %1$d 件の取引は履歴に保存されたまま残ります。</string>
+    <string name="acct_delete_simple_message">口座は完全に削除されます。</string>
+    <string name="acct_delete_confirm_title">口座を削除しますか？</string>
+    <string name="acct_delete_confirm">口座を削除</string>
+    <string name="acct_close">閉じる</string>
+    <string name="acct_cancel">キャンセル</string>
+</resources>

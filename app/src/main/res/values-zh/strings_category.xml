@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tipe kategori (TypeCategory.labelResId) -->
+    <string name="cat_type_expense">支出</string>
+    <string name="cat_type_income">收入</string>
+
+    <!-- Layar utama kategori -->
+    <string name="cat_title">分类</string>
+    <string name="cat_action_add">添加</string>
+    <string name="cat_search_hint">搜索分类...</string>
+    <string name="cat_total_budget">预算总额</string>
+    <string name="cat_remaining_short">剩余</string>
+    <string name="cat_total_income_month">本月总收入</string>
+    <string name="cat_percent_format">%1$d%%</string>
+    <string name="cat_used_of_budget_format">" / %1$s"</string>
+    <string name="cat_empty_no_category">暂无分类</string>
+    <string name="cat_add_new_category">添加新分类</string>
+
+    <!-- Tambah / edit kategori -->
+    <string name="cat_add_title">添加分类</string>
+    <string name="cat_back">返回</string>
+    <string name="cat_name_label">分类名称</string>
+    <string name="cat_name_placeholder">例如：影视订阅</string>
+    <string name="cat_type_label">分类类型</string>
+    <string name="cat_note_label">附加备注</string>
+    <string name="cat_note_placeholder">为此分类添加描述或特别说明...</string>
+    <string name="cat_finish_action">完成创建</string>
+    <string name="cat_cancel_back_action">取消 &amp; 返回</string>
+    <string name="cat_subcategory_of">子分类所属</string>
+    <string name="cat_see_all_icons_desc">查看所有图标</string>
+    <string name="cat_add_color_desc">添加颜色</string>
+
+    <!-- Kelompok ikon kategori (CategoryIcons.allGroups) -->
+    <string name="cat_icon_group_transportasi">交通</string>
+    <string name="cat_icon_group_makanan">餐饮</string>
+    <string name="cat_icon_group_hiburan">娱乐</string>
+    <string name="cat_icon_group_tagihan">账单</string>
+    <string name="cat_icon_group_kesehatan">健康</string>
+    <string name="cat_icon_group_lainnya">其他</string>
+
+    <!-- Detail kategori -->
+    <string name="cat_detail_title">详情</string>
+    <string name="cat_menu_desc">菜单</string>
+    <string name="cat_edit_category">编辑分类</string>
+    <string name="cat_delete_category">删除分类</string>
+    <string name="cat_fab_subcategory">子分类</string>
+    <string name="cat_income_trend">收入趋势</string>
+    <string name="cat_expense_trend">支出趋势</string>
+    <string name="cat_last_7_days">最近 7 天</string>
+    <string name="cat_subcategory_section">子分类</string>
+    <string name="cat_see_all">查看全部</string>
+    <string name="cat_recent_transactions">最近交易</string>
+    <string name="cat_no_transactions">暂无交易</string>
+    <string name="cat_used_amount_format">已使用 %1$s</string>
+    <string name="cat_percent_of_budget_format">%1$d%%（占 %2$s）</string>
+    <string name="cat_budget_title_format">%1$s 预算</string>
+    <string name="cat_contribution_percent_format">%1$d%% 贡献度</string>
+    <string name="cat_budget_not_set_format">尚未设置 %1$s 预算</string>
+    <string name="cat_budget_follows_parent_format">子预算跟随主预算 — 请在 %1$s 分类中设置。</string>
+    <string name="cat_used_label">"已使用: "</string>
+    <string name="cat_parent_remaining_label">"主分类剩余: "</string>
+    <string name="cat_remaining_label">"剩余: "</string>
+    <string name="cat_used_percent_format">%1$d%% 已使用</string>
+    <string name="cat_no_weekly_data">本周暂无交易数据</string>
+    <string name="cat_edit_budget_action">编辑预算</string>
+    <string name="cat_set_notification_action">设置通知</string>
+    <string name="cat_add_note_action">添加备注</string>
+    <string name="cat_chart_marker_separator">•</string>
+
+    <!-- Daftar subkategori -->
+    <string name="cat_subcategory_list_title">子分类 · %1$s</string>
+
+    <!-- Hapus kategori -->
+    <string name="cat_delete_title">删除分类？</string>
+    <string name="cat_delete_action">删除分类</string>
+    <string name="cat_delete_success">分类删除成功</string>
+    <string name="cat_delete_confirm_heading">删除确认</string>
+    <string name="cat_delete_description_format">分类 \"%1$s\" 仍有 %2$d 笔相关交易。您想如何处理？</string>
+    <string name="cat_option_delete_all_title">删除所有交易</string>
+    <string name="cat_option_delete_all_desc">该分类下的所有交易数据将被永久删除。</string>
+    <string name="cat_option_move_title">移至其他分类</string>
+    <string name="cat_option_move_desc">将交易转移到已有分类，以保持报表准确。</string>
+    <string name="cat_option_uncategorized_title">保持未分类</string>
+    <string name="cat_option_uncategorized_desc">交易将保留，但不再具有分类标签。</string>
+    <string name="cat_pick_target_category">选择目标分类</string>
+    <string name="cat_delete_failed">删除分类失败</string>
+    <string name="cat_load_failed">数据加载失败</string>
+</resources>

@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">NexCashApplication</string>
+
+    <string name="total_balance_format">Rp %1$s</string>
+
+    <!-- Type Account Labels -->
+    <string name="account_type_cash">Наличные</string>
+    <string name="account_type_bank">Банк</string>
+    <string name="account_type_card">Карта</string>
+    <string name="account_type_debit_card">Дебетовая карта</string>
+    <string name="account_type_savings">Сбережения</string>
+    <string name="account_type_prepaid_card">Предоплаченная карта</string>
+    <string name="account_type_investment">Инвестиции</string>
+    <string name="account_type_e_wallet">E-Wallet</string>
+    <string name="account_type_loan">Кредит</string>
+    <string name="account_type_insurance">Страхование</string>
+    <string name="account_type_other">Другое</string>
+    <string name="semua">Все</string>
+
+    <!-- Label cadangan baris transaksi (lihat TransactionItem) -->
+    <string name="common_no_category">Без категории</string>
+    <string name="common_account_deleted">Счёт удалён</string>
+</resources>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- BalanceCard -->
+    <string name="dash_total_balance_label">您的总余额</string>
+    <string name="dash_balance_hidden">Rp ••••••••</string>
+    <string name="dash_income_label">收入</string>
+    <string name="dash_expense_label">支出</string>
+
+    <!-- HeaderSection -->
+    <string name="dash_greeting_format">你好，%1$s</string>
+
+    <!-- QuickActionSection -->
+    <string name="dash_quick_action_category">分类</string>
+    <string name="dash_quick_action_add_account">添加账户</string>
+    <string name="dash_quick_action_statistics">统计</string>
+
+    <!-- BudgetCard -->
+    <string name="dash_remaining_budget">剩余预算</string>
+    <string name="dash_see_detail">查看详情</string>
+    <string name="dash_budget_period">%1$s %2$d</string>
+    <string name="dash_remaining_suffix">剩余</string>
+    <string name="dash_budget_used_format">已使用 %1$d%%</string>
+    <string name="dash_budget_tip">提示：本周您的餐饮支出上升了 15%。</string>
+
+    <!-- DashboardScreen -->
+    <string name="dash_recent_transactions">最近交易</string>
+    <string name="dash_no_transactions">暂无交易</string>
+</resources>

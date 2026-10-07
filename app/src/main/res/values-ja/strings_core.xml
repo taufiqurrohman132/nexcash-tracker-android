@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tombol dialog generik -->
+    <string name="common_ok">OK</string>
+    <string name="common_cancel">キャンセル</string>
+
+    <!-- MonthPicker -->
+    <string name="core_month_picker_title">月を選択</string>
+
+    <!-- InteractiveDonutChart: label slice terpilih di lubang tengah -->
+    <string name="core_donut_slice_percent">%1$s: %2$d%%</string>
+
+    <!-- Nama channel notifikasi (bukan ID channel) -->
+    <string name="core_channel_budget_alert_name">予算アラート</string>
+    <string name="core_channel_reminder_name">毎日のリマインダー</string>
+
+    <!-- AppTimePickerDialog -->
+    <string name="core_time_picker_title">時間を選択</string>
+
+    <!-- Bottom navigation -->
+    <string name="nav_home">ホーム</string>
+    <string name="nav_transaction">取引</string>
+    <string name="nav_asset">資産</string>
+    <string name="nav_insight">分析</string>
+    <string name="nav_settings">設定</string>
+</resources>

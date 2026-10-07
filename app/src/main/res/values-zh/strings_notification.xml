@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- NotificationMapper: judul & badan alert budget -->
+    <string name="notif_alert_title_format">%1$s 已达 %2$d%%</string>
+    <string name="notif_alert_limit_body_format">%1$s 的预算限额已达到。</string>
+    <string name="notif_alert_warning_body_format">%1$s 的预算即将用完。</string>
+
+    <!-- NotificationMapper: grup per hari & label waktu relatif -->
+    <string name="notif_group_today">今天</string>
+    <string name="notif_group_yesterday">昨天</string>
+    <string name="notif_time_just_now">刚刚</string>
+    <string name="notif_time_minutes_ago_format">%1$d 分钟前</string>
+    <string name="notif_time_hours_ago_format">%1$d 小时前</string>
+    <string name="notif_time_yesterday_format">昨天，%1$s</string>
+    <string name="notif_time_date_format">%1$s, %2$s</string>
+
+    <!-- NotificationScreen (daftar notifikasi) -->
+    <string name="notif_title">通知</string>
+    <string name="notif_back">返回</string>
+    <string name="notif_settings_content_desc">通知设置</string>
+    <string name="notif_unread_count_format">%1$d 条未读</string>
+    <string name="notif_all_read">全部已读</string>
+    <string name="notif_mark_all_read">全部标为已读</string>
+    <string name="notif_unread_dot_desc">未读</string>
+    <string name="notif_empty_title">暂无通知</string>
+    <string name="notif_empty_subtitle">当支出达到预算限额时，提醒将显示在这里。</string>
+
+    <!-- NotificationEditScreen (pengaturan notifikasi) -->
+    <string name="notif_settings_title">通知设置</string>
+    <string name="notif_active_budgets_label">启用的预算</string>
+    <string name="notif_footnote">提醒将作为通知显示在此设备上，每个预算周期内每个限额仅提醒一次。</string>
+    <string name="notif_enable_reminders">启用提醒</string>
+    <string name="notif_enable_reminders_desc">在支出接近限额时通知我</string>
+    <string name="notif_permission_hint">尚未授予通知权限。请在系统设置中启用。</string>
+    <string name="notif_reminder_switch_desc_format">%1$s 提醒</string>
+    <string name="notif_remind_at">提醒时间</string>
+    <string name="notif_threshold_percent_format">%1$d%%</string>
+
+    <!-- DailyReminderWorker (context aplikasi → wajib withAppLocale) -->
+    <string name="notif_daily_reminder_title">今天还没有交易</string>
+    <string name="notif_daily_reminder_body">记录您的收入或支出，让预算保持准确。</string>
+</resources>

@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">NexCashApplication</string>
+
+    <string name="total_balance_format">Rp %1$s</string>
+
+    <!-- Type Account Labels -->
+    <string name="account_type_cash">Bargeld</string>
+    <string name="account_type_bank">Bank</string>
+    <string name="account_type_card">Karte</string>
+    <string name="account_type_debit_card">Debitkarte</string>
+    <string name="account_type_savings">Sparkonto</string>
+    <string name="account_type_prepaid_card">Prepaidkarte</string>
+    <string name="account_type_investment">Investitionen</string>
+    <string name="account_type_e_wallet">E-Wallet</string>
+    <string name="account_type_loan">Kredit</string>
+    <string name="account_type_insurance">Versicherung</string>
+    <string name="account_type_other">Sonstiges</string>
+    <string name="semua">Alle</string>
+
+    <!-- Label cadangan baris transaksi (lihat TransactionItem) -->
+    <string name="common_no_category">Ohne Kategorie</string>
+    <string name="common_account_deleted">Gelöschtes Konto</string>
+</resources>

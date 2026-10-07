@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Header layar -->
+    <string name="stat_title">Статистика</string>
+
+    <!-- Kartu ringkasan -->
+    <string name="stat_remaining_budget">Остаток бюджета</string>
+    <string name="stat_savings_rate_title">Норма сбережений</string>
+
+    <!-- Badge status anggaran (BudgetStatus) -->
+    <string name="stat_status_safe">НОРМА</string>
+    <string name="stat_status_warning">ВНИМАНИЕ</string>
+    <string name="stat_status_over">ПЕРЕРАСХОД</string>
+
+    <!-- Kartu Alokasi Dana -->
+    <string name="stat_allocation_title">Распределение средств</string>
+    <string name="stat_basis_target">По цели</string>
+    <string name="stat_basis_actual_expense">По факту (расходы)</string>
+    <string name="stat_basis_actual_income">По факту (доходы)</string>
+    <string name="stat_basis_value_format">%1$s · %2$s</string>
+    <string name="stat_tab_allocation">Распределение</string>
+    <string name="stat_tab_actual">Факт</string>
+    <string name="stat_tipe_expense">Расходы</string>
+    <string name="stat_tipe_income">Доходы</string>
+
+    <!-- Kartu Tindakan Cepat -->
+    <string name="stat_quick_actions">Быстрые действия</string>
+    <string name="stat_help">помощь</string>
+    <string name="stat_edit_allocation">Изменить распределение средств</string>
+    <string name="stat_edit_allocation_desc">Настройте целевой бюджет, чтобы сохранить финансовое здоровье.</string>
+
+    <!-- Kartu Total Pengeluaran -->
+    <string name="stat_total_expense">Общие расходы</string>
+</resources>

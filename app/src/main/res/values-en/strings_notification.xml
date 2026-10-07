@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- NotificationMapper: judul & badan alert budget -->
+    <string name="notif_alert_title_format">%1$s has reached %2$d%%</string>
+    <string name="notif_alert_limit_body_format">The %1$s budget limit has been reached.</string>
+    <string name="notif_alert_warning_body_format">The %1$s budget is almost used up.</string>
+
+    <!-- NotificationMapper: grup per hari & label waktu relatif -->
+    <string name="notif_group_today">Today</string>
+    <string name="notif_group_yesterday">Yesterday</string>
+    <string name="notif_time_just_now">Just now</string>
+    <string name="notif_time_minutes_ago_format">%1$d minutes ago</string>
+    <string name="notif_time_hours_ago_format">%1$d hours ago</string>
+    <string name="notif_time_yesterday_format">Yesterday, %1$s</string>
+    <string name="notif_time_date_format">%1$s, %2$s</string>
+
+    <!-- NotificationScreen (daftar notifikasi) -->
+    <string name="notif_title">Notifications</string>
+    <string name="notif_back">Back</string>
+    <string name="notif_settings_content_desc">Notification settings</string>
+    <string name="notif_unread_count_format">%1$d unread</string>
+    <string name="notif_all_read">All read</string>
+    <string name="notif_mark_all_read">Mark all as read</string>
+    <string name="notif_unread_dot_desc">Unread</string>
+    <string name="notif_empty_title">No notifications yet</string>
+    <string name="notif_empty_subtitle">Reminders will appear here when expenses reach the budget limit.</string>
+
+    <!-- NotificationEditScreen (pengaturan notifikasi) -->
+    <string name="notif_settings_title">Notification Settings</string>
+    <string name="notif_active_budgets_label">ACTIVE BUDGETS</string>
+    <string name="notif_footnote">Reminders appear as notifications on this device, once per limit in each budget period.</string>
+    <string name="notif_enable_reminders">Enable reminders</string>
+    <string name="notif_enable_reminders_desc">Notify me when expenses approach the limit</string>
+    <string name="notif_permission_hint">Notification permission has not been granted. Enable it in system settings.</string>
+    <string name="notif_reminder_switch_desc_format">Reminder %1$s</string>
+    <string name="notif_remind_at">Remind at</string>
+    <string name="notif_threshold_percent_format">%1$d%%</string>
+
+    <!-- DailyReminderWorker (context aplikasi → wajib withAppLocale) -->
+    <string name="notif_daily_reminder_title">No transactions today yet</string>
+    <string name="notif_daily_reminder_body">Log your revenues or expenses to keep your budget accurate.</string>
+</resources>

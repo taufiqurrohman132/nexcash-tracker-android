@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- NotificationMapper: judul & badan alert budget -->
+    <string name="notif_alert_title_format">%1$s atingiu %2$d%%</string>
+    <string name="notif_alert_limit_body_format">O limite do orçamento %1$s foi atingido.</string>
+    <string name="notif_alert_warning_body_format">O orçamento %1$s está quase esgotado.</string>
+
+    <!-- NotificationMapper: grup per hari & label waktu relatif -->
+    <string name="notif_group_today">Hoje</string>
+    <string name="notif_group_yesterday">Ontem</string>
+    <string name="notif_time_just_now">Agora mesmo</string>
+    <string name="notif_time_minutes_ago_format">%1$d minutos atrás</string>
+    <string name="notif_time_hours_ago_format">%1$d horas atrás</string>
+    <string name="notif_time_yesterday_format">Ontem, %1$s</string>
+    <string name="notif_time_date_format">%1$s, %2$s</string>
+
+    <!-- NotificationScreen (daftar notifikasi) -->
+    <string name="notif_title">Notificações</string>
+    <string name="notif_back">Voltar</string>
+    <string name="notif_settings_content_desc">Configurações de notificação</string>
+    <string name="notif_unread_count_format">%1$d não lidas</string>
+    <string name="notif_all_read">Todas já foram lidas</string>
+    <string name="notif_mark_all_read">Marcar todas como lidas</string>
+    <string name="notif_unread_dot_desc">Não lida</string>
+    <string name="notif_empty_title">Nenhuma notificação ainda</string>
+    <string name="notif_empty_subtitle">Os lembretes aparecerão aqui quando as despesas atingirem o limite do orçamento.</string>
+
+    <!-- NotificationEditScreen (pengaturan notifikasi) -->
+    <string name="notif_settings_title">Configurações de notificação</string>
+    <string name="notif_active_budgets_label">ORÇAMENTOS ATIVOS</string>
+    <string name="notif_footnote">Os lembretes aparecem como notificações neste dispositivo, uma vez por limite em cada período do orçamento.</string>
+    <string name="notif_enable_reminders">Ativar lembretes</string>
+    <string name="notif_enable_reminders_desc">Avisar quando as despesas se aproximarem do limite</string>
+    <string name="notif_permission_hint">A permissão de notificação não foi concedida. Ative-a nas configurações do sistema.</string>
+    <string name="notif_reminder_switch_desc_format">Lembrete %1$s</string>
+    <string name="notif_remind_at">Lembrar às</string>
+    <string name="notif_threshold_percent_format">%1$d%%</string>
+
+    <!-- DailyReminderWorker (context aplikasi → wajib withAppLocale) -->
+    <string name="notif_daily_reminder_title">Nenhuma transação hoje</string>
+    <string name="notif_daily_reminder_body">Registre suas receitas e despesas para manter seu orçamento preciso.</string>
+</resources>

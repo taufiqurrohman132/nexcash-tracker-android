@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Daftar akun / aset (AccountAssetScreen) -->
+    <string name="acct_title">Conta</string>
+    <string name="acct_add_account">Adicionar conta</string>
+    <string name="acct_add_content_desc">Adicionar conta</string>
+    <string name="acct_load_failed">Falha ao carregar os dados</string>
+    <string name="acct_retry">Tentar novamente</string>
+    <string name="acct_empty_title">Nenhuma conta ainda</string>
+    <string name="acct_empty_subtitle">Adicione uma conta ou carteira eletrônica para começar a registrar ativos.</string>
+    <string name="acct_total_balance_combined">Saldo total combinado</string>
+    <string name="acct_currency_code">IDR</string>
+    <string name="acct_this_month">ESTE MÊS</string>
+    <string name="acct_active_assets">CONTAS ATIVAS</string>
+    <string name="acct_active_account_count">%1$d contas</string>
+    <string name="acct_provider_undefined">Não definido</string>
+
+    <!-- Detail akun (DetailAccountScreen) -->
+    <string name="acct_back">Voltar</string>
+    <string name="acct_transaction">Transação</string>
+    <string name="acct_recent_transactions">Transações recentes</string>
+    <string name="acct_see_all">Ver todos</string>
+    <string name="acct_asset_settings">CONFIGURAÇÕES DE ATIVOS</string>
+    <string name="acct_edit_asset">Editar ativo</string>
+    <string name="acct_delete_this_asset">Excluir este ativo</string>
+    <string name="acct_total_balance">Saldo total</string>
+    <string name="acct_type_provider_format">%1$s • %2$s</string>
+    <string name="acct_account_not_loaded">A conta não foi carregada, tente novamente</string>
+    <string name="acct_transaction_unavailable">Transação indisponível</string>
+
+    <!-- Tambah / edit informasi akun (AddEditInfoAccountScreen) -->
+    <string name="acct_choose_provider">Selecionar provedor (opcional)</string>
+    <string name="acct_provider_unavailable">Indisponível</string>
+    <string name="acct_save_changes">Salvar alterações</string>
+    <string name="acct_save_asset">Salvar ativo</string>
+    <string name="acct_save_failed">Falha ao salvar o ativo</string>
+    <string name="acct_asset_name">Nome do ativo (apelido)</string>
+    <string name="acct_name_placeholder">Ex.: Reserva de emergência</string>
+    <string name="acct_name_hint">Use um nome fácil de lembrar</string>
+    <string name="acct_name_required">O nome do ativo é obrigatório</string>
+    <string name="acct_asset_type">Tipo de ativo</string>
+    <string name="acct_locked">BLOQUEADO</string>
+    <string name="acct_initial_balance">Saldo inicial</string>
+    <string name="acct_currency_prefix">"Rp "</string>
+    <string name="acct_balance_hint">Saldo atual desse ativo</string>
+    <string name="acct_step_last">Última etapa</string>
+    <string name="acct_step_last_desc">Preencha os detalhes do seu ativo para começar a registrar transações automaticamente.</string>
+
+    <!-- Pilih tipe akun (AddEditTypeAccountScreen) -->
+    <string name="acct_title_assets">Conta &amp; Ativos</string>
+    <string name="acct_continue">Continuar</string>
+    <string name="acct_step_1_of_2">Etapa 1 de 2: Identificação do ativo</string>
+    <string name="acct_choose_asset_type">Selecionar tipo de ativo</string>
+    <string name="acct_asset_type_hint">Você pode adicionar vários ativos do mesmo tipo na próxima etapa.</string>
+
+    <!-- Dialog hapus akun (DeleteAccountDialog) -->
+    <string name="acct_delete_blocked_title">Não é possível excluir</string>
+    <string name="acct_delete_blocked_message">A conta ainda tem um saldo de Rp %1$s. Zere o saldo primeiro.</string>
+    <string name="acct_delete_history_message">%1$d transações relacionadas continuarão salvas no histórico.</string>
+    <string name="acct_delete_simple_message">A conta será excluída permanentemente.</string>
+    <string name="acct_delete_confirm_title">Excluir conta?</string>
+    <string name="acct_delete_confirm">Excluir conta</string>
+    <string name="acct_close">Fechar</string>
+    <string name="acct_cancel">Cancelar</string>
+</resources>

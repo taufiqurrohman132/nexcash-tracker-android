@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Umum / navigasi (fitur transaksi) -->
+    <string name="tx_back">Назад</string>
+    <string name="tx_cancel">Отмена</string>
+    <string name="tx_retry">Повторить</string>
+    <string name="tx_load_failed">Не удалось загрузить транзакции</string>
+    <string name="tx_transaction_unavailable">Транзакции недоступны</string>
+
+    <!-- Tambah / edit transaksi (AddEditTransactionScreen) -->
+    <string name="tx_add_title">Новая транзакция</string>
+    <string name="tx_save_transaction">Сохранить транзакцию</string>
+    <string name="tx_saving">Сохранение...</string>
+    <string name="tx_amount_out">СУММА (РАСХОД)</string>
+    <string name="tx_amount_in">СУММА (ДОХОД)</string>
+    <string name="tx_currency_prefix">Rp</string>
+    <string name="tx_date">Дата</string>
+    <string name="tx_time">Время</string>
+    <string name="tx_name">Название</string>
+    <string name="tx_name_placeholder">Название транзакции</string>
+    <string name="tx_category">Категория</string>
+    <string name="tx_select_category">Выберите категорию</string>
+    <string name="tx_select_category_hint">например: Еда, Транспорт...</string>
+    <string name="tx_funding_source">Источник средств</string>
+    <string name="tx_received_at">Получено в</string>
+    <string name="tx_select_account">Выберите счёт</string>
+    <string name="tx_select_account_hint">Наличные, Банк BCA, E-Wallet...</string>
+    <string name="tx_note">Заметка</string>
+    <string name="tx_note_placeholder">Добавьте заметку здесь...</string>
+    <string name="tx_attachment">Вложение</string>
+    <string name="tx_attachment_hint">JPG, PNG ИЛИ PDF (МАКС. 5MB)</string>
+    <string name="tx_take_photo">Сделать фото или выбрать файл</string>
+    <string name="tx_recurring">Повторяющаяся транзакция</string>
+    <string name="tx_save_failed">Не удалось сохранить транзакцию. Повторите попытку.</string>
+
+    <!-- Tipe transaksi (TransactionType.labelResId) -->
+    <string name="tx_type_expense">Расходы</string>
+    <string name="tx_type_income">Доходы</string>
+
+    <!-- Layar kosong (TransactionEmptyScreen) -->
+    <string name="tx_empty_title">Транзакций пока нет</string>
+    <string name="tx_empty_description">Начните записывать расходы и доходы уже сегодня, чтобы лучше контролировать финансы и достичь своих финансовых целей.</string>
+    <string name="tx_empty_action">Добавить первую транзакцию</string>
+
+    <!-- Bottom sheet kategori &amp; rekening -->
+    <string name="tx_no_categories">Категорий пока нет</string>
+    <string name="tx_pick_parent_category">Выберите основную категорию</string>
+
+    <!-- Tab Transaksi (TransactionScreen) -->
+    <string name="tx_title">Транзакции</string>
+    <string name="tx_search_hint">Поиск транзакций...</string>
+    <string name="tx_today">Сегодня</string>
+    <string name="tx_this_week">Эта неделя</string>
+    <string name="tx_remaining_budget">Остаток бюджета</string>
+    <string name="tx_group_net_format">%1$s %2$s %3$s</string>
+
+    <!-- Semua Transaksi (GetTransactionsByFilterUseCase / AllTransactionsScreen) -->
+    <string name="tx_title_all">Все транзакции</string>
+    <string name="tx_title_filter">Транзакции · %1$s</string>
+
+    <!-- Detail transaksi (DetailTransactionScreen) -->
+    <string name="tx_detail_title">Детали транзакции</string>
+    <string name="tx_not_found">Транзакция не найдена</string>
+    <string name="tx_unknown_category">Неизвестная категория</string>
+    <string name="tx_unknown_account">Неизвестный счёт</string>
+    <string name="tx_view_fullscreen">Открыть на весь экран</string>
+    <string name="tx_action_edit">ИЗМЕНИТЬ</string>
+    <string name="tx_action_duplicate">КОПИРОВАТЬ</string>
+    <string name="tx_action_share">ПОДЕЛИТЬСЯ</string>
+    <string name="tx_action_delete">УДАЛИТЬ</string>
+    <string name="tx_transaction_id">ID ТРАНЗАКЦИИ: %1$s</string>
+    <string name="tx_date_time">Дата &amp; время</string>
+    <string name="tx_date_time_value">%1$s, %2$s %3$s</string>
+    <string name="tx_share_chooser">Поделиться транзакцией</string>
+    <string name="tx_no_share_app">Нет приложений для отправки</string>
+    <string name="tx_detail_load_failed">Не удалось загрузить транзакцию</string>
+    <string name="tx_delete_failed">Не удалось удалить транзакцию. Повторите попытку.</string>
+    <string name="tx_duplicated">Транзакция скопирована</string>
+    <string name="tx_duplicate_failed">Не удалось скопировать транзакцию. Повторите попытку.</string>
+    <string name="tx_attachment_preview_unavailable">Предпросмотр вложения недоступен</string>
+
+    <!-- Dialog hapus transaksi (DeleteTransactionDialog) -->
+    <string name="tx_delete_title">Удалить транзакцию?</string>
+    <string name="tx_delete">Удалить</string>
+    <string name="tx_balance_effect_expense">Баланс счёта \"%1$s\" увеличится на %2$s после удаления этой транзакции.</string>
+    <string name="tx_balance_effect_income">Баланс счёта \"%1$s\" уменьшится на %2$s после удаления этой транзакции.</string>
+
+    <!-- Teks yang dibagikan (DetailTransactionViewModel.handleShare) -->
+    <string name="tx_share_headline">%1$s • %2$s</string>
+    <string name="tx_share_date_line">Дата: %1$s %2$s</string>
+    <string name="tx_share_category_line">Категория: %1$s</string>
+    <string name="tx_share_funding_line">Источник средств: %1$s</string>
+    <string name="tx_share_received_line">Получено в: %1$s</string>
+    <string name="tx_share_note_line">Заметка: %1$s</string>
+</resources>

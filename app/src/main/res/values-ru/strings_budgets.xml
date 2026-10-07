@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Label tipe periode (RecurrenceType.labelResId) -->
+    <string name="budget_recurrence_monthly">Ежемесячно</string>
+    <string name="budget_recurrence_weekly">Еженедельно</string>
+    <string name="budget_recurrence_custom">Пользовательский</string>
+
+    <!-- Layar tambah/ubah anggaran (AddEditBudgetScreen) -->
+    <string name="budget_edit_title">Изменить бюджет</string>
+    <string name="budget_category_label">Категория: %1$s</string>
+    <string name="budget_back_cd">Назад</string>
+    <string name="budget_delete_content_description">Удалить бюджет</string>
+    <string name="budget_new_limit_title">Новый лимит бюджета</string>
+    <string name="budget_previous_limit">Ранее лимит составлял %1$s</string>
+    <string name="budget_effective_period_title">Период действия</string>
+    <string name="budget_start_label">НАЧАЛО</string>
+    <string name="budget_end_label">ЗАВЕРШЕНИЕ</string>
+    <string name="budget_duration_days">Длительность: %1$d дн.</string>
+    <string name="budget_recurring_settings_title">Настройки повторения</string>
+
+    <!-- Kartu anggaran berulang (RecurringBudgetCard + AddEditBudgetState.previewTeksBerulang) -->
+    <string name="budget_recurring_card_title">Повторяющийся бюджет</string>
+    <string name="budget_recurring_card_subtitle">Этот бюджет будет автоматически обновляться в начале каждого периода</string>
+    <string name="budget_recurring_preview_monthly">Система автоматически создаст бюджет %1$s на сумму Rp %2$s 1-го числа каждого месяца.</string>
+    <string name="budget_recurring_preview_weekly">Система автоматически создаст бюджет %1$s на сумму Rp %2$s в начале каждой недели.</string>
+    <string name="budget_recurring_preview_custom">Система автоматически создаст бюджет %1$s на сумму Rp %2$s каждые %3$d дн. начиная с %4$s.</string>
+    <string name="budget_this_category">эта категория</string>
+
+    <!-- Ringkasan perubahan (ChangeSummaryCard) -->
+    <string name="budget_change_summary_title">СВОДКА ИЗМЕНЕНИЙ</string>
+    <string name="budget_old_value_label">Было</string>
+    <string name="budget_new_value_label">Стало</string>
+
+    <!-- Tombol -->
+    <string name="budget_save_changes_action">Сохранить изменения</string>
+    <string name="budget_save_action">Сохранить</string>
+    <string name="budget_saving_action">Сохранение…</string>
+    <string name="budget_delete_action">Удалить</string>
+    <string name="budget_cancel_action">Отмена</string>
+
+    <!-- Dialog konfirmasi hapus anggaran (AddEditBudgetScreen) -->
+    <string name="budget_delete_dialog_title">Удалить бюджет?</string>
+    <string name="budget_delete_dialog_message">Бюджет \"%1$s\" будет удалён за текущий и следующий периоды. История прошлых периодов сохранится.</string>
+
+    <!-- Layar edit alokasi banyak kategori (EditPresentageBudgetScreen) -->
+    <string name="budget_edit_allocations_title">Изменить бюджет</string>
+    <string name="budget_expense_categories_title">Категории расходов</string>
+    <string name="budget_active_categories_count">%1$d АКТИВНЫХ КАТЕГОРИЙ</string>
+    <string name="budget_allocation_ready">Итого распределено %1$d%% — готово к сохранению</string>
+    <string name="budget_allocation_invalid_hint">Итого распределено %1$d%% (макс. 100%%) • каждая категория должна быть больше 0</string>
+    <string name="budget_delete_allocation_cd">Удалить распределение %1$s</string>
+
+    <!-- Dialog konfirmasi hapus alokasi (EditPresentageBudgetScreen) -->
+    <string name="budget_delete_allocation_dialog_title">Удалить распределение?</string>
+    <string name="budget_delete_allocation_dialog_message">Распределение \"%1$s\" будет удалено за текущий и следующий периоды. История прошлых периодов сохранится.</string>
+
+    <!-- Kartu ringkasan & kartu alokasi kategori -->
+    <string name="budget_summary_total">Общий бюджет</string>
+    <string name="budget_summary_used">Израсходовано</string>
+    <string name="budget_summary_remaining">Остаток</string>
+    <string name="budget_percentage_of_total">%1$s%% от общего</string>
+    <string name="budget_percentage_value">%1$s%%</string>
+
+    <!-- Pesan validasi & hasil aksi (SaveBudgetUseCase / DeleteBudgetUseCase / ViewModel) -->
+    <string name="budget_error_category_not_found">Категория не найдена</string>
+    <string name="budget_error_expense_category_only">Бюджет можно задать только для категорий расходов</string>
+    <string name="budget_error_amount_must_be_positive">Лимит бюджета должен быть больше 0</string>
+    <string name="budget_error_end_after_start">Дата окончания должна быть позже даты начала</string>
+    <string name="budget_error_invalid_budget">Недействительный бюджет</string>
+    <string name="budget_error_budget_not_found">Бюджет не найден</string>
+    <string name="budget_error_min_one_category">Распределите хотя бы одну категорию</string>
+    <string name="budget_error_allocation_total">Итого распределено %1$d%% (макс. 100%%) — каждая категория должна быть больше 0</string>
+    <string name="budget_save_failed">Не удалось сохранить бюджет: %1$s</string>
+    <string name="budget_delete_failed">Не удалось удалить бюджет: %1$s</string>
+    <string name="budget_allocation_deleted">Распределение категорий удалено</string>
+</resources>
