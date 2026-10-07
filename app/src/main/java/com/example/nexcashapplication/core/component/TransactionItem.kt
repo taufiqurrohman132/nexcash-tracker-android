@@ -84,9 +84,9 @@ fun TransactionItem(
             ) {
                 Text(
                     text = if (transaction.typeTransaction == TransactionType.INCOME)
-                        "+ Rp ${transaction.amount.formatCurrency()}"
+                        "+ ${transaction.amount.formatCurrency()}"
                     else
-                        "- Rp ${transaction.amount.formatCurrency()}",
+                        "- ${transaction.amount.formatCurrency()}",
                     color = if (transaction.typeTransaction == TransactionType.INCOME) AccentTealGreen else Color.Red,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,

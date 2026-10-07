@@ -9,7 +9,6 @@
     <string name="acct_empty_title">Aún no hay cuentas</string>
     <string name="acct_empty_subtitle">Añade una cuenta o un monedero electrónico para empezar a registrar activos.</string>
     <string name="acct_total_balance_combined">Saldo total combinado</string>
-    <string name="acct_currency_code">IDR</string>
     <string name="acct_this_month">ESTE MES</string>
     <string name="acct_active_assets">ACTIVOS VIGENTES</string>
     <string name="acct_active_account_count">%1$d cuentas</string>
@@ -41,7 +40,6 @@
     <string name="acct_asset_type">Tipo de activo</string>
     <string name="acct_locked">BLOQUEADO</string>
     <string name="acct_initial_balance">Saldo inicial</string>
-    <string name="acct_currency_prefix">"Rp "</string>
     <string name="acct_balance_hint">Saldo actual de ese activo</string>
     <string name="acct_step_last">Último paso</string>
     <string name="acct_step_last_desc">Completa los detalles de tu activo para empezar a registrar transacciones automáticamente.</string>
@@ -55,7 +53,7 @@
 
     <!-- Dialog hapus akun (DeleteAccountDialog) -->
     <string name="acct_delete_blocked_title">No se puede eliminar</string>
-    <string name="acct_delete_blocked_message">La cuenta todavía tiene un saldo de Rp %1$s. Vacía el saldo primero.</string>
+    <string name="acct_delete_blocked_message">La cuenta todavía tiene un saldo de %1$s. Vacía el saldo primero.</string>
     <string name="acct_delete_history_message">Las %1$d transacciones relacionadas seguirán guardadas en el historial.</string>
     <string name="acct_delete_simple_message">La cuenta se eliminará de forma permanente.</string>
     <string name="acct_delete_confirm_title">¿Eliminar cuenta?</string>

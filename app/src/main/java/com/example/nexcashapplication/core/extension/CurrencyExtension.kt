@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.core.extension
 
+import com.example.nexcashapplication.core.currency.AppCurrencyHolder
 import com.example.nexcashapplication.core.i18n.LocaleCached
 import java.text.NumberFormat
 import java.util.Locale
@@ -9,13 +10,15 @@ import java.util.Locale
  * bukan di-pin ke locale Indonesia. Di-cache per-locale karena bahasa bisa berganti saat
  * runtime — lihat [LocaleCached].
  *
- * Simbol mata uang ("Rp", "US$", ...) TIDAK ada di sini: itu urusan settings Mata Uang dan
- * ditambahkan oleh pemanggil.
+ * Simbol mata uang ("Rp", "$", ...) ikut pilihan di pengaturan Mata Uang lewat
+ * [AppCurrencyHolder] — jadi format di sini sudah termasuk prefix siap tampil;
+ * pemanggil tidak perlu menambah "Rp" sendiri (baik lewat kode maupun resource).
+ * `parseCurrency`/`parseCurrencyCompact` tetap aman karena membuang semua non-digit.
  */
 private val numberFormatter = LocaleCached { locale: Locale -> NumberFormat.getNumberInstance(locale) }
 
 fun Long.formatCurrency(): String {
-    return numberFormatter.get().format(this)
+    return AppCurrencyHolder.value.prefix + numberFormatter.get().format(this)
 }
 
 // Untuk currency formatted string
@@ -48,7 +51,7 @@ fun String.parseCurrencyCompact(): Long {
 }
 
 fun Long.formatCompact(): String {
-    return when {
+    val compact = when {
         this >= 1_000_000_000_000 -> {
             val value = this / 1_000_000_000_000.0
             "${formatDecimal(value)}T"
@@ -71,6 +74,7 @@ fun Long.formatCompact(): String {
 
         else -> this.toString()
     }
+    return AppCurrencyHolder.value.prefix + compact
 }
 
 private fun formatDecimal(value: Double): String {
@@ -85,7 +89,7 @@ private fun formatDecimal(value: Double): String {
 // visibilty
 fun Long.toFormatCurrencyVisibility(isVisible: Boolean, isTotalSaldoOverflow: Boolean = false): String {
     return  if (!isVisible) {
-        "••••••••"
+        AppCurrencyHolder.value.prefix + "••••••••"
     } else if (isTotalSaldoOverflow) {
         this.formatCompact()
     } else {

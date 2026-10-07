@@ -9,7 +9,6 @@
     <string name="acct_empty_title">Aucun compte pour le moment</string>
     <string name="acct_empty_subtitle">Ajoutez un compte bancaire ou un e-wallet pour commencer à enregistrer vos actifs.</string>
     <string name="acct_total_balance_combined">Solde total combiné</string>
-    <string name="acct_currency_code">IDR</string>
     <string name="acct_this_month">CE MOIS-CI</string>
     <string name="acct_active_assets">COMPTES ACTIFS</string>
     <string name="acct_active_account_count">%1$d comptes</string>
@@ -41,7 +40,6 @@
     <string name="acct_asset_type">Type d\'actif</string>
     <string name="acct_locked">VERROUILLÉ</string>
     <string name="acct_initial_balance">Solde initial</string>
-    <string name="acct_currency_prefix">"Rp "</string>
     <string name="acct_balance_hint">Solde actuel de cet actif</string>
     <string name="acct_step_last">Dernière étape</string>
     <string name="acct_step_last_desc">Complétez les informations de votre actif pour enregistrer automatiquement vos transactions.</string>
@@ -55,7 +53,7 @@
 
     <!-- Dialog hapus akun (DeleteAccountDialog) -->
     <string name="acct_delete_blocked_title">Suppression impossible</string>
-    <string name="acct_delete_blocked_message">Le compte possède encore un solde de Rp %1$s. Videz d\'abord le solde.</string>
+    <string name="acct_delete_blocked_message">Le compte possède encore un solde de %1$s. Videz d\'abord le solde.</string>
     <string name="acct_delete_history_message">%1$d transactions associées resteront dans l\'historique.</string>
     <string name="acct_delete_simple_message">Le compte sera définitivement supprimé.</string>
     <string name="acct_delete_confirm_title">Supprimer le compte ?</string>

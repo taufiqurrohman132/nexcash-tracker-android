@@ -9,7 +9,6 @@
     <string name="acct_empty_title">まだ口座がありません</string>
     <string name="acct_empty_subtitle">口座やE-Walletを追加して、資産の記録を始めましょう。</string>
     <string name="acct_total_balance_combined">合算の合計残高</string>
-    <string name="acct_currency_code">IDR</string>
     <string name="acct_this_month">今月</string>
     <string name="acct_active_assets">アクティブな資産</string>
     <string name="acct_active_account_count">%1$d件の口座</string>
@@ -41,7 +40,6 @@
     <string name="acct_asset_type">資産の種類</string>
     <string name="acct_locked">ロック中</string>
     <string name="acct_initial_balance">初期残高</string>
-    <string name="acct_currency_prefix">"Rp "</string>
     <string name="acct_balance_hint">その資産の現在の残高</string>
     <string name="acct_step_last">最後のステップ</string>
     <string name="acct_step_last_desc">資産の詳細を入力して、取引の自動記録を始めましょう。</string>
@@ -55,7 +53,7 @@
 
     <!-- Dialog hapus akun (DeleteAccountDialog) -->
     <string name="acct_delete_blocked_title">削除できません</string>
-    <string name="acct_delete_blocked_message">この口座には Rp %1$s の残高があります。先に残高を空にしてください。</string>
+    <string name="acct_delete_blocked_message">この口座には %1$s の残高があります。先に残高を空にしてください。</string>
     <string name="acct_delete_history_message">関連する %1$d 件の取引は履歴に保存されたまま残ります。</string>
     <string name="acct_delete_simple_message">口座は完全に削除されます。</string>
     <string name="acct_delete_confirm_title">口座を削除しますか？</string>

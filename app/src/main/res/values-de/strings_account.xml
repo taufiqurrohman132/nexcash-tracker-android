@@ -9,7 +9,6 @@
     <string name="acct_empty_title">Noch keine Konten</string>
     <string name="acct_empty_subtitle">Fügen Sie ein Konto oder E-Wallet hinzu, um Vermögenswerte zu erfassen.</string>
     <string name="acct_total_balance_combined">Gesamtguthaben (kombiniert)</string>
-    <string name="acct_currency_code">IDR</string>
     <string name="acct_this_month">DIESEN MONAT</string>
     <string name="acct_active_assets">AKTIVE VERMÖGENSWERTE</string>
     <string name="acct_active_account_count">%1$d Konten</string>
@@ -41,7 +40,6 @@
     <string name="acct_asset_type">Art des Vermögenswerts</string>
     <string name="acct_locked">GESPERRT</string>
     <string name="acct_initial_balance">Anfangsguthaben</string>
-    <string name="acct_currency_prefix">"Rp "</string>
     <string name="acct_balance_hint">Aktuelles Guthaben dieses Vermögenswerts</string>
     <string name="acct_step_last">Letzter Schritt</string>
     <string name="acct_step_last_desc">Vervollständigen Sie die Details Ihres Vermögenswerts, um Transaktionen automatisch zu erfassen.</string>
@@ -55,7 +53,7 @@
 
     <!-- Dialog hapus akun (DeleteAccountDialog) -->
     <string name="acct_delete_blocked_title">Kann nicht gelöscht werden</string>
-    <string name="acct_delete_blocked_message">Das Konto hat noch ein Guthaben von Rp %1$s. Leeren Sie zuerst das Guthaben.</string>
+    <string name="acct_delete_blocked_message">Das Konto hat noch ein Guthaben von %1$s. Leeren Sie zuerst das Guthaben.</string>
     <string name="acct_delete_history_message">%1$d zugehörige Transaktionen bleiben im Verlauf gespeichert.</string>
     <string name="acct_delete_simple_message">Das Konto wird dauerhaft gelöscht.</string>
     <string name="acct_delete_confirm_title">Konto löschen?</string>

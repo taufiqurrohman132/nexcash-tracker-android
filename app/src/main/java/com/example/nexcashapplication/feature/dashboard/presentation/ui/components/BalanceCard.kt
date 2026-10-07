@@ -36,8 +36,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
-import com.example.nexcashapplication.core.extension.formatCompact
-import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.extension.toFormatCurrencyVisibility
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 
@@ -108,23 +107,11 @@ fun BalanceCard(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    // format sekali per nilai, bukan tiap recomposition
-                    val formattedBalance = remember(totalBalance) {
-                        totalBalance.formatCurrency()
-                    }
-                    val compactBalance = remember(totalBalance) {
-                        totalBalance.formatCompact()
-                    }
+                    // helper sudah membawa prefix mata uang dan menyamarkan saldo tersembunyi
                     Text(
                         modifier = Modifier
                                 .weight(1f),
-                        text = if (!isVisible) {
-                            stringResource(R.string.dash_balance_hidden)
-                        } else if (isTotalSaldoOverflow) {
-                            stringResource(R.string.total_balance_format, compactBalance)
-                        } else {
-                            stringResource(R.string.total_balance_format, formattedBalance)
-                        },
+                        text = totalBalance.toFormatCurrencyVisibility(isVisible, isTotalSaldoOverflow),
                         style =
                             MaterialTheme.typography.headlineLarge,
                         fontWeight = FontWeight.Bold,

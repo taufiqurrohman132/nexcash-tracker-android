@@ -30,6 +30,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.currency.AppCurrencyHolder
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.ui.theme.LightCyan
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -94,14 +95,11 @@ fun BudgetCard(
 
                 Spacer(modifier = Modifier.height(2.dp))
 
-                // Remaining budget — format nilai sekali, bukan tiap recomposition
-                val remainingAmount = remember(remainingBudget) {
+                // Remaining budget — format nilai sekali, bukan tiap recomposition;
+                // + AppCurrencyHolder.value supaya cache ikut invalid saat ganti mata uang
+                val formattedRemaining = remember(remainingBudget, AppCurrencyHolder.value) {
                     remainingBudget.formatCurrency()
                 }
-                val formattedRemaining = stringResource(
-                    R.string.total_balance_format,
-                    remainingAmount,
-                )
                 val remainingSuffix = stringResource(R.string.dash_remaining_suffix)
                 Text(
                     text = buildAnnotatedString {

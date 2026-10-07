@@ -13,7 +13,6 @@
     <string name="tx_saving">Guardando...</string>
     <string name="tx_amount_out">IMPORTE (GASTO)</string>
     <string name="tx_amount_in">IMPORTE (INGRESO)</string>
-    <string name="tx_currency_prefix">Rp</string>
     <string name="tx_date">Fecha</string>
     <string name="tx_time">Hora</string>
     <string name="tx_name">Nombre</string>
@@ -52,7 +51,7 @@
     <string name="tx_today">Hoy</string>
     <string name="tx_this_week">Esta semana</string>
     <string name="tx_remaining_budget">Presupuesto restante</string>
-    <string name="tx_group_net_format">%1$s %2$s %3$s</string>
+    <string name="tx_group_net_format">%1$s %2$s</string>
 
     <!-- Semua Transaksi (GetTransactionsByFilterUseCase / AllTransactionsScreen) -->
     <string name="tx_title_all">Todas las transacciones</string>

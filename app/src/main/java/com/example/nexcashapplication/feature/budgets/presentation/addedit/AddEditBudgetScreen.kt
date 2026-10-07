@@ -75,6 +75,7 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.toEpochMillis
 import com.example.nexcashapplication.core.common.toLocalDate
 import com.example.nexcashapplication.core.component.FormField
+import com.example.nexcashapplication.core.currency.AppCurrencyHolder
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.i18n.asString
@@ -197,7 +198,11 @@ fun AddEditBudgetContent(
                         onEvent(AddEditBudgetEvent.BatasBaruChanged(it))
                     },
                     prefix = {
-                        Text("Rp ", fontSize = 18.sp, fontWeight = FontWeight.Medium)
+                        Text(
+                            AppCurrencyHolder.value.prefix,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Medium,
+                        )
                     },
                     textStyle = TextStyle(
                         fontSize = 24.sp,
@@ -352,7 +357,7 @@ private fun NewLimitField(value: String, onValueChange: (String) -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         leadingIcon = {
             Text(
-                "Rp",
+                AppCurrencyHolder.value.prefix.trimEnd(),
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )

@@ -394,7 +394,7 @@ fun BalanceCard(
         }
         Spacer(Modifier.height(6.dp))
         Text(
-            text = stringResource(R.string.total_balance_format, state.balance.formatCurrency()),
+            text = state.balance.formatCurrency(),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1A2B2E),

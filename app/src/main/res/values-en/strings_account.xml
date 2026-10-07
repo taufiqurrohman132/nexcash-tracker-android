@@ -9,7 +9,6 @@
     <string name="acct_empty_title">No accounts yet</string>
     <string name="acct_empty_subtitle">Add a bank account or e-wallet to start tracking your assets.</string>
     <string name="acct_total_balance_combined">Combined Total Balance</string>
-    <string name="acct_currency_code">IDR</string>
     <string name="acct_this_month">THIS MONTH</string>
     <string name="acct_active_assets">ACTIVE ASSETS</string>
     <string name="acct_active_account_count">%1$d Accounts</string>
@@ -41,7 +40,6 @@
     <string name="acct_asset_type">Asset Type</string>
     <string name="acct_locked">LOCKED</string>
     <string name="acct_initial_balance">Opening Balance</string>
-    <string name="acct_currency_prefix">"Rp "</string>
     <string name="acct_balance_hint">Current balance in this asset</string>
     <string name="acct_step_last">Final Step</string>
     <string name="acct_step_last_desc">Complete your asset details to start recording transactions automatically.</string>
@@ -55,7 +53,7 @@
 
     <!-- Dialog hapus akun (DeleteAccountDialog) -->
     <string name="acct_delete_blocked_title">Cannot Be Deleted</string>
-    <string name="acct_delete_blocked_message">This account still has a balance of Rp %1$s. Clear the balance first.</string>
+    <string name="acct_delete_blocked_message">This account still has a balance of %1$s. Clear the balance first.</string>
     <string name="acct_delete_history_message">%1$d related transactions will remain in your history.</string>
     <string name="acct_delete_simple_message">The account will be deleted permanently.</string>
     <string name="acct_delete_confirm_title">Delete Account?</string>

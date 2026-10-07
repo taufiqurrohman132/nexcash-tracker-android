@@ -421,7 +421,6 @@ fun TransactionGroupHeader(
                 text = stringResource(
                     R.string.tx_group_net_format,
                     if (isPositive) "+" else "-",
-                    stringResource(R.string.tx_currency_prefix),
                     Math.abs(total).formatCurrency(),
                 ),
                 color = if (isPositive) AccentTealGreen else Color.Red,
@@ -490,7 +489,7 @@ fun SummaryCard(
                 style = MaterialTheme.typography.bodySmall,
             )
             Text(
-                text = stringResource(R.string.total_balance_format, amount.formatCompact()),
+                text = amount.formatCompact(),
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 softWrap = false,

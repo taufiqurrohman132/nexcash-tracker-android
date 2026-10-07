@@ -84,7 +84,7 @@ fun SummaryChip(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            // nilai diformat dulu, prefiks "Rp"-nya baru diambil dari resource
+            // formatCurrency/formatCompact sudah membawa prefix mata uang dari settings
             val shownAmount = if (isTextOverflow) {
                 value.formatCompact()
             } else {
@@ -92,7 +92,7 @@ fun SummaryChip(
             }
 
             Text(
-                text = stringResource(R.string.total_balance_format, shownAmount),
+                text = shownAmount,
                 maxLines = 1,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,

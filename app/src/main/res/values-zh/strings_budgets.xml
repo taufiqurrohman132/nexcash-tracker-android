@@ -21,9 +21,9 @@
     <!-- Kartu anggaran berulang (RecurringBudgetCard + AddEditBudgetState.previewTeksBerulang) -->
     <string name="budget_recurring_card_title">周期性预算</string>
     <string name="budget_recurring_card_subtitle">每个周期开始时自动更新此预算</string>
-    <string name="budget_recurring_preview_monthly">系统将在每月 1 日自动生成 %1$s 预算，金额为 Rp %2$s。</string>
-    <string name="budget_recurring_preview_weekly">系统将在每周开始时自动生成 %1$s 预算，金额为 Rp %2$s。</string>
-    <string name="budget_recurring_preview_custom">系统将自动生成 %1$s 预算（金额为 Rp %2$s），每 %3$d 天一次，自 %4$s 起。</string>
+    <string name="budget_recurring_preview_monthly">系统将在每月 1 日自动生成 %1$s 预算，金额为 %2$s。</string>
+    <string name="budget_recurring_preview_weekly">系统将在每周开始时自动生成 %1$s 预算，金额为 %2$s。</string>
+    <string name="budget_recurring_preview_custom">系统将自动生成 %1$s 预算（金额为 %2$s），每 %3$d 天一次，自 %4$s 起。</string>
     <string name="budget_this_category">这个分类</string>
 
     <!-- Ringkasan perubahan (ChangeSummaryCard) -->

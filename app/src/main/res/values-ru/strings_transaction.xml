@@ -13,7 +13,6 @@
     <string name="tx_saving">Сохранение...</string>
     <string name="tx_amount_out">СУММА (РАСХОД)</string>
     <string name="tx_amount_in">СУММА (ДОХОД)</string>
-    <string name="tx_currency_prefix">Rp</string>
     <string name="tx_date">Дата</string>
     <string name="tx_time">Время</string>
     <string name="tx_name">Название</string>
@@ -52,7 +51,7 @@
     <string name="tx_today">Сегодня</string>
     <string name="tx_this_week">Эта неделя</string>
     <string name="tx_remaining_budget">Остаток бюджета</string>
-    <string name="tx_group_net_format">%1$s %2$s %3$s</string>
+    <string name="tx_group_net_format">%1$s %2$s</string>
 
     <!-- Semua Transaksi (GetTransactionsByFilterUseCase / AllTransactionsScreen) -->
     <string name="tx_title_all">Все транзакции</string>

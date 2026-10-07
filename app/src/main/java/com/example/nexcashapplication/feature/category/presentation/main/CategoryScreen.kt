@@ -309,10 +309,7 @@ fun BudgetSummaryCard(
                     color = Color(0xFF7A8A99),
                 )
                 Text(
-                    text = stringResource(
-                        R.string.total_balance_format,
-                        totalBudget.formatCurrency(),
-                    ),
+                    text = totalBudget.formatCurrency(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,
@@ -339,10 +336,7 @@ fun BudgetSummaryCard(
                     color = Color(0xFF7A8A99),
                 )
                 Text(
-                    text = stringResource(
-                        R.string.total_balance_format,
-                        totalPemasukan.formatCurrency(),
-                    ),
+                    text = totalPemasukan.formatCurrency(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
                     color = Color.Black,

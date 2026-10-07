@@ -21,9 +21,9 @@
     <!-- Kartu anggaran berulang (RecurringBudgetCard + AddEditBudgetState.previewTeksBerulang) -->
     <string name="budget_recurring_card_title">Wiederkehrendes Budget</string>
     <string name="budget_recurring_card_subtitle">Dieses Budget wird zu Beginn jedes Zeitraums automatisch aktualisiert</string>
-    <string name="budget_recurring_preview_monthly">Das System erstellt automatisch am 1. jedes Monats ein Budget für %1$s über Rp %2$s.</string>
-    <string name="budget_recurring_preview_weekly">Das System erstellt automatisch zu Beginn jeder Woche ein Budget für %1$s über Rp %2$s.</string>
-    <string name="budget_recurring_preview_custom">Das System erstellt automatisch ein Budget für %1$s über Rp %2$s alle %3$d Tage ab %4$s.</string>
+    <string name="budget_recurring_preview_monthly">Das System erstellt automatisch am 1. jedes Monats ein Budget für %1$s über %2$s.</string>
+    <string name="budget_recurring_preview_weekly">Das System erstellt automatisch zu Beginn jeder Woche ein Budget für %1$s über %2$s.</string>
+    <string name="budget_recurring_preview_custom">Das System erstellt automatisch ein Budget für %1$s über %2$s alle %3$d Tage ab %4$s.</string>
     <string name="budget_this_category">dieser Kategorie</string>
 
     <!-- Ringkasan perubahan (ChangeSummaryCard) -->

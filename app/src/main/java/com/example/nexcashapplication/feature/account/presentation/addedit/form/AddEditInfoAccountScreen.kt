@@ -59,6 +59,7 @@ import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconRounded
+import com.example.nexcashapplication.core.currency.AppCurrencyHolder
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.i18n.asString
@@ -360,7 +361,7 @@ fun FormFieldEdit(
                 },
                 textStyle = MaterialTheme.typography.bodyMedium,
                 prefix = {
-                    Text(stringResource(R.string.acct_currency_prefix))
+                    Text(AppCurrencyHolder.value.prefix)
                 },
             )
             Spacer(Modifier.height(6.dp))

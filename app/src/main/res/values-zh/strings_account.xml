@@ -9,7 +9,6 @@
     <string name="acct_empty_title">暂无账户</string>
     <string name="acct_empty_subtitle">添加银行账户或电子钱包，开始记录您的资产。</string>
     <string name="acct_total_balance_combined">合并总余额</string>
-    <string name="acct_currency_code">IDR</string>
     <string name="acct_this_month">本月</string>
     <string name="acct_active_assets">启用资产</string>
     <string name="acct_active_account_count">%1$d 个账户</string>
@@ -41,7 +40,6 @@
     <string name="acct_asset_type">资产类型</string>
     <string name="acct_locked">已锁定</string>
     <string name="acct_initial_balance">初始余额</string>
-    <string name="acct_currency_prefix">"Rp "</string>
     <string name="acct_balance_hint">该资产的当前余额</string>
     <string name="acct_step_last">最后一步</string>
     <string name="acct_step_last_desc">完善您的资产详情，即可开始自动记录交易。</string>
@@ -55,7 +53,7 @@
 
     <!-- Dialog hapus akun (DeleteAccountDialog) -->
     <string name="acct_delete_blocked_title">无法删除</string>
-    <string name="acct_delete_blocked_message">该账户仍有 Rp %1$s 余额。请先清空余额。</string>
+    <string name="acct_delete_blocked_message">该账户仍有 %1$s 余额。请先清空余额。</string>
     <string name="acct_delete_history_message">%1$d 笔相关交易仍会保留在历史记录中。</string>
     <string name="acct_delete_simple_message">该账户将被永久删除。</string>
     <string name="acct_delete_confirm_title">删除账户？</string>

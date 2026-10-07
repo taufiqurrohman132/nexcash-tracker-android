@@ -327,7 +327,7 @@ fun CategoryAllocationCard(
                 color = MaterialTheme.colorScheme.surfaceVariant,
             ) {
                 Text(
-                    text = "Rp ${category.totalBudget.formatCurrency()}",
+                    text = category.totalBudget.formatCurrency(),
                     modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                     style = MaterialTheme.typography.labelLarge,
                 )

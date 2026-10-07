@@ -13,7 +13,6 @@
     <string name="tx_saving">保存中...</string>
     <string name="tx_amount_out">金額（支出）</string>
     <string name="tx_amount_in">金額（収入）</string>
-    <string name="tx_currency_prefix">Rp</string>
     <string name="tx_date">日付</string>
     <string name="tx_time">時刻</string>
     <string name="tx_name">名前</string>
@@ -52,7 +51,7 @@
     <string name="tx_today">今日</string>
     <string name="tx_this_week">今週</string>
     <string name="tx_remaining_budget">残り予算</string>
-    <string name="tx_group_net_format">%1$s %2$s %3$s</string>
+    <string name="tx_group_net_format">%1$s %2$s</string>
 
     <!-- Semua Transaksi (GetTransactionsByFilterUseCase / AllTransactionsScreen) -->
     <string name="tx_title_all">すべての取引</string>

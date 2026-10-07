@@ -2,7 +2,6 @@
 <resources>
     <!-- BalanceCard -->
     <string name="dash_total_balance_label">Saldo total</string>
-    <string name="dash_balance_hidden">Rp ••••••••</string>
     <string name="dash_income_label">INGRESOS</string>
     <string name="dash_expense_label">GASTOS</string>
 

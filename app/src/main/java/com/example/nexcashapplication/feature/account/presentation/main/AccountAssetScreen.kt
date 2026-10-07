@@ -63,6 +63,7 @@ import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
+import com.example.nexcashapplication.core.currency.AppCurrencyHolder
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.extension.toFormatCurrencyVisibility
 import com.example.nexcashapplication.core.i18n.UiText
@@ -303,7 +304,7 @@ fun TotalBalanceCard(
                             .padding(horizontal = 10.dp, vertical = 4.dp),
                 ) {
                     Text(
-                        stringResource(R.string.acct_currency_code),
+                        AppCurrencyHolder.value.code,
                         color = Color.White,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
@@ -319,10 +320,7 @@ fun TotalBalanceCard(
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = stringResource(
-                        R.string.total_balance_format,
-                        totalBalance.toFormatCurrencyVisibility(isVisible, isTotalSaldoOverflow),
-                    ),
+                    text = totalBalance.toFormatCurrencyVisibility(isVisible, isTotalSaldoOverflow),
                     color = Color.White,
                     fontSize = 28.sp,
                     fontWeight = FontWeight.Bold,
@@ -452,10 +450,7 @@ private fun AccountRow(
             }
 
             Text(
-                text = stringResource(
-                    R.string.total_balance_format,
-                    account.balance.formatCurrency(),
-                ),
+                text = account.balance.formatCurrency(),
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
                 maxLines = 1,

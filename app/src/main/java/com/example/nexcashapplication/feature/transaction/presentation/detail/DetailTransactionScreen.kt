@@ -505,7 +505,7 @@ fun HeaderContent(
             style = MaterialTheme.typography.bodyMedium,
         )
         Text(
-            text = stringResource(R.string.total_balance_format, amount.formatCurrency()),
+            text = amount.formatCurrency(),
             style = MaterialTheme.typography.headlineLarge,
             color = amountColor,
             fontWeight = FontWeight.Bold,

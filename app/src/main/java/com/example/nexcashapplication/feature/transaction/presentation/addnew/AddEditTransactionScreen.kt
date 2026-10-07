@@ -94,6 +94,7 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
+import com.example.nexcashapplication.core.currency.AppCurrencyHolder
 import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
@@ -282,7 +283,8 @@ fun AddEditTransactionContent(
                 },
                 prefix = {
                     Text(
-                        stringResource(R.string.tx_currency_prefix),
+                        // prefix dari settings Mata Uang (Rp 1.000 / $1,000)
+                        AppCurrencyHolder.value.prefix,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Medium,
                     )

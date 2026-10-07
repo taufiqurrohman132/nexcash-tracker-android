@@ -9,7 +9,6 @@
     <string name="acct_empty_title">Счетов пока нет</string>
     <string name="acct_empty_subtitle">Добавьте счёт или E-Wallet, чтобы начать записывать активы.</string>
     <string name="acct_total_balance_combined">Суммарный баланс</string>
-    <string name="acct_currency_code">IDR</string>
     <string name="acct_this_month">ЭТОТ МЕСЯЦ</string>
     <string name="acct_active_assets">АКТИВНЫЕ АКТИВЫ</string>
     <string name="acct_active_account_count">%1$d счетов</string>
@@ -41,7 +40,6 @@
     <string name="acct_asset_type">Тип актива</string>
     <string name="acct_locked">ЗАБЛОКИРОВАНО</string>
     <string name="acct_initial_balance">Начальный баланс</string>
-    <string name="acct_currency_prefix">"Rp "</string>
     <string name="acct_balance_hint">Текущий баланс этого актива</string>
     <string name="acct_step_last">Последний шаг</string>
     <string name="acct_step_last_desc">Завершите описание актива, чтобы начать автоматически записывать транзакции.</string>
@@ -55,7 +53,7 @@
 
     <!-- Dialog hapus akun (DeleteAccountDialog) -->
     <string name="acct_delete_blocked_title">Удаление невозможно</string>
-    <string name="acct_delete_blocked_message">На счёте всё ещё есть баланс Rp %1$s. Сначала обнулите баланс.</string>
+    <string name="acct_delete_blocked_message">На счёте всё ещё есть баланс %1$s. Сначала обнулите баланс.</string>
     <string name="acct_delete_history_message">Связанные транзакции: %1$d — они останутся в истории.</string>
     <string name="acct_delete_simple_message">Счёт будет удалён навсегда.</string>
     <string name="acct_delete_confirm_title">Удалить счёт?</string>

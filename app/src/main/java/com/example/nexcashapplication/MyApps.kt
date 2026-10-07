@@ -10,6 +10,7 @@ import androidx.work.Configuration
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import com.example.nexcashapplication.core.currency.AppCurrencyHolder
 import com.example.nexcashapplication.core.domain.model.AppLanguage
 import com.example.nexcashapplication.core.i18n.AppLocale
 import com.example.nexcashapplication.core.notification.NotificationHelper
@@ -67,6 +68,9 @@ class MyApps : Application(), Configuration.Provider {
         // (nama channel notifikasi, judul reminder, format tanggal & angka, dst.).
         applyInitialLocale()
 
+        // Mata uang tampilan mengikuti pengaturan; blocking sekali lalu reaktif.
+        applyInitialCurrency()
+
         // Wajib sebelum notify() apa pun; aman dipanggil berulang.
         notificationHelper.ensureChannels()
 
@@ -109,6 +113,21 @@ class MyApps : Application(), Configuration.Provider {
             applicationScope.launch {
                 runCatching { settingsRepository.updateLanguage(code) }
             }
+        }
+    }
+
+    /**
+     * Mata uang tampilan mengikuti pengaturan — blocking sekali (pola [applyInitialLocale])
+     * supaya frame pertama sudah memakai simbol yang benar, lalu collect Flow agar perubahan
+     * dari layar pengaturan Mata Uang langsung terlihat tanpa perlu Activity recreate.
+     */
+    private fun applyInitialCurrency() {
+        runCatching {
+            AppCurrencyHolder.set(runBlocking { settingsRepository.settings.first() }.currency)
+        }.onFailure { Log.e(TAG, "Gagal membaca mata uang tersimpan", it) }
+
+        applicationScope.launch {
+            settingsRepository.settings.collect { AppCurrencyHolder.set(it.currency) }
         }
     }
 

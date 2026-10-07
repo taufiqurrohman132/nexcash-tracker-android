@@ -29,6 +29,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
 import com.example.nexcashapplication.ui.theme.BorderGray
 
@@ -115,7 +116,7 @@ private fun AccountItem(
         }
 
         Text(
-            text = stringResource(R.string.total_balance_format, account.balance),
+            text = account.balance.formatCurrency(),
             style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.primary

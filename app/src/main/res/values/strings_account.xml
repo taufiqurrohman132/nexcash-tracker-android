@@ -9,7 +9,6 @@
     <string name="acct_empty_title">Belum ada akun</string>
     <string name="acct_empty_subtitle">Tambahkan rekening atau e-wallet untuk mulai mencatat aset.</string>
     <string name="acct_total_balance_combined">Total Saldo Gabungan</string>
-    <string name="acct_currency_code">IDR</string>
     <string name="acct_this_month">BULAN INI</string>
     <string name="acct_active_assets">ASET AKTIF</string>
     <string name="acct_active_account_count">%1$d Akun</string>
@@ -41,7 +40,6 @@
     <string name="acct_asset_type">Tipe Aset</string>
     <string name="acct_locked">TERKUNCI</string>
     <string name="acct_initial_balance">Saldo Awal</string>
-    <string name="acct_currency_prefix">"Rp "</string>
     <string name="acct_balance_hint">Saldo saat ini dalam aset tersebut</string>
     <string name="acct_step_last">Langkah Terakhir</string>
     <string name="acct_step_last_desc">Lengkapi detail aset Anda untuk mulai mencatat transaksi secara otomatis.</string>
@@ -55,7 +53,7 @@
 
     <!-- Dialog hapus akun (DeleteAccountDialog) -->
     <string name="acct_delete_blocked_title">Tidak Dapat Dihapus</string>
-    <string name="acct_delete_blocked_message">Akun masih memiliki saldo Rp %1$s. Kosongkan saldo terlebih dahulu.</string>
+    <string name="acct_delete_blocked_message">Akun masih memiliki saldo %1$s. Kosongkan saldo terlebih dahulu.</string>
     <string name="acct_delete_history_message">%1$d transaksi terkait akan tetap tersimpan di riwayat.</string>
     <string name="acct_delete_simple_message">Akun akan dihapus secara permanen.</string>
     <string name="acct_delete_confirm_title">Hapus Akun?</string>
