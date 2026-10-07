@@ -13,12 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import com.example.nexcashapplication.R
 import com.patrykandpatrick.vico.compose.common.Fill
 import com.patrykandpatrick.vico.compose.common.Insets
 import com.patrykandpatrick.vico.compose.common.component.TextComponent
-import com.patrykandpatrick.vico.compose.common.vicoTheme
 import com.patrykandpatrick.vico.compose.pie.PieChart
 import com.patrykandpatrick.vico.compose.pie.PieChartHost
 import com.patrykandpatrick.vico.compose.pie.PieSize
@@ -29,6 +30,12 @@ import com.patrykandpatrick.vico.compose.pie.rememberPieChart
 import kotlin.math.atan2
 import kotlin.math.sqrt
 
+/** Ukuran lubang tengah — harus sama dengan [PieSize.Inner.fixed] di bawah. */
+private val InnerHoleSize = 128.dp
+
+/** Jarak congkelan slice yang dipilih (efek "explode"). */
+private val SelectedSliceOffset = 10.dp
+
 @Composable
 fun InteractiveDonutChart(
     slices: List<DonutSlice>,
@@ -38,65 +45,102 @@ fun InteractiveDonutChart(
 
     var selectedIndex by remember { mutableStateOf<Int?>(null) }
 
+    // data/tab berubah -> highlight lama sudah tidak relevan (bisa salah index)
+    LaunchedEffect(slices) { selectedIndex = null }
+
     val total = slices.sumOf { it.value.toDouble() }.toFloat()
-    val sliceAngles = remember(slices) {
-        var comulative = startAngleDeg
-        slices.map { slice ->
-            val sweep = 360f * (slice.value / total)
-            val range = comulative to (comulative + sweep)
-            comulative += sweep
-            range
+    val sliceAngles = remember(slices, startAngleDeg) {
+        if (total <= 0f) {
+            emptyList()
+        } else {
+            var comulative = startAngleDeg
+            slices.map { slice ->
+                val sweep = 360f * (slice.value / total)
+                val range = comulative to (comulative + sweep)
+                comulative += sweep
+                range
+            }
         }
     }
 
     val modelProducer = remember { PieChartModelProducer() }
-    LaunchedEffect(slices, selectedIndex) {
+    LaunchedEffect(slices) {
         modelProducer.runTransaction {
-            pieSeries {
-                slices.forEachIndexed { index, slice ->
-                    // offset dikit kalau slice ini yang lagi dipilih -> efek "highlight"
-                    series(slice.value)
-                }
-            }
+            // Satu panggilan untuk semua nilai. Builder.series() menimpa entries
+            // tiap pemanggilan, jadi kalau dipanggil di dalam loop hasilnya
+            // cuma 1 entri (slice terakhir) -> chart jadi lingkaran satu warna.
+            pieSeries { series(slices.map { it.value }) }
+        }
+    }
+
+    // Warna mengikuti kategori (DonutSlice.color), slice terpilih dicondongkan keluar.
+    val vicoSlices = remember(slices, selectedIndex) {
+        slices.mapIndexed { index, slice ->
+            PieChart.Slice(
+                fill = Fill(slice.color),
+                offsetFromCenter = if (index == selectedIndex) SelectedSliceOffset else 0.dp,
+                label = PieChart.SliceLabel.Outside(
+                    textComponent = TextComponent(
+                        textStyle = TextStyle(slice.color),
+                        margins = Insets(horizontal = 4.dp),
+                    ),
+                    lineColor = slice.color,
+                ),
+            )
         }
     }
 
     Box(
         modifier = modifier.pointerInput(sliceAngles) {
+            // rasio hole dibuat dari nilai dp yang sama, bukan tebakan 0.5f
+            val innerRadius = InnerHoleSize.toPx() / 2f
+
             detectTapGestures { offset ->
                 val center = Offset(size.width / 2f, size.height / 2f)
                 val dx = offset.x - center.x
                 val dy = offset.y - center.y
                 val distance = sqrt(dx * dx + dy * dy)
 
-                // radius pie asumsinya setengah dari sisi terpendek Box
-                // sesuaikan dengan innerSize/outerSize yang kamu set di PieChart
+                // radius luar asumsinya setengah dari sisi terpendek Box
+                // (Vico mengecilkan sedikit karena ada outside label)
                 val outerRadius = minOf(size.width, size.height) / 2f
-                val innerRadius = outerRadius * 0.5f // samain rasio innerSize.fixed()-mu
 
                 if (distance in innerRadius..outerRadius) {
-                    // atan2 ngasih -180..180, normalisasi ke 0..360 biar cocok sama cumulative angle
+                    // atan2 ngasih -180..180, normalisasi ke rentang sudut kumulatif
                     var tapAngle = Math.toDegrees(atan2(dy, dx).toDouble()).toFloat()
                     if (tapAngle < startAngleDeg) tapAngle += 360f
 
+                    // takeIf: -1 artinya area tanpa slice, jangan jadi index
                     val hitIndex = sliceAngles.indexOfFirst { (start, end) ->
                         tapAngle in start..end
-                    }
+                    }.takeIf { it >= 0 }
+
                     selectedIndex = if (hitIndex == selectedIndex) null else hitIndex
                 }
             }
         },
     ) {
 
-        ComposeBasicDonutChart(modelProducer)
-
-        // opsional: tampilkan detail slice yang dipilih
-        selectedIndex?.let { idx ->
-            val slice = slices[idx]
-            Text(
-                text = "${slice.label}: ${slice.value.toInt()}%",
-                modifier = Modifier.align(Alignment.Center),
+        if (slices.isNotEmpty()) {
+            ComposeBasicDonutChart(
+                vicoSlices = vicoSlices,
+                modelProducer = modelProducer,
+                startAngleDeg = startAngleDeg,
             )
+        }
+
+        // detail slice yang dipilih, tampil di lubang tengah
+        selectedIndex?.let { idx ->
+            slices.getOrNull(idx)?.let { slice ->
+                Text(
+                    text = stringResource(
+                        R.string.core_donut_slice_percent,
+                        slice.label,
+                        slice.value.toInt(),
+                    ),
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            }
         }
     }
 }
@@ -104,28 +148,22 @@ fun InteractiveDonutChart(
 
 @Composable
 private fun ComposeBasicDonutChart(
+    vicoSlices: List<PieChart.Slice>,
     modelProducer: PieChartModelProducer,
+    startAngleDeg: Float,
     modifier: Modifier = Modifier,
 ) {
+    val sliceProvider = remember(vicoSlices) {
+        // SliceProvider.series() mewajibkan minimal 1 slice; state kosong sudah
+        // di-guard di InteractiveDonutChart, fallback ini sekadar jaga-jaga.
+        PieChart.SliceProvider.series(vicoSlices.ifEmpty { listOf(PieChart.Slice()) })
+    }
+
     PieChartHost(
         chart = rememberPieChart(
-            sliceProvider = PieChart.SliceProvider.series(
-                vicoTheme.pieChartColors.map { color ->
-                    PieChart.Slice(
-
-                        fill = Fill(color),
-                        label = PieChart.SliceLabel.Outside(
-                            textComponent = TextComponent(
-                                textStyle = TextStyle(vicoTheme.textColor),
-                                margins = Insets(horizontal = 4.dp),
-                            ),
-                            lineColor = vicoTheme.textColor,
-                        ),
-                    )
-                },
-            ),
-
-            innerSize = PieSize.Inner.fixed(128.dp),
+            sliceProvider = sliceProvider,
+            startAngle = startAngleDeg,
+            innerSize = PieSize.Inner.fixed(InnerHoleSize),
             spacing = 8.dp,
             valueFormatter = PieValueFormatter { _, value, _ -> "${value.toInt()}%" },
         ),
