@@ -1,6 +1,5 @@
 package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
-import android.content.Context
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -96,6 +95,7 @@ import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
 import com.example.nexcashapplication.feature.common.components.AppTimePickerDialog
 import com.example.nexcashapplication.feature.common.transformation.ThousandSeparatorTransformation
@@ -110,17 +110,6 @@ import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.launch
-
-
-/**
- * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
- * yang hanya bersifat suspend sehingga `UiText.asString()` tidak bisa dipanggil).
- */
-private fun UiText.resolve(context: Context): String = when (this) {
-    is UiText.Res -> context.getString(resId, *args.toTypedArray())
-    is UiText.Raw -> value
-}
-
 
 @Composable
 fun AddEditTransactionScreen(

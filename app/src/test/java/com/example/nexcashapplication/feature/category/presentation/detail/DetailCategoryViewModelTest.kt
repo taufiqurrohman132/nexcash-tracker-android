@@ -1,8 +1,11 @@
 package com.example.nexcashapplication.feature.category.presentation.detail
 
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.Budget
 import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.core.ui.UiState
 import com.example.nexcashapplication.core.ui.dataOrNull
@@ -366,7 +369,7 @@ class DetailCategoryViewModelTest {
             assertEquals(
                 listOf(
                     DetailCategoryEffect.NavigateToSubCategoryDetail("c1-sub"),
-                    DetailCategoryEffect.ShowSnackbar("Sub Category ID is null"),
+                    DetailCategoryEffect.ShowSnackbar(UiText.Raw("Sub Category ID is null")),
                 ),
                 effects,
             )
@@ -386,7 +389,7 @@ class DetailCategoryViewModelTest {
             assertEquals(
                 listOf(
                     DetailCategoryEffect.NavigateToTransactionDetail("t1"),
-                    DetailCategoryEffect.ShowSnackbar("Transaction ID is null"),
+                    DetailCategoryEffect.ShowSnackbar(UiText.Raw("Transaction ID is null")),
                 ),
                 effects,
             )
@@ -449,7 +452,11 @@ class DetailCategoryViewModelTest {
             advanceUntilIdle()
 
             assertEquals(
-                listOf(DetailCategoryEffect.ShowSnackbar("Fitur notifikasi sedang dikembangkan")),
+                listOf(
+                    DetailCategoryEffect.ShowSnackbar(
+                        uiText(R.string.detail_category_notification_coming_soon),
+                    ),
+                ),
                 effects,
             )
         }

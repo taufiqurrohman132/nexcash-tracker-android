@@ -85,4 +85,5 @@
     <string name="cat_pick_target_category">选择目标分类</string>
     <string name="cat_delete_failed">删除分类失败</string>
     <string name="cat_load_failed">数据加载失败</string>
+    <string name="detail_category_notification_coming_soon">通知功能即将推出</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.feature.category.presentation.detail
 
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.core.i18n.UiText
 
 sealed interface DetailCategoryEffect {
     data object NavigateBack : DetailCategoryEffect
@@ -18,6 +19,6 @@ sealed interface DetailCategoryEffect {
     data class NavigateToTransactionDetail(val transactionId: String) : DetailCategoryEffect
     data class NavigateToAllSubCategories(val categoryId: String,  val categoryName: String) : DetailCategoryEffect
     data class NavigateToAllTransactions(val categoryId: String) : DetailCategoryEffect
-    data class ShowSnackbar(val message: String) : DetailCategoryEffect
+    data class ShowSnackbar(val message: UiText) : DetailCategoryEffect
     data object ShowMenuBottomSheet : DetailCategoryEffect
 }

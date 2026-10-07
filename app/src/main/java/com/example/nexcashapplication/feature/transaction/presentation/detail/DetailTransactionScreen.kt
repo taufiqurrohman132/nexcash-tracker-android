@@ -1,6 +1,5 @@
 package com.example.nexcashapplication.feature.transaction.presentation.detail
 
-import android.content.Context
 import android.content.Intent
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -68,6 +67,7 @@ import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.common.extentions.toAmountColor
 import com.example.nexcashapplication.feature.common.utils.formatDate
@@ -83,15 +83,6 @@ import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
 import kotlin.time.Clock
-
-/**
- * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
- * yang hanya bersifat suspend sehingga `UiText.asString()` tidak bisa dipanggil).
- */
-private fun UiText.resolve(context: Context): String = when (this) {
-    is UiText.Res -> context.getString(resId, *args.toTypedArray())
-    is UiText.Raw -> value
-}
 
 @Composable
 fun DetailTransactionScreen(

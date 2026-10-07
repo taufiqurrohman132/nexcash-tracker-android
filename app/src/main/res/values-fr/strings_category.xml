@@ -85,4 +85,5 @@
     <string name="cat_pick_target_category">Choisir la catégorie cible</string>
     <string name="cat_delete_failed">Échec de la suppression de la catégorie</string>
     <string name="cat_load_failed">Échec du chargement des données</string>
+    <string name="detail_category_notification_coming_soon">La fonctionnalité de notifications arrive bientôt</string>
 </resources>

@@ -53,6 +53,7 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.feature.category.presentation.delete.model.CategoryDeleteItemUI
 import com.example.nexcashapplication.feature.category.presentation.delete.model.DeleteOption
 import com.example.nexcashapplication.ui.theme.BorderGray
@@ -69,19 +70,9 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.key
 import androidx.compose.ui.platform.LocalContext
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.HorizontalDivider
-
-/**
- * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
- * yang hanya bersifat suspend sehingga `UiText.asString` tidak bisa dipanggil).
- */
-private fun UiText.resolve(context: Context): String = when (this) {
-    is UiText.Res -> context.getString(resId, *args.toTypedArray())
-    is UiText.Raw -> value
-}
 
 @Composable
 fun DeleteCategoryScreen(

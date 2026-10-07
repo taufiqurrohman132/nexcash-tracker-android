@@ -1,6 +1,5 @@
 package com.example.nexcashapplication.feature.budgets.presentation.addedit
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -79,6 +78,7 @@ import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.i18n.asString
+import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.AmountOutlinedTextField
@@ -87,15 +87,6 @@ import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.TextSecondary
 import java.time.LocalDate
 import java.time.ZoneOffset
-
-/**
- * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
- * yang hanya bersifat suspend sehingga `UiText.asString()` tidak bisa dipanggil).
- */
-private fun UiText.resolve(context: Context): String = when (this) {
-    is UiText.Res -> context.getString(resId, *args.toTypedArray())
-    is UiText.Raw -> value
-}
 
 @Composable
 fun AddEditBudgetScreen(

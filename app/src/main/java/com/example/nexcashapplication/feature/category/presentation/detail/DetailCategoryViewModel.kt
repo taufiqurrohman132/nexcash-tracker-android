@@ -3,7 +3,10 @@ package com.example.nexcashapplication.feature.category.presentation.detail
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.core.navigations.Route
@@ -110,7 +113,9 @@ class DetailCategoryViewModel internal constructor(
                         if (event.subCategoryId != null) {
                             NavigateToSubCategoryDetail(event.subCategoryId)
                         } else {
-                            ShowSnackbar("Sub Category ID is null")
+                            ShowSnackbar(
+                                UiText.Raw("Sub Category ID is null"),
+                            )
                         },
                     )
                 }
@@ -122,7 +127,9 @@ class DetailCategoryViewModel internal constructor(
                         if (event.transactionId != null) {
                             NavigateToTransactionDetail(event.transactionId)
                         } else {
-                            ShowSnackbar("Transaction ID is null")
+                            ShowSnackbar(
+                                UiText.Raw("Transaction ID is null"),
+                            )
                         },
                     )
                 }
@@ -167,7 +174,11 @@ class DetailCategoryViewModel internal constructor(
             // Fitur notifikasi belum ada — jangan TODO() (crash saat diklik),
             // beri tahu pengguna lewat snackbar yang kini benar-benar dirender.
             DetailCategoryEvent.OnSetNotificationClick -> viewModelScope.launch {
-                sendEffect(ShowSnackbar("Fitur notifikasi sedang dikembangkan"))
+                sendEffect(
+                    ShowSnackbar(
+                        uiText(R.string.detail_category_notification_coming_soon),
+                    ),
+                )
             }
         }
     }

@@ -85,4 +85,5 @@
     <string name="cat_pick_target_category">Select target category</string>
     <string name="cat_delete_failed">Failed to delete category</string>
     <string name="cat_load_failed">Failed to load data</string>
+    <string name="detail_category_notification_coming_soon">Notification feature is coming soon</string>
 </resources>

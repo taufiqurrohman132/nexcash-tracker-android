@@ -1,6 +1,5 @@
 package com.example.nexcashapplication.feature.account.presentation.main
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -68,6 +67,7 @@ import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.extension.toFormatCurrencyVisibility
 import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.i18n.asString
+import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.form.model.AccountProviderUiModel
@@ -78,15 +78,6 @@ import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.SecondaryDeepPurple
 import com.example.nexcashapplication.ui.theme.TextTertiary
 import kotlinx.coroutines.flow.collectLatest
-
-/**
- * Resolve [UiText] di luar konteks composable (mis. di dalam `LaunchedEffect`,
- * yang hanya bersifat suspend sehingga `UiText.asString` tidak bisa dipanggil).
- */
-private fun UiText.resolve(context: Context): String = when (this) {
-    is UiText.Res -> context.getString(resId, *args.toTypedArray())
-    is UiText.Raw -> value
-}
 
 @Composable
 fun AccountAssetScreen(

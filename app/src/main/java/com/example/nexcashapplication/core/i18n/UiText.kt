@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.core.i18n
 
+import android.content.Context
 import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
@@ -51,5 +52,15 @@ fun Throwable.toUiText(@StringRes fallback: Int): UiText =
 @Composable
 fun UiText.asString(): String = when (this) {
     is UiText.Res -> stringResource(resId, *args.toTypedArray())
+    is UiText.Raw -> value
+}
+
+/**
+ * Resolve ke [String] dari **luar composable** — aman dipanggil dari `LaunchedEffect`,
+ * collector suspend, worker, atau notifikasi yang tidak bisa memanggil [asString].
+ * Membaca Resources milik [context], sehingga teksnya tetap mengikuti bahasa yang sedang aktif.
+ */
+fun UiText.resolve(context: Context): String = when (this) {
+    is UiText.Res -> context.getString(resId, *args.toTypedArray())
     is UiText.Raw -> value
 }
