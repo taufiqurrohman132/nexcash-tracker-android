@@ -32,10 +32,6 @@
     <string name="tx_recurring">Transação recorrente</string>
     <string name="tx_save_failed">Falha ao salvar a transação. Tente novamente.</string>
 
-    <!-- Tipe transaksi (TransactionType.labelResId) -->
-    <string name="tx_type_expense">Despesas</string>
-    <string name="tx_type_income">Receitas</string>
-
     <!-- Layar kosong (TransactionEmptyScreen) -->
     <string name="tx_empty_title">Nenhuma transação ainda</string>
     <string name="tx_empty_description">Comece a registrar suas despesas e receitas hoje para ter mais controle financeiro e alcançar seus objetivos.</string>

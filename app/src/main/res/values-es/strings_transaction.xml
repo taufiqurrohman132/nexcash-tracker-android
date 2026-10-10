@@ -32,10 +32,6 @@
     <string name="tx_recurring">Transacción recurrente</string>
     <string name="tx_save_failed">Error al guardar la transacción. Inténtalo de nuevo.</string>
 
-    <!-- Tipe transaksi (TransactionType.labelResId) -->
-    <string name="tx_type_expense">Gastos</string>
-    <string name="tx_type_income">Ingresos</string>
-
     <!-- Layar kosong (TransactionEmptyScreen) -->
     <string name="tx_empty_title">Aún no hay transacciones</string>
     <string name="tx_empty_description">Empieza a registrar tus gastos e ingresos hoy para tener tus finanzas bajo control y alcanzar tus metas.</string>

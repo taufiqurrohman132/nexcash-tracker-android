@@ -32,10 +32,6 @@
     <string name="tx_recurring">周期性交易</string>
     <string name="tx_save_failed">交易保存失败。请重试。</string>
 
-    <!-- Tipe transaksi (TransactionType.labelResId) -->
-    <string name="tx_type_expense">支出</string>
-    <string name="tx_type_income">收入</string>
-
     <!-- Layar kosong (TransactionEmptyScreen) -->
     <string name="tx_empty_title">暂无交易</string>
     <string name="tx_empty_description">从今天开始记录支出与收入，更好地掌控财务，实现您的财务目标。</string>

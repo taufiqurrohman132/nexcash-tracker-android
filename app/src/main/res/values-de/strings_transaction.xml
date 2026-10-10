@@ -32,10 +32,6 @@
     <string name="tx_recurring">Wiederkehrende Transaktion</string>
     <string name="tx_save_failed">Transaktion konnte nicht gespeichert werden. Erneut versuchen.</string>
 
-    <!-- Tipe transaksi (TransactionType.labelResId) -->
-    <string name="tx_type_expense">Ausgaben</string>
-    <string name="tx_type_income">Einnahmen</string>
-
     <!-- Layar kosong (TransactionEmptyScreen) -->
     <string name="tx_empty_title">Noch keine Transaktionen</string>
     <string name="tx_empty_description">Erfasse heute deine Ausgaben und Einnahmen, damit deine Finanzen besser unter Kontrolle sind und du deine finanziellen Ziele erreichst.</string>

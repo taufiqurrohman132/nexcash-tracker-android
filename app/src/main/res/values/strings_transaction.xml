@@ -32,10 +32,6 @@
     <string name="tx_recurring">Transaksi Berulang</string>
     <string name="tx_save_failed">Transaksi gagal disimpan. Coba lagi.</string>
 
-    <!-- Tipe transaksi (TransactionType.labelResId) -->
-    <string name="tx_type_expense">Pengeluaran</string>
-    <string name="tx_type_income">Pemasukan</string>
-
     <!-- Layar kosong (TransactionEmptyScreen) -->
     <string name="tx_empty_title">Belum ada transaksi</string>
     <string name="tx_empty_description">Mulai catat pengeluaran dan pemasukanmu hari ini agar keuangan lebih terkontrol dan tujuan finansialmu tercapai.</string>

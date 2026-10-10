@@ -32,10 +32,6 @@
     <string name="tx_recurring">Transaction récurrente</string>
     <string name="tx_save_failed">Échec de l\'enregistrement de la transaction. Réessayez.</string>
 
-    <!-- Tipe transaksi (TransactionType.labelResId) -->
-    <string name="tx_type_expense">Dépenses</string>
-    <string name="tx_type_income">Revenus</string>
-
     <!-- Layar kosong (TransactionEmptyScreen) -->
     <string name="tx_empty_title">Aucune transaction pour le moment</string>
     <string name="tx_empty_description">Commencez à enregistrer vos dépenses et vos revenus aujourd\'hui pour mieux contrôler vos finances et atteindre vos objectifs.</string>

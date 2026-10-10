@@ -32,10 +32,6 @@
     <string name="tx_recurring">Повторяющаяся транзакция</string>
     <string name="tx_save_failed">Не удалось сохранить транзакцию. Повторите попытку.</string>
 
-    <!-- Tipe transaksi (TransactionType.labelResId) -->
-    <string name="tx_type_expense">Расходы</string>
-    <string name="tx_type_income">Доходы</string>
-
     <!-- Layar kosong (TransactionEmptyScreen) -->
     <string name="tx_empty_title">Транзакций пока нет</string>
     <string name="tx_empty_description">Начните записывать расходы и доходы уже сегодня, чтобы лучше контролировать финансы и достичь своих финансовых целей.</string>

@@ -32,10 +32,6 @@
     <string name="tx_recurring">Recurring Transaction</string>
     <string name="tx_save_failed">Transaction failed to save. Try again.</string>
 
-    <!-- Tipe transaksi (TransactionType.labelResId) -->
-    <string name="tx_type_expense">Expenses</string>
-    <string name="tx_type_income">Revenues</string>
-
     <!-- Layar kosong (TransactionEmptyScreen) -->
     <string name="tx_empty_title">No transactions yet</string>
     <string name="tx_empty_description">Start logging your expenses and revenues today to gain better control of your finances and reach your financial goals.</string>

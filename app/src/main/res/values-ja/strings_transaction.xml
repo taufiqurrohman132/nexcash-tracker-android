@@ -32,10 +32,6 @@
     <string name="tx_recurring">繰り返し取引</string>
     <string name="tx_save_failed">取引を保存できませんでした。再試行してください。</string>
 
-    <!-- Tipe transaksi (TransactionType.labelResId) -->
-    <string name="tx_type_expense">支出</string>
-    <string name="tx_type_income">収入</string>
-
     <!-- Layar kosong (TransactionEmptyScreen) -->
     <string name="tx_empty_title">まだ取引がありません</string>
     <string name="tx_empty_description">今日から支出と収入を記録して、家計をコントロールし、金融目標を達成しましょう。</string>
