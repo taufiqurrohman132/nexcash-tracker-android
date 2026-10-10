@@ -12,7 +12,7 @@ import kotlin.time.Instant
 
 data class AddEditTransactionState(
     val transactionId: String? = null,
-    val type: TransactionType = TransactionType.EXPENSE,
+    val type: TypeCategory = TypeCategory.EXPENSE,
     val amount: Long = 0L,
     val nameTransaction: String = "",
     val selectedCategoryId: String? = null,
@@ -53,7 +53,7 @@ data class AddEditTransactionState(
      */
     val availableCategories: List<TransactionCategoryAndSubModel>
         get() {
-            val wanted = if (type == TransactionType.EXPENSE) {
+            val wanted = if (type == TypeCategory.EXPENSE) {
                 TypeCategory.EXPENSE
             } else {
                 TypeCategory.INCOME

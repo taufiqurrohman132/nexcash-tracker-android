@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.transaction.presentation.addnew
 
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.TransactionCategoryItemModel
 
@@ -8,7 +9,7 @@ sealed interface AddEditTransactionEvent {
     data object OnBackClick : AddEditTransactionEvent
 
     data class OnTypeChange(
-        val type: TransactionType,
+        val type: TypeCategory,
     ) : AddEditTransactionEvent
 
 

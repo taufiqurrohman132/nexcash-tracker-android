@@ -2,7 +2,7 @@ package com.example.nexcashapplication.feature.statistics.domain.usecase
 
 import com.example.nexcashapplication.feature.category.presentation.main.FakeTransactionRepository
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -32,8 +32,8 @@ class GetExpenseSummaryUseCaseTest {
     @Test
     fun `tren - dibanding bulan lalu dengan pembagian presisi`() = runTest {
         transactionRepository.seed(
-            tx("sept", 150_000, TransactionType.EXPENSE, year = 2026, month = 9),
-            tx("agustus", 100_000, TransactionType.EXPENSE, year = 2026, month = 8),
+            tx("sept", 150_000, TypeCategory.EXPENSE, year = 2026, month = 9),
+            tx("agustus", 100_000, TypeCategory.EXPENSE, year = 2026, month = 8),
         )
 
         val summary = GetExpenseSummaryUseCase(transactionRepository)(YearMonth.of(2026, 9)).first()
@@ -46,8 +46,8 @@ class GetExpenseSummaryUseCaseTest {
     @Test
     fun `tren - pengeluaran turun hasilnya negatif`() = runTest {
         transactionRepository.seed(
-            tx("sept", 50_000, TransactionType.EXPENSE, year = 2026, month = 9),
-            tx("agustus", 100_000, TransactionType.EXPENSE, year = 2026, month = 8),
+            tx("sept", 50_000, TypeCategory.EXPENSE, year = 2026, month = 9),
+            tx("agustus", 100_000, TypeCategory.EXPENSE, year = 2026, month = 8),
         )
 
         val summary = GetExpenseSummaryUseCase(transactionRepository)(YearMonth.of(2026, 9)).first()
@@ -58,7 +58,7 @@ class GetExpenseSummaryUseCaseTest {
     @Test
     fun `tren - bulan lalu tanpa pengeluaran hasilnya 0`() = runTest {
         transactionRepository.seed(
-            tx("sept", 150_000, TransactionType.EXPENSE, year = 2026, month = 9),
+            tx("sept", 150_000, TypeCategory.EXPENSE, year = 2026, month = 9),
         )
 
         val summary = GetExpenseSummaryUseCase(transactionRepository)(YearMonth.of(2026, 9)).first()
@@ -67,7 +67,7 @@ class GetExpenseSummaryUseCaseTest {
         assertEquals(0f, summary.percentChangeFromLastMonth, 0.001f)
     }
 
-    private fun tx(id: String, amount: Long, type: TransactionType, year: Int, month: Int) =
+    private fun tx(id: String, amount: Long, type: TypeCategory, year: Int, month: Int) =
         Transaction(
             id = id,
             title = "tx-$id",

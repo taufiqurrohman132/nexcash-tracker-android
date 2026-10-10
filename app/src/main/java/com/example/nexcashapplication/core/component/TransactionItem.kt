@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCurrency
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.ui.theme.AccentTealGreen
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.TextSecondary
@@ -83,11 +83,11 @@ fun TransactionItem(
                 horizontalAlignment = Alignment.End,
             ) {
                 Text(
-                    text = if (transaction.typeTransaction == TransactionType.INCOME)
+                    text = if (transaction.typeTransaction == TypeCategory.INCOME)
                         "+ ${transaction.amount.formatCurrency()}"
                     else
                         "- ${transaction.amount.formatCurrency()}",
-                    color = if (transaction.typeTransaction == TransactionType.INCOME) AccentTealGreen else Color.Red,
+                    color = if (transaction.typeTransaction == TypeCategory.INCOME) AccentTealGreen else Color.Red,
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.Bold,
                 )
@@ -122,7 +122,7 @@ private fun TransactionItemPreview() {
             name = "Transfer Gaji",
             time = "23 okt, 10:45",
             amount = 5_000_000,
-            typeTransaction = TransactionType.INCOME,
+            typeTransaction = TypeCategory.INCOME,
             category = "Salary",
             account = "BCA Finance",
             icon = Icons.Default.Category,

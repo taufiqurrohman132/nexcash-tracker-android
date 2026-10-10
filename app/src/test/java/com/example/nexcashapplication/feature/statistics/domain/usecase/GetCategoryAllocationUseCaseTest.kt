@@ -12,7 +12,6 @@ import com.example.nexcashapplication.feature.category.presentation.main.FakeTra
 import com.example.nexcashapplication.feature.statistics.presentation.main.AlokasiMode
 import com.example.nexcashapplication.feature.statistics.presentation.main.RealisasiTipe
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -110,7 +109,7 @@ class GetCategoryAllocationUseCaseTest {
                 dateTime = Instant.fromEpochMilliseconds(
                     LocalDate.of(2026, 9, 15).atTime(12, 0).toInstant(ZoneOffset.UTC).toEpochMilli(),
                 ),
-                typeTransaction = TransactionType.INCOME,
+                typeTransaction = TypeCategory.INCOME,
                 accountId = "acc1",
             ),
             tx("e1", 600_000, "c1"), // expense tidak ikut donut pendapatan
@@ -164,7 +163,7 @@ class GetCategoryAllocationUseCaseTest {
         dateTime = Instant.fromEpochMilliseconds(
             LocalDate.of(2026, 9, 15).atTime(12, 0).toInstant(ZoneOffset.UTC).toEpochMilli(),
         ),
-        typeTransaction = TransactionType.EXPENSE,
+        typeTransaction = TypeCategory.EXPENSE,
         accountId = "acc1",
     )
 }

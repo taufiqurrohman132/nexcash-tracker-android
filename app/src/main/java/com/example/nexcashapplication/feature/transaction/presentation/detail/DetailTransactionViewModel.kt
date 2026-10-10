@@ -12,7 +12,7 @@ import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.common.utils.formatDate
 import com.example.nexcashapplication.feature.common.utils.formatTime
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.transaction.presentation.detail.mapper.toDeleteDialogUiState
 import com.example.nexcashapplication.feature.transaction.presentation.detail.mapper.toDetailTransactionUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -228,7 +228,7 @@ class DetailTransactionViewModel internal constructor(
             )
             transaction.category?.name?.let { add(uiText(R.string.tx_share_category_line, it)) }
             transaction.account?.name?.let { name ->
-                val lineRes = if (transaction.type == TransactionType.EXPENSE) {
+                val lineRes = if (transaction.type == TypeCategory.EXPENSE) {
                     R.string.tx_share_funding_line
                 } else {
                     R.string.tx_share_received_line

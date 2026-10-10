@@ -5,7 +5,7 @@ import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceTyp
 import com.example.nexcashapplication.feature.budgets.domain.usecase.FakeBudgetRepository
 import com.example.nexcashapplication.feature.category.presentation.main.FakeTransactionRepository
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -81,7 +81,7 @@ class GetBudgetHealthUseCaseTest {
         dateTime = Instant.fromEpochMilliseconds(
             LocalDate.of(2026, 9, 15).atTime(12, 0).toInstant(ZoneOffset.UTC).toEpochMilli(),
         ),
-        typeTransaction = TransactionType.EXPENSE,
+        typeTransaction = TypeCategory.EXPENSE,
         accountId = "acc1",
     )
 }

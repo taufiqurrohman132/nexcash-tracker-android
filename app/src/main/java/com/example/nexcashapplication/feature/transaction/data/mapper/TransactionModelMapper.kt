@@ -2,7 +2,7 @@ package com.example.nexcashapplication.feature.transaction.data.mapper
 
 import com.example.nexcashapplication.core.datasource.local.model.TransactionEntity
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import java.util.UUID
 import kotlin.time.Instant
 
@@ -13,7 +13,7 @@ fun TransactionEntity.toDomain() = Transaction(
     categoryId = categoryId,
     description = description,
     dateTime = Instant.fromEpochMilliseconds(transactionDate),
-    typeTransaction = TransactionType.valueOf(type.uppercase()),
+    typeTransaction = TypeCategory.valueOf(type.uppercase()),
     accountId = accountId,
 )
 

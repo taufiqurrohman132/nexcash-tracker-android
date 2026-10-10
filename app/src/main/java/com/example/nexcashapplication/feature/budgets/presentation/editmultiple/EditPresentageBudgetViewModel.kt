@@ -19,7 +19,7 @@ import com.example.nexcashapplication.feature.budgets.domain.usecase.DeleteBudge
 import com.example.nexcashapplication.feature.budgets.domain.usecase.SaveBudgetUseCase
 import com.example.nexcashapplication.feature.budgets.presentation.editmultiple.model.EditPresentageBudgetItemUiModel
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -331,7 +331,7 @@ class EditPresentageBudgetViewModel @Inject constructor(
         val monthEnd = period.toEndOfMonthMillis()
         val allocatedIds = withPercentage.map { it.id }.toSet()
         val used = transactions.filter { tx ->
-            tx.typeTransaction == TransactionType.EXPENSE &&
+            tx.typeTransaction == TypeCategory.EXPENSE &&
                     tx.categoryId != null && tx.categoryId in allocatedIds &&
                     tx.dateTime.toEpochMilliseconds() in monthStart..monthEnd
         }.sumOf { it.amount }

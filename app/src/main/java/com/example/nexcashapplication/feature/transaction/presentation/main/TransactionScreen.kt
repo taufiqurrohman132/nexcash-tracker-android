@@ -75,7 +75,7 @@ import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.navigations.Route
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.transaction.presentation.main.component.TransactionEmptyScreen
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.CategoryNameItemUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionHeaderUiModel
@@ -540,7 +540,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 name = "Gaji Bulanan",
                 time = "08:00",
                 amount = 5_000_000L,
-                typeTransaction = TransactionType.INCOME,
+                typeTransaction = TypeCategory.INCOME,
                 category = "Gaji",
                 account = "Bank BCA",
                 icon = Icons.Default.AttachMoney,
@@ -551,7 +551,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 name = "Makan Siang Warteg",
                 time = "12:30",
                 amount = 25_000L,
-                typeTransaction = TransactionType.INCOME,
+                typeTransaction = TypeCategory.INCOME,
                 category = "Makanan & Minuman",
                 account = "Cash",
                 icon = Icons.Default.Fastfood,
@@ -563,7 +563,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 name = "Bensin Motor",
                 time = "14:15",
                 amount = 50_000L,
-                typeTransaction = TransactionType.INCOME,
+                typeTransaction = TypeCategory.INCOME,
                 category = "Transportasi",
                 account = "Cash",
                 icon = Icons.Default.Directions,
@@ -575,7 +575,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 name = "Beli Baju",
                 time = "16:45",
                 amount = 275_000L,
-                typeTransaction = TransactionType.INCOME,
+                typeTransaction = TypeCategory.INCOME,
                 category = "Belanja",
                 account = "Bank BCA",
                 icon = Icons.Default.ShoppingBag,
@@ -587,7 +587,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 name = "Tagihan Listrik",
                 time = "19:00",
                 amount = 400_000L,
-                typeTransaction = TransactionType.INCOME,
+                typeTransaction = TypeCategory.INCOME,
                 category = "Tagihan",
                 account = "Bank BCA",
                 icon = Icons.Default.Receipt,
@@ -610,7 +610,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 name = "Nonton Bioskop",
                 time = "20:00",
                 amount = 100_000L,
-                typeTransaction = TransactionType.INCOME,
+                typeTransaction = TypeCategory.INCOME,
                 category = "Hiburan",
                 account = "Cash",
                 icon = Icons.Default.Movie,
@@ -622,7 +622,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 name = "Beli Obat",
                 time = "10:20",
                 amount = 80_000L,
-                typeTransaction = TransactionType.INCOME,
+                typeTransaction = TypeCategory.INCOME,
                 category = "Kesehatan",
                 account = "Cash",
                 icon = Icons.Default.LocalHospital,

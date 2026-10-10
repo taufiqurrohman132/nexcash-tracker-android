@@ -14,7 +14,7 @@ import com.example.nexcashapplication.feature.notification.domain.model.BudgetAl
 import com.example.nexcashapplication.feature.notification.domain.repository.NotificationPreferenceRepository
 import com.example.nexcashapplication.feature.settings.domain.repository.SettingsRepository
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -35,7 +35,7 @@ import javax.inject.Inject
  *   induk + seluruh anak), supaya persennya selaras dengan layar kategori/budget.
  * - **Window periode** memakai [GetBudgetPeriodUseCase] (WEEKLY/MONTHLY/CUSTOM), bukan
  *   bulan kalender mutlak — budget mingguan tidak boleh dihitung sepanjang bulan.
- * - Hanya `TransactionType.EXPENSE`; persen dibulatkan ke bawah dan mentok di 0..100.
+ * - Hanya `TypeCategory.EXPENSE`; persen dibulatkan ke bawah dan mentok di 0..100.
  *
  * Alert muncul/hilang mengikuti pemakaian aktual (sumbernya Room, jadi reaktif).
  * Id `"$budgetId-$threshold"` dibentuk di sini karena stabilitasnya bagian dari aturan.
@@ -149,7 +149,7 @@ class GetBudgetAlertsUseCase @Inject constructor(
         val familyIds = setOf(budget.categoryId) + childIdsByParent[budget.categoryId].orEmpty()
         val used = transactions
                 .filter { tx ->
-                    tx.typeTransaction == TransactionType.EXPENSE &&
+                    tx.typeTransaction == TypeCategory.EXPENSE &&
                             tx.categoryId != null && tx.categoryId in familyIds &&
                             tx.dateTime.toEpochMilliseconds() in periodStart..periodEnd
                 }

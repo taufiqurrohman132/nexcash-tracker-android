@@ -4,7 +4,7 @@ import com.example.nexcashapplication.awaitSettled
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.category.presentation.main.FakeTransactionRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -187,7 +187,7 @@ class DashboardViewModelTest {
                 dateTime = Instant.fromEpochMilliseconds(
                     Clock.System.now().toEpochMilliseconds() - hoursAgo * 60 * 60 * 1000,
                 ),
-                typeTransaction = TransactionType.EXPENSE,
+                typeTransaction = TypeCategory.EXPENSE,
                 accountId = "acc1",
             ),
         )

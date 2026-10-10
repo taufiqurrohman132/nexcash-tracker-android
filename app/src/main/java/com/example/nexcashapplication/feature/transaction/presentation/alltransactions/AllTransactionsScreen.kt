@@ -41,7 +41,7 @@ import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionGroupHeader
 import com.example.nexcashapplication.feature.transaction.presentation.main.component.TransactionEmptyScreen
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionHeaderUiModel
@@ -197,7 +197,7 @@ private val sampleGroups = listOf(
                 name = "Nasi Goreng",
                 time = "12:30",
                 amount = 25_000,
-                typeTransaction = TransactionType.EXPENSE,
+                typeTransaction = TypeCategory.EXPENSE,
                 category = "Makanan",
                 account = "BCA",
                 icon = Icons.Default.Fastfood,
@@ -208,7 +208,7 @@ private val sampleGroups = listOf(
                 name = "Ongkir Motor",
                 time = "09:15",
                 amount = 40_000,
-                typeTransaction = TransactionType.EXPENSE,
+                typeTransaction = TypeCategory.EXPENSE,
                 category = "Transportasi",
                 account = "BCA",
                 icon = Icons.Default.CreditCard,

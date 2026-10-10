@@ -2,7 +2,7 @@ package com.example.nexcashapplication.feature.statistics.domain.usecase
 
 import com.example.nexcashapplication.feature.category.presentation.main.FakeTransactionRepository
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -33,11 +33,11 @@ class GetSavingsRateUseCaseTest {
     fun `tingkat tabungan - dihitung dari pemasukan dan pengeluaran dua bulan`() = runTest {
         transactionRepository.seed(
             // bulan ini: pemasukan 1jt, pengeluaran 250rb → 75%
-            tx("income-sept", 1_000_000, TransactionType.INCOME, year = 2026, month = 9),
-            tx("expense-sept", 250_000, TransactionType.EXPENSE, year = 2026, month = 9),
+            tx("income-sept", 1_000_000, TypeCategory.INCOME, year = 2026, month = 9),
+            tx("expense-sept", 250_000, TypeCategory.EXPENSE, year = 2026, month = 9),
             // bulan lalu: pemasukan 800rb, pengeluaran 400rb → 50%
-            tx("income-aug", 800_000, TransactionType.INCOME, year = 2026, month = 8),
-            tx("expense-aug", 400_000, TransactionType.EXPENSE, year = 2026, month = 8),
+            tx("income-aug", 800_000, TypeCategory.INCOME, year = 2026, month = 8),
+            tx("expense-aug", 400_000, TypeCategory.EXPENSE, year = 2026, month = 8),
         )
 
         val rate = GetSavingsRateUseCase(transactionRepository)(YearMonth.of(2026, 9)).first()
@@ -49,7 +49,7 @@ class GetSavingsRateUseCaseTest {
     @Test
     fun `tingkat tabungan - pemasukan nol hasilnya 0 tanpa pembagian nol`() = runTest {
         transactionRepository.seed(
-            tx("expense-sept", 250_000, TransactionType.EXPENSE, year = 2026, month = 9),
+            tx("expense-sept", 250_000, TypeCategory.EXPENSE, year = 2026, month = 9),
         )
 
         val rate = GetSavingsRateUseCase(transactionRepository)(YearMonth.of(2026, 9)).first()
@@ -58,7 +58,7 @@ class GetSavingsRateUseCaseTest {
         assertEquals(0f, rate.trendPercent, 0.001f) // bulan lalu tanpa pemasukan
     }
 
-    private fun tx(id: String, amount: Long, type: TransactionType, year: Int, month: Int) =
+    private fun tx(id: String, amount: Long, type: TypeCategory, year: Int, month: Int) =
         Transaction(
             id = id,
             title = "tx-$id",

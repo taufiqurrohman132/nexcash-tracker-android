@@ -5,7 +5,7 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
 import com.example.nexcashapplication.feature.category.presentation.shared.model.CategoryUiItemModel
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import kotlin.time.Instant
 
 // presentation/detail/model/TransactionDetailUiModel.kt
@@ -13,7 +13,7 @@ data class DetailTransactionUiModel(
     val transactionId: String?,
     val name: String,
     val amount: Long,
-    val type: TransactionType, // pindah ke domain.model
+    val type: TypeCategory, // pindah ke domain.model
     val dateTime: Instant,
     val category: CategoryUiItemModel?,      // bukan Category domain langsung
 //    val status: TransactionStatus,      // enum, bukan String
@@ -23,8 +23,8 @@ data class DetailTransactionUiModel(
 ) {
     val signedAmountText: String
         get() = when (type) {
-            TransactionType.INCOME -> "+ ${amount.formatCurrency()}"
-            TransactionType.EXPENSE -> "- ${amount.formatCurrency()}"
+            TypeCategory.INCOME -> "+ ${amount.formatCurrency()}"
+            TypeCategory.EXPENSE -> "- ${amount.formatCurrency()}"
         }
 
     /**
@@ -34,8 +34,8 @@ data class DetailTransactionUiModel(
     @get:StringRes
     val accountLabelRes: Int
         get() = when (type) {
-            TransactionType.INCOME -> R.string.tx_received_at
-            TransactionType.EXPENSE -> R.string.tx_funding_source
+            TypeCategory.INCOME -> R.string.tx_received_at
+            TypeCategory.EXPENSE -> R.string.tx_funding_source
         }
     // amountColor DIHAPUS dari sini — resolve warnanya di Composable pakai token tema,
     // bukan di-derive di model. Model nggak boleh tahu soal Color Compose sama sekali.

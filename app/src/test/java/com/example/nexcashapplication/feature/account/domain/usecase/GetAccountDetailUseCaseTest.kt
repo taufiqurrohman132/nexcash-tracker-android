@@ -5,7 +5,7 @@ import com.example.nexcashapplication.feature.transaction.domain.model.Transacti
 import com.example.nexcashapplication.feature.transaction.domain.usecase.FakeAccountRepository
 import com.example.nexcashapplication.feature.transaction.domain.usecase.FakeTransactionRepository
 import com.example.nexcashapplication.feature.transaction.domain.usecase.sampleBankAccount
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -73,7 +73,7 @@ class GetAccountDetailUseCaseTest {
                 dateTime = Instant.fromEpochMilliseconds(
                     Clock.System.now().toEpochMilliseconds(),
                 ),
-                typeTransaction = TransactionType.EXPENSE,
+                typeTransaction = TypeCategory.EXPENSE,
                 accountId = accountId,
             ),
         )

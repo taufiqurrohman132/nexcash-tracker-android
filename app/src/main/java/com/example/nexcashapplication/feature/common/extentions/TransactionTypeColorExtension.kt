@@ -3,10 +3,10 @@ package com.example.nexcashapplication.feature.common.extentions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 
 @Composable
-fun TransactionType.toAmountColor(): Color = when (this) {
-    TransactionType.INCOME -> Color.Green
-    TransactionType.EXPENSE -> MaterialTheme.colorScheme.error
+fun TypeCategory.toAmountColor(): Color = when (this) {
+    TypeCategory.INCOME -> Color.Green
+    TypeCategory.EXPENSE -> MaterialTheme.colorScheme.error
 }

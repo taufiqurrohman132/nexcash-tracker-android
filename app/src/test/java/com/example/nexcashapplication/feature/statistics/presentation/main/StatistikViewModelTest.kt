@@ -14,7 +14,6 @@ import com.example.nexcashapplication.feature.statistics.domain.usecase.GetExpen
 import com.example.nexcashapplication.feature.statistics.domain.usecase.GetSavingsRateUseCase
 import com.example.nexcashapplication.feature.statistics.presentation.main.RealisasiTipe
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -94,7 +93,7 @@ class StatistikViewModelTest {
     @Test
     fun `tanpa budget - sisa 0 dan status AMAN netral`() = runTest(testDispatcher) {
         categoryRepository.seed(category("c1", "Makanan"))
-        transactionRepository.seed(tx("expense", 250_000, TransactionType.EXPENSE, bulanIni, day = 15))
+        transactionRepository.seed(tx("expense", 250_000, TypeCategory.EXPENSE, bulanIni, day = 15))
 
         val vm = createViewModel()
         awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
@@ -111,7 +110,7 @@ class StatistikViewModelTest {
     fun `status anggaran - OVER saat pengeluaran melebihi budget`() = runTest(testDispatcher) {
         categoryRepository.seed(category("c1", "Makanan"))
         budgetRepository.seed(budget("b1", "c1", 100_000))
-        transactionRepository.seed(tx("expense", 250_000, TransactionType.EXPENSE, bulanIni, day = 15))
+        transactionRepository.seed(tx("expense", 250_000, TypeCategory.EXPENSE, bulanIni, day = 15))
 
         val vm = createViewModel()
         awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
@@ -125,7 +124,7 @@ class StatistikViewModelTest {
         runTest(testDispatcher) {
             categoryRepository.seed(category("c1", "Makanan"))
             budgetRepository.seed(budget("b1", "c1", 300_000))
-            transactionRepository.seed(tx("expense", 250_000, TransactionType.EXPENSE, bulanIni, day = 15))
+            transactionRepository.seed(tx("expense", 250_000, TypeCategory.EXPENSE, bulanIni, day = 15))
 
             val vm = createViewModel()
             awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
@@ -233,10 +232,10 @@ class StatistikViewModelTest {
             budget("b2", "c2", 600_000),
         )
         transactionRepository.seed(
-            tx("income-now", 1_000_000, TransactionType.INCOME, bulanIni, day = 10),
-            tx("expense-now", 250_000, TransactionType.EXPENSE, bulanIni, day = 15),
-            tx("income-prev", 800_000, TransactionType.INCOME, bulanLalu, day = 10),
-            tx("expense-prev", 400_000, TransactionType.EXPENSE, bulanLalu, day = 15),
+            tx("income-now", 1_000_000, TypeCategory.INCOME, bulanIni, day = 10),
+            tx("expense-now", 250_000, TypeCategory.EXPENSE, bulanIni, day = 15),
+            tx("income-prev", 800_000, TypeCategory.INCOME, bulanLalu, day = 10),
+            tx("expense-prev", 400_000, TypeCategory.EXPENSE, bulanLalu, day = 15),
         )
     }
 
@@ -283,14 +282,14 @@ class StatistikViewModelTest {
     private fun tx(
         id: String,
         amount: Long,
-        type: TransactionType,
+        type: TypeCategory,
         month: YearMonth,
         day: Int,
     ) = Transaction(
         id = id,
         title = "tx-$id",
         amount = amount,
-        categoryId = if (type == TransactionType.EXPENSE) "c1" else null,
+        categoryId = if (type == TypeCategory.EXPENSE) "c1" else null,
         description = null,
         dateTime = Instant.fromEpochMilliseconds(
             month.atDay(day).atTime(12, 0).toInstant(java.time.ZoneOffset.UTC).toEpochMilli(),

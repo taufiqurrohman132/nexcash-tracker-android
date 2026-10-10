@@ -12,7 +12,6 @@ import com.example.nexcashapplication.feature.transaction.domain.model.Transacti
 import com.example.nexcashapplication.feature.transaction.domain.usecase.FakeAccountRepository
 import com.example.nexcashapplication.feature.transaction.domain.usecase.FakeTransactionRepository
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetTransactionsByFilterUseCase
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -240,7 +239,7 @@ class AllTransactionsViewModelTest {
             categoryId = "food",
             description = null,
             dateTime = at,
-            typeTransaction = TransactionType.EXPENSE,
+            typeTransaction = TypeCategory.EXPENSE,
             accountId = "bca",
         ),
     )

@@ -8,7 +8,6 @@ import com.example.nexcashapplication.feature.category.presentation.main.FakeCat
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionFilter
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -161,7 +160,7 @@ class GetTransactionsByFilterUseCaseTest {
             amount = 10_000,
             categoryId = categoryId,
             description = null,
-            typeTransaction = TransactionType.EXPENSE,
+            typeTransaction = TypeCategory.EXPENSE,
             accountId = accountId,
         ),
     )

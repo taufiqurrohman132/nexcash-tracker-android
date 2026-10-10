@@ -9,7 +9,6 @@ import com.example.nexcashapplication.feature.account.domain.model.AccountModel
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlinx.datetime.LocalDate
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -40,7 +39,7 @@ class TransactionStateMapperTest {
         assertEquals("Kopi pagi", item.name)
         assertEquals("08:10", item.time)
         assertEquals(150_000, item.amount)
-        assertEquals(TransactionType.EXPENSE, item.typeTransaction)
+        assertEquals(TypeCategory.EXPENSE, item.typeTransaction)
         assertEquals("Makanan", item.category)
         assertEquals("BCA", item.account)
         assertEquals(Icons.Default.Coffee, item.icon)
@@ -80,9 +79,9 @@ class TransactionStateMapperTest {
     @Test
     fun `toGroupHeaderUiModel - total adalah pemasukan dikurangi pengeluaran`() {
         val rows = listOf(
-            sample(id = "gaji", type = TransactionType.INCOME, amount = 200_000),
-            sample(id = "kopi", type = TransactionType.EXPENSE, amount = 50_000),
-            sample(id = "taksi", type = TransactionType.EXPENSE, amount = 15_000),
+            sample(id = "gaji", type = TypeCategory.INCOME, amount = 200_000),
+            sample(id = "kopi", type = TypeCategory.EXPENSE, amount = 50_000),
+            sample(id = "taksi", type = TypeCategory.EXPENSE, amount = 15_000),
         )
 
         val header = rows.toGroupHeaderUiModel(LocalDate(2026, 10, 1))
@@ -126,7 +125,7 @@ class TransactionStateMapperTest {
     private fun sample(
         id: String = "t1",
         amount: Long = 150_000,
-        type: TransactionType = TransactionType.EXPENSE,
+        type: TypeCategory = TypeCategory.EXPENSE,
         at: Instant = instant(2026, 10, 1, 8, 30),
         category: Category? = kategori,
         account: AccountModel? = akun,

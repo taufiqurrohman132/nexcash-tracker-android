@@ -72,7 +72,7 @@ import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.common.extentions.toAmountColor
 import com.example.nexcashapplication.feature.common.utils.formatDate
 import com.example.nexcashapplication.feature.common.utils.formatTime
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.transaction.presentation.detail.components.DeleteTransactionDialog
 import com.example.nexcashapplication.feature.transaction.presentation.detail.model.AttachmentUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.detail.model.DetailTransactionUiModel
@@ -531,7 +531,7 @@ private fun DetailTransactionScreenPreview() {
                         thumbnailUri = null,
                     ),
                     transactionId = "",
-                    type = TransactionType.EXPENSE,
+                    type = TypeCategory.EXPENSE,
                     dateTime = Clock.System.now(),
                     category = null,
                     account = null,

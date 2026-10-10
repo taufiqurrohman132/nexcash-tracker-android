@@ -6,7 +6,7 @@ import com.example.nexcashapplication.core.domain.repository.TransactionReposito
 import com.example.nexcashapplication.feature.dashboard.domain.model.MonthlySummary
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -71,7 +71,7 @@ class FakeTransactionRepository : TransactionRepository {
         transactions.map { list ->
             list.filter {
                 it.categoryId == categoryId &&
-                        it.typeTransaction == TransactionType.EXPENSE &&
+                        it.typeTransaction == TypeCategory.EXPENSE &&
                         it.dateTime.toEpochMilliseconds() in periodStart..periodEnd
             }.sumOf { it.amount }
         }
@@ -104,8 +104,8 @@ class FakeTransactionRepository : TransactionRepository {
     override fun getMonthlySummary(yearMonth: String): Flow<MonthlySummary> =
         transactions.map { list ->
             val rows = list.filter { it.dateTime.toEpochMilliseconds().toYearMonthString() == yearMonth }
-            val pemasukan = rows.filter { it.typeTransaction == TransactionType.INCOME }.sumOf { it.amount }
-            val pengeluaran = rows.filter { it.typeTransaction == TransactionType.EXPENSE }.sumOf { it.amount }
+            val pemasukan = rows.filter { it.typeTransaction == TypeCategory.INCOME }.sumOf { it.amount }
+            val pengeluaran = rows.filter { it.typeTransaction == TypeCategory.EXPENSE }.sumOf { it.amount }
             MonthlySummary(
                 totalPemasukan = pemasukan,
                 totalPengeluaran = pengeluaran,
@@ -185,11 +185,11 @@ class FakeTransactionRepository : TransactionRepository {
     override suspend fun deleteTransaction(transactionId: String): Unit = unused()
 
     private fun Transaction.isExpenseBetween(startOfMonth: Long, endOfMonth: Long): Boolean =
-        typeTransaction == TransactionType.EXPENSE &&
+        typeTransaction == TypeCategory.EXPENSE &&
                 dateTime.toEpochMilliseconds() in startOfMonth..endOfMonth
 
     private fun Transaction.isIncomeBetween(startOfMonth: Long, endOfMonth: Long): Boolean =
-        typeTransaction == TransactionType.INCOME &&
+        typeTransaction == TypeCategory.INCOME &&
                 dateTime.toEpochMilliseconds() in startOfMonth..endOfMonth
 
     /** "yyyy-MM" ala SQL `strftime`, zona sistem — sama dengan pemanggilnya. */

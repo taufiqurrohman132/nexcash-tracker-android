@@ -6,7 +6,7 @@ import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.toAccountUiModel
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiModel
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.transaction.presentation.detail.model.DetailTransactionUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.detail.state.DeleteTransactionDialogUiState
 
@@ -36,7 +36,7 @@ fun DetailTransactionUiModel.toDeleteDialogUiState(): DeleteTransactionDialogUiS
         // label tipe: kunci resource (bukan `type.name` mentah) — di-resolve di Composable
         typeLabelRes = type.labelResId,
         accountName = accountName,
-        balanceEffectText = if (type == TransactionType.EXPENSE) {
+        balanceEffectText = if (type == TypeCategory.EXPENSE) {
             uiText(R.string.tx_balance_effect_expense, accountName, formattedAmount)
         } else {
             uiText(R.string.tx_balance_effect_income, accountName, formattedAmount)

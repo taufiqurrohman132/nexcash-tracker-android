@@ -95,6 +95,7 @@ import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.currency.AppCurrencyHolder
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
@@ -183,7 +184,7 @@ fun AddEditTransactionContent(
     // dibungkus remember: daftar ini dihitung dari filter tipe, buang biar tidak
     // dibuat ulang tiap recomposition
     val parentCategories = remember(state.availableCategories) {
-        state.availableCategories.map { it.categoriItem }
+        state.availableCategories.map { it.categoriItem }.filter { it.tipe == state.type }
     }
 
     // --- alur cepat isi form: amount -> Nama -> sheet Category ---
@@ -272,7 +273,7 @@ fun AddEditTransactionContent(
                 focusRequester = amountFocus,
                 label = {
                     Text(
-                        text = if (state.type == TransactionType.EXPENSE) {
+                        text = if (state.type == TypeCategory.EXPENSE) {
                             stringResource(R.string.tx_amount_out)
                         } else {
                             stringResource(R.string.tx_amount_in)
@@ -548,8 +549,8 @@ fun AddEditTransactionContent(
 
 @Composable
 private fun SegmentedTypeToggle(
-    selected: TransactionType,
-    onSelect: (TransactionType) -> Unit,
+    selected: TypeCategory,
+    onSelect: (TypeCategory) -> Unit,
 ) {
     val inset = 2.dp
     val gap = 4.dp
@@ -581,20 +582,20 @@ private fun SegmentedTypeToggle(
             horizontalArrangement = Arrangement.spacedBy(gap),
         ) {
             ToggleChip(
-                label = stringResource(TransactionType.EXPENSE.labelResId),
+                label = stringResource(TypeCategory.EXPENSE.labelResId),
                 icon = Icons.Default.TrendingDown,
-                selected = selected == TransactionType.EXPENSE,
+                selected = selected == TypeCategory.EXPENSE,
                 selectedColor = Color(0xFFE8433D),
                 modifier = Modifier.weight(1f),
-                onClick = { onSelect(TransactionType.EXPENSE) },
+                onClick = { onSelect(TypeCategory.EXPENSE) },
             )
             ToggleChip(
-                label = stringResource(TransactionType.INCOME.labelResId),
+                label = stringResource(TypeCategory.INCOME.labelResId),
                 icon = Icons.Default.TrendingUp,
-                selected = selected == TransactionType.INCOME,
+                selected = selected == TypeCategory.INCOME,
                 selectedColor = PrimaryCyan,
                 modifier = Modifier.weight(1f),
-                onClick = { onSelect(TransactionType.INCOME) },
+                onClick = { onSelect(TypeCategory.INCOME) },
             )
         }
     }
@@ -615,12 +616,12 @@ private fun BoxScope.ToggleIndicator(
     chipWidth: Dp,
     inset: Dp,
     gap: Dp,
-    selected: TransactionType,
+    selected: TypeCategory,
 ) {
     // Tepi kiri pil: Expense (kiri) -> Income (kanan). Satu nilai animasi untuk
     // dua sisi supaya lebar pil selalu tetap saat meluncur.
     val startPadding by animateDpAsState(
-        targetValue = if (selected == TransactionType.EXPENSE) {
+        targetValue = if (selected == TypeCategory.EXPENSE) {
             inset
         } else {
             inset + chipWidth + gap

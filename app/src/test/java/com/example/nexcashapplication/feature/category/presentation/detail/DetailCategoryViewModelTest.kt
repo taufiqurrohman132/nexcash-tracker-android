@@ -21,7 +21,6 @@ import com.example.nexcashapplication.feature.category.presentation.main.FakeCat
 import com.example.nexcashapplication.feature.category.presentation.main.FakeTransactionRepository
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -94,7 +93,7 @@ class DetailCategoryViewModelTest {
             withDetails("t3", "c2", hoursAgo(2)),
         )
         transactionRepository.seed(
-            transaction(categoryId, 150L, TransactionType.EXPENSE, Clock.System.now()),
+            transaction(categoryId, 150L, TypeCategory.EXPENSE, Clock.System.now()),
         )
 
         categoryRepository.seedWeeklyTrend(
@@ -154,7 +153,7 @@ class DetailCategoryViewModelTest {
         runTest(testDispatcher) {
             budgetRepository.seed(budget("b1", categoryId, 500_000L))
             transactionRepository.seed(
-                transaction("c1-sub", 60L, TransactionType.EXPENSE, Clock.System.now()),
+                transaction("c1-sub", 60L, TypeCategory.EXPENSE, Clock.System.now()),
             )
 
             val vm = createViewModel()
@@ -176,7 +175,7 @@ class DetailCategoryViewModelTest {
             budgetRepository.seed(budget("b1", categoryId, 500_000L))
             budgetRepository.seed(budget("b2", "c1-sub", 100_000L))
             transactionRepository.seed(
-                transaction("c1-sub", 60L, TransactionType.EXPENSE, Clock.System.now()),
+                transaction("c1-sub", 60L, TypeCategory.EXPENSE, Clock.System.now()),
             )
 
             val vm = createViewModel()
@@ -196,7 +195,7 @@ class DetailCategoryViewModelTest {
         runTest(testDispatcher) {
             budgetRepository.seed(budget("b1", categoryId, 500_000L))
             transactionRepository.seed(
-                transaction("c1-sub", 60L, TransactionType.EXPENSE, Clock.System.now()),
+                transaction("c1-sub", 60L, TypeCategory.EXPENSE, Clock.System.now()),
             )
 
             // Layar sub kategori (route id = sub, bukan induk)
@@ -518,7 +517,7 @@ class DetailCategoryViewModelTest {
                 categoryId = catId,
                 description = null,
                 dateTime = dateTime,
-                typeTransaction = TransactionType.EXPENSE,
+                typeTransaction = TypeCategory.EXPENSE,
                 accountId = "acc1",
             ),
         )
@@ -526,7 +525,7 @@ class DetailCategoryViewModelTest {
     private fun transaction(
         catId: String,
         amount: Long,
-        type: TransactionType,
+        type: TypeCategory,
         dateTime: Instant,
     ) = Transaction(
         title = "tx-$catId",

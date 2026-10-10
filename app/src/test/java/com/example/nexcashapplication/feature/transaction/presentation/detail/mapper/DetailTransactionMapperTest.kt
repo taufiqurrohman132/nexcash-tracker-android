@@ -9,7 +9,6 @@ import com.example.nexcashapplication.feature.account.domain.model.AccountModel
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
@@ -33,7 +32,7 @@ class DetailTransactionMapperTest {
         assertEquals("t1", ui.transactionId)
         assertEquals("Kopi pagi", ui.name)
         assertEquals(150_000, ui.amount)
-        assertEquals(TransactionType.EXPENSE, ui.type)
+        assertEquals(TypeCategory.EXPENSE, ui.type)
         assertEquals(at, ui.dateTime)
         assertEquals("Rapat tim", ui.note)
         assertEquals("Makanan", ui.category?.name)
@@ -56,7 +55,7 @@ class DetailTransactionMapperTest {
         val dialog = sample().toDetailTransactionUiModel().toDeleteDialogUiState()
 
         assertEquals("Kopi pagi", dialog.title)
-        assertEquals(R.string.tx_type_expense, dialog.typeLabelRes)
+        assertEquals(R.string.cat_type_expense, dialog.typeLabelRes)
         assertEquals("BCA", dialog.accountName)
         assertEquals(150_000L.formatCurrency(), dialog.formattedAmount)
         assertEquals(
@@ -72,11 +71,11 @@ class DetailTransactionMapperTest {
 
     @Test
     fun `dialog hapus - pemasukan membuat saldo berkurang dan nama akun kosong`() {
-        val dialog = sample(type = TransactionType.INCOME, account = null)
+        val dialog = sample(type = TypeCategory.INCOME, account = null)
                 .toDetailTransactionUiModel()
                 .toDeleteDialogUiState()
 
-        assertEquals(R.string.tx_type_income, dialog.typeLabelRes)
+        assertEquals(R.string.cat_type_income, dialog.typeLabelRes)
         assertEquals("", dialog.accountName)
         assertEquals(
             uiText(
@@ -109,7 +108,7 @@ class DetailTransactionMapperTest {
     )
 
     private fun sample(
-        type: TransactionType = TransactionType.EXPENSE,
+        type: TypeCategory = TypeCategory.EXPENSE,
         category: Category? = kategori,
         account: AccountModel? = akun,
         note: String? = "Rapat tim",

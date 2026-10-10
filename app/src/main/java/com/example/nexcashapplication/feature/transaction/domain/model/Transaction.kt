@@ -1,6 +1,6 @@
 package com.example.nexcashapplication.feature.transaction.domain.model
 
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import kotlin.time.Clock
 import kotlin.time.Instant
 
@@ -12,13 +12,13 @@ data class Transaction(
     val categoryId: String?,
     val description: String?,
     val dateTime: Instant = Clock.System.now(),
-    val typeTransaction: TransactionType,
+    val typeTransaction: TypeCategory,
     val accountId: String?,
 ) {
     fun applyAmount(): Long {
         return when (typeTransaction) {
-            TransactionType.INCOME -> amount
-            TransactionType.EXPENSE -> -amount
+            TypeCategory.INCOME -> amount
+            TypeCategory.EXPENSE -> -amount
         }
     }
 

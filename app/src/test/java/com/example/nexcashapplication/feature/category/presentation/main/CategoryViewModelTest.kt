@@ -10,7 +10,6 @@ import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUs
 import com.example.nexcashapplication.feature.category.domain.usecase.DeleteCategoryUseCase
 import com.example.nexcashapplication.feature.category.domain.usecase.GetCategoryByIdUseCase
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -75,11 +74,11 @@ class CategoryViewModelTest {
         )
 
         transactionRepository.seed(
-            transaction("c1", 100L, TransactionType.EXPENSE, Clock.System.now()),
-            transaction("c1", 50L, TransactionType.EXPENSE, Clock.System.now()),
+            transaction("c1", 100L, TypeCategory.EXPENSE, Clock.System.now()),
+            transaction("c1", 50L, TypeCategory.EXPENSE, Clock.System.now()),
             // 10 hari lalu → di luar window, wajib TIDAK ikut terpakai
-            transaction("c1", 999L, TransactionType.EXPENSE, daysAgo(10)),
-            transaction("c3", 5_000L, TransactionType.INCOME, Clock.System.now()),
+            transaction("c1", 999L, TypeCategory.EXPENSE, daysAgo(10)),
+            transaction("c3", 5_000L, TypeCategory.INCOME, Clock.System.now()),
         )
     }
 
@@ -122,7 +121,7 @@ class CategoryViewModelTest {
                 category("c1-sub", "Makan Siang", TypeCategory.EXPENSE, parentId = "c1"),
             )
             transactionRepository.seed(
-                transaction("c1-sub", 75L, TransactionType.EXPENSE, Clock.System.now()),
+                transaction("c1-sub", 75L, TypeCategory.EXPENSE, Clock.System.now()),
             )
 
             val vm = createViewModel()
@@ -304,7 +303,7 @@ class CategoryViewModelTest {
     private fun transaction(
         categoryId: String,
         amount: Long,
-        type: TransactionType,
+        type: TypeCategory,
         dateTime: Instant,
     ) = Transaction(
         title = "tx-$categoryId",

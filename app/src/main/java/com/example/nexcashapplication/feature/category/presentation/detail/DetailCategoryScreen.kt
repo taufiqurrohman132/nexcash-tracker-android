@@ -92,7 +92,6 @@ import com.example.nexcashapplication.feature.category.presentation.addnew.const
 import com.example.nexcashapplication.feature.category.presentation.detail.model.DetailCategoryUiModel
 import com.example.nexcashapplication.feature.category.presentation.detail.model.ParentBudgetUiModel
 import com.example.nexcashapplication.feature.category.presentation.shared.model.CategoryUiItemModel
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -126,7 +125,7 @@ val dummyTransactions = listOf(
         name = "Gaji Bulanan",
         time = "08:00",
         amount = 8_500_000,
-        typeTransaction = TransactionType.INCOME,
+        typeTransaction = TypeCategory.INCOME,
         category = "Gaji",
         account = "BCA",
         icon = Icons.Default.AccountBalanceWallet,
@@ -137,7 +136,7 @@ val dummyTransactions = listOf(
         name = "Makan Siang",
         time = "12:30",
         amount = 35_000,
-        typeTransaction = TransactionType.INCOME,
+        typeTransaction = TypeCategory.INCOME,
         category = "Makanan & Minuman",
         account = "Cash",
         icon = Icons.Default.Restaurant,
@@ -148,7 +147,7 @@ val dummyTransactions = listOf(
         name = "Langganan Netflix",
         time = "10:15",
         amount = 54_000,
-        typeTransaction = TransactionType.INCOME,
+        typeTransaction = TypeCategory.INCOME,
         category = "Hiburan",
         account = "Gopay",
         icon = Icons.Default.Movie,
@@ -159,7 +158,7 @@ val dummyTransactions = listOf(
         name = "Bensin Motor",
         time = "07:45",
         amount = 25_000,
-        typeTransaction = TransactionType.INCOME,
+        typeTransaction = TypeCategory.INCOME,
         category = "Transportasi",
         account = "Cash",
         icon = Icons.Default.LocalGasStation,
@@ -170,7 +169,7 @@ val dummyTransactions = listOf(
         name = "Freelance Project",
         time = "16:20",
         amount = 1_200_000,
-        typeTransaction = TransactionType.INCOME,
+        typeTransaction = TypeCategory.INCOME,
         category = "Freelance",
         account = "BCA",
         icon = Icons.Default.Work,
@@ -181,7 +180,7 @@ val dummyTransactions = listOf(
         name = "Belanja Bulanan",
         time = "19:00",
         amount = 450_000,
-        typeTransaction = TransactionType.INCOME,
+        typeTransaction = TypeCategory.INCOME,
         category = "Belanja",
         account = "Gopay",
         icon = Icons.Default.ShoppingCart,
@@ -192,7 +191,7 @@ val dummyTransactions = listOf(
         name = "Tagihan Listrik",
         time = "09:10",
         amount = 180_000,
-        typeTransaction = TransactionType.INCOME,
+        typeTransaction = TypeCategory.INCOME,
         category = "Tagihan",
         account = "BCA",
         icon = Icons.Default.Bolt,
@@ -203,7 +202,7 @@ val dummyTransactions = listOf(
         name = "Transfer dari Teman",
         time = "14:05",
         amount = 200_000,
-        typeTransaction = TransactionType.INCOME,
+        typeTransaction = TypeCategory.INCOME,
         category = null,
         account = null,
         icon = Icons.Default.Category,

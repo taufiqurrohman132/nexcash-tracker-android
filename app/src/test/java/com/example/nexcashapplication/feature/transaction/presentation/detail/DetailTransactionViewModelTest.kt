@@ -12,7 +12,6 @@ import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
 import com.example.nexcashapplication.feature.transaction.domain.usecase.FakeTransactionRepository
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -125,7 +124,7 @@ class DetailTransactionViewModelTest {
 
             val dialog = vm.state.value.deleteDialogState
             assertEquals("Kopi pagi", dialog?.title)
-            assertEquals(R.string.tx_type_expense, dialog?.typeLabelRes)
+            assertEquals(R.string.cat_type_expense, dialog?.typeLabelRes)
             assertEquals("BCA", dialog?.accountName)
             assertEquals(150_000L.formatCurrency(), dialog?.formattedAmount)
             assertEquals(
@@ -345,7 +344,7 @@ class DetailTransactionViewModelTest {
             categoryId = "food",
             description = "Rapat tim",
             dateTime = at,
-            typeTransaction = TransactionType.EXPENSE,
+            typeTransaction = TypeCategory.EXPENSE,
             accountId = "bca",
         ),
         category = Category(

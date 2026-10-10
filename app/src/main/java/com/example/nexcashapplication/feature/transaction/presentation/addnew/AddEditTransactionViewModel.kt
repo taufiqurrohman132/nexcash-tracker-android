@@ -178,7 +178,7 @@ class AddEditTransactionViewModel internal constructor(
                 updateState {
                     // kategori lama tidak sah untuk tipe baru → buang,
                     // supaya `isValid` menahan save sampai pilih ulang
-                    val tipeBaru = if (event.type == TransactionType.EXPENSE) {
+                    val tipeBaru = if (event.type == TypeCategory.EXPENSE) {
                         TypeCategory.EXPENSE
                     } else {
                         TypeCategory.INCOME

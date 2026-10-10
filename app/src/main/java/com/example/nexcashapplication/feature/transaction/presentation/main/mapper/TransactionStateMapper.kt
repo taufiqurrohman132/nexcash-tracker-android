@@ -7,7 +7,7 @@ import com.example.nexcashapplication.feature.common.extentions.toColor
 import com.example.nexcashapplication.feature.common.utils.formatDate
 import com.example.nexcashapplication.feature.common.utils.formatTime
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
-import com.example.nexcashapplication.feature.transaction.presentation.addnew.TransactionType
+import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionHeaderUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionUiGroupModel
 import kotlinx.datetime.LocalDate
@@ -35,7 +35,7 @@ fun TransactionWithDetails.toItemUiModel() = TransactionItemUiModel(
 
 fun List<TransactionWithDetails>.toGroupHeaderUiModel(localDate: LocalDate): TransactionHeaderUiModel {
     val totalAmount = sumOf { transactionWithDetails ->
-        if (transactionWithDetails.transaction.typeTransaction == TransactionType.INCOME)
+        if (transactionWithDetails.transaction.typeTransaction == TypeCategory.INCOME)
             transactionWithDetails.transaction.amount
         else -transactionWithDetails.transaction.amount
     }
