@@ -1,6 +1,5 @@
 package com.example.nexcashapplication.feature.dashboard.presentation.ui.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -28,8 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.extension.toFormatCurrencyVisibility
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
+import com.example.nexcashapplication.ui.theme.SecondaryDeepPurple
 
 
 @Composable
@@ -59,120 +60,108 @@ fun BalanceCard(
                     elevation = 12.dp,
                     shape = RoundedCornerShape(24.dp),
                     ambientColor = PrimaryCyan.copy(alpha = 0.35f),
-                    spotColor = PrimaryCyan.copy(alpha = 0.35f)
+                    spotColor = PrimaryCyan.copy(alpha = 0.35f),
                 ),
         elevation = CardDefaults.elevatedCardElevation(
-            defaultElevation = 0.dp   // dimatiin, shadow udah dihandle Modifier.shadow()
+            defaultElevation = 0.dp,   // dimatiin, shadow udah dihandle Modifier.shadow()
         ),
         shape = RoundedCornerShape(24.dp),
     ) {
-
-        Box(
+        Column(
             modifier = Modifier
-                    .fillMaxWidth(),
-//                .background(
-//                    brush = Brush.linearGradient(
-//                        colors = listOf(
-//                            PrimaryCyan,
-//                            PrimaryCyan,
-//                            SecondaryDeepPurple
-//                        ),
-//                        start = Offset(0f, 0f),
-//                        end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-//                    )
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.linearGradient(
+                            colors = listOf(
+                                PrimaryCyan,
+                                PrimaryCyan,
+                                SecondaryDeepPurple,
+                            ),
+                            start = Offset(0f, 0f),
+                            end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
+                        ),
 
-//                )
+                        )
+                    .padding(24.dp),
         ) {
-            Image(
-                painter = painterResource(R.drawable.bg_balance_card),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                        .matchParentSize(),
+
+            Text(
+                text = stringResource(R.string.dash_total_balance_label),
+                color = Color.White,
             )
 
-            Column(
-                modifier = Modifier.padding(24.dp),
+            Spacer(
+                modifier = Modifier.height(8.dp),
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-
+                // helper sudah membawa prefix mata uang dan menyamarkan saldo tersembunyi
                 Text(
-                    text = stringResource(R.string.dash_total_balance_label),
+                    modifier = Modifier
+                            .weight(1f),
+                    text = totalBalance.toFormatCurrencyVisibility(isVisible, isTotalSaldoOverflow),
+                    style =
+                        MaterialTheme.typography.headlineLarge,
+                    fontWeight = FontWeight.Bold,
                     color = Color.White,
+                    maxLines = 1,
+                    onTextLayout = { result ->
+                        if (result.hasVisualOverflow) {
+                            isTotalSaldoOverflow = result.hasVisualOverflow
+                        }
+                    },
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Box(
+                    modifier = Modifier
+                            .size(40.dp)
+                            .background(
+                                color = Color.White.copy(0.2f),
+                                shape = CircleShape,
+                            )
+                            .clip(CircleShape)
+                            .clickable { onEyeClick() },
+                    contentAlignment = Alignment.Center,
+
+                    ) {
+                    Icon(
+                        painter = painterResource(R.drawable.eye_show),
+                        contentDescription = null,
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp),
+                    )
+                }
+            }
+
+            Spacer(
+                modifier = Modifier.height(20.dp),
+            )
+
+            Row {
+
+                SummaryChip(
+                    title = stringResource(R.string.dash_income_label),
+                    value = income,
+                    modifier = Modifier.weight(1f),
+                    icon = painterResource(R.drawable.down),
+                    color = Color.Green,
                 )
 
                 Spacer(
-                    modifier = Modifier.height(8.dp),
+                    modifier = Modifier.width(12.dp),
                 )
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    // helper sudah membawa prefix mata uang dan menyamarkan saldo tersembunyi
-                    Text(
-                        modifier = Modifier
-                                .weight(1f),
-                        text = totalBalance.toFormatCurrencyVisibility(isVisible, isTotalSaldoOverflow),
-                        style =
-                            MaterialTheme.typography.headlineLarge,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.White,
-                        maxLines = 1,
-                        onTextLayout = { result ->
-                            if (result.hasVisualOverflow) {
-                                isTotalSaldoOverflow = result.hasVisualOverflow
-                            }
-                        },
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Box(
-                        modifier = Modifier
-                                .size(40.dp)
-                                .background(
-                                    color = Color.White.copy(0.2f),
-                                    shape = CircleShape,
-                                )
-                                .clip(CircleShape)
-                                .clickable { onEyeClick() },
-                        contentAlignment = Alignment.Center,
-
-                        ) {
-                        Icon(
-                            painter = painterResource(R.drawable.eye_show),
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(20.dp),
-                        )
-                    }
-                }
-
-                Spacer(
-                    modifier = Modifier.height(20.dp),
+                SummaryChip(
+                    title = stringResource(R.string.dash_expense_label),
+                    value = expense,
+                    modifier = Modifier.weight(1f),
+                    icon = painterResource(R.drawable.up),
+                    color = Color.Red,
                 )
-
-                Row {
-
-                    SummaryChip(
-                        title = stringResource(R.string.dash_income_label),
-                        value = income,
-                        modifier = Modifier.weight(1f),
-                        icon = painterResource(R.drawable.down),
-                        color = Color.Green,
-                    )
-
-                    Spacer(
-                        modifier = Modifier.width(12.dp),
-                    )
-
-                    SummaryChip(
-                        title = stringResource(R.string.dash_expense_label),
-                        value = expense,
-                        modifier = Modifier.weight(1f),
-                        icon = painterResource(R.drawable.up),
-                        color = Color.Red,
-                    )
-                }
             }
         }
     }

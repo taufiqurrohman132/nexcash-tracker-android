@@ -13,6 +13,7 @@ material3 = "1.4.0"
 vico = "3.2.3"
 uiText = "1.11.4"
 engageCore = "1.6.0"
+uiGeometry = "1.12.1"
 
 
 [libraries]
@@ -36,6 +37,7 @@ vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 androidx-compose-ui-text = { group = "androidx.compose.ui", name = "ui-text", version.ref = "uiText" }
 engage-core = { group = "com.google.android.engage", name = "engage-core", version.ref = "engageCore" }
+androidx-compose-ui-geometry = { group = "androidx.compose.ui", name = "ui-geometry", version.ref = "uiGeometry" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

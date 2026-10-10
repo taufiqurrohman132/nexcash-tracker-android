@@ -42,42 +42,42 @@ import java.util.Locale
 fun BudgetCard(
     remainingBudget: Long,
     progress: Float,
-    onDetailClick: () -> Unit = {}
+    onDetailClick: () -> Unit = {},
 ) {
 
     Column {
         // Header
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
                 text = stringResource(R.string.dash_remaining_budget),
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
             )
             TextButton(onClick = { onDetailClick() }) {
                 Text(
                     text = stringResource(R.string.dash_see_detail),
-                    color = PrimaryCyan
+                    color = PrimaryCyan,
                 )
             }
         }
 
         Card(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            shape = RoundedCornerShape(20.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+            shape = RoundedCornerShape(20.dp),
         ) {
 
             Column(
                 modifier = Modifier
-                    .background(LightCyan)
-                    .padding(16.dp)
+                        .background(LightCyan)
+                        .padding(16.dp),
             ) {
                 // Periode bulan/tahun berjalan, terlokalisasi (bukan placeholder
                 // hardcoded "Oktober 2023")
@@ -90,7 +90,7 @@ fun BudgetCard(
                 Text(
                     text = period,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
+                    color = Color.Gray,
                 )
 
                 Spacer(modifier = Modifier.height(2.dp))
@@ -107,8 +107,8 @@ fun BudgetCard(
                             SpanStyle(
                                 color = PrimaryCyan,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = MaterialTheme.typography.headlineSmall.fontSize
-                            )
+                                fontSize = MaterialTheme.typography.headlineSmall.fontSize,
+                            ),
                         ) {
                             append("$formattedRemaining ")
                         }
@@ -116,21 +116,21 @@ fun BudgetCard(
                             SpanStyle(
                                 color = Color.Gray,
                                 fontWeight = FontWeight.Normal,
-                                fontSize = MaterialTheme.typography.bodySmall.fontSize
-                            )
+                                fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                            ),
                         ) {
                             append(remainingSuffix)
                         }
-                    }
+                    },
                 )
                 Box(
                     modifier = Modifier
-                        .background(
-                            color = PrimaryCyan.copy(alpha = 0.05f),
-                            shape = RoundedCornerShape(50.dp)
-                        )
-                        .padding(horizontal = 10.dp, vertical = 4.dp)
-                        .align(Alignment.End),
+                            .background(
+                                color = PrimaryCyan.copy(alpha = 0.05f),
+                                shape = RoundedCornerShape(50.dp),
+                            )
+                            .padding(horizontal = 10.dp, vertical = 4.dp)
+                            .align(Alignment.End),
                 ) {
                     Text(
                         text = stringResource(
@@ -148,11 +148,11 @@ fun BudgetCard(
                 LinearProgressIndicator(
                     progress = { progress },
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(8.dp)
-                        .clip(RoundedCornerShape(50)),
-                    color = Color(0xFF00C2FF),
-                    trackColor = Color(0xFFE6F7FF)
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(RoundedCornerShape(50)),
+                    color = PrimaryCyan,
+                    trackColor = PrimaryCyan.copy(alpha = 0.1f),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -162,7 +162,7 @@ fun BudgetCard(
                     text = stringResource(R.string.dash_budget_tip),
                     style = MaterialTheme.typography.bodySmall,
                     fontStyle = FontStyle.Italic,
-                    color = Color.Gray
+                    color = Color.Gray,
                 )
             }
         }
@@ -174,7 +174,7 @@ fun BudgetCard(
 private fun BudgetCardPreview() {
     BudgetCard(
         20,
-        13f,
+        4f,
     )
 
 }

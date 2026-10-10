@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.TrendingDown
@@ -72,6 +71,7 @@ import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.form.model.AccountProviderUiModel
+import com.example.nexcashapplication.feature.account.presentation.addedit.typeoption.mapper.toUiItem
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiGroupModel
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
@@ -365,7 +365,10 @@ fun TotalBalanceCard(
                         Spacer(Modifier.width(2.dp))
                         Text(
                             // Tanpa prefix "+" bawaan — nilai negatif sudah membawa tanda "-"
-                            text = if (isUp) "+$monthlyChangePercent%" else "$monthlyChangePercent%",
+                            text = buildString {
+                                append(if (isUp) "+" else "")
+                                append(String.format("%.2f", monthlyChangePercent) + "%")
+                            },
                             color = changeColor,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
@@ -428,14 +431,27 @@ private fun AccountRow(
                     .padding(14.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            // Icon & warna diambil dari provider akun: tipe akun menentukan icon,
+            // warna brand bank/e-wallet menentukan background → konsisten dengan
+            // AccountBottomSheetContent.
+            val typeIcon = account.provider?.typeAccount?.toUiItem()?.icon
+                ?: Icons.Outlined.AccountBalanceWallet
+
             Box(
                 modifier = Modifier
                         .size(44.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.primaryContainer),
+                        .background(
+                            (account.provider?.color ?: MaterialTheme.colorScheme.surfaceVariant).copy(alpha = 0.1f)
+                        ),
                 contentAlignment = Alignment.Center,
             ) {
-                Icon(Icons.Filled.AccountBalance, contentDescription = null)
+                Icon(
+                    imageVector = typeIcon,
+                    contentDescription = null,
+                    tint = (account.provider?.color ?: MaterialTheme.colorScheme.surfaceVariant),
+                    modifier = Modifier.size(24.dp),
+                )
             }
 
             Spacer(Modifier.width(12.dp))
