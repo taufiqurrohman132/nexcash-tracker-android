@@ -6,7 +6,7 @@
 *   **Solution**: Run `Build -> Clean Project` then `Build -> Rebuild Project`. Ensure the KSP version matches your Kotlin version.
 
 ### Missing Resources
-*   **Issue**: `bg_balance_card` or other drawables not recognized.
+*   **Issue**: `eye_show` or other drawables not recognized.
 *   **Solution**: Check `app/src/main/res/drawable/` and ensure naming is strictly lowercase with underscores.
 
 ## 2. Runtime Issues

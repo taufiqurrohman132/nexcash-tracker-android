@@ -84,12 +84,32 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 - **4 unit test pemetaan filter route** (`feature/transaction/domain/model`):
   `TransactionFilterTest` — `TransactionFilter.fromRoute` memetakan argumen route
   `All(categoryId, accountId)` ke `ByCategory`/`ByAccount`/`None`, termasuk guard
-  saat keduanya terisi. Total suite: **74 test**. Gradle: dependency
+  saat keduanya terisi. Total suite: **159 test**. Gradle: dependency
   `kotlinx-coroutines-test:1.11.0` dan
   `testOptions unitTests.returnDefaultValues` agar `android.util.Log` aman di JVM.
 
 ### Diubah
 
+- **Bottom nav hanya tampil di 5 tab utama** — visibilitas `BottomNavBar` di
+  `NexcashApp` diturunkan dari hierarchy destination terhadap `TOP_LEVEL_DESTINATION`
+  (Home, Transaksi, Aset, Statistik, Settings); layar detail/tambah/hapus kini
+  fullscreen. Bar muncul/hilang dengan slide (`AnimatedVisibility`) dan
+  `innerPadding` mengikuti animasi sehingga konten tidak melompat.
+- **Unifikasi enum `TransactionType` → `TypeCategory`** —
+  `TransactionItemUiModel.typeTransaction` dan `DetailTransactionUiModel.type` kini
+  memakai `TypeCategory` mengikuti domain `Transaction`; enum ganda dihapus dan
+  mapper/ViewModel/screen/use case + 15 file test disesuaikan (35 file). Label dialog
+  hapus transaksi resolve `cat_type_*` alih-alih `tx_type_*` — nilai string identik di
+  semua locale sehingga UI tidak berubah, dan `tx_type_*` dihapus dari 9 file
+  `strings_transaction.xml`. Form tambah/ubah transaksi menyaring kategori induk
+  sesuai tipe terpilih sehingga seleksi lama tidak lolos saat ganti tipe.
+  Total suite kini **159 test**.
+- **Tampilan dashboard & aset** — `BalanceCard` memakai gradient
+  `PrimaryCyan → SecondaryDeepPurple` (menggantikan `bg_balance_card.jpg`; drawable
+  ikut dihapus karena tak terpakai), progres anggaran `BudgetCard` memakai token warna
+  tema, persen perubahan saldo total diformat 2 desimal, dan baris akun memakai ikon +
+  warna brand provider. Dependency baru `androidx.compose.ui:ui-geometry` untuk offset
+  gradient.
 - **UI `AddEditBudgetScreen`**: teks durasi dihitung dinamis (bukan hardcode "12 Hari"),
   switch "Anggaran Berulang" hanya aktif untuk tipe `CUSTOM`, preview teks berulang
   disesuaikan per tipe periode, Snackbar effect terhubung (sebelumnya diabaikan),
@@ -156,7 +176,7 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
   dipetakan ke `TransactionFilter` lewat fungsi murni `TransactionFilter.fromRoute(...)`
   (prioritas kategori sebagai guard); titik panggil "Lihat Semua" di detail kategori
   dan detail akun disesuaikan, ADR-002 diamend. Pemetaan ditutup 4 unit test
-  `TransactionFilterTest` → total suite **74 test**.
+  `TransactionFilterTest` → total suite **159 test**.
 
 ### Peringatan
 

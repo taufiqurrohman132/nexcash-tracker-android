@@ -14,7 +14,7 @@ NexCashApplication follows **Clean Architecture** principles combined with the *
 *   **Local Database**: [Room](https://developer.android.com/training/data-storage/room) - SQLite abstraction for structured data.
 *   **Asynchronous Programming**: [Kotlin Coroutines & Flow](https://developer.android.com/kotlin/coroutines) - For reactive data streams.
 *   **Charts**: [Vico](https://github.com/patrykandpatrick/vico) - Modern charting library for Compose.
-*   **Navigation**: [Navigation 3](https://developer.android.com/jetpack/androidx/releases/navigation3) (Experimental/Compose Navigation).
+*   **Navigation**: [Navigation Compose](https://developer.android.com/develop/ui/compose/navigation) (`androidx.navigation:navigation-compose:2.9.8`) — type-safe routes via `kotlinx.serialization` (`@Serializable`).
 
 ## 3. Modularization Strategy
 Currently, the project uses a **Feature-based structure** within a single `:app` module for simplicity, but it is structured to be easily split into library modules in the future:

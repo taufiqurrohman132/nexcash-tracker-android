@@ -7,7 +7,7 @@ We focus on testing business logic, mappers, and ViewModels.
     (untuk ViewModel: `Dispatchers.setMain` + virtual time), fake/repository in-memory
     untuk use case (tanpa mock berat).
 *   **Goal**: Ensure data transformations (Mappers) and State transitions (ViewModels) work correctly.
-*   **Contoh**: 74 unit test — 23 fitur anggaran berulang: mapper self-ref, lazy generation
+*   **Contoh**: 159 unit test — di antaranya 23 fitur anggaran berulang: mapper self-ref, lazy generation
     (`EnsureUpToDateBudgetsUseCaseTest`), alur simpan (`SaveBudgetUseCaseTest`), tutup seri
     (`DeleteBudgetUseCaseTest`) + `FakeBudgetRepository`; 17 fitur kategori tab utama:
     `CategoryViewModelTest` (load budget+terpakai, event→state/effect, search dengan
