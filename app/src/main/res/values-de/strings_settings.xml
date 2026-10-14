@@ -32,6 +32,7 @@
     <!-- LanguageSettingsScreen -->
     <string name="settings_back">Zurück</string>
     <string name="settings_save">Speichern</string>
+    <string name="settings_save_failed">Einstellungen konnten nicht gespeichert werden</string>
     <string name="settings_search_language">Sprache suchen</string>
     <string name="settings_language_info">Die gewählte Sprache wird auf die gesamte Benutzeroberfläche der NexCash-App angewendet, um die Verwaltung Ihrer Finanzen zu erleichtern.</string>
 

@@ -24,6 +24,7 @@
     <string name="notif_unread_dot_desc">Não lida</string>
     <string name="notif_empty_title">Nenhuma notificação ainda</string>
     <string name="notif_empty_subtitle">Os lembretes aparecerão aqui quando as despesas atingirem o limite do orçamento.</string>
+    <string name="notif_load_failed">Falha ao carregar as notificações</string>
 
     <!-- NotificationEditScreen (pengaturan notifikasi) -->
     <string name="notif_settings_title">Configurações de notificação</string>

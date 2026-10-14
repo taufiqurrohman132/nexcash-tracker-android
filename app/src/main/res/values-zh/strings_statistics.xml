@@ -31,4 +31,5 @@
 
     <!-- Kartu Total Pengeluaran -->
     <string name="stat_total_expense">总支出</string>
+    <string name="stat_load_failed">统计加载失败</string>
 </resources>

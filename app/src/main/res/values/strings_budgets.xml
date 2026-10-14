@@ -71,6 +71,7 @@
     <string name="budget_error_min_one_category">Minimal satu kategori dialokasikan</string>
     <string name="budget_error_allocation_total">Total alokasi %1$d%% (maks 100%%) — tiap kategori harus lebih dari 0</string>
     <string name="budget_save_failed">Gagal menyimpan anggaran: %1$s</string>
+    <string name="budget_load_failed">Gagal memuat anggaran</string>
     <string name="budget_delete_failed">Gagal menghapus anggaran: %1$s</string>
     <string name="budget_allocation_deleted">Alokasi kategori dihapus</string>
 </resources>

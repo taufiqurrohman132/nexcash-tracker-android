@@ -71,6 +71,7 @@
     <string name="budget_error_min_one_category">Mindestens eine Kategorie muss zugeordnet sein</string>
     <string name="budget_error_allocation_total">Gesamtallokation %1$d%% (max. 100%%) — jede Kategorie muss größer als 0 sein</string>
     <string name="budget_save_failed">Budget konnte nicht gespeichert werden: %1$s</string>
+    <string name="budget_load_failed">Budget konnte nicht geladen werden</string>
     <string name="budget_delete_failed">Budget konnte nicht gelöscht werden: %1$s</string>
     <string name="budget_allocation_deleted">Kategorie-Allokation gelöscht</string>
 </resources>

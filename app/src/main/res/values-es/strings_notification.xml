@@ -24,6 +24,7 @@
     <string name="notif_unread_dot_desc">Sin leer</string>
     <string name="notif_empty_title">Aún no hay notificaciones</string>
     <string name="notif_empty_subtitle">Los recordatorios aparecerán aquí cuando los gastos se acerquen al límite del presupuesto.</string>
+    <string name="notif_load_failed">Error al cargar las notificaciones</string>
 
     <!-- NotificationEditScreen (pengaturan notifikasi) -->
     <string name="notif_settings_title">Ajustes de notificaciones</string>

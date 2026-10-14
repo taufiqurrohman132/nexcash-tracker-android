@@ -31,4 +31,5 @@
 
     <!-- Kartu Total Pengeluaran -->
     <string name="stat_total_expense">Общие расходы</string>
+    <string name="stat_load_failed">Не удалось загрузить статистику</string>
 </resources>

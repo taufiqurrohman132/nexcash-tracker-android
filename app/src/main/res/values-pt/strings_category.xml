@@ -85,5 +85,6 @@
     <string name="cat_pick_target_category">Selecionar categoria de destino</string>
     <string name="cat_delete_failed">Falha ao excluir a categoria</string>
     <string name="cat_load_failed">Falha ao carregar os dados</string>
+    <string name="cat_retry">Tentar novamente</string>
     <string name="detail_category_notification_coming_soon">O recurso de notificações estará disponível em breve</string>
 </resources>

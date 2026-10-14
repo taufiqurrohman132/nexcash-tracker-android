@@ -24,6 +24,7 @@
     <string name="notif_unread_dot_desc">Belum dibaca</string>
     <string name="notif_empty_title">Belum ada notifikasi</string>
     <string name="notif_empty_subtitle">Pengingat akan muncul di sini saat pengeluaran mencapai batas anggaran.</string>
+    <string name="notif_load_failed">Gagal memuat notifikasi</string>
 
     <!-- NotificationEditScreen (pengaturan notifikasi) -->
     <string name="notif_settings_title">Pengaturan Notifikasi</string>

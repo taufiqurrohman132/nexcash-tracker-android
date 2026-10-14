@@ -32,6 +32,7 @@
     <!-- LanguageSettingsScreen -->
     <string name="settings_back">Kembali</string>
     <string name="settings_save">Simpan</string>
+    <string name="settings_save_failed">Gagal menyimpan pengaturan</string>
     <string name="settings_search_language">Cari Bahasa</string>
     <string name="settings_language_info">Bahasa yang Anda pilih akan diterapkan ke seluruh antarmuka aplikasi NexCash untuk memudahkan pengelolaan finansial Anda.</string>
 

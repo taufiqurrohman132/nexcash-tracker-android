@@ -71,6 +71,7 @@
     <string name="budget_error_min_one_category">Au moins une catégorie doit être allouée</string>
     <string name="budget_error_allocation_total">Allocation totale : %1$d%% (max 100%%) — chaque catégorie doit être supérieure à 0</string>
     <string name="budget_save_failed">Échec de l\'enregistrement du budget : %1$s</string>
+    <string name="budget_load_failed">Échec du chargement du budget</string>
     <string name="budget_delete_failed">Échec de la suppression du budget : %1$s</string>
     <string name="budget_allocation_deleted">Allocation de catégorie supprimée</string>
 </resources>

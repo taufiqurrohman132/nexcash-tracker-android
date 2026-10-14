@@ -24,6 +24,7 @@
     <string name="notif_unread_dot_desc">Non lu</string>
     <string name="notif_empty_title">Aucune notification</string>
     <string name="notif_empty_subtitle">Les rappels apparaîtront ici lorsque les dépenses atteindront le plafond du budget.</string>
+    <string name="notif_load_failed">Échec du chargement des notifications</string>
 
     <!-- NotificationEditScreen (pengaturan notifikasi) -->
     <string name="notif_settings_title">Paramètres des notifications</string>

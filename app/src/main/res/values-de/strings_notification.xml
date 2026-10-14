@@ -24,6 +24,7 @@
     <string name="notif_unread_dot_desc">Ungelesen</string>
     <string name="notif_empty_title">Noch keine Benachrichtigungen</string>
     <string name="notif_empty_subtitle">Erinnerungen erscheinen hier, wenn Ihre Ausgaben das Budgetlimit erreichen.</string>
+    <string name="notif_load_failed">Benachrichtigungen konnten nicht geladen werden</string>
 
     <!-- NotificationEditScreen (pengaturan notifikasi) -->
     <string name="notif_settings_title">Benachrichtigungseinstellungen</string>

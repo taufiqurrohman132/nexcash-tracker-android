@@ -24,6 +24,7 @@
     <string name="notif_unread_dot_desc">Не прочитано</string>
     <string name="notif_empty_title">Уведомлений пока нет</string>
     <string name="notif_empty_subtitle">Напоминания появятся здесь, когда расходы достигнут лимита бюджета.</string>
+    <string name="notif_load_failed">Не удалось загрузить уведомления</string>
 
     <!-- NotificationEditScreen (pengaturan notifikasi) -->
     <string name="notif_settings_title">Настройки уведомлений</string>

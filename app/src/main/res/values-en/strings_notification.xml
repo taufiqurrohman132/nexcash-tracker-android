@@ -24,6 +24,7 @@
     <string name="notif_unread_dot_desc">Unread</string>
     <string name="notif_empty_title">No notifications yet</string>
     <string name="notif_empty_subtitle">Reminders will appear here when expenses reach the budget limit.</string>
+    <string name="notif_load_failed">Failed to load notifications</string>
 
     <!-- NotificationEditScreen (pengaturan notifikasi) -->
     <string name="notif_settings_title">Notification Settings</string>

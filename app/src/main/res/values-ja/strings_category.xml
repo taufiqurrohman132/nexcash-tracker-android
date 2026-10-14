@@ -85,5 +85,6 @@
     <string name="cat_pick_target_category">移動先のカテゴリを選択</string>
     <string name="cat_delete_failed">カテゴリの削除に失敗しました</string>
     <string name="cat_load_failed">データの読み込みに失敗しました</string>
+    <string name="cat_retry">再試行</string>
     <string name="detail_category_notification_coming_soon">通知機能は近日提供予定です</string>
 </resources>

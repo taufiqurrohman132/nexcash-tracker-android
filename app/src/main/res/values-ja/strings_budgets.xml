@@ -71,6 +71,7 @@
     <string name="budget_error_min_one_category">少なくとも 1 つのカテゴリを割り当ててください</string>
     <string name="budget_error_allocation_total">割合合計 %1$d%%（最大 100%%）— 各カテゴリは 0 より大きい必要があります</string>
     <string name="budget_save_failed">予算の保存に失敗しました: %1$s</string>
+    <string name="budget_load_failed">予算の読み込みに失敗しました</string>
     <string name="budget_delete_failed">予算の削除に失敗しました: %1$s</string>
     <string name="budget_allocation_deleted">カテゴリの割り当てを削除しました</string>
 </resources>

@@ -85,5 +85,6 @@
     <string name="cat_pick_target_category">Pilih kategori tujuan</string>
     <string name="cat_delete_failed">Gagal menghapus kategori</string>
     <string name="cat_load_failed">Gagal memuat data</string>
+    <string name="cat_retry">Coba Lagi</string>
     <string name="detail_category_notification_coming_soon">Fitur notifikasi sedang dikembangkan</string>
 </resources>

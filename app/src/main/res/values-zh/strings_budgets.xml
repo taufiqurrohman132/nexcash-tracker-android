@@ -71,6 +71,7 @@
     <string name="budget_error_min_one_category">至少分配一个分类</string>
     <string name="budget_error_allocation_total">分配总额 %1$d%%（上限 100%%）— 每个分类必须大于 0</string>
     <string name="budget_save_failed">保存预算失败：%1$s</string>
+    <string name="budget_load_failed">预算加载失败</string>
     <string name="budget_delete_failed">删除预算失败：%1$s</string>
     <string name="budget_allocation_deleted">分类分配已删除</string>
 </resources>

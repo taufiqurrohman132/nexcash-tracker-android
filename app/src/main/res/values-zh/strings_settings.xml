@@ -32,6 +32,7 @@
     <!-- LanguageSettingsScreen -->
     <string name="settings_back">返回</string>
     <string name="settings_save">保存</string>
+    <string name="settings_save_failed">设置保存失败</string>
     <string name="settings_search_language">搜索语言</string>
     <string name="settings_language_info">您选择的语言将应用于 NexCash 应用的整个界面，让您的财务管理更轻松。</string>
 

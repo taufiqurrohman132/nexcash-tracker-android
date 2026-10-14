@@ -31,4 +31,5 @@
 
     <!-- Kartu Total Pengeluaran -->
     <string name="stat_total_expense">Total des dépenses</string>
+    <string name="stat_load_failed">Échec du chargement des statistiques</string>
 </resources>

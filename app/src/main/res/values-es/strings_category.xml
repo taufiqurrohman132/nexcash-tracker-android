@@ -85,5 +85,6 @@
     <string name="cat_pick_target_category">Seleccionar categoría de destino</string>
     <string name="cat_delete_failed">Error al eliminar la categoría</string>
     <string name="cat_load_failed">Error al cargar los datos</string>
+    <string name="cat_retry">Reintentar</string>
     <string name="detail_category_notification_coming_soon">La función de notificaciones estará disponible próximamente</string>
 </resources>

@@ -24,6 +24,7 @@
     <string name="notif_unread_dot_desc">未读</string>
     <string name="notif_empty_title">暂无通知</string>
     <string name="notif_empty_subtitle">当支出达到预算限额时，提醒将显示在这里。</string>
+    <string name="notif_load_failed">通知加载失败</string>
 
     <!-- NotificationEditScreen (pengaturan notifikasi) -->
     <string name="notif_settings_title">通知设置</string>

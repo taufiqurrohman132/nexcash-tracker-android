@@ -85,5 +85,6 @@
     <string name="cat_pick_target_category">Выберите целевую категорию</string>
     <string name="cat_delete_failed">Не удалось удалить категорию</string>
     <string name="cat_load_failed">Не удалось загрузить данные</string>
+    <string name="cat_retry">Повторить</string>
     <string name="detail_category_notification_coming_soon">Функция уведомлений скоро будет доступна</string>
 </resources>

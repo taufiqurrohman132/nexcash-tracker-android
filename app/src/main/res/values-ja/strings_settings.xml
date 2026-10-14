@@ -32,6 +32,7 @@
     <!-- LanguageSettingsScreen -->
     <string name="settings_back">戻る</string>
     <string name="settings_save">保存</string>
+    <string name="settings_save_failed">設定の保存に失敗しました</string>
     <string name="settings_search_language">言語を検索</string>
     <string name="settings_language_info">選択した言語は、NexCash アプリのすべてのインターフェースに適用され、家計管理をより簡単にします。</string>
 

@@ -31,4 +31,5 @@
 
     <!-- Kartu Total Pengeluaran -->
     <string name="stat_total_expense">支出合計</string>
+    <string name="stat_load_failed">統計の読み込みに失敗しました</string>
 </resources>

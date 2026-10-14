@@ -71,6 +71,7 @@
     <string name="budget_error_min_one_category">Распределите хотя бы одну категорию</string>
     <string name="budget_error_allocation_total">Итого распределено %1$d%% (макс. 100%%) — каждая категория должна быть больше 0</string>
     <string name="budget_save_failed">Не удалось сохранить бюджет: %1$s</string>
+    <string name="budget_load_failed">Не удалось загрузить бюджет</string>
     <string name="budget_delete_failed">Не удалось удалить бюджет: %1$s</string>
     <string name="budget_allocation_deleted">Распределение категорий удалено</string>
 </resources>

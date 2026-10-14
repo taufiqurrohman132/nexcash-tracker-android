@@ -71,6 +71,7 @@
     <string name="budget_error_min_one_category">Asigna al menos una categoría</string>
     <string name="budget_error_allocation_total">Total asignado %1$d%% (máx. 100%%) — cada categoría debe ser mayor que 0</string>
     <string name="budget_save_failed">Error al guardar el presupuesto: %1$s</string>
+    <string name="budget_load_failed">Error al cargar el presupuesto</string>
     <string name="budget_delete_failed">Error al eliminar el presupuesto: %1$s</string>
     <string name="budget_allocation_deleted">Asignación de categorías eliminada</string>
 </resources>
