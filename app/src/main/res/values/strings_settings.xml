@@ -19,7 +19,10 @@
     <!-- ThemeColorSheet -->
     <string name="settings_theme_choose_title">Pilih Tema</string>
     <string name="settings_theme_choose_color">Pilih Warna</string>
-    <string name="settings_theme_default">Bawaan</string>
+    <string name="settings_theme_light">Terang</string>
+    <string name="settings_theme_dark">Gelap</string>
+    <string name="settings_theme_system">Ikuti Sistem</string>
+    <string name="settings_color_primary">Biru NexCash</string>
     <string name="settings_color_blue">Biru</string>
     <string name="settings_color_magenta">Magenta</string>
     <string name="settings_color_green">Hijau</string>

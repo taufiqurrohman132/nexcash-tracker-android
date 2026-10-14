@@ -19,7 +19,10 @@
     <!-- ThemeColorSheet -->
     <string name="settings_theme_choose_title">Thema wählen</string>
     <string name="settings_theme_choose_color">Farbe wählen</string>
-    <string name="settings_theme_default">Standard</string>
+    <string name="settings_theme_light">Hell</string>
+    <string name="settings_theme_dark">Dunkel</string>
+    <string name="settings_theme_system">System folgen</string>
+    <string name="settings_color_primary">NexCash-Blau</string>
     <string name="settings_color_blue">Blau</string>
     <string name="settings_color_magenta">Magenta</string>
     <string name="settings_color_green">Grün</string>

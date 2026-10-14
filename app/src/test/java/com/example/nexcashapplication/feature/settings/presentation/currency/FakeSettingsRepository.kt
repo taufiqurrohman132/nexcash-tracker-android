@@ -2,6 +2,7 @@ package com.example.nexcashapplication.feature.settings.presentation.currency
 
 import com.example.nexcashapplication.core.domain.model.AppLanguage
 import com.example.nexcashapplication.feature.settings.domain.model.AppSettings
+import com.example.nexcashapplication.feature.settings.domain.model.AppThemeMode
 import com.example.nexcashapplication.feature.settings.domain.repository.SettingsRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +21,8 @@ class FakeSettingsRepository(
     var savedCurrency: String? = null
         private set
 
-    override suspend fun updateTheme(mode: String) {
-        _settings.value = _settings.value.copy(themeLight = mode == "light")
+    override suspend fun updateTheme(mode: AppThemeMode) {
+        _settings.value = _settings.value.copy(themeMode = mode)
     }
 
     override suspend fun updateColor(color: String) {

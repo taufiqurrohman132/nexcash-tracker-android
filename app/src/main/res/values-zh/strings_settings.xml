@@ -19,7 +19,10 @@
     <!-- ThemeColorSheet -->
     <string name="settings_theme_choose_title">选择主题</string>
     <string name="settings_theme_choose_color">选择颜色</string>
-    <string name="settings_theme_default">默认</string>
+    <string name="settings_theme_light">浅色</string>
+    <string name="settings_theme_dark">深色</string>
+    <string name="settings_theme_system">跟随系统</string>
+    <string name="settings_color_primary">NexCash蓝</string>
     <string name="settings_color_blue">蓝色</string>
     <string name="settings_color_magenta">洋红色</string>
     <string name="settings_color_green">绿色</string>

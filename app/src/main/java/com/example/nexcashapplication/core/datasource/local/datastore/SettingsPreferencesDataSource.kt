@@ -19,6 +19,7 @@ class SettingsPreferencesDataSource @Inject constructor(
 
     private object Keys {
         val THEME = stringPreferencesKey("theme_color")
+        val COLOR = stringPreferencesKey("accent_color")
         val LANGUAGE = stringPreferencesKey("language")
         val CURRENCY = stringPreferencesKey("currency")
         val NOTIFICATION_MASTER_ENABLED = booleanPreferencesKey("notification_master_enabled")
@@ -27,6 +28,9 @@ class SettingsPreferencesDataSource @Inject constructor(
     val settingsPreferences: Flow<SettingsPreferences> = dataStore.data.map {
         SettingsPreferences(
             themeMode = it[Keys.THEME] ?: "system",
+            // Kosong kalau belum pernah memilih warna; presentation yang menentukan
+            // warna bawaannya (PrimaryCyan) — lihat `String.toComposeColor()`.
+            color = it[Keys.COLOR] ?: "",
             // Bahasa pertama kali: ikut bahasa perangkat kalau didukung, kalau tidak
             // jatuh ke default aplikasi (Bahasa Indonesia, isi dari res/values).
             languageCode = it[Keys.LANGUAGE] ?: defaultLanguageCode(),
@@ -36,6 +40,8 @@ class SettingsPreferencesDataSource @Inject constructor(
     }
 
     suspend fun setThemeMode(mode: String) = dataStore.edit { it[Keys.THEME] = mode }
+
+    suspend fun setColor(color: String) = dataStore.edit { it[Keys.COLOR] = color }
 
     suspend fun setLanguage(language: String) = dataStore.edit { it[Keys.LANGUAGE] = language }
 

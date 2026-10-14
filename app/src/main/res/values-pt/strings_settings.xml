@@ -19,7 +19,10 @@
     <!-- ThemeColorSheet -->
     <string name="settings_theme_choose_title">Selecionar tema</string>
     <string name="settings_theme_choose_color">Selecionar cor</string>
-    <string name="settings_theme_default">Padrão</string>
+    <string name="settings_theme_light">Claro</string>
+    <string name="settings_theme_dark">Escuro</string>
+    <string name="settings_theme_system">Seguir o sistema</string>
+    <string name="settings_color_primary">Azul NexCash</string>
     <string name="settings_color_blue">Azul</string>
     <string name="settings_color_magenta">Magenta</string>
     <string name="settings_color_green">Verde</string>

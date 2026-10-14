@@ -19,7 +19,10 @@
     <!-- ThemeColorSheet -->
     <string name="settings_theme_choose_title">テーマを選択</string>
     <string name="settings_theme_choose_color">カラーを選択</string>
-    <string name="settings_theme_default">デフォルト</string>
+    <string name="settings_theme_light">ライト</string>
+    <string name="settings_theme_dark">ダーク</string>
+    <string name="settings_theme_system">システムに合わせる</string>
+    <string name="settings_color_primary">NexCashブルー</string>
     <string name="settings_color_blue">青</string>
     <string name="settings_color_magenta">マゼンタ</string>
     <string name="settings_color_green">緑</string>

@@ -19,7 +19,10 @@
     <!-- ThemeColorSheet -->
     <string name="settings_theme_choose_title">Выбор темы</string>
     <string name="settings_theme_choose_color">Выбор цвета</string>
-    <string name="settings_theme_default">По умолчанию</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Тёмная</string>
+    <string name="settings_theme_system">Системная</string>
+    <string name="settings_color_primary">Синий NexCash</string>
     <string name="settings_color_blue">Синий</string>
     <string name="settings_color_magenta">Маджента</string>
     <string name="settings_color_green">Зелёный</string>

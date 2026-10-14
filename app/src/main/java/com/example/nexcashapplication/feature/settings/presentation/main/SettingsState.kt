@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.Color
 import com.example.nexcashapplication.core.domain.model.AppCurrency
 import com.example.nexcashapplication.core.domain.model.AppLanguage
 import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.feature.settings.domain.model.AppThemeMode
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 data class SettingsState(
@@ -15,7 +16,18 @@ data class SettingsState(
     /** Kode mata uang aktif — nama & kode tampilnya di-resolve dari `AppCurrency` di layar. */
     val currency: String = AppCurrency.IDR.code,
 
-    val color: Color = PrimaryCyan,                 // hex strings, konsisten pola String-for-color kamu
+    /**
+     * Warna aksen terpilih — sudah di-resolve dari hex, jadi siap dipakai sebagai
+     * seed color tema maupun sebagai pratinjau di baris "Tema & Warna".
+     */
+    val color: Color = PrimaryCyan,
+
+    /**
+     * Mode tema terpilih. Nilai ini bukan untuk dirender di layar Settings —
+     * `MainActivity` yang membacanya langsung dari repository untuk mengubah tema.
+     */
+    val themeMode: AppThemeMode = AppThemeMode.SYSTEM,
+
     val notificationSummary: String = "",                        // "Saldo, Pengingat Budget"
     val appVersion: String = "",
     /** Gagal memuat pengaturan; null = tidak ada error. */

@@ -3,42 +3,31 @@ package com.example.nexcashapplication.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryCyan,
-    secondary = PrimaryCyan,
-    tertiary = PrimaryCyan
-)
-
-private val LightColorScheme = lightColorScheme(
-    primary = PrimaryCyan,
-    secondary = PrimaryCyan,
-    tertiary = PrimaryCyan,
-
-    background = BackgroundLight,
-    surface = SurfaceWhite,
-    /* Other default colors to override
-
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
-)
-
+/**
+ * Tema aplikasi.
+ *
+ * [seedColor] adalah warna yang dipilih pengguna di Pengaturan → Tema & Warna; dari
+ * situ [lightColorSchemeFrom]/[darkColorSchemeFrom] membangkitkan scheme utuh —
+ * primary, onPrimary, container — supaya tombol dan chip ikut kontras. Lihat
+ * `ui/theme/ColorScheme.kt`.
+ *
+ * [darkTheme] dipasok pemanggil, bukan diambil dari `isSystemInDarkTheme()` di sini,
+ * karena preferensi pengguna (Terang / Gelap / Ikuti Sistem) harus ikut diperhitungkan
+ * — `MainActivity` yang menggabungkan keduanya.
+ */
 @Composable
 fun NexCashApplicationTheme(
+    seedColor: Color = PrimaryCyan,
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     val colorScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -46,13 +35,13 @@ fun NexCashApplicationTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> darkColorSchemeFrom(seedColor)
+        else -> lightColorSchemeFrom(seedColor)
     }
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = content,
     )
 }

@@ -3,21 +3,42 @@ package com.example.nexcashapplication
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nexcashapplication.core.i18n.withAppLocale
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.core.notification.NotificationHelper
+import com.example.nexcashapplication.feature.settings.domain.model.AppSettings
+import com.example.nexcashapplication.feature.settings.domain.model.AppThemeMode
+import com.example.nexcashapplication.feature.settings.domain.repository.SettingsRepository
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
+import com.example.nexcashapplication.ui.theme.toComposeColor
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.catch
+import javax.inject.Inject
+
+private const val TAG = "MainActivity"
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    /**
+     * Preferensi tema dibaca di lapisan Activity, bukan lewat ViewModel, karena
+     * `NexCashApplicationTheme` harus membacanya **sebelum** `NexcashApp` dikomposisi —
+     * sedangkan semua ViewModel berada di dalam `NexcashApp`. Dibaca sebagai Flow biasa,
+     * jadi pergantian warna langsung terlihat di seluruh app tanpa membuka ulang layar.
+     */
+    @Inject
+    lateinit var settingsRepository: SettingsRepository
 
     /**
      * Tujuan dari notifikasi yang di-tap. State di Activity (bukan composable) supaya
@@ -40,8 +61,21 @@ class MainActivity : ComponentActivity() {
         pendingDestination.value = intent.toDestinationRoute()
 
         setContent {
+            // DataStore gagal baca (file korup / disk penuh) → jangan crash; app tetap
+            // jalan dengan tema dan warna bawaan. `initialValue` sudah AppSettings() .
+            val settings by settingsRepository.settings
+                    .catch { e ->
+                        Log.e(TAG, "gagal membaca pengaturan aplikasi", e)
+                    }
+                    .collectAsStateWithLifecycle(initialValue = AppSettings())
+
             NexCashApplicationTheme(
-                dynamicColor = false, darkTheme = false,
+                seedColor = settings.color.toComposeColor(),
+                darkTheme = when (settings.themeMode) {
+                    AppThemeMode.LIGHT -> false
+                    AppThemeMode.DARK -> true
+                    AppThemeMode.SYSTEM -> isSystemInDarkTheme()
+                },
             ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     NexcashApp(

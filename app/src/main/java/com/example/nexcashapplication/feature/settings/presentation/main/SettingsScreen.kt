@@ -308,14 +308,14 @@ fun SettingsContent(
                 sheetState = sheetState,
             ) {
                 ThemeColorSheet(
+                    onThemeClick = { mode ->
+                        onEvent(SettingsEvent.OnThemeSelected(mode))
+                    },
                     onColorClick = { color ->
                         onEvent(SettingsEvent.OnColorSelected(color))
                     },
-                    onThemeClick = {
-
-                    },
-                    initialThemeSelected = "Default",
-                    intitalColorSelected = state.color,
+                    themeMode = state.themeMode,
+                    initialColorSelected = state.color,
                 )
             }
         }
