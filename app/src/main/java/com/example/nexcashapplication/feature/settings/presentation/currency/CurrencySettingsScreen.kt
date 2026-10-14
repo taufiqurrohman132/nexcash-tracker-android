@@ -20,15 +20,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,6 +43,7 @@ import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.AppSearchBar
+import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.feature.settings.presentation.component.LanguageItem
 import com.example.nexcashapplication.feature.settings.presentation.currency.model.CurrencyItemUiModel
 import com.example.nexcashapplication.ui.theme.BorderGray
@@ -53,15 +58,18 @@ fun CurrencySettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
             when (effect) {
                 CurrencySettingsEffect.NavigateBack -> navController.popBackStack()
 
-                // Scaffold ini belum punya SnackbarHost — TODO() akan melempar
-                // NotImplementedError begitu efeknya pernah dikirim.
                 is CurrencySettingsEffect.ShowSnackbar -> {
+                    // resolve(context), bukan asString(): kita di dalam LaunchedEffect
+                    // (bukan konteks komposisi), jadi composable tidak boleh dipanggil.
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
                 }
             }
         }
@@ -70,6 +78,7 @@ fun CurrencySettingsScreen(
     CurrencySettingsContent(
         state = state,
         onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
     )
 }
@@ -80,9 +89,11 @@ fun CurrencySettingsContent(
     state: CurrencySettingsState,
     onEvent: (CurrencySettingsEvent) -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {

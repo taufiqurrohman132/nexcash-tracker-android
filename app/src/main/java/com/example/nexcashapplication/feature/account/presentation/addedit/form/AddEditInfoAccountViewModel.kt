@@ -17,6 +17,7 @@ import com.example.nexcashapplication.feature.account.domain.usecase.UpdateAccon
 import com.example.nexcashapplication.feature.account.presentation.addedit.form.catalog.ProviderCatalog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -125,21 +126,33 @@ class AddEditInfoAccountViewModel @Inject constructor(
     private fun observerDetailAccount(id: String?, type: TypeAccount) {
         viewModelScope.launch {
             if (id != null) {
-                getAccountDetailUseCase(accountId = id).collect { accountDetailData ->
-                    updateState {
-                        it.copy(
-                            accountId = accountDetailData.account.id,
-                            namaAset = accountDetailData.account.name,
-                            typeAccount = accountDetailData.account.accountType,
-                            providers = ProviderCatalog.getByType(accountDetailData.account.accountType),
-                            selectedProviderId = accountDetailData.account.providerAccount?.id,
-                            saldoAwal = accountDetailData.account.currentBalance,
-                            initialNamaAset = accountDetailData.account.name,
-                            initialSaldoAwal = accountDetailData.account.currentBalance,
-                            initialSelectedProviderId = accountDetailData.account.providerAccount?.id,
-                        )
-                    }
-                }
+                getAccountDetailUseCase(accountId = id)
+                        // Wajib: tanpa catch kegagalan Room bocor ke viewModelScope = crash.
+                        // Form edit tetap bisa dipakai (nama/saldo manual), jadi cukup
+                        // beri tahu lewat snackbar, jangan blokir layar.
+                        .catch { e ->
+                            Log.e(TAG, "gagal memuat detail akun untuk diedit", e)
+                            sendEffect(
+                                AddEditInfoAccountEffect.ShowError(
+                                    e.toUiText(R.string.acct_load_failed),
+                                ),
+                            )
+                        }
+                        .collect { accountDetailData ->
+                            updateState {
+                                it.copy(
+                                    accountId = accountDetailData.account.id,
+                                    namaAset = accountDetailData.account.name,
+                                    typeAccount = accountDetailData.account.accountType,
+                                    providers = ProviderCatalog.getByType(accountDetailData.account.accountType),
+                                    selectedProviderId = accountDetailData.account.providerAccount?.id,
+                                    saldoAwal = accountDetailData.account.currentBalance,
+                                    initialNamaAset = accountDetailData.account.name,
+                                    initialSaldoAwal = accountDetailData.account.currentBalance,
+                                    initialSelectedProviderId = accountDetailData.account.providerAccount?.id,
+                                )
+                            }
+                        }
             } else {
                 updateState {
                     it.copy(

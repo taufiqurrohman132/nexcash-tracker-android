@@ -1,5 +1,7 @@
 package com.example.nexcashapplication.feature.dashboard.presentation.ui
 
+import com.example.nexcashapplication.core.i18n.UiText
+
 sealed interface DashboardEffect {
     data object NavigateToNotifications : DashboardEffect
     data object NavigateToProfile : DashboardEffect
@@ -17,5 +19,5 @@ sealed interface DashboardEffect {
     data object NavigateToAllTransactions : DashboardEffect
     data class NavigateToTransactionDetail(val transactionId: String) : DashboardEffect
     data object NavigateToAddTransaction : DashboardEffect
-    data class ShowError(val message: String) : DashboardEffect
+    data class ShowError(val message: UiText) : DashboardEffect
 }

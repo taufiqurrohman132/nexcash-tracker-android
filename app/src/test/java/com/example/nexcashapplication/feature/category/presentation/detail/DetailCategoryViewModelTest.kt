@@ -271,7 +271,9 @@ class DetailCategoryViewModelTest {
 
         val state = vm.state.value.dataState
         assertTrue(state is UiState.Error)
-        assertEquals("gagal", (state as UiState.Error).errorMessage)
+        // toUiText mempertahankan pesan teknis exception sebagai UiText.Raw
+        // selama tidak kosong; hanya kosong yang jatuh ke fallback resource.
+        assertEquals(UiText.Raw("gagal"), (state as UiState.Error).message)
     }
 
     // ── Event → effect ───────────────────────────────────────────────────

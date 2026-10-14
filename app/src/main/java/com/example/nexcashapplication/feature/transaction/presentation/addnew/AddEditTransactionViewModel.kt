@@ -8,6 +8,7 @@ import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.repository.AccountRepository
@@ -19,6 +20,7 @@ import com.example.nexcashapplication.feature.transaction.domain.model.Transacti
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.mapper.toAddEditTransactionState
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.mapper.toUIModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -293,7 +295,10 @@ class AddEditTransactionViewModel internal constructor(
                 dateTime = currentState.transactionAt,
             )
 
-            val result = runCatching {
+            // runCancellable, bukan runCatching: pembatalan (mis. user segera
+            // menutup layar) harus menerus, bukan dianggap "gagal simpan" yang
+            // memunculkan snackbar di scope yang sudah mati.
+            val result = runCancellable {
                 if (currentState.transactionId != null) {
                     transactionRepository.updateTransaction(transaction)
                 } else {
@@ -325,22 +330,33 @@ class AddEditTransactionViewModel internal constructor(
                     ensureAccountsLoaded()
                 }
 
-                transactionRepository.getTransactionWithDetailsById(id).collect { transaction ->
-                    // sementara pakai let
-                    transaction?.let {
-                        updateState { current ->
-                            transaction.toAddEditTransactionState(
-                                allCategories = current.allCategories,
-                                availableAccounts = current.availableAccounts,
-                            ).copy(
-                                showDatePicker = current.showDatePicker,
-                                showTimePicker = current.showTimePicker,
-                                showCategoryBottomSheet = current.showCategoryBottomSheet,
-                                showAccountBottomSheet = current.showAccountBottomSheet,
+                transactionRepository.getTransactionWithDetailsById(id)
+                        // Wajib: tanpa catch kegagalan Room bocor ke viewModelScope = crash.
+                        // Gagal baca form edit → beri tahu lewat snackbar, form tetap bisa
+                        // dipakai untuk transaksi baru.
+                        .catch { e ->
+                            sendEffect(
+                                AddEditTransactionEffect.ShowSnackbar(
+                                    e.toUiText(R.string.tx_load_failed),
+                                ),
                             )
                         }
-                    }
-                }
+                        .collect { transaction ->
+                            // sementara pakai let
+                            transaction?.let {
+                                updateState { current ->
+                                    transaction.toAddEditTransactionState(
+                                        allCategories = current.allCategories,
+                                        availableAccounts = current.availableAccounts,
+                                    ).copy(
+                                        showDatePicker = current.showDatePicker,
+                                        showTimePicker = current.showTimePicker,
+                                        showCategoryBottomSheet = current.showCategoryBottomSheet,
+                                        showAccountBottomSheet = current.showAccountBottomSheet,
+                                    )
+                                }
+                            }
+                        }
             }
         }
     }
@@ -351,12 +367,19 @@ class AddEditTransactionViewModel internal constructor(
         // supaya sheet bisa menampilkan indikator, bukan daftar kosong diam
         updateState { it.copy(isCategoriesLoading = true) }
 
+        // onFailure wajib: tanpanya kegagalan diabaikan dan indikator tetap
+        // menyala (onSuccess tidak pernah terpanggil, tapi loading direset
+        // setelahnya — tetap laporkan errornya supaya user tahu kenapa sheet kosong).
         runCatching {
             categoryRepository.getCategoriesAndSubCategories()
         }.onSuccess { result ->
             updateState {
                 it.copy(allCategories = result.map { model -> model.toUIModel() })
             }
+        }.onFailure { e ->
+            sendEffect(
+                AddEditTransactionEffect.ShowSnackbar(e.toUiText(R.string.cat_load_failed)),
+            )
         }
 
         updateState { it.copy(isCategoriesLoading = false) }
@@ -371,6 +394,10 @@ class AddEditTransactionViewModel internal constructor(
             updateState {
                 it.copy(availableAccounts = result.map { it.toAccountUiModel() })
             }
+        }.onFailure { e ->
+            sendEffect(
+                AddEditTransactionEffect.ShowSnackbar(e.toUiText(R.string.acct_load_failed)),
+            )
         }
     }
 }

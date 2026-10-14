@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.notification.presentation.main
 
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.feature.notification.presentation.main.model.NotificationGroupUi
 
 data class NotificationState(
@@ -17,8 +18,11 @@ data class NotificationState(
      * bukan tabel notifications, jadi status baca cukup bertahan selama layar terbuka.
      */
     val readIds: Set<String> = emptySet(),
+
+    /** Gagal memuat alert; null = tidak ada error. */
+    val error: UiText? = null,
 ) {
     /** Selesai loading tapi tidak ada anggaran yang melewati threshold → tampilkan empty state. */
     val isEmpty: Boolean
-        get() = !isLoading && groups.isEmpty()
+        get() = !isLoading && groups.isEmpty() && error == null
 }

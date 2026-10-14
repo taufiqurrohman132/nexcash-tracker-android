@@ -22,6 +22,7 @@ import com.example.nexcashapplication.feature.common.extentions.sortedIcon
 import com.example.nexcashapplication.feature.common.extentions.toColor
 import com.example.nexcashapplication.feature.common.extentions.toHex
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -46,6 +47,12 @@ class AddCategoryViewModel @Inject constructor(
         parentId?.let { pid ->
             viewModelScope.launch {
                 categoryUseCases.getCategoryById(id = pid)
+                        // Gagal memuat induk bukan fatal (form tetap bisa dipakai,
+                        // hanya label induk yang tidak tampil) — cukup catat, jangan
+                        // biarkan bocor ke viewModelScope = crash.
+                        .catch { e ->
+                            Log.e(TAG, "gagal memuat kategori induk", e)
+                        }
                         .collect { detailCategory ->
                             detailCategory?.let {
                                 updateState {

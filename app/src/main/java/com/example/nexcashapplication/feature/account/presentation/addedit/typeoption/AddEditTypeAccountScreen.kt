@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +52,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.typeoption.model.TypeAccountItem
@@ -65,6 +67,7 @@ fun AddEditTypeAccountScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
@@ -77,7 +80,14 @@ fun AddEditTypeAccountScreen(
                     )
                 }
 
-                is AddEditTypeAccountEffect.ShowError -> TODO()
+                // Efek ini belum pernah dikirim, tapi handlernya diisi penuh (bukan
+                // TODO() yang siap melempar NotImplementedError) supaya aman begitu
+                // ViewModel mulai memakainya.
+                is AddEditTypeAccountEffect.ShowError -> {
+                    // resolve(context), bukan asString(): kita di dalam LaunchedEffect
+                    // (bukan konteks komposisi), jadi composable tidak boleh dipanggil.
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
+                }
             }
         }
     }

@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.feature.dashboard.presentation.state
 
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
+import com.example.nexcashapplication.core.i18n.UiText
 
 data class DashboardState(
     val userName: String = "Budi",
@@ -14,6 +15,8 @@ data class DashboardState(
     // cache menampilkan indikator, bukan kartu kosong
     val isLoading: Boolean = true,
     val isBalanceVisible: Boolean = true,
+    /** Gagal memuat transaksi terakhir; null = tidak ada error. */
+    val error: UiText? = null,
 )
 //
 //data class TransactionUi(

@@ -14,6 +14,7 @@ import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUs
 import com.example.nexcashapplication.feature.category.presentation.delete.model.DeleteOption
 import com.example.nexcashapplication.feature.category.presentation.mapper.toCategoryDeleteItemList
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,6 +34,11 @@ class DeleteCategoryViewModel @Inject constructor(
         loadData()
     }
 
+    /**
+     * Muat data layar. `catch` menangkap kegagalan Room, tapi **CancellationException
+     * diteruskan** — kalau ditelan, pembatalan (layar ditutup) dianggap "gagal memuat"
+     * dan memicu snackbar di scope yang sudah mati.
+     */
     private fun loadData() {
         viewModelScope.launch {
             updateState { it.copy(isLoading = true) }
@@ -56,6 +62,8 @@ class DeleteCategoryViewModel @Inject constructor(
                         )
                     }
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 updateState { it.copy(isLoading = false) }
                 sendEffect(
@@ -123,6 +131,9 @@ class DeleteCategoryViewModel @Inject constructor(
             try {
                 categoryUseCases.deleteCategory(currentState.categoryId, resolution)
                 sendEffect(DeleteCategoryEffect.DeleteSuccess)
+            } catch (e: CancellationException) {
+                // Jangan ditelan: pembatalan bukan kegagalan hapus.
+                throw e
             } catch (e: Exception) {
                 updateState { it.copy(isSubmitting = false) }
                 sendEffect(

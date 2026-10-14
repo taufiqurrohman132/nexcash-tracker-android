@@ -1,6 +1,7 @@
 package com.example.nexcashapplication.feature.transaction.presentation.main
 
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.CategoryNameItemUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionUiGroupModel
 import java.time.YearMonth
@@ -28,5 +29,6 @@ data class TransactionState(
     // true sampai emisi data pertama diterima — UI menampilkan indikator loading
     // menggantikan pesan "tidak ada transaksi"
     val isLoading: Boolean = true,
-    val errorMessage: String? = null,
+    /** Gagal memuat daftar transaksi; null = tidak ada error. */
+    val errorMessage: UiText? = null,
 )

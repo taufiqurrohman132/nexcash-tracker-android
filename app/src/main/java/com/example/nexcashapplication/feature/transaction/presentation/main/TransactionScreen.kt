@@ -61,6 +61,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -74,6 +75,7 @@ import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.transaction.presentation.main.component.TransactionEmptyScreen
@@ -290,20 +292,38 @@ fun TransactionContent(
 
                     if (state.groupedTransactions.isEmpty()) {
                         item(key = "loading_or_empty") {
-                            if (state.isLoading) {
-                                // data belum sampai: area kosong dulu, jangan
-                                // buru-buru bilang "tidak ada transaksi"
-                                Spacer(
-                                    modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(96.dp),
-                                )
-                            } else {
-                                TransactionEmptyScreen(
-                                    onAddClick = {
-                                        onEvent(TransactionEvent.OnAddTransactionClick)
-                                    },
-                                )
+                            val errorMessage = state.errorMessage
+                            when {
+                                state.isLoading -> {
+                                    // data belum sampai: area kosong dulu, jangan
+                                    // buru-buru bilang "tidak ada transaksi"
+                                    Spacer(
+                                        modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(96.dp),
+                                    )
+                                }
+
+                                // Gagal memuat & tidak ada data lama: tampilkan pesan
+                                // error, bukan empty screen "tidak ada transaksi" yang menyesatkan.
+                                errorMessage != null -> {
+                                    Text(
+                                        text = errorMessage.asString(),
+                                        modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 24.dp),
+                                        textAlign = TextAlign.Center,
+                                        color = MaterialTheme.colorScheme.error,
+                                    )
+                                }
+
+                                else -> {
+                                    TransactionEmptyScreen(
+                                        onAddClick = {
+                                            onEvent(TransactionEvent.OnAddTransactionClick)
+                                        },
+                                    )
+                                }
                             }
                         }
                     } else {

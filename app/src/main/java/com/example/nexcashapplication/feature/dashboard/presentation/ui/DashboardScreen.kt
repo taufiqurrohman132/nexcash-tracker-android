@@ -35,6 +35,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
+import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
 import com.example.nexcashapplication.feature.dashboard.presentation.state.DashboardState
@@ -189,6 +190,17 @@ fun DashboardContent(
                             modifier = Modifier
                                     .fillMaxWidth()
                                     .height(120.dp),
+                        )
+                    } else if (state.error != null && state.transactions.isEmpty()) {
+                        // Gagal memuat & tidak ada data lama: tampilkan pesan error,
+                        // bukan "Belum ada transaksi" yang menyesatkan.
+                        Text(
+                            text = state.error.asString(),
+                            modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 24.dp),
+                            textAlign = TextAlign.Center,
+                            color = Color.Gray,
                         )
                     } else if (state.transactions.isEmpty()) {
                         Text(

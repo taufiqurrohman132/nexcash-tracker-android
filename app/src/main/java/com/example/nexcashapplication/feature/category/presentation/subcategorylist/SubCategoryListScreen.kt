@@ -1,6 +1,8 @@
 package com.example.nexcashapplication.feature.category.presentation.subcategorylist
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -12,28 +14,34 @@ import androidx.compose.material.icons.filled.LocalParking
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.domain.model.TypeCategory.EXPENSE
+import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.presentation.detail.SubcategoryGrid
 import com.example.nexcashapplication.feature.category.presentation.shared.model.CategoryUiItemModel
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
+import com.example.nexcashapplication.ui.theme.TextSecondary
 
 // SubCategoryListScreen.kt — stateful, TIDAK di-preview
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,14 +108,35 @@ fun SubCategoryListContent(
                     .padding(16.dp)
                     .fillMaxSize(),
         ) {
-            SubcategoryGrid(
-                subcategories = state.subCategories,
-                parentTotalBudget = state.parentTotalBudget,
-                parentName = state.parentCategoryName,
-                onSubcategoryClick = { id ->
-                    onEvent(SubCategoryListEvent.OnSubCategoryClick(id))
-                },
-            )
+            val error = state.error
+            if (error != null && !state.isLoading) {
+                // Gagal memuat: tampilkan pesan + tombol coba lagi, bukan daftar kosong diam.
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    Text(
+                        text = error.asString(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary,
+                        textAlign = TextAlign.Center,
+                    )
+                    AppButton(
+                        title = stringResource(R.string.cat_retry),
+                        onClick = { onEvent(SubCategoryListEvent.OnRetryClick) },
+                    )
+                }
+            } else {
+                SubcategoryGrid(
+                    subcategories = state.subCategories,
+                    parentTotalBudget = state.parentTotalBudget,
+                    parentName = state.parentCategoryName,
+                    onSubcategoryClick = { id ->
+                        onEvent(SubCategoryListEvent.OnSubCategoryClick(id))
+                    },
+                )
+            }
         }
     }
 }

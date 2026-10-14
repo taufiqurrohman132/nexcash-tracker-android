@@ -1,15 +1,19 @@
 package com.example.nexcashapplication.feature.notification.presentation.edit
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.common.toEpochMillis
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.feature.notification.domain.model.BudgetAlertPreference
 import com.example.nexcashapplication.feature.notification.domain.repository.NotificationPreferenceRepository
 import com.example.nexcashapplication.feature.settings.domain.repository.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -20,6 +24,8 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import javax.inject.Inject
+
+private const val TAG = "NotifSettingsVm"
 
 /**
  * Pengaturan notifikasi: daftar budget aktif dari Room, preferensi dari
@@ -100,6 +106,11 @@ class NotificationSettingsViewModel @Inject constructor(
                         it.copy(masterEnabled = enabled, remindersActive = enabled)
                     }
                 }
+                // DataStore gagal baca → jangan crash; saklar tetap di nilai default
+                // state (false) dan layar tetap utuh.
+                .catch { e ->
+                    Log.e(TAG, "gagal membaca preferensi master notifikasi", e)
+                }
                 .launchIn(viewModelScope)
     }
 
@@ -140,7 +151,21 @@ class NotificationSettingsViewModel @Inject constructor(
                         )
                     }
 
-                    updateState { it.copy(budgets = items, isLoading = false) }
+                    updateState {
+                        it.copy(budgets = items, isLoading = false, error = null)
+                    }
+                }
+                // Wajib: tanpa catch kegagalan Room bocor ke viewModelScope = crash.
+                // Gagal baca menghentikan indikator dan mengisi error; daftar lama
+                // (kalau ada) tidak dibuang supaya layar tetap menampilkan kartu tervalid.
+                .catch { e ->
+                    Log.e(TAG, "gagal memuat budget untuk pengaturan notifikasi", e)
+                    updateState {
+                        it.copy(
+                            isLoading = false,
+                            error = e.toUiText(R.string.budget_load_failed),
+                        )
+                    }
                 }
                 .launchIn(viewModelScope)
     }

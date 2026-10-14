@@ -62,6 +62,7 @@ import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -72,6 +73,7 @@ import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryItem
@@ -197,6 +199,19 @@ fun CategoryContent(
                 query = state.searchQuery,
                 onQueryChange = { onEvent(CategoryEvent.OnSearchQueryChange(it)) },
             )
+
+            // Gagal memuat daftar kategori: tampilkan pesan di tempat daftar,
+            // bukan menyembunyikannya tanpa penjelasan (data lama tetap tampil di bawah).
+            state.error?.let { error ->
+                Text(
+                    text = error.asString(),
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
 
             // Budget summary card
 

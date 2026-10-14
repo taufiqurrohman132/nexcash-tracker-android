@@ -46,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -63,6 +64,7 @@ import com.example.nexcashapplication.core.currency.AppCurrencyHolder
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.i18n.asString
+import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.form.catalog.ProviderCatalog
@@ -83,6 +85,7 @@ fun AddEditInfoAccountScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.effect.collectLatest { effect ->
@@ -98,7 +101,11 @@ fun AddEditInfoAccountScreen(
 
                 AddEditInfoAccountEffect.NavigateBack -> navController.popBackStack()
                 AddEditInfoAccountEffect.NavigateToProviderList -> TODO()
-                is AddEditInfoAccountEffect.ShowError -> TODO()
+                is AddEditInfoAccountEffect.ShowError -> {
+                    // resolve(context), bukan asString(): kita di dalam LaunchedEffect
+                    // (bukan konteks komposisi), jadi composable tidak boleh dipanggil.
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
+                }
             }
         }
     }

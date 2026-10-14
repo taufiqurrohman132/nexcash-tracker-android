@@ -1,5 +1,6 @@
 package com.example.nexcashapplication.feature.settings.presentation.main
 
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations
 
 sealed interface SettingsEffect {
@@ -9,5 +10,5 @@ sealed interface SettingsEffect {
 //    data object ShowDeleteAccountConfirmDialog : SettingsEffect
 //    data object NavigateToLogin : SettingsEffect       // setelah logout beneran
 //    data object NavigateToOnboarding : SettingsEffect  // setelah akun kehapus
-    data class ShowSnackbar(val message: String) : SettingsEffect
+    data class ShowSnackbar(val message: UiText) : SettingsEffect
 }

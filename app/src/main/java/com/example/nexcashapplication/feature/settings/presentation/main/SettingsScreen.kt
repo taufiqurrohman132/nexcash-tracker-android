@@ -26,6 +26,8 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -33,11 +35,13 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -51,6 +55,7 @@ import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.domain.model.AppCurrency
 import com.example.nexcashapplication.core.domain.model.AppLanguage
+import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.settings.presentation.language.model.nameResId
 import com.example.nexcashapplication.feature.settings.presentation.main.component.ThemeColorSheet
@@ -71,6 +76,8 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -115,9 +122,13 @@ fun SettingsScreen(
                     }
                 }
 
-                // Scaffold ini belum punya SnackbarHost — TODO() di sini akan melempar
-                // NotImplementedError dan men crash aplikasi kalau efeknya pernah dikirim.
+                // Efek ini belum pernah dikirim, tapi handlernya diisi penuh (bukan
+                // TODO() yang siap melempar NotImplementedError) dan Scaffold sudah
+                // dipasangi SnackbarHost supaya siap dipakai kapan pun.
                 is SettingsEffect.ShowSnackbar -> {
+                    // resolve(context), bukan asString(): kita di dalam LaunchedEffect
+                    // (bukan konteks komposisi), jadi composable tidak boleh dipanggil.
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
                 }
             }
         }
@@ -126,6 +137,7 @@ fun SettingsScreen(
     SettingsContent(
         state = state,
         onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
     )
 }
@@ -136,9 +148,11 @@ fun SettingsContent(
     state: SettingsState,
     onEvent: (SettingsEvent) -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {

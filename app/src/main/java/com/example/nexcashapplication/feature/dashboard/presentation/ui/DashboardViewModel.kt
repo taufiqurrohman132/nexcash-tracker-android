@@ -3,15 +3,18 @@ package com.example.nexcashapplication.feature.dashboard.presentation.ui
 import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
 import com.example.nexcashapplication.feature.dashboard.presentation.state.DashboardState
 import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -138,9 +141,17 @@ class DashboardViewModel @Inject constructor(
                         dashboardState.copy(
                             transactions = transactions,
                             isLoading = false,
+                            error = null,
                         )
                     }
                     lastSnapshot = DashboardSnapshot(transactions = transactions)
+                }
+                // Wajib: tanpa catch kegagalan Room bocor ke viewModelScope dan crash.
+                // Gagal baca menghentikan indikator dan mengisi error; data lama (snapshot)
+                // tidak dibuang supaya layar tetap menampilkan kartu terakhir yang tervalid.
+                .catch { e ->
+                    Log.e(TAG, "gagal memuat transaksi terakhir", e)
+                    updateState { it.copy(isLoading = false, error = e.toUiText(R.string.tx_load_failed)) }
                 }
                 .launchIn(viewModelScope)
     }

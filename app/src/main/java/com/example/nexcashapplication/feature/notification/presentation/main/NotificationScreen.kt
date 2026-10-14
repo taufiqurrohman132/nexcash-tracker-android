@@ -112,11 +112,27 @@ fun NotificationContent(
             )
         },
     ) { padding ->
+        val error = state.error
         when {
             state.isLoading -> Box(
                 Modifier.fillMaxSize().padding(padding),
                 contentAlignment = Alignment.Center,
             ) { CircularProgressIndicator() }
+
+            // Gagal memuat: tampilkan pesan error, bukan empty state "Belum ada notifikasi"
+            // yang menyesatkan (isEmpty sudah mengecualikan error, tapi cabang ini lebih eksplisit).
+            error != null -> Box(
+                Modifier.fillMaxSize().padding(padding),
+                contentAlignment = Alignment.Center,
+            ) {
+                Text(
+                    text = error.asString(),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 32.dp),
+                )
+            }
 
             state.isEmpty -> NotificationEmptyState(Modifier.padding(padding))
 

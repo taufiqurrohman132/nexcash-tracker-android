@@ -13,6 +13,7 @@ import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
 import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceType
 import com.example.nexcashapplication.feature.budgets.domain.usecase.DeleteBudgetUseCase
@@ -23,6 +24,7 @@ import com.example.nexcashapplication.core.domain.model.TypeCategory
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
@@ -285,6 +287,15 @@ class EditPresentageBudgetViewModel @Inject constructor(
                             isLoading = false,
                         )
                     }
+                }
+                // Wajib: tanpa catch kegagalan Room bocor ke viewModelScope = crash.
+                // Gagal baca menghentikan indikator lalu memberi tahu user lewat snackbar;
+                // alokasi lama (kalau ada) tidak dibuang supaya layar tidak kosong diam.
+                .catch { e ->
+                    updateState { it.copy(isLoading = false) }
+                    sendEffect(
+                        EditPresentageBudgetEffect.ShowSnackbar(e.toUiText(R.string.budget_load_failed)),
+                    )
                 }
                 .launchIn(viewModelScope)
     }

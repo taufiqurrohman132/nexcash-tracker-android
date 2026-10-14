@@ -62,6 +62,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,6 +76,7 @@ import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.core.navigations.Route.AccountRoute.*
@@ -128,7 +130,9 @@ fun DetailAccountScreen(
                     )
                 }
 
-                is DetailAccountEffect.ShowSnackbar -> TODO()
+                is DetailAccountEffect.ShowSnackbar -> {
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
+                }
                 is DetailAccountEffect.ShowToast -> {
                     Toast.makeText(context, effect.message.resolve(context), Toast.LENGTH_SHORT).show()
                 }
@@ -173,6 +177,7 @@ fun DetailAssetContent(
         },
 
         ) { padding ->
+        val errorMessage = state.errorMessage
         when {
             state.isLoading -> {
                 Spacer(
@@ -180,6 +185,31 @@ fun DetailAssetContent(
                             .fillMaxSize()
                             .padding(padding),
                 )
+            }
+
+            // Gagal memuat detail akun: tampilkan pesan + coba lagi, bukan layar
+            // dengan saldo Rp 0 yang menyesatkan.
+            errorMessage != null -> {
+                Column(
+                    modifier = Modifier
+                            .fillMaxSize()
+                            .padding(padding)
+                            .padding(horizontal = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                ) {
+                    Text(
+                        text = errorMessage.asString(),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(Modifier.height(16.dp))
+                    AppButton(
+                        title = stringResource(R.string.acct_retry),
+                        onClick = { onEvent(DetailAccountEvent.OnRetryLoad) },
+                    )
+                }
             }
 
             else -> {

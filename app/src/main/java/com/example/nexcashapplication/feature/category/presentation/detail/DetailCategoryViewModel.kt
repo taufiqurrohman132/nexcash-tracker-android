@@ -6,6 +6,7 @@ import androidx.navigation.toRoute
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
@@ -193,7 +194,11 @@ class DetailCategoryViewModel internal constructor(
             ) { category, budgetResult, transactions ->
                 Triple(category, budgetResult, transactions)
             }
-                    .catch { e -> updateState { it.copy(dataState = UiState.Error(e.message.toString())) } }
+                    .catch { e ->
+                        updateState {
+                            it.copy(dataState = UiState.Error(e.toUiText(R.string.cat_load_failed)))
+                        }
+                    }
                     .collect { (category, budgetResult, transactions) ->
                         updateState { current ->
                             val existingData = current.dataState.dataOrNull
@@ -294,7 +299,9 @@ class DetailCategoryViewModel internal constructor(
                         )
                     }
                     .catch { e ->
-                        updateState { it.copy(dataState = UiState.Error(e.message.toString())) }
+                        updateState {
+                            it.copy(dataState = UiState.Error(e.toUiText(R.string.cat_load_failed)))
+                        }
                     }
                     .collect { trend ->
                         updateState { current ->

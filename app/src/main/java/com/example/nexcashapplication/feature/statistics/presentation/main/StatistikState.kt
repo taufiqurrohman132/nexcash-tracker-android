@@ -2,6 +2,7 @@ package com.example.nexcashapplication.feature.statistics.presentation.main
 
 import androidx.annotation.StringRes
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.feature.statistics.presentation.main.model.AlokasiKategoriUi
 import java.time.YearMonth
 
@@ -21,6 +22,8 @@ data class StatistikState(
     val alokasiMode: AlokasiMode = AlokasiMode.ALOKASI,
     val realisasiTipe: RealisasiTipe = RealisasiTipe.PENGELUARAN,
     val showMonthPicker: Boolean = false,
+    /** Gagal memuat statistik; null = tidak ada error. */
+    val error: UiText? = null,
 )
 
 /**

@@ -29,12 +29,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -50,6 +53,7 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.AppSearchBar
 import com.example.nexcashapplication.core.component.IconCircular
+import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.feature.settings.presentation.component.LanguageItem
 import com.example.nexcashapplication.feature.settings.presentation.language.model.LanguageItemUiModel
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.*
@@ -73,6 +77,7 @@ fun LanguageSettingsScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { effect ->
@@ -88,7 +93,11 @@ fun LanguageSettingsScreen(
                     }
                 }
 
-                is LanguageSettingsEffect.ShowSnackbar -> TODO()
+                is LanguageSettingsEffect.ShowSnackbar -> {
+                    // resolve(context), bukan asString(): kita di dalam LaunchedEffect
+                    // (bukan konteks komposisi), jadi composable tidak boleh dipanggil.
+                    snackbarHostState.showSnackbar(effect.message.resolve(context))
+                }
                 LanguageSettingsEffect.NavigateBack -> navController.popBackStack()
 
                 // Bahasa sudah tersimpan & AppLocale diterapkan: tutup layar, lalu paksa
@@ -104,6 +113,7 @@ fun LanguageSettingsScreen(
     LanguageSettingsContent(
         state = state,
         onEvent = viewModel::onEvent,
+        snackbarHostState = snackbarHostState,
         modifier = modifier,
     )
 }
@@ -114,9 +124,11 @@ fun LanguageSettingsContent(
     state: LanguageSettingsState,
     onEvent: (LanguageSettingsEvent) -> Unit,
     modifier: Modifier = Modifier,
+    snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
         modifier = modifier,
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
             TopAppBar(
                 title = {

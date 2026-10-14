@@ -30,7 +30,8 @@ data class AddEditBudgetState(
 
     val isSaving: Boolean = false,
     val isLoading: Boolean = true,
-    val errorMessage: String? = null,
+    /** Pesan error validasi/persistensi; null = tidak ada error. */
+    val errorMessage: UiText? = null,
 
     val isDirty: Boolean = false,
     val isFormValid: Boolean = false,

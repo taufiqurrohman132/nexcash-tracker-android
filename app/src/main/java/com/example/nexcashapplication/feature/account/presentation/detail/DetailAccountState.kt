@@ -2,6 +2,7 @@ package com.example.nexcashapplication.feature.account.presentation.detail
 
 import androidx.compose.runtime.Immutable
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.feature.account.domain.model.DeleteAccountDesision
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.form.model.AccountProviderUiModel
@@ -18,5 +19,6 @@ data class DetailAccountState(
 
     val showDeleteConfirmation: Boolean = false,
     val deleteDialogDesision: DeleteAccountDesision? = null,
-    val errorMessage: String? = null,
+    /** Gagal memuat detail akun; null = tidak ada error. */
+    val errorMessage: UiText? = null,
 )

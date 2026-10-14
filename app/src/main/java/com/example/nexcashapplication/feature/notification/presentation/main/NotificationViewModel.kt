@@ -1,11 +1,14 @@
 package com.example.nexcashapplication.feature.notification.presentation.main
 
 import androidx.lifecycle.viewModelScope
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.feature.notification.domain.usecase.GetBudgetAlertsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
@@ -87,7 +90,14 @@ class NotificationViewModel @Inject constructor(
                         unreadCount = alerts.count { alert -> alert.id !in read },
                         readIds = read,
                         isLoading = false,
+                        error = null,
                     )
+                }
+            }
+            // Wajib: tanpa catch kegagalan Room bocor ke viewModelScope = crash.
+            .catch { e ->
+                updateState {
+                    it.copy(isLoading = false, error = e.toUiText(R.string.notif_load_failed))
                 }
             }
             .launchIn(viewModelScope)

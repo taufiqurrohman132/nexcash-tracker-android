@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.category.presentation.mapper.toCategoryNameItemUiModel
 import com.example.nexcashapplication.feature.transaction.domain.usecase.GetAllCategoryUsecase
@@ -23,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -251,6 +253,7 @@ class TransactionViewModel @Inject constructor(
                             categoryList = data.categoryList,
                             groupedTransactions = data.grouped,
                             isLoading = false,
+                            errorMessage = null,
                         )
                     }
 
@@ -261,6 +264,18 @@ class TransactionViewModel @Inject constructor(
                         groupedTransactions = data.grouped,
                         categoryList = data.categoryList,
                     )
+                }
+                // Wajib: tanpa catch kegagalan Room bocor ke viewModelScope = crash.
+                // Gagal baca menghentikan indikator dan mengisi errorMessage; data lama
+                // (snapshot) tidak dibuang supaya layar tetap menampilkan bulan tervalid.
+                .catch { e ->
+                    Log.e(TAG, "gagal memuat transaksi bulanan", e)
+                    updateState {
+                        it.copy(
+                            isLoading = false,
+                            errorMessage = e.toUiText(R.string.tx_load_failed),
+                        )
+                    }
                 }
                 .launchIn(viewModelScope)
 
@@ -282,6 +297,12 @@ class TransactionViewModel @Inject constructor(
                     .map { list -> list.map { it.toItemUiModel() } }
                     // mapping hasil search juga di luar main thread
                     .flowOn(Dispatchers.Default)
+                    .catch { e ->
+                        // Gagal cari bukan fatal (daftar utama tetap tampil) — reset
+                        // pencarian ke kosong, jangan crash dan jangan blokir layar.
+                        Log.e(TAG, "gagal mencari transaksi", e)
+                        updateState { it.copy(trasactionsSearchList = emptyList()) }
+                    }
                     .collect { result ->
                         updateState {
                             it.copy(

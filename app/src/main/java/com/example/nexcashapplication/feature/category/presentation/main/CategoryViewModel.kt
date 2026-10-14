@@ -2,12 +2,14 @@ package com.example.nexcashapplication.feature.category.presentation.main
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.common.toEpochMillis
 import com.example.nexcashapplication.core.domain.model.Category
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.CategoryRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.feature.budgets.domain.usecase.GetBudgetPeriodUseCase
 import com.example.nexcashapplication.feature.category.domain.usecase.CategoryUseCases
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect.NavigateToDetail
@@ -20,6 +22,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -95,10 +98,10 @@ class CategoryViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun observeCategories() {
         observeCategoriesByType(categoryRepository.getExpenseCategories()) { items ->
-            updateState { it.copy(expenseList = items) }
+            updateState { it.copy(expenseList = items, isLoading = false) }
         }
         observeCategoriesByType(categoryRepository.getIncomeCategories()) { items ->
-            updateState { it.copy(incomeList = items) }
+            updateState { it.copy(incomeList = items, isLoading = false) }
         }
     }
 
@@ -178,6 +181,19 @@ class CategoryViewModel @Inject constructor(
                     }
                 }
                 .onEach { items -> onUpdate(items) }
+                // Wajib: tanpa catch kegagalan Room bocor ke viewModelScope = crash.
+                // Gagal baca mengisi `error` dan menghentikan indikator; daftar lama
+                // (kalau ada) tidak dibuang supaya layar tetap menampilkan data tervalid.
+                .catch { e ->
+                    Log.e(
+                        "${CategoryViewModel::class.java.simpleName}",
+                        "gagal memuat daftar kategori",
+                        e,
+                    )
+                    updateState {
+                        it.copy(isLoading = false, error = e.toUiText(R.string.cat_load_failed))
+                    }
+                }
                 .launchIn(viewModelScope)
     }
 
@@ -195,6 +211,16 @@ class CategoryViewModel @Inject constructor(
                         }
                     }
                     .map { it.toCategoryItemList() }
+                    .catch { e ->
+                        // Gagal cari bukan fatal (daftar utama tetap tampil) — reset
+                        // pencarian ke kosong, jangan crash dan jangan blokir layar.
+                        Log.e(
+                            "${CategoryViewModel::class.java.simpleName}",
+                            "gagal mencari kategori",
+                            e,
+                        )
+                        updateState { it.copy(categorySearchList = emptyList()) }
+                    }
                     .collect { result ->
                         updateState {
                             it.copy(

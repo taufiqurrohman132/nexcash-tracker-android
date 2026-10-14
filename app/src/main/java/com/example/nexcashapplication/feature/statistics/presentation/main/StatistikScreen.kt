@@ -68,6 +68,7 @@ import com.example.nexcashapplication.core.component.donutchart.InteractiveDonut
 import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.core.extension.formatDecimal2
+import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.common.extentions.toColor
 import com.example.nexcashapplication.feature.statistics.presentation.main.model.AlokasiKategoriUi
@@ -139,6 +140,19 @@ fun StatistikContent(
                     .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
+            // Gagal memuat: tampilkan pesan error di atas. Kartu lama (kalau ada)
+            // tetap tampil di bawahnya supaya angka terakhir yang tervalid tidak hilang.
+            state.error?.let { error ->
+                Text(
+                    text = error.asString(),
+                    modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 4.dp),
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+
             if (state.isLoading && state.alokasiDana.isEmpty()) {
                 // Frame pertama tanpa cache (atau belum pernah ada data):
                 // area kosong dulu, bukan kartu Rp 0 + donut kosong.

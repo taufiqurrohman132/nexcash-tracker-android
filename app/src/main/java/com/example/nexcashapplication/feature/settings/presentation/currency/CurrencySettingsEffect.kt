@@ -1,5 +1,7 @@
 package com.example.nexcashapplication.feature.settings.presentation.currency
 
+import com.example.nexcashapplication.core.i18n.UiText
+
 /**
  * Layar Mata Uang tidak punya tujuan navigasi selain kembali, jadi tidak ada
  * [NavigateTo] seperti di layar Settings/Language. Menghapusnya sekaligus
@@ -8,5 +10,5 @@ package com.example.nexcashapplication.feature.settings.presentation.currency
 sealed interface CurrencySettingsEffect {
     data object NavigateBack : CurrencySettingsEffect
 
-    data class ShowSnackbar(val message: String) : CurrencySettingsEffect
+    data class ShowSnackbar(val message: UiText) : CurrencySettingsEffect
 }

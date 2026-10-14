@@ -1,13 +1,17 @@
 package com.example.nexcashapplication.feature.settings.presentation.currency
 
+import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.domain.model.AppCurrency
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.feature.settings.domain.repository.SettingsRepository
 import com.example.nexcashapplication.feature.settings.presentation.currency.model.CurrencyItemUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
@@ -56,8 +60,21 @@ class CurrencySettingsViewModel @Inject constructor(
             }
 
             CurrencySettingsEvent.OnSaveClick -> viewModelScope.launch {
-                settingsRepository.updateCurrency(state.value.selectedCurrencyId)
-                sendEffect(CurrencySettingsEffect.NavigateBack)
+                // runCancellable: gagal tulis DataStore dilaporkan lewat snackbar,
+                // bukan crash. Pembatalan (layar ditutup) diteruskan, bukan dianggap
+                // gagal simpan.
+                val result = runCancellable {
+                    settingsRepository.updateCurrency(state.value.selectedCurrencyId)
+                }
+                result.onFailure { e ->
+                    sendEffect(
+                        CurrencySettingsEffect.ShowSnackbar(
+                            e.toUiText(R.string.settings_save_failed),
+                        ),
+                    )
+                }.onSuccess {
+                    sendEffect(CurrencySettingsEffect.NavigateBack)
+                }
             }
         }
     }
@@ -72,15 +89,25 @@ class CurrencySettingsViewModel @Inject constructor(
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
     private fun observerCurrency() {
         viewModelScope.launch {
-            settingsRepository.settings.collect { appSettings ->
-                val currentCode = AppCurrency.fromCode(appSettings.currency).code
-                updateState {
-                    it.copy(
-                        selectedCurrencyId = currentCode,
-                        initialSelectedCurrencyId = currentCode,
-                    )
-                }
-            }
+            settingsRepository.settings
+                    // DataStore gagal baca → jangan crash; layar tetap memakai
+                    // nilai default state dan daftar mata uang tetap bisa dipakai.
+                    .catch { e ->
+                        Log.e(
+                            "CurrencySettingsVm",
+                            "gagal membaca preferensi mata uang",
+                            e,
+                        )
+                    }
+                    .collect { appSettings ->
+                        val currentCode = AppCurrency.fromCode(appSettings.currency).code
+                        updateState {
+                            it.copy(
+                                selectedCurrencyId = currentCode,
+                                initialSelectedCurrencyId = currentCode,
+                            )
+                        }
+                    }
         }
 
         viewModelScope.launch {

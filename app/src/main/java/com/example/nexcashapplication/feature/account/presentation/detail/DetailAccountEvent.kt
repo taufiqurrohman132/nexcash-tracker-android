@@ -10,4 +10,7 @@ sealed interface DetailAccountEvent {
     data object OnDeleteAccountClick : DetailAccountEvent
     data object OnConfirmDelete : DetailAccountEvent
     data object OnDismissDeleteDialog : DetailAccountEvent
+
+    /** Muat ulang detail akun setelah gagal memuat (tombol "Coba lagi"). */
+    data object OnRetryLoad : DetailAccountEvent
 }

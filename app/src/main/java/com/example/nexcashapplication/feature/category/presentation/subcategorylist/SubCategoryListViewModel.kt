@@ -3,11 +3,14 @@ package com.example.nexcashapplication.feature.category.presentation.subcategory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.domain.usecase.GetSubCategoriesWithBudgetUseCase
 import com.example.nexcashapplication.feature.category.presentation.mapper.toUiModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -38,9 +41,7 @@ class SubCategoryListViewModel @Inject constructor(
                 )
             }
 
-            is SubCategoryListEvent.OnRetryClick -> {
-
-            }
+            is SubCategoryListEvent.OnRetryClick -> observerSubCategories()
         }
     }
 
@@ -48,8 +49,13 @@ class SubCategoryListViewModel @Inject constructor(
      * Sub + budget lew [GetSubCategoriesWithBudgetUseCase] — sama dengan layar detail,
      * supaya kartu sub tidak lagi menampilkan `0% / Rp 0`.
      * Budget induk ikut dibawa untuk kontribusi sub yang belum punya budget sendiri.
+     *
+     * `catch` wajib: tanpanya kegagalan Room bocor ke `viewModelScope` = crash. Gagal baca
+     * mengisi `error` dan menghentikan indikator supaya layar menampilkan pesan + tombol
+     * coba lagi ([SubCategoryListEvent.OnRetryClick]) alih-alih daftar kosong diam.
      */
     private fun observerSubCategories() {
+        updateState { it.copy(isLoading = true, error = null) }
         getSubCategoriesWithBudgetUseCase(categoryId)
                 .onEach { result ->
                     updateState {
@@ -63,6 +69,15 @@ class SubCategoryListViewModel @Inject constructor(
                                 )
                             },
                             isLoading = false,
+                            error = null,
+                        )
+                    }
+                }
+                .catch { e ->
+                    updateState {
+                        it.copy(
+                            isLoading = false,
+                            error = e.toUiText(R.string.cat_load_failed),
                         )
                     }
                 }

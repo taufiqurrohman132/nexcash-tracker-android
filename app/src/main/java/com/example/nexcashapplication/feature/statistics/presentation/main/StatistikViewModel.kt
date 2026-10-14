@@ -3,11 +3,13 @@ package com.example.nexcashapplication.feature.statistics.presentation.main
 import android.os.SystemClock
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.common.BaseViewModel
 import com.example.nexcashapplication.core.common.toEndOfMonthMillis
 import com.example.nexcashapplication.core.common.toStartOfMonthMillis
 import com.example.nexcashapplication.core.domain.repository.BudgetRepository
 import com.example.nexcashapplication.core.domain.repository.TransactionRepository
+import com.example.nexcashapplication.core.i18n.toUiText
 import com.example.nexcashapplication.feature.statistics.domain.model.BudgetHealth
 import com.example.nexcashapplication.feature.statistics.domain.model.ExpenseSummary
 import com.example.nexcashapplication.feature.statistics.domain.model.SavingsRate
@@ -21,6 +23,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOn
@@ -242,9 +245,19 @@ class StatistikViewModel @Inject constructor(
                             },
                             statusAnggaran = data.budget.toStatus(),
                             isLoading = false,
+                            error = null,
                         )
                     }
                     lastSnapshot = state.value
+                }
+                // Wajib: tanpa catch kegagalan Room bocor ke viewModelScope = crash.
+                // Gagal baca menghentikan indikator dan mengisi error; ringkasan lama
+                // tidak dibuang supaya layar tetap menampilkan angka tervalid.
+                .catch { e ->
+                    Log.e(TAG, "gagal memuat statistik", e)
+                    updateState {
+                        it.copy(isLoading = false, error = e.toUiText(R.string.stat_load_failed))
+                    }
                 }
                 .launchIn(viewModelScope)
     }

@@ -1,17 +1,19 @@
 package com.example.nexcashapplication.feature.category.presentation.main
 
 import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryItem
 
 // ui/kategori/KategoriState.kt
 data class CategoryState(
-    val isLoading: Boolean = false,
+    val isLoading: Boolean = true,
     val expenseList: List<CategoryItem> = emptyList(),
     val incomeList: List<CategoryItem> = emptyList(),
     val categorySearchList: List<CategoryItem> = emptyList(),
     val searchQuery: String = "",
     val selectedTabCategory: TypeCategory = TypeCategory.EXPENSE,
-    val error: String? = null,
+    /** Gagal memuat daftar kategori; null = tidak ada error. */
+    val error: UiText? = null,
 ) {
 
     private val activeList: List<CategoryItem>
