@@ -115,10 +115,6 @@ class TransactionViewModel @Inject constructor(
 
     override fun onEvent(event: TransactionEvent) {
         when (event) {
-            is TransactionEvent.OnRefresh -> {
-
-            }
-
             is TransactionEvent.OnTransactionClick -> {
                 viewModelScope.launch {
                     if (event.transactionId == null) {

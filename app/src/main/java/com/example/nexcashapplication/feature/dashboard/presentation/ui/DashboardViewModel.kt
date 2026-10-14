@@ -98,10 +98,6 @@ class DashboardViewModel @Inject constructor(
             DashboardEvent.OnStatistikClick -> navigate(DashboardEffect.NavigateToStatistics)
             DashboardEvent.OnTambahAkunClick -> navigate(DashboardEffect.NavigateToAddAccount)
 
-            DashboardEvent.OnRefresh,
-            DashboardEvent.OnScreenLoad,
-            -> loadData()
-
             DashboardEvent.OnToggleBalanceVisibility -> updateState {
                 it.copy(isBalanceVisible = !it.isBalanceVisible)
             }
@@ -114,7 +110,7 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
-    fun loadData() {
+    private fun loadData() {
         recentTransactionsJob?.cancel()
         // reload ditandai lewat isLoading (indikator hanya muncul kalau daftar
         // kosong, jadi data lama tidak berkedip) — sekaligus jadi penanda buat

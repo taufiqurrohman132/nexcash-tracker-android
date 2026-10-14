@@ -179,18 +179,6 @@ class CategoryViewModelTest {
         assertEquals("ma", vm.state.value.searchQuery)
     }
 
-    @Test
-    fun `OnRefresh tidak membuat crash`() = runTest(testDispatcher) {
-        val vm = createViewModel()
-        advanceUntilIdle()
-
-        vm.onEvent(CategoryEvent.OnRefresh)
-        advanceUntilIdle()
-
-        // Belum ada logika refresh; yang dipastikan hanya tidak melempar
-        assertEquals(listOf("c1", "c2"), vm.state.value.expenseList.map { it.id })
-    }
-
     // ── Event → effect ───────────────────────────────────────────────────
 
     @Test

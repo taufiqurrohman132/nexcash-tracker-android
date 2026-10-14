@@ -24,7 +24,4 @@ sealed interface TransactionEvent {
 
     // Floating
     data object OnAddTransactionClick : TransactionEvent
-
-    // Refresh (pull to refresh)
-    data object OnRefresh : TransactionEvent
 }

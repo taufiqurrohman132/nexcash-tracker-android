@@ -53,10 +53,6 @@ class CategoryViewModel @Inject constructor(
 
     override fun onEvent(event: CategoryEvent) {
         when (event) {
-            is CategoryEvent.OnRefresh -> {
-                // TODO: Implement refresh logic
-            }
-
             is CategoryEvent.OnKategoriClick -> {
                 viewModelScope.launch {
                     sendEffect(NavigateToDetail(event.id))

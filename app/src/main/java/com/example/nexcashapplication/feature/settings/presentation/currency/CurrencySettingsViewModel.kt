@@ -34,9 +34,6 @@ class CurrencySettingsViewModel @Inject constructor(
 
     override fun onEvent(event: CurrencySettingsEvent) {
         when (event) {
-            CurrencySettingsEvent.Refresh -> {
-            }
-
             is CurrencySettingsEvent.OnItemClick -> {
                 updateState {
                     it.copy(selectedCurrencyId = event.itemId)

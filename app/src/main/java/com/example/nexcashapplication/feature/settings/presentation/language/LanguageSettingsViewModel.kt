@@ -36,10 +36,6 @@ class LanguageSettingsViewModel @Inject constructor(
 
     override fun onEvent(event: LanguageSettingsEvent) {
         when (event) {
-            LanguageSettingsEvent.Refresh -> {
-
-            }
-
             is LanguageSettingsEvent.OnItemClick -> {
                 updateState {
                     it.copy(
@@ -90,7 +86,7 @@ class LanguageSettingsViewModel @Inject constructor(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
-    fun observerLanguage() {
+    private fun observerLanguage() {
         viewModelScope.launch {
             settingsRepository.settings
                     // DataStore gagal baca → jangan crash; layar tetap memakai

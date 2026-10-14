@@ -1,7 +1,6 @@
 package com.example.nexcashapplication.feature.settings.presentation.currency
 
 sealed interface CurrencySettingsEvent {
-    data object Refresh : CurrencySettingsEvent
     data object OnSearchClear : CurrencySettingsEvent
     data object OnBackClick : CurrencySettingsEvent
     data object OnSaveClick : CurrencySettingsEvent

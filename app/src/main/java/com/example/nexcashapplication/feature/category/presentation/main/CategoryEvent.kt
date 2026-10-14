@@ -10,7 +10,6 @@ sealed interface CategoryEvent {
     //    data class OnFilterSelect(val filter: CategoryFilter) : CategoryEvent
     data class OnKategoriClick(val id: String) : CategoryEvent
     data object OnAddKategoriClick : CategoryEvent
-    data object OnRefresh : CategoryEvent
 
     // tab category selected
     data class OnTabCategoryClick(val type: TypeCategory) : CategoryEvent

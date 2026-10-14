@@ -23,10 +23,6 @@ class SettingsViewModel @Inject constructor(
 
     override fun onEvent(event: SettingsEvent) {
         when (event) {
-            SettingsEvent.Refresh -> {
-
-            }
-
             is SettingsEvent.OnMenuItemClick -> {
                 // Tema & Warna membuka bottom sheet di tempat, bukan pindah layar.
                 // Tanpa cabang ini showThemeColorSheet tak pernah jadi true dan

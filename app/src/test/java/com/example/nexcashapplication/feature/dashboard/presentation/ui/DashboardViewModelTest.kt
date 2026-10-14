@@ -32,7 +32,6 @@ import kotlin.time.Instant
  *   dengan `""` → WHERE category_id = '' tidak pernah cocok → daftar selalu kosong
  * - toggle visibilitas saldo
  * - SEMUA event navigasi mengirim effect — regresi lama: `TODO()` = crash saat ditekan
- * - OnRefresh/OnScreenLoad reload tanpa menumpuk collector ganda
  *
  * Dispatcher: Dispatchers.Main diganti StandardTestDispatcher; semua coroutine
  * ViewModel berjalan di scheduler virtual yang sama.
@@ -140,23 +139,6 @@ class DashboardViewModelTest {
                 ),
                 effects,
             )
-        }
-
-    @Test
-    fun `OnRefresh dan OnScreenLoad - reload tanpa crash dan tanpa duplikasi`() =
-        runTest(testDispatcher) {
-            transactionRepository.seedWithDetails(withDetails("t1", "c1", hoursAgo = 1))
-
-            val vm = createViewModel()
-            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
-
-            vm.onEvent(DashboardEvent.OnRefresh)
-            vm.onEvent(DashboardEvent.OnScreenLoad)
-            // reload menyalakan isLoading lagi → tunggu emisi berikutnya
-            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
-
-            // collector lama dibatalkan saat reload → daftar tidak terduplikasi
-            assertEquals(listOf("t1"), vm.state.value.transactions.map { it.id })
         }
 
     // ── Helpers ──────────────────────────────────────────────────────────
