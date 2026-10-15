@@ -3,10 +3,13 @@ package com.example.nexcashapplication.core.common
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.retryWhen
 import kotlinx.coroutines.flow.update
 
 /**
@@ -22,6 +25,10 @@ import kotlinx.coroutines.flow.update
  *   ke `viewModelScope` = crash. Flow yang murni **in-memory** (`state.map { ... }.collect`,
  *   pencarian di atas state sendiri) tidak punya sumber kegagalan, jadi `catch` di sana
  *   hanya dead code — tidak perlu dipasang.
+ *   Kegagalan sesaat (disk penuh, kunci SQLite sibuk) dicoba ulang sendiri oleh
+ *   [autoRetry], dipasang **sebelum** `catch` — lihat penjelasannya di sana.
+ *   UI sengaja tidak punya tombol "coba lagi": aplikasi offline, dan pemulihan yang
+ *   menuntut tap user sama saja dengan meminta mereka me-restart aplikasi.
  * - **Tulis (suspend)**: bungkus dengan [runCancellable] (atau `try`/`catch` yang melempar
  *   ulang `CancellationException`), lalu terjemahkan ke `UiText` via
  *   [com.example.nexcashapplication.core.i18n.toUiText] dan kirim lewat effect snackbar.
@@ -61,5 +68,37 @@ abstract class BaseViewModel<State, Event, Effect>(initialState: State) : ViewMo
         throw e
     } catch (e: Exception) {
         Result.failure(e)
+    }
+}
+
+/**
+ * Auto-retry **diam-diam** untuk kegagalan sementara.
+ *
+ * Aplikasi offline tidak memakai tombol "coba lagi" di UI. Sebagai gantinya collector
+ * dicoba ulang beberapa kali sebelum menyerah, tanpa campur tangan user: kegagalan
+ * sesaat — disk penuh, kunci SQLite yang kebetulan sibuk — sembuh sendiri; kegagalan
+ * permanen (file DB korup, bug skema) tetap berhenti dan jatuh ke `catch` di bawahnya.
+ *
+ * ## Urutan penting: pasang ini SEBELUM `catch`
+ *
+ * `catch` mengubah kegagalan menjadi penyelesaian biasa. Kalau `catch` dipasang lebih
+ * dulu, `retryWhen` tidak akan pernah melihat kegagalan apa pun dan retry tidak jalan:
+ *
+ * ```kotlin
+ * flow.autoRetry().catch { /* settle ke state error */ }.launchIn(viewModelScope)
+ * ```
+ *
+ * [maxAttempts] adalah jumlah percobaan **tambahan** (2 = maksimal tiga kali mencoba),
+ * dipisah jeda [delayMs].
+ */
+fun <T> Flow<T>.autoRetry(
+    maxAttempts: Int = 2,
+    delayMs: Long = 500,
+): Flow<T> = retryWhen { _, attempt ->
+    if (attempt < maxAttempts) {
+        delay(delayMs)
+        true
+    } else {
+        false
     }
 }
