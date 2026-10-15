@@ -1,5 +1,16 @@
 package com.example.nexcashapplication.feature.statistics.presentation.main
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -289,64 +300,90 @@ fun AlokasiDanaCard(
         )
 
         // Tab sekunder hanya relevan di Realisasi — budget (Alokasi) memang
-        // cuma ada di kategori pengeluaran.
-        if (mode == AlokasiMode.REALISASI) {
-            Spacer(Modifier.height(8.dp))
+        // cuma ada di kategori pengeluaran. Kemunculannya di-slide vertikal
+        // (expand/shrink) supaya kartu tidak "loncat" tingginya.
+        AnimatedVisibility(
+            visible = mode == AlokasiMode.REALISASI,
+            enter = expandVertically(animationSpec = tween(250)) + fadeIn(tween(250)),
+            exit = shrinkVertically(animationSpec = tween(250)) + fadeOut(tween(250)),
+        ) {
+            Column {
+                Spacer(Modifier.height(8.dp))
 
-            val tipeOptions = listOf(
-                RealisasiTipe.PENGELUARAN to stringResource(R.string.stat_tipe_expense),
-                RealisasiTipe.PENDAPATAN to stringResource(R.string.stat_tipe_income),
-            )
-            SecondaryTabRow(
-                selectedTabIndex = tipeOptions.indexOfFirst { it.first == realisasiTipe },
-                modifier = Modifier.fillMaxWidth(),
-                // tanpa garis pemisah bawah — kartu sudah punya paddingnya sendiri
-                divider = {},
-            ) {
-                tipeOptions.forEach { (value, label) ->
-                    Tab(
-                        selected = realisasiTipe == value,
-                        onClick = { onTipeChange(value) },
-                        text = { Text(label) },
-                    )
+                val tipeOptions = listOf(
+                    RealisasiTipe.PENGELUARAN to stringResource(R.string.stat_tipe_expense),
+                    RealisasiTipe.PENDAPATAN to stringResource(R.string.stat_tipe_income),
+                )
+                SecondaryTabRow(
+                    selectedTabIndex = tipeOptions.indexOfFirst { it.first == realisasiTipe },
+                    modifier = Modifier.fillMaxWidth(),
+                    // tanpa garis pemisah bawah — kartu sudah punya paddingnya sendiri
+                    divider = {},
+                ) {
+                    tipeOptions.forEach { (value, label) ->
+                        Tab(
+                            selected = realisasiTipe == value,
+                            onClick = { onTipeChange(value) },
+                            text = { Text(label) },
+                        )
+                    }
                 }
             }
         }
 
         Spacer(Modifier.height(16.dp))
 
-        // Memastikan slices diperbarui setiap kali data items berubah
-        val slices = remember(items, mode, realisasiTipe) {
-            items.mapIndexed { index, item ->
-                DonutSlice(
-                    label = item.nama,
-                    value = item.persentase,
-                    color = item.colorHex.toColor()
-                )
+        // Ganti tab (Alokasi/Realisasi maupun Pengeluaran/Pendapatan) tidak
+        // langsung loncat: konten baru slide naik dari bawah, konten lama
+        // slide ke atas — keduanya membawa fade supaya terasa seperti
+        // "visibility yang digeser vertikal", bukan dissolve.
+        AnimatedContent(
+            targetState = mode to realisasiTipe,
+            transitionSpec = {
+                (slideInVertically(animationSpec = tween(300)) { it / 4 } + fadeIn(tween(300)))
+                        .togetherWith(
+                            slideOutVertically(animationSpec = tween(300)) { -it / 4 } +
+                                    fadeOut(tween(300)),
+                        )
+                        .using(SizeTransform(clip = false))
+            },
+            label = "alokasi-donut",
+        ) { (targetMode, targetTipe) ->
+            // Memastikan slices diperbarui setiap kali data items berubah.
+            // Di-key per target tab supaya tiap pane punya slices-nya sendiri.
+            val slices = remember(items, targetMode, targetTipe) {
+                items.mapIndexed { index, item ->
+                    DonutSlice(
+                        label = item.nama,
+                        value = item.persentase,
+                        color = item.colorHex.toColor()
+                    )
+                }
             }
-        }
 
+            Column {
+                InteractiveDonutChart(
+                    slices = slices,
+                    modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .size(220.dp),
+                )
 
-        InteractiveDonutChart(
-            slices = slices,
-            modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .size(220.dp),
-        )
+                Spacer(Modifier.height(16.dp))
 
-        Spacer(Modifier.height(16.dp))
-
-        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-            // chunked tiap recomposition = alokasi list baru; ingat hasilnya
-            val rows = remember(items) { items.chunked(2) }
-            rows.forEach { rowItems ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
-                    rowItems.forEach { item ->
-                        // weight(1f) → tiap sel dapat (lebar - jarak) / 2 → kolom seimbang
-                        LegendItem(item, Modifier.weight(1f))
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    // chunked tiap recomposition = alokasi list baru; ingat hasilnya
+                    val rows = remember(items, targetMode, targetTipe) { items.chunked(2) }
+                    rows.forEach { rowItems ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        ) {
+                            rowItems.forEach { item ->
+                                // weight(1f) → tiap sel dapat (lebar - jarak) / 2 → kolom seimbang
+                                LegendItem(item, Modifier.weight(1f))
+                            }
+                        }
                     }
                 }
             }
