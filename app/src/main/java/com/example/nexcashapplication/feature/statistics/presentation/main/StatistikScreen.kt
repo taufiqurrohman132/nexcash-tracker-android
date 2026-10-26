@@ -1,24 +1,17 @@
 package com.example.nexcashapplication.feature.statistics.presentation.main
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.SizeTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,13 +23,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.automirrored.filled.TrendingDown
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material.icons.filled.AccountBalanceWallet
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.outlined.DateRange
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material.icons.outlined.ShoppingBag
 import androidx.compose.material.icons.outlined.TrendingUp
@@ -60,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalLocale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -71,7 +61,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
-import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.component.MonthNavigator
 import com.example.nexcashapplication.core.component.MonthPicker
 import com.example.nexcashapplication.core.component.donutchart.DonutSlice
@@ -83,13 +72,11 @@ import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.common.extentions.toColor
 import com.example.nexcashapplication.feature.statistics.presentation.main.model.AlokasiKategoriUi
-import com.example.nexcashapplication.ui.theme.BorderGray
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.SegmentedTypeToggle
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.ToggleOption
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.TextTertiary
 import java.time.YearMonth
-import java.time.format.TextStyle
-import java.util.Locale
 
 @Composable
 fun StatistikScreen(
@@ -188,12 +175,12 @@ fun StatistikContent(
                     SummaryStatCard(
                         title = stringResource(R.string.stat_savings_rate_title),
                         value = String.format(
-                            Locale.getDefault(),
+                            LocalLocale.current.platformLocale,
                             "%.1f%%",
                             state.tingkatTabungan,
                         ),
                         badge = String.format(
-                            Locale.getDefault(),
+                            LocalLocale.current.platformLocale,
                             "%+.1f%%",
                             state.tabunganTrendPercent,
                         ),
@@ -269,7 +256,10 @@ fun AlokasiDanaCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Column {
-                Text(stringResource(R.string.stat_allocation_title), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.stat_allocation_title),
+                    style = MaterialTheme.typography.titleMedium,
+                )
                 val basis = when {
                     mode == AlokasiMode.ALOKASI -> stringResource(R.string.stat_basis_target)
                     realisasiTipe == RealisasiTipe.PENGELUARAN ->
@@ -290,14 +280,23 @@ fun AlokasiDanaCard(
 
         Spacer(Modifier.height(12.dp))
 
-        SegmentedTabRow(
+
+        SegmentedTypeToggle(
             selected = mode,
             options = listOf(
-                AlokasiMode.ALOKASI to stringResource(R.string.stat_tab_allocation),
-                AlokasiMode.REALISASI to stringResource(R.string.stat_tab_actual),
-            ),
+                ToggleOption(
+                    value = AlokasiMode.ALOKASI,
+                    label = stringResource(R.string.stat_tab_allocation),
+                ),
+                ToggleOption(
+                    value = AlokasiMode.REALISASI,
+                    label = stringResource(R.string.stat_tab_actual),
+                ),
+
+                ),
             onSelect = onTabChange,
         )
+
 
         // Tab sekunder hanya relevan di Realisasi — budget (Alokasi) memang
         // cuma ada di kategori pengeluaran. Kemunculannya di-slide vertikal
@@ -337,52 +336,39 @@ fun AlokasiDanaCard(
         // langsung loncat: konten baru slide naik dari bawah, konten lama
         // slide ke atas — keduanya membawa fade supaya terasa seperti
         // "visibility yang digeser vertikal", bukan dissolve.
-        AnimatedContent(
-            targetState = mode to realisasiTipe,
-            transitionSpec = {
-                (slideInVertically(animationSpec = tween(300)) { it / 4 } + fadeIn(tween(300)))
-                        .togetherWith(
-                            slideOutVertically(animationSpec = tween(300)) { -it / 4 } +
-                                    fadeOut(tween(300)),
-                        )
-                        .using(SizeTransform(clip = false))
-            },
-            label = "alokasi-donut",
-        ) { (targetMode, targetTipe) ->
-            // Memastikan slices diperbarui setiap kali data items berubah.
-            // Di-key per target tab supaya tiap pane punya slices-nya sendiri.
-            val slices = remember(items, targetMode, targetTipe) {
-                items.mapIndexed { index, item ->
-                    DonutSlice(
-                        label = item.nama,
-                        value = item.persentase,
-                        color = item.colorHex.toColor()
-                    )
-                }
-            }
-
-            Column {
-                InteractiveDonutChart(
-                    slices = slices,
-                    modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .size(220.dp),
+        // Memastikan slices diperbarui setiap kali data items berubah.
+        // Di-key per target tab supaya tiap pane punya slices-nya sendiri.
+        val slices = remember(items, mode, realisasiTipe) {
+            items.mapIndexed { index, item ->
+                DonutSlice(
+                    label = item.nama,
+                    value = item.persentase,
+                    color = item.colorHex.toColor(),
                 )
+            }
+        }
 
-                Spacer(Modifier.height(16.dp))
+        Column {
+            InteractiveDonutChart(
+                slices = slices,
+                modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .size(220.dp),
+            )
 
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                    // chunked tiap recomposition = alokasi list baru; ingat hasilnya
-                    val rows = remember(items, targetMode, targetTipe) { items.chunked(2) }
-                    rows.forEach { rowItems ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        ) {
-                            rowItems.forEach { item ->
-                                // weight(1f) → tiap sel dapat (lebar - jarak) / 2 → kolom seimbang
-                                LegendItem(item, Modifier.weight(1f))
-                            }
+            Spacer(Modifier.height(16.dp))
+
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                // chunked tiap recomposition = alokasi list baru; ingat hasilnya
+                val rows = remember(items, mode, realisasiTipe) { items.chunked(2) }
+                rows.forEach { rowItems ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    ) {
+                        rowItems.forEach { item ->
+                            // weight(1f) → tiap sel dapat (lebar - jarak) / 2 → kolom seimbang
+                            LegendItem(item, Modifier.weight(1f))
                         }
                     }
                 }
@@ -397,63 +383,33 @@ private fun LegendItem(item: AlokasiKategoriUi, modifier: Modifier = Modifier) {
     // parse warna hex tiap recomposition = buang-buang; warna ikut item saja
     val dotColor = remember(item.colorHex) { item.colorHex.toColor() }
     Row(
-        modifier = modifier,verticalAlignment = Alignment.CenterVertically) {
+        modifier = modifier, verticalAlignment = Alignment.CenterVertically,
+    ) {
         Box(
             Modifier
-                    .background(dotColor, CircleShape)
-                    .padding(horizontal = 4.dp)
-        ){
-            Text(item.persentase.formatDecimal2(), style = MaterialTheme.typography.titleSmall)
-        }
+                    .height(16.dp)
+                    .width(20.dp)
+                    .background(dotColor, CircleShape),
+        )
         Spacer(Modifier.width(6.dp))
         Column {
             // 1 baris + ellipsis: nama panjang jangan bikin sel jadi 2 baris
-            Text(
-                text = item.nama,
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+
+            Row {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = item.nama,
+                    style = MaterialTheme.typography.bodySmall,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(item.persentase.formatDecimal2(), style = MaterialTheme.typography.titleSmall)
+            }
             Text(
                 text = item.nominal.formatCurrency(),
                 style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-            )
-        }
-    }
-}
-
-
-/**
- * Segmented control generik dipakai dua kali di [AlokasiDanaCard]:
- * tab utama `AlokasiMode` dan tab sekunder `RealisasiTipe`.
- */
-@Composable
-fun <T> SegmentedTabRow(
-    selected: T,
-    options: List<Pair<T, String>>,
-    onSelect: (T) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Row(
-        modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(50))
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(4.dp),
-    ) {
-        options.forEach { (value, label) ->
-            val isSelected = selected == value
-            Text(
-                text = label,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                        .weight(1f)
-                        .clip(RoundedCornerShape(50))
-                        .background(if (isSelected) MaterialTheme.colorScheme.surface else Color.Transparent)
-                        .clickable { onSelect(value) }
-                        .padding(vertical = 8.dp),
             )
         }
     }
@@ -468,7 +424,10 @@ fun TindakanCepatCard(onClick: () -> Unit) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(stringResource(R.string.stat_quick_actions), style = MaterialTheme.typography.titleMedium)
+            Text(
+                stringResource(R.string.stat_quick_actions),
+                style = MaterialTheme.typography.titleMedium,
+            )
             Text(
                 text = stringResource(R.string.stat_help),
                 color = PrimaryCyan,
@@ -495,13 +454,13 @@ fun TindakanCepatCard(onClick: () -> Unit) {
                     modifier = Modifier
                             .size(40.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(PrimaryCyan),
+                            .background(PrimaryCyan.copy(alpha = 0.2f)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = PrimaryCyan,
                         modifier = Modifier.size(18.dp),
                     )
                 }
@@ -613,7 +572,7 @@ fun TotalPengeluaranCard(totalPengeluaran: Long, deltaPercent: Float) {
                     )
                     Spacer(Modifier.width(4.dp))
                     Text(
-                        String.format(Locale.getDefault(), "%+.1f%%", deltaPercent),
+                        String.format(LocalLocale.current.platformLocale, "%+.1f%%", deltaPercent),
                         color = trendColor,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.SemiBold,

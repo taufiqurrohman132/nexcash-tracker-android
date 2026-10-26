@@ -6,6 +6,25 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ## [Unreleased]
 
+### Diubah
+
+#### Komponen UI Statistik & Transaksi
+
+- **`SegmentedTypeToggle` jadi generik** (`feature/transaction/presentation/addnew`) dan
+  tidak lagi private: sekarang menerima `options: List<ToggleOption<T>>` untuk tipe
+  data apa pun, sehingga tab **Alokasi/Realisasi** di `StatistikScreen` memakai komponen
+  yang sama dengan toggle **Pengeluaran/Pendapatan** di transaksi (menggantikan
+  `SegmentedTabRow`, yang kini dihapus dari `StatistikScreen`).
+- Model baru **`ToggleOption<T>`** (`value`, `label`, `icon` opsional,
+  `selectedColor`) — chip ikon sudah tidak wajib, indikator pil bergerak berdasarkan
+  `selectedIndex` alih-alih nilai enum `TypeCategory`.
+- `InteractiveDonutChart`: label persentase digeser keluar (`LabelRadiusOffset`
+  12dp → 20dp) supaya tidak menempel cincin, plus **preview interaktif** (4 slice,
+  2 slice, kosong).
+- `StatistikScreen`: legend alokasi dirapikan (dot berukuran tetap, persentase
+  sejajar nama), ikon "Ubah Alokasi" memakai tint cyan lembut, dan format persen
+  memakai `LocalLocale` (ikut locale platform, bukan `Locale.getDefault()`).
+
 ### Ditambahkan
 
 #### Fitur Anggaran Berulang (Recurring Budget)

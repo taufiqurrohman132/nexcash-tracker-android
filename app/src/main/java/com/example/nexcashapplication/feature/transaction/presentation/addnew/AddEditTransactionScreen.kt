@@ -108,6 +108,7 @@ import com.example.nexcashapplication.feature.common.utils.minute
 import com.example.nexcashapplication.feature.common.utils.toDatePickerMillis
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.components.AccountBottomSheetContent
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.components.CategoryBottomSheetContent
+import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.ToggleOption
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
@@ -256,6 +257,17 @@ fun AddEditTransactionContent(
             // ---- Segmented toggle Expense / Income ----
             SegmentedTypeToggle(
                 selected = state.type,
+                options = listOf(
+                    ToggleOption(
+                        value = TypeCategory.EXPENSE,
+                        label = stringResource(R.string.tx_amount_out),
+                    ),
+                    ToggleOption(
+                        value = TypeCategory.INCOME,
+                        label = stringResource(R.string.tx_amount_in),
+                    ),
+
+                ),
                 onSelect = { onEvent(AddEditTransactionEvent.OnTypeChange(it)) },
             )
 
@@ -547,32 +559,38 @@ fun AddEditTransactionContent(
     }
 }
 
+/**
+ * Segmented toggle control generik untuk tipe data [T] apa saja.
+ */
 @Composable
-private fun SegmentedTypeToggle(
-    selected: TypeCategory,
-    onSelect: (TypeCategory) -> Unit,
+fun <T> SegmentedTypeToggle(
+    selected: T,
+    options: List<ToggleOption<T>>,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
+    if (options.isEmpty()) return
+
     val inset = 2.dp
     val gap = 4.dp
+    val count = options.size
+    val selectedIndex = options.indexOfFirst { it.value == selected }.coerceAtLeast(0)
 
     BoxWithConstraints(
-        modifier = Modifier
+        modifier = modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(20.dp))
                 .background(Color(0xFFF0F0F0)),
     ) {
-        // Sama dengan hasil Modifier.weight(1f) di Row bawah:
-        // (lebar track - padding kiri/kanan - jarak antar chip) / 2
-        val chipWidth = ((maxWidth - inset * 2f - gap) / 2f).coerceAtLeast(0.dp)
+        val totalGaps = gap * (count - 1)
+        val chipWidth = ((maxWidth - inset * 2f - totalGaps) / count).coerceAtLeast(0.dp)
 
-        // Composable terpisah supaya hanya pil ini yang rekomposisi tiap frame
-        // animasi; Row di bawahnya ikut membaca nilai animasi kalau disatukan.
         ToggleIndicator(
             trackWidth = maxWidth,
             chipWidth = chipWidth,
             inset = inset,
             gap = gap,
-            selected = selected,
+            selectedIndex = selectedIndex,
         )
 
         Row(
@@ -581,32 +599,29 @@ private fun SegmentedTypeToggle(
                     .padding(inset),
             horizontalArrangement = Arrangement.spacedBy(gap),
         ) {
-            ToggleChip(
-                label = stringResource(TypeCategory.EXPENSE.labelResId),
-                icon = Icons.Default.TrendingDown,
-                selected = selected == TypeCategory.EXPENSE,
-                selectedColor = Color(0xFFE8433D),
-                modifier = Modifier.weight(1f),
-                onClick = { onSelect(TypeCategory.EXPENSE) },
-            )
-            ToggleChip(
-                label = stringResource(TypeCategory.INCOME.labelResId),
-                icon = Icons.Default.TrendingUp,
-                selected = selected == TypeCategory.INCOME,
-                selectedColor = PrimaryCyan,
-                modifier = Modifier.weight(1f),
-                onClick = { onSelect(TypeCategory.INCOME) },
-            )
+            options.forEach { option ->
+                val isSelected = option.value == selected
+                ToggleChip(
+                    label = option.label,
+                    icon = option.icon,
+                    selected = isSelected,
+                    selectedColor = option.selectedColor,
+                    modifier = Modifier.weight(1f),
+                    onClick = { onSelect(option.value) },
+                )
+            }
         }
     }
 }
+
 
 /**
  * Pil putih yang menandai pilihan aktif, digambar **di belakang** isi track.
  *
  * Dideklarasi sebelum [Row] chip supaya ditempatkan lebih dulu (urutan tempat =
- * urutan gambar), lebar/sisinya diatur lewat padding dari satu nilai animasi
- * sehingga pil meluncur tanpa berubah lebar, dan tingginya ikut track lewat
+ * urutan gambar), lebar/sisinya diatur dari satu nilai animasi
+ * (`targetStart = inset + (chipWidth + gap) * selectedIndex`) sehingga pil
+ * meluncur tanpa berubah lebar, dan tingginya ikut track lewat
  * `matchParentSize` — track ada di dalam `verticalScroll` sehingga tingginya
  * tidak bisa diturunkan dari constraint.
  */
@@ -616,16 +631,12 @@ private fun BoxScope.ToggleIndicator(
     chipWidth: Dp,
     inset: Dp,
     gap: Dp,
-    selected: TypeCategory,
+    selectedIndex: Int,
 ) {
-    // Tepi kiri pil: Expense (kiri) -> Income (kanan). Satu nilai animasi untuk
-    // dua sisi supaya lebar pil selalu tetap saat meluncur.
+    val targetStart = inset + (chipWidth + gap) * selectedIndex
+
     val startPadding by animateDpAsState(
-        targetValue = if (selected == TypeCategory.EXPENSE) {
-            inset
-        } else {
-            inset + chipWidth + gap
-        },
+        targetValue = targetStart,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioLowBouncy,
             stiffness = Spring.StiffnessMediumLow,
@@ -653,9 +664,9 @@ private fun BoxScope.ToggleIndicator(
 }
 
 @Composable
-private fun ToggleChip(
+fun ToggleChip(
     label: String,
-    icon: ImageVector,
+    icon: ImageVector? = null,
     selected: Boolean,
     selectedColor: Color,
     modifier: Modifier = Modifier,
@@ -684,13 +695,15 @@ private fun ToggleChip(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Icon(
-                icon,
-                contentDescription = null,
-                tint = tint,
-                modifier = Modifier.size(16.dp),
-            )
-            Spacer(Modifier.width(6.dp))
+            if (icon != null) {
+                Icon(
+                    icon,
+                    contentDescription = null,
+                    tint = tint,
+                    modifier = Modifier.size(16.dp),
+                )
+                Spacer(Modifier.width(6.dp))
+            }
             Text(
                 label,
                 color = tint,
