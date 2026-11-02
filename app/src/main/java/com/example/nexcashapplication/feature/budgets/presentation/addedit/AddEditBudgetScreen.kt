@@ -84,8 +84,6 @@ import com.example.nexcashapplication.feature.budgets.domain.model.RecurrenceTyp
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.AmountOutlinedTextField
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.TextSecondary
 import java.time.LocalDate
 import java.time.ZoneOffset
 
@@ -268,7 +266,7 @@ fun AddEditBudgetContent(
                     Text(
                         text = stringResource(R.string.budget_duration_days, state.durasiHari),
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
@@ -440,11 +438,11 @@ private fun RecurringBudgetCard(
                 .shadow(
                     elevation = 8.dp,
                     shape = RoundedCornerShape(16.dp),
-                    ambientColor = PrimaryCyan,
-                    spotColor = PrimaryCyan,
+                    ambientColor = MaterialTheme.colorScheme.primary,
+                    spotColor = MaterialTheme.colorScheme.primary,
                 )
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp),
     ) {
         Row(

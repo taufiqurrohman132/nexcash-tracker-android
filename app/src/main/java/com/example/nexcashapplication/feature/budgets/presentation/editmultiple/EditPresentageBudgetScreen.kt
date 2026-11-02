@@ -60,9 +60,7 @@ import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.budgets.presentation.editmultiple.model.EditPresentageBudgetItemUiModel
 import com.example.nexcashapplication.feature.category.presentation.main.AddCategoryButton
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 @Composable
 fun EditPresentageBudgetScreen(
@@ -307,7 +305,7 @@ fun CategoryAllocationCard(
                     shape = RoundedCornerShape(16.dp),
                 )
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp),
     ) {
         Row(
@@ -358,18 +356,18 @@ fun CategoryAllocationCard(
                                 .size(20.dp)
                                 .border(
                                     width = 2.dp,
-                                    color = PrimaryCyan,
+                                    color = MaterialTheme.colorScheme.primary,
                                     shape = CircleShape,
                                 )
-                                .background(Color.White, CircleShape),
+                                .background(MaterialTheme.colorScheme.surface, CircleShape),
                     )
                 },
                 track = { sliderState ->
                     SliderDefaults.Track(
                         sliderState = sliderState,
                         colors = SliderDefaults.colors(
-                            activeTrackColor = PrimaryCyan,
-                            inactiveTrackColor = PrimaryCyan.copy(alpha = 0.2f),
+                            activeTrackColor = MaterialTheme.colorScheme.primary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
                         ),
                         modifier = Modifier.height(8.dp), // default-nya ~4.dp
                     )
@@ -396,12 +394,12 @@ fun SummaryBudgetCard(
         modifier = modifier
                 .shadow(
                     elevation = 4.dp,
-                    ambientColor = PrimaryCyan,
-                    spotColor = PrimaryCyan,
+                    ambientColor = MaterialTheme.colorScheme.primary,
+                    spotColor = MaterialTheme.colorScheme.primary,
                     shape = RoundedCornerShape(10.dp),
                 )
                 .clip(RoundedCornerShape(10.dp))
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
