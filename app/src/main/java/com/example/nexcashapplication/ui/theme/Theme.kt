@@ -6,16 +6,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
 /**
  * Tema aplikasi.
  *
- * [seedColor] adalah warna yang dipilih pengguna di Pengaturan → Tema & Warna; dari
- * situ [lightColorSchemeFrom]/[darkColorSchemeFrom] membangkitkan scheme utuh —
- * primary, onPrimary, container — supaya tombol dan chip ikut kontras. Lihat
- * `ui/theme/ColorScheme.kt`.
+ * Warna diambil dari token statis `md_theme_*` (lihat `ui/theme/Color.kt` dan
+ * `ColorScheme.kt`).
  *
  * [darkTheme] dipasok pemanggil, bukan diambil dari `isSystemInDarkTheme()` di sini,
  * karena preferensi pengguna (Terang / Gelap / Ikuti Sistem) harus ikut diperhitungkan
@@ -23,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
  */
 @Composable
 fun NexCashApplicationTheme(
-    seedColor: Color = PrimaryCyan,
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
@@ -35,8 +31,8 @@ fun NexCashApplicationTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> darkColorSchemeFrom(seedColor)
-        else -> lightColorSchemeFrom(seedColor)
+        darkTheme -> DarkColors
+        else -> LightColors
     }
 
     MaterialTheme(
