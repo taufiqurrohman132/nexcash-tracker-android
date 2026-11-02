@@ -75,7 +75,6 @@ import com.example.nexcashapplication.feature.statistics.presentation.main.model
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.SegmentedTypeToggle
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.ToggleOption
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import java.time.YearMonth
 
 @Composable
@@ -118,7 +117,7 @@ fun StatistikContent(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.surface,
                 ),
                 actions = {
                     MonthNavigator(
@@ -243,11 +242,11 @@ fun AlokasiDanaCard(
                 .shadow(
                     elevation = 4.dp,
                     shape = RoundedCornerShape(16.dp),
-                    ambientColor = PrimaryCyan,
-                    spotColor = PrimaryCyan,
+                    ambientColor = MaterialTheme.colorScheme.primary,
+                    spotColor = MaterialTheme.colorScheme.primary,
                 )
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp),
     ) {
         Row(
@@ -430,7 +429,7 @@ fun TindakanCepatCard(onClick: () -> Unit) {
             )
             Text(
                 text = stringResource(R.string.stat_help),
-                color = PrimaryCyan,
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
             )
@@ -440,7 +439,7 @@ fun TindakanCepatCard(onClick: () -> Unit) {
 
         Surface(
             onClick = onClick,
-            color = PrimaryCyan.copy(alpha = 0.1f),
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -454,13 +453,13 @@ fun TindakanCepatCard(onClick: () -> Unit) {
                     modifier = Modifier
                             .size(40.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(PrimaryCyan.copy(alpha = 0.2f)),
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Edit,
                         contentDescription = null,
-                        tint = PrimaryCyan,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp),
                     )
                 }
@@ -475,15 +474,15 @@ fun TindakanCepatCard(onClick: () -> Unit) {
                     )
                     Text(
                         text = stringResource(R.string.stat_edit_allocation_desc),
-                        fontSize = 12.sp,
-                        color = Color.Gray,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 }
 
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = null,
-                    tint = PrimaryCyan,
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -500,9 +499,9 @@ fun SummaryStatCard(
 ) {
     Surface(
         modifier = modifier,
-        color = Color.White,
+        color = MaterialTheme.colorScheme.surface,
         shape = RoundedCornerShape(16.dp),
-        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFEFEFEF)),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(
@@ -514,15 +513,29 @@ fun SummaryStatCard(
                     modifier = Modifier
                             .size(32.dp)
                             .clip(RoundedCornerShape(8.dp))
-                            .background(Color(0xFFF5F5F5)),
+                            .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Icon(icon, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(
+                        icon,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
-                Text(badge, color = PrimaryCyan, fontSize = 12.sp, fontWeight = FontWeight.SemiBold)
+                Text(
+                    badge,
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
             }
             Spacer(Modifier.height(10.dp))
-            Text(title, fontSize = 12.sp, color = Color.Gray)
+            Text(
+                title,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Text(value, fontSize = 16.sp, fontWeight = FontWeight.Bold)
         }
     }
@@ -531,7 +544,7 @@ fun SummaryStatCard(
 @Composable
 fun TotalPengeluaranCard(totalPengeluaran: Long, deltaPercent: Float) {
     Surface(
-        color = PrimaryCyan.copy(alpha = 0.2f),
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.2f),
         shape = RoundedCornerShape(20.dp),
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -544,21 +557,21 @@ fun TotalPengeluaranCard(totalPengeluaran: Long, deltaPercent: Float) {
                     modifier = Modifier
                             .size(40.dp)
                             .clip(RoundedCornerShape(12.dp))
-                            .background(Color.White),
+                            .background(MaterialTheme.colorScheme.surface),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         Icons.Default.AccountBalanceWallet,
                         contentDescription = null,
-                        tint = PrimaryCyan,
+                        tint = MaterialTheme.colorScheme.primary,
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    // tren pengeluaran: naik = merah, turun = hijau, datar = abu
+                    // tren pengeluaran: naik = error (merah), turun = primary (atau hijau), datar = onSurfaceVariant
                     val trendColor = when {
-                        deltaPercent > 0f -> Color(0xFFD32F2F)
+                        deltaPercent > 0f -> MaterialTheme.colorScheme.error
                         deltaPercent < 0f -> Color(0xFF2E7D32)
-                        else -> Color.Gray
+                        else -> MaterialTheme.colorScheme.onSurfaceVariant
                     }
                     Icon(
                         if (deltaPercent >= 0f) {
@@ -580,7 +593,11 @@ fun TotalPengeluaranCard(totalPengeluaran: Long, deltaPercent: Float) {
                 }
             }
             Spacer(Modifier.height(16.dp))
-            Text(stringResource(R.string.stat_total_expense), fontSize = 13.sp, color = Color.Gray)
+            Text(
+                stringResource(R.string.stat_total_expense),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
             Text(totalPengeluaran.formatCurrency(), fontSize = 24.sp, fontWeight = FontWeight.Bold)
         }
     }
