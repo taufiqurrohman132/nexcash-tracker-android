@@ -32,6 +32,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -53,6 +54,7 @@ import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.feature.notification.presentation.main.model.AlertSeverity
 import com.example.nexcashapplication.feature.notification.presentation.main.model.NotificationGroupUi
 import com.example.nexcashapplication.feature.notification.presentation.main.model.NotificationUiModel
+import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 
 @Composable
 fun NotificationScreen(
@@ -93,6 +95,9 @@ fun NotificationContent(
         topBar = {
             TopAppBar(
                 title = { Text(stringResource(R.string.notif_title), fontWeight = FontWeight.Bold) },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
                 navigationIcon = {
                     IconButton(onClick = { onEvent(NotificationEvent.BackClicked) }) {
                         Icon(
@@ -295,7 +300,7 @@ private fun NotificationEmptyState(modifier: Modifier = Modifier) {
 @Preview(showBackground = true)
 @Composable
 private fun NotificationContentPreview() {
-    MaterialTheme { // ganti dengan NexCashTheme
+    NexCashApplicationTheme {
         NotificationContent(
             state = NotificationState(
                 isLoading = false,
@@ -335,5 +340,5 @@ private fun NotificationContentPreview() {
 @Preview(showBackground = true)
 @Composable
 private fun NotificationEmptyPreview() {
-    MaterialTheme { NotificationContent(NotificationState(isLoading = false), onEvent = {}) }
+    NexCashApplicationTheme { NotificationContent(NotificationState(isLoading = false), onEvent = {}) }
 }

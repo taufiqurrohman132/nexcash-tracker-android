@@ -38,6 +38,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -58,6 +59,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 
 @Composable
 fun NotificationEditScreen(
@@ -119,6 +121,9 @@ fun NotificationSettingsContent(
                         fontWeight = FontWeight.Bold,
                     )
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
                 navigationIcon = {
                     IconButton(onClick = { onEvent(NotificationSettingsEvent.BackClicked) }) {
                         Icon(
@@ -314,7 +319,7 @@ internal fun categoryIcon(key: String): ImageVector = when (key) {
 @Preview(showBackground = true)
 @Composable
 private fun NotificationSettingsPreview() {
-    MaterialTheme { // ganti dengan NexCashTheme
+    NexCashApplicationTheme {
         NotificationSettingsContent(
             state = NotificationSettingsState(
                 isLoading = false, masterEnabled = true,
