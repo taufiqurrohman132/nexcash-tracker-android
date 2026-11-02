@@ -31,7 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -46,10 +45,7 @@ import com.example.nexcashapplication.core.component.AppSearchBar
 import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.feature.settings.presentation.component.LanguageItem
 import com.example.nexcashapplication.feature.settings.presentation.currency.model.CurrencyItemUiModel
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.TextSecondary
 
 @Composable
 fun CurrencySettingsScreen(
@@ -104,7 +100,7 @@ fun CurrencySettingsContent(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.surface,
                 ),
                 navigationIcon = {
                     IconButton(onClick = { onEvent(CurrencySettingsEvent.OnBackClick) }) {
@@ -181,22 +177,22 @@ private fun InformationCard(modifier: Modifier = Modifier) {
                 .clip(RoundedCornerShape(16.dp))
                 .border(
                     1.dp,
-                    BorderGray,
+                    MaterialTheme.colorScheme.outlineVariant,
                     RoundedCornerShape(16.dp),
                 )
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp),
     ) {
         Icon(
             imageVector = Icons.Outlined.Info,
             contentDescription = null,
-            tint = PrimaryCyan,
+            tint = MaterialTheme.colorScheme.primary,
         )
 
         Text(
             text = stringResource(R.string.settings_currency_info),
             style = MaterialTheme.typography.bodySmall,
-            color = TextSecondary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 16.dp),
         )
 

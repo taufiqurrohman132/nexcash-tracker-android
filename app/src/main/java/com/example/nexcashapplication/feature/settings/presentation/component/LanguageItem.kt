@@ -13,14 +13,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.core.component.IconCircular
-import com.example.nexcashapplication.ui.theme.BorderGray
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.TextSecondary
-import com.example.nexcashapplication.ui.theme.TextTertiary
 
 
 @Composable
@@ -32,16 +27,30 @@ fun LanguageItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val outlineColor = if (isSelectable) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.outlineVariant
+    }
+
+    val iconBgColor = if (isSelectable) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant
+    }
+
+    val iconContentColor = if (isSelectable) {
+        MaterialTheme.colorScheme.onPrimary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+
     ListItem(
         modifier = modifier
                 .clip(RoundedCornerShape(16.dp))
                 .border(
                     width = if (isSelectable) 2.dp else 1.dp,
-                    color = if (isSelectable) {
-                        PrimaryCyan
-                    } else {
-                        BorderGray
-                    },
+                    color = outlineColor,
                     shape = RoundedCornerShape(16.dp),
                 )
                 .clickable(
@@ -53,16 +62,8 @@ fun LanguageItem(
         leadingContent = {
             IconCircular(
                 iconText = iconText,
-                backgroundColor = if (isSelectable) {
-                    PrimaryCyan
-                } else {
-                    BorderGray
-                },
-                iconColor = if (isSelectable) {
-                    Color.White
-                } else {
-                    TextSecondary
-                },
+                backgroundColor = iconBgColor,
+                iconColor = iconContentColor,
             )
         },
         headlineContent = {
@@ -76,7 +77,7 @@ fun LanguageItem(
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextTertiary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         },
@@ -85,7 +86,7 @@ fun LanguageItem(
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
                     contentDescription = null,
-                    tint = PrimaryCyan,
+                    tint = MaterialTheme.colorScheme.primary,
                 )
             }
         },

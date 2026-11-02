@@ -65,9 +65,7 @@ import com.example.nexcashapplication.feature.settings.presentation.main.model.S
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.NOTIFIKASI
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.PUSAT_BANTUAN
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.TEMA_WARNA
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.TextTertiary
 
 @Composable
 fun SettingsScreen(
@@ -163,7 +161,7 @@ fun SettingsContent(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.surface,
                 ),
             )
         },
@@ -177,12 +175,12 @@ fun SettingsContent(
         ) {
             FormField(
                 title = stringResource(R.string.settings_section_preferences),
-                textColor = TextTertiary,
+                textColor = MaterialTheme.colorScheme.onSurfaceVariant,
             ) {
                 Column(
                     modifier = Modifier.border(
                         1.dp,
-                        BorderGray,
+                        MaterialTheme.colorScheme.outlineVariant,
                         RoundedCornerShape(16.dp),
                     )
                 ){
@@ -200,13 +198,13 @@ fun SettingsContent(
                                     stringResource(AppLanguage.fromCode(state.language).nameResId),
                                 ),
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                color = TextTertiary,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         },
                     )
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        color = BorderGray,
+                        color = MaterialTheme.colorScheme.outlineVariant,
                     )
                     SettingsItem(
                         icon = Icons.Outlined.CurrencyExchange,
@@ -223,13 +221,13 @@ fun SettingsContent(
                                     currency.code,
                                 ),
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                color = TextTertiary,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                         },
                     )
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        color = BorderGray,
+                        color = MaterialTheme.colorScheme.outlineVariant,
                     )
                     SettingsItem(
                         icon = Icons.Outlined.Palette,
@@ -251,7 +249,7 @@ fun SettingsContent(
                     )
                     HorizontalDivider(
                         modifier = Modifier.padding(horizontal = 16.dp),
-                        color = BorderGray,
+                        color = MaterialTheme.colorScheme.outlineVariant,
                     )
                     SettingsItem(
                         icon = Icons.Outlined.Notifications,
@@ -266,13 +264,13 @@ fun SettingsContent(
 
             FormField(
                 title = stringResource(R.string.settings_section_manage_data),
-                textColor = TextTertiary,
+                textColor = MaterialTheme.colorScheme.onSurfaceVariant,
 
                 ) {
                 Column(
                     modifier = Modifier.border(
                         1.dp,
-                        BorderGray,
+                        MaterialTheme.colorScheme.outlineVariant,
                         RoundedCornerShape(16.dp),
                     )
                 ){
@@ -342,7 +340,7 @@ fun SettingsItem(
             IconCircular(
                 icon = icon,
                 iconToCountainerRatio = 2,
-                backgroundColor = BorderGray,
+                backgroundColor = MaterialTheme.colorScheme.surfaceVariant,
             )
         },
         headlineContent = {
@@ -356,7 +354,7 @@ fun SettingsItem(
                 Text(
                     text = subtitle,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = TextTertiary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         },
@@ -369,7 +367,7 @@ fun SettingsItem(
                 Icon(
                     imageVector = Icons.Default.KeyboardArrowRight,
                     contentDescription = null,
-                    tint = BorderGray,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         },

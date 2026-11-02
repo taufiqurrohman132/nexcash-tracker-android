@@ -8,7 +8,6 @@ import android.os.Build
 import android.os.LocaleList
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,12 +20,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -40,7 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,21 +48,16 @@ import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.AppButton
 import com.example.nexcashapplication.core.component.AppSearchBar
-import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.feature.settings.presentation.component.LanguageItem
 import com.example.nexcashapplication.feature.settings.presentation.language.model.LanguageItemUiModel
-import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.*
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.BAHASA
+import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.KATEGORI
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.MATA_UANG
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.NOTIFIKASI
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.PUSAT_BANTUAN
 import com.example.nexcashapplication.feature.settings.presentation.main.model.SettingsDestinations.TEMA_WARNA
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.TextSecondary
-import com.example.nexcashapplication.ui.theme.TextTertiary
 import java.util.Locale
 
 @Composable
@@ -98,6 +89,7 @@ fun LanguageSettingsScreen(
                     // (bukan konteks komposisi), jadi composable tidak boleh dipanggil.
                     snackbarHostState.showSnackbar(effect.message.resolve(context))
                 }
+
                 LanguageSettingsEffect.NavigateBack -> navController.popBackStack()
 
                 // Bahasa sudah tersimpan & AppLocale diterapkan: tutup layar, lalu paksa
@@ -139,7 +131,7 @@ fun LanguageSettingsContent(
                     )
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.surface,
                 ),
                 navigationIcon = {
                     IconButton(onClick = { onEvent(LanguageSettingsEvent.OnBackClick) }) {
@@ -179,8 +171,8 @@ fun LanguageSettingsContent(
 
 
             LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ){
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+            ) {
                 items(
                     state.listLanguage,
                     key = { it.id },
@@ -202,7 +194,6 @@ fun LanguageSettingsContent(
             }
 
 
-
         }
     }
 }
@@ -215,22 +206,22 @@ private fun InformationCard(modifier: Modifier = Modifier) {
                 .clip(RoundedCornerShape(16.dp))
                 .border(
                     1.dp,
-                    BorderGray,
+                    MaterialTheme.colorScheme.outlineVariant,
                     RoundedCornerShape(16.dp),
                 )
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(16.dp),
     ) {
         Icon(
             imageVector = Icons.Outlined.Info,
             contentDescription = null,
-            tint = PrimaryCyan,
+            tint = MaterialTheme.colorScheme.primary,
         )
 
         Text(
             text = stringResource(R.string.settings_language_info),
             style = MaterialTheme.typography.bodySmall,
-            color = TextSecondary,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 16.dp),
         )
 
@@ -273,7 +264,8 @@ private fun LanguageSettingsContentPreview() {
  */
 private fun applyLanguage(context: Context, languageCode: String) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        val manager = runCatching { context.getSystemService(LocaleManager::class.java) }.getOrNull()
+        val manager =
+            runCatching { context.getSystemService(LocaleManager::class.java) }.getOrNull()
         if (manager != null) {
             val applied = runCatching {
                 manager.applicationLocales = LocaleList(Locale.forLanguageTag(languageCode))
