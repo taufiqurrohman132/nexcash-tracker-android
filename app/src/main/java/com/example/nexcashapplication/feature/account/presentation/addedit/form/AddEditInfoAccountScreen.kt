@@ -71,10 +71,7 @@ import com.example.nexcashapplication.feature.account.presentation.addedit.form.
 import com.example.nexcashapplication.feature.account.presentation.addedit.form.model.AccountProviderUiModel
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.AmountOutlinedTextField
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.TextSecondary
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -142,7 +139,7 @@ fun AddEditAccountContent(
                         Icon(Icons.Default.KeyboardArrowLeft, contentDescription = stringResource(R.string.acct_back))
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
             )
         },
         bottomBar = {
@@ -187,7 +184,7 @@ fun AddEditAccountContent(
                                         .fillMaxWidth()
                                         .padding(16.dp),
                                 textAlign = TextAlign.Center,
-                                color = TextSecondary,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontStyle = FontStyle.Italic,
                             )
@@ -242,14 +239,14 @@ private fun SimpanAsetButton(
     enabled: Boolean,
     onClick: () -> Unit,
 ) {
-    Surface(color = Color.White, shadowElevation = 8.dp) {
+    Surface(color = MaterialTheme.colorScheme.surface, shadowElevation = 8.dp) {
         Button(
             onClick = onClick,
             enabled = enabled,
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = PrimaryCyan,
-                disabledContainerColor = PrimaryCyan.copy(alpha = 0.4f),
+                containerColor = MaterialTheme.colorScheme.primary,
+                disabledContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f),
             ),
             modifier = Modifier
                     .fillMaxWidth()
@@ -264,13 +261,13 @@ private fun SimpanAsetButton(
                     stringResource(
                         if (editMode) R.string.acct_save_changes else R.string.acct_save_asset,
                     ),
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
                 )
             }
             Spacer(Modifier.width(6.dp))
-            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = Color.White)
+            Icon(Icons.Default.ChevronRight, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
         }
     }
 }
@@ -298,15 +295,15 @@ fun FormFieldEdit(
                 placeholder = {
                     Text(
                         stringResource(R.string.acct_name_placeholder),
-                        color = TextSecondary.copy(alpha = 0.6f),
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                 },
                 isError = error != null,
                 singleLine = true,
                 shape = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryCyan,
-                    unfocusedBorderColor = BorderGray,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
                 ),
                 modifier = Modifier
                         .height(50.dp)
@@ -315,7 +312,7 @@ fun FormFieldEdit(
             Spacer(Modifier.height(6.dp))
             Text(
                 error?.asString() ?: stringResource(R.string.acct_name_hint),
-                color = if (error != null) MaterialTheme.colorScheme.error else TextSecondary,
+                color = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
             )
         }
@@ -334,21 +331,21 @@ fun FormFieldEdit(
                 trailingIcon = {
                     Surface(
                         shape = CircleShape,
-                        color = BorderGray.copy(alpha = 0.5f),
+                        color = MaterialTheme.colorScheme.outlineVariant,
                         modifier = Modifier.padding(end = 16.dp),
                     ) {
                         Text(
                             text = stringResource(R.string.acct_locked),
                             style = MaterialTheme.typography.labelSmall,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                         )
                     }
                 },
                 shape = RoundedCornerShape(14.dp),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = PrimaryCyan,
-                    unfocusedBorderColor = BorderGray,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
                 ),
                 modifier = Modifier
                         .height(50.dp)
@@ -374,7 +371,7 @@ fun FormFieldEdit(
             Spacer(Modifier.height(6.dp))
             Text(
                 stringResource(R.string.acct_balance_hint),
-                color = TextSecondary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
             )
 
@@ -395,7 +392,7 @@ fun ProviderGridItem(
                 .clip(RoundedCornerShape(16.dp))
                 .border(
                     width = 2.dp,
-                    color = if (isSelected) PrimaryCyan else BorderGray,
+                    color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
                     shape = RoundedCornerShape(16.dp),
                 )
                 .clickable { onSelect() }
@@ -403,7 +400,7 @@ fun ProviderGridItem(
     ) {
         Text(
             name,
-            color = if (isSelected) PrimaryCyan else BorderGray,
+            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
             fontWeight = FontWeight.Bold,
             style = MaterialTheme.typography.titleMedium,
         )
@@ -417,28 +414,28 @@ private fun LangkahTerakhirBanner() {
         modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(PrimaryCyan.copy(alpha = 0.1f))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
                 .padding(16.dp),
         verticalAlignment = Alignment.Top,
     ) {
 
         IconRounded(
-            iconColor = PrimaryCyan,
-            backgroundColor = PrimaryCyan.copy(alpha = 0.1f),
+            iconColor = MaterialTheme.colorScheme.primary,
+            backgroundColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
             imageVector = Icons.Outlined.Info,
         )
         Spacer(Modifier.width(12.dp))
         Column {
             Text(
                 stringResource(R.string.acct_step_last),
-                color = PrimaryCyan,
+                color = MaterialTheme.colorScheme.primary,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
             )
             Spacer(Modifier.height(2.dp))
             Text(
                 stringResource(R.string.acct_step_last_desc),
-                color = TextSecondary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 13.sp,
             )
         }

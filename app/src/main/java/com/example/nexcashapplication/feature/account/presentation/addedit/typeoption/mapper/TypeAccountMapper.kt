@@ -16,7 +16,6 @@ import androidx.compose.ui.graphics.Color
 import com.example.nexcashapplication.feature.account.domain.model.TypeAccount
 import com.example.nexcashapplication.feature.account.presentation.addedit.typeoption.model.TypeAccountItem
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.labelResId
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 /**
  * Label tipe akun berupa string resource `account_type_*` supaya mengikuti bahasa aktif —
@@ -35,7 +34,7 @@ fun TypeAccount.toUiItem(): TypeAccountItem = when (this) {
     TypeAccount.BANK -> TypeAccountItem(
         type = this,
         icon = Icons.Outlined.AccountBalance,
-        iconColor = PrimaryCyan,
+        iconColor = Color(0xFF003DFF),
     )
 
     TypeAccount.CARD -> TypeAccountItem(

@@ -75,9 +75,6 @@ import com.example.nexcashapplication.feature.account.presentation.addedit.typeo
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiGroupModel
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.SecondaryDeepPurple
-import com.example.nexcashapplication.ui.theme.TextTertiary
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -196,7 +193,7 @@ fun AccountAssetContent(
                         Text(
                             text = stringResource(R.string.acct_empty_subtitle),
                             style = MaterialTheme.typography.bodySmall,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(Modifier.height(12.dp))
                         Button(onClick = { onEvent(AccountAssetEvent.OnAddAccountClick) }) {
@@ -229,7 +226,7 @@ fun AccountAssetContent(
                                 Box(
                                     modifier = Modifier
                                             .fillMaxWidth()
-                                            .background(Color.White),
+                                            .background(MaterialTheme.colorScheme.surface),
                                 ) {
                                     // Semua akun grup sudah ikut dirender di daftar ini, dan
                                     // belum ada layar tujuan untuk "semua akun per tipe" →
@@ -281,8 +278,8 @@ fun TotalBalanceCard(
                 .background(
                     Brush.linearGradient(
                         listOf(
-                            PrimaryCyan,
-                            SecondaryDeepPurple,
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.secondary,
 
                             ),
                     ),
@@ -423,7 +420,7 @@ private fun AccountRow(
             modifier = Modifier
                     .width(3.dp)
                     .fillMaxHeight()
-                    .background(PrimaryCyan),
+                    .background(MaterialTheme.colorScheme.primary),
         )
         Row(
             modifier = Modifier
@@ -476,7 +473,7 @@ private fun AccountRow(
             Icon(
                 Icons.Filled.ChevronRight,
                 contentDescription = null,
-                tint = TextTertiary,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }

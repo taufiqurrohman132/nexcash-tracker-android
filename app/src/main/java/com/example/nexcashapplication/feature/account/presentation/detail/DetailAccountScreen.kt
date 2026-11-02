@@ -86,8 +86,6 @@ import com.example.nexcashapplication.feature.account.presentation.addedit.form.
 import com.example.nexcashapplication.feature.account.presentation.main.mapper.labelResId
 import com.example.nexcashapplication.feature.account.presentation.shared.component.DeleteAccountDialog
 import com.example.nexcashapplication.core.domain.model.TypeCategory
-import com.example.nexcashapplication.ui.theme.BorderGray
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.collectLatest
 
 @Composable
@@ -172,7 +170,7 @@ fun DetailAssetContent(
                         Icon(Icons.Default.KeyboardArrowLeft, contentDescription = stringResource(R.string.acct_back))
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
             )
         },
 
@@ -282,23 +280,23 @@ fun AssetSettingsSection(onEvent: (DetailAccountEvent) -> Unit) {
         Text(
             stringResource(R.string.acct_asset_settings),
             fontSize = 11.sp,
-            color = Color(0xFF999999),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             letterSpacing = 0.5.sp,
         )
         Spacer(Modifier.height(8.dp))
         SettingsRow(
             icon = Icons.Default.Edit,
             label = stringResource(R.string.acct_edit_asset),
-            tint = PrimaryCyan,
-            background = PrimaryCyan.copy(alpha = 0.1f),
+            tint = MaterialTheme.colorScheme.primary,
+            background = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
             onClick = { onEvent(DetailAccountEvent.OnEditAccountClick) },
         )
         Spacer(Modifier.height(10.dp))
         SettingsRow(
             icon = Icons.Default.DeleteOutline,
             label = stringResource(R.string.acct_delete_this_asset),
-            tint = Color(0xFFE6455B),
-            background = Color(0xFFFCEEF0),
+            tint = MaterialTheme.colorScheme.error,
+            background = MaterialTheme.colorScheme.errorContainer,
             onClick = { onEvent(DetailAccountEvent.OnDeleteAccountClick) },
         )
     }
@@ -371,7 +369,7 @@ private fun ActionButtons(onEvent: (DetailAccountEvent) -> Unit) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         contentPadding = PaddingValues(14.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF29C5E0)),
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary, contentColor = MaterialTheme.colorScheme.onPrimary),
     ) {
         Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
         Spacer(Modifier.width(6.dp))
@@ -392,7 +390,7 @@ fun BalanceCard(
     Column(
         modifier = Modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(PrimaryCyan.copy(alpha = 0.1f))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
                 .padding(16.dp),
     ) {
         Row(
@@ -400,7 +398,7 @@ fun BalanceCard(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(stringResource(R.string.acct_total_balance), fontSize = 13.sp, color = Color(0xFF5B6B70))
+            Text(stringResource(R.string.acct_total_balance), fontSize = 13.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             AssistChip(
                 onClick = {},
                 shape = CircleShape,
@@ -408,15 +406,15 @@ fun BalanceCard(
                     Text(
                         stringResource(state.typeAccount.labelResId),
                         fontSize = 12.sp,
-                        color = PrimaryCyan,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 },
                 colors = AssistChipDefaults.assistChipColors(
-                    containerColor = PrimaryCyan.copy(alpha = 0.1f),
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                 ),
                 border = AssistChipDefaults.assistChipBorder(
                     enabled = true,
-                    borderColor = PrimaryCyan.copy(alpha = 0.5f),
+                    borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
                     borderWidth = 1.dp,
                 ),
                 modifier = Modifier.height(28.dp), // paksa lebih pendek dari minimum touch target
@@ -427,7 +425,7 @@ fun BalanceCard(
             text = state.balance.formatCurrency(),
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF1A2B2E),
+            color = MaterialTheme.colorScheme.onSurface,
         )
         Spacer(Modifier.height(4.dp))
         Text(
@@ -437,7 +435,7 @@ fun BalanceCard(
                 state.providers?.name.orEmpty(),
             ),
             fontSize = 12.sp,
-            color = Color(0xFF5B6B70),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 

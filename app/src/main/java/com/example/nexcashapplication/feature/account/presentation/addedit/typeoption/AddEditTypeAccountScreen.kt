@@ -213,14 +213,14 @@ private fun HintBox() {
         modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFFEAF6FF))
+                .background(MaterialTheme.colorScheme.primaryContainer)
                 .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             Icons.AutoMirrored.Outlined.TrendingUp,
             contentDescription = null,
-            tint = Color(0xFF3B9FE0),
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(18.dp),
         )
         Spacer(Modifier.width(8.dp))
@@ -228,7 +228,7 @@ private fun HintBox() {
             stringResource(R.string.acct_asset_type_hint),
             style = MaterialTheme.typography.bodySmall,
             fontStyle = FontStyle.Italic,
-            color = Color(0xFF2B7EBF),
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
         )
     }
 }
