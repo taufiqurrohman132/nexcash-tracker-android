@@ -24,7 +24,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,8 +43,6 @@ import com.example.nexcashapplication.feature.dashboard.presentation.ui.componen
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.components.HeaderSection
 import com.example.nexcashapplication.feature.dashboard.presentation.ui.components.QuickActionSection
 import com.example.nexcashapplication.core.component.TransactionItem
-import com.example.nexcashapplication.ui.theme.BorderGray
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 @Composable
 fun DashboardScreen(
@@ -116,7 +113,8 @@ fun DashboardContent(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(
-                containerColor = PrimaryCyan,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 onClick = { onEvent(DashboardEvent.OnAddTransactionClick) }
             ) {
                 Icon(
@@ -179,7 +177,7 @@ fun DashboardContent(
                             .padding(horizontal = 16.dp)
                             .border(
                                 width = 1.dp,
-                                color = BorderGray,
+                                color = MaterialTheme.colorScheme.outlineVariant,
                                 shape = RoundedCornerShape(16.dp)
                             )
                 ) {
@@ -200,7 +198,7 @@ fun DashboardContent(
                                     .fillMaxWidth()
                                     .padding(vertical = 24.dp),
                             textAlign = TextAlign.Center,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     } else if (state.transactions.isEmpty()) {
                         Text(
@@ -209,7 +207,7 @@ fun DashboardContent(
                                     .fillMaxWidth()
                                     .padding(vertical = 24.dp),
                             textAlign = TextAlign.Center,
-                            color = Color.Gray,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     } else {
                         // DAO sudah LIMIT 5 → take(5) di sini cuma buang-buang;
@@ -227,6 +225,7 @@ fun DashboardContent(
 
                             if (index != state.transactions.lastIndex) {
                                 HorizontalDivider(
+                                    color = MaterialTheme.colorScheme.outlineVariant,
                                     modifier = Modifier.padding(horizontal = 16.dp)
                                 )
                             }
