@@ -56,9 +56,7 @@ import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.feature.category.presentation.delete.model.CategoryDeleteItemUI
 import com.example.nexcashapplication.feature.category.presentation.delete.model.DeleteOption
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.collectLatest
 
 import androidx.compose.foundation.rememberScrollState
@@ -139,7 +137,7 @@ fun DeleteCategoryContent(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             Column {
-                HorizontalDivider(color = BorderGray.copy(alpha = 0.5f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 Box(
                     modifier = Modifier
                             .fillMaxWidth()
@@ -153,9 +151,9 @@ fun DeleteCategoryContent(
                         enabled = state.isConfirmEnabled,
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red,
-                            contentColor = Color.White,
-                            disabledContainerColor = Color.Red.copy(alpha = 0.3f)
+                            containerColor = MaterialTheme.colorScheme.error,
+                            contentColor = MaterialTheme.colorScheme.onError,
+                            disabledContainerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.3f)
                         )
                     ) {
                         Text(
@@ -183,8 +181,8 @@ fun DeleteCategoryContent(
 
                 IconCircular(
                     icon = Icons.Default.Warning,
-                    iconColor = Color.Red,
-                    backgroundColor = Color.Red.copy(alpha = 0.1f),
+                    iconColor = MaterialTheme.colorScheme.error,
+                    backgroundColor = MaterialTheme.colorScheme.errorContainer,
                     iconSize = 72.dp,
                     iconToCountainerRatio = 2,
                 )
@@ -204,7 +202,7 @@ fun DeleteCategoryContent(
                     ),
                     textAlign = TextAlign.Center,
                     fontSize = 13.sp,
-                    color = Color(0xFF888888),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Spacer(Modifier.height(20.dp))
@@ -268,11 +266,11 @@ fun OptionCard(
         onClick = onClick,
         shape = RoundedCornerShape(14.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (selected) PrimaryCyan.copy(alpha = 0.1f) else Color.White,
+            containerColor = if (selected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surface,
         ),
         border = BorderStroke(
             width = if (selected) 1.5.dp else 1.dp,
-            color = if (selected) PrimaryCyan else BorderGray,
+            color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
         ),
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -295,13 +293,13 @@ fun OptionCard(
                         modifier = Modifier
                                 .size(18.dp)
                                 .padding(top = 2.dp),
-                        tint = if (selected) Color(0xFF3B82F6) else Color(0xFF555555),
+                        tint = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     Spacer(Modifier.width(8.dp))
                     Text(title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
                 }
                 Spacer(Modifier.height(2.dp))
-                Text(description, fontSize = 12.sp, color = Color(0xFF999999))
+                Text(description, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
@@ -336,15 +334,15 @@ private fun CategoryDropdown(
                     .menuAnchor()
                     .fillMaxWidth(),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = PrimaryCyan,
-                unfocusedBorderColor = BorderGray,
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
             ),
         )
         ExposedDropdownMenu(
             expanded = expanded,
             onDismissRequest = { onExpandedChange() },
             shape = RoundedCornerShape(16.dp),
-            containerColor = Color.White,
+            containerColor = MaterialTheme.colorScheme.surface,
         ) {
             categories.forEach { category ->
                 key(category.id) {
@@ -363,7 +361,7 @@ private fun CategoryDropdown(
                                 Icon(
                                     Icons.Filled.Check,
                                     contentDescription = null,
-                                    tint = PrimaryCyan,
+                                    tint = MaterialTheme.colorScheme.primary,
                                 )
                             }
                         },

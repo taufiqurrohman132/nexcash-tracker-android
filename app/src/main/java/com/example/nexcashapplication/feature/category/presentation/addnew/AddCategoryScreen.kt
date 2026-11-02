@@ -80,11 +80,7 @@ import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.nameResId
 import com.example.nexcashapplication.feature.category.presentation.main.CategoryEffect
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.TextSecondary
-import com.example.nexcashapplication.ui.theme.TextTertiary
 import io.mhssn.colorpicker.ColorPickerDialog
 import io.mhssn.colorpicker.ColorPickerType
 
@@ -138,7 +134,7 @@ fun AddCategoryContent(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
             )
         },
     ) { padding ->
@@ -171,14 +167,14 @@ fun AddCategoryContent(
                     placeholder = {
                         Text(
                             text = stringResource(R.string.cat_name_placeholder),
-                            color = TextTertiary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     },
                     singleLine = true,
                     shape = RoundedCornerShape(14.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryCyan,
-                        unfocusedBorderColor = BorderGray,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
                     ),
                     textStyle = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
@@ -220,12 +216,12 @@ fun AddCategoryContent(
                     placeholder = {
                         Text(
                             stringResource(R.string.cat_note_placeholder),
-                            color = TextTertiary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     },
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryCyan,
-                        unfocusedBorderColor = BorderGray,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
                     ),
                     shape = RoundedCornerShape(14.dp),
                     modifier = Modifier
@@ -246,8 +242,8 @@ fun AddCategoryContent(
 
             AppButton(
                 title = stringResource(R.string.cat_cancel_back_action),
-                textColor = TextSecondary,
-                backgroundColor = Color.White,
+                textColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                backgroundColor = MaterialTheme.colorScheme.surface,
                 onClick = { onEvent(AddCategoryEvent.OnBackClicked) },
             )
 
@@ -283,7 +279,7 @@ fun AddCategoryContent(
                         width = 40.dp,
                     )
                 },
-                containerColor = Color.White,
+                containerColor = MaterialTheme.colorScheme.surface,
                 onDismissRequest = { showBottomSheet = false },
                 sheetState = sheetState,
             ) {
@@ -330,7 +326,7 @@ fun ParentCategoryBanner(
                 Text(
                     text = stringResource(R.string.cat_subcategory_of),
                     style = MaterialTheme.typography.titleSmall,
-                    color = TextSecondary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = nameCategory,
@@ -359,7 +355,7 @@ fun ColorSwatchRow(
                         .size(46.dp)
                         .then(
                             if (color == selectedColor) {
-                                Modifier.border(2.dp, Color.Black, CircleShape)
+                                Modifier.border(2.dp, MaterialTheme.colorScheme.onSurface, CircleShape)
                             } else Modifier,
                         )
                         .padding(4.dp)
@@ -408,16 +404,16 @@ fun TipeKategoriToggle(
                 },
                 shape = RoundedCornerShape(50), // full rounded / pill shape
                 colors = FilterChipDefaults.filterChipColors(
-                    containerColor = Color.White,
-                    labelColor = Color.Black,
-                    selectedContainerColor = PrimaryCyan.copy(alpha = 0.12f),
-                    selectedLabelColor = PrimaryCyan,
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    labelColor = MaterialTheme.colorScheme.onSurface,
+                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    selectedLabelColor = MaterialTheme.colorScheme.primary,
                 ),
                 border = FilterChipDefaults.filterChipBorder(
                     enabled = true,
                     selected = isSelected,
-                    borderColor = BorderGray,
-                    selectedBorderColor = PrimaryCyan,
+                    borderColor = MaterialTheme.colorScheme.outlineVariant,
+                    selectedBorderColor = MaterialTheme.colorScheme.primary,
                     borderWidth = 1.dp,
                     selectedBorderWidth = 1.dp,
                 ),
@@ -460,15 +456,15 @@ fun IconPreviewRow(
                 elevation = 16.dp,
                 shape = RoundedCornerShape(16.dp),
                 clip = false,
-                ambientColor = PrimaryCyan,
-                spotColor = PrimaryCyan,
+                ambientColor = MaterialTheme.colorScheme.primary,
+                spotColor = MaterialTheme.colorScheme.primary,
             ),
             icon = Icons.Default.GridView,
             isSelected = false,
             onClick = { onMenuIconClick() },
             contentDescription = stringResource(R.string.cat_see_all_icons_desc),
-            iconColor = Color.White,
-            backgroundColor = PrimaryCyan,
+            iconColor = MaterialTheme.colorScheme.onPrimary,
+            backgroundColor = MaterialTheme.colorScheme.primary,
         )
     }
 }
@@ -490,13 +486,13 @@ fun IconChip(
                 .background(
                     backgroundColor ?: run {
                         if (isSelected) MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
-                        else Color.White
+                        else MaterialTheme.colorScheme.surface
                     },
                 )
                 .border(
                     width = if (isSelected) 2.dp else 1.dp,
                     color = if (isSelected) MaterialTheme.colorScheme.primary
-                    else BorderGray,
+                    else MaterialTheme.colorScheme.outlineVariant,
                     shape = RoundedCornerShape(16.dp),
                 )
                 .clickable(onClick = onClick),
@@ -506,7 +502,7 @@ fun IconChip(
             imageVector = icon,
             contentDescription = contentDescription,
             tint = iconColor ?: run {
-                if (isSelected) MaterialTheme.colorScheme.primary else Color(0xFF666666)
+                if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             },
             modifier = Modifier.size(24.dp),
         )
@@ -602,7 +598,7 @@ private fun AddColorButton(onClick: () -> Unit) {
                     .matchParentSize() // makin kecil dari parent = makin tebel ring-nya
                     .padding(6.dp)
                     .clip(CircleShape)
-                    .background(Color.White),
+                    .background(MaterialTheme.colorScheme.surface),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
@@ -697,7 +693,7 @@ private fun AddCategoryContentSubCategoryPreview() {
                     id = "id_transportasi",
                     name = "Transportasi",
                     icon = CategoryIcons.lainnya[0], // sesuaikan sama enum/sealed class icon kamu
-                    color = PrimaryCyan,
+                    color = MaterialTheme.colorScheme.primary,
                 ),
                 selectedColor = Color(0xFF3B82F6),
             ),

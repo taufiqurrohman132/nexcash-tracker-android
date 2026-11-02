@@ -78,7 +78,6 @@ import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.presentation.addnew.constant.CategoryIcons
 import com.example.nexcashapplication.feature.category.presentation.main.model.CategoryItem
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.flow.distinctUntilChanged
 
 // ============ DUMMY DATA ============
@@ -171,16 +170,16 @@ fun CategoryContent(
                         Icon(
                             imageVector = Icons.Default.Add,
                             contentDescription = stringResource(R.string.cat_action_add),
-                            tint = PrimaryCyan,
+                            tint = MaterialTheme.colorScheme.primary,
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.White,
+                    containerColor = MaterialTheme.colorScheme.surface,
                 ),
             )
         },
-        containerColor = Color.White,
+        containerColor = MaterialTheme.colorScheme.surface,
         modifier = modifier,
     ) { padding ->
         Column(
@@ -271,15 +270,15 @@ fun CategorySearchBar(
 //        },
         shape = RoundedCornerShape(50.dp),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = Color(0xFFF2F2F2),
-            unfocusedContainerColor = Color(0xFFF2F2F2),
-            disabledContainerColor = Color(0xFFF2F2F2),
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant,
 
-            focusedBorderColor = PrimaryCyan,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = Color.Transparent,
             disabledBorderColor = Color.Transparent,
 
-            cursorColor = Color.Black,
+            cursorColor = MaterialTheme.colorScheme.primary,
         ),
     )
 }
@@ -296,7 +295,7 @@ fun BudgetSummaryCard(
         modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .background(PrimaryCyan.copy(alpha = 0.1f))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
                 .padding(16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -304,13 +303,13 @@ fun BudgetSummaryCard(
             modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(PrimaryCyan.copy(alpha = 0.15f)),
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
             contentAlignment = Alignment.Center,
         ) {
             Icon(
                 imageVector = Icons.Outlined.AccountBalanceWallet,
                 contentDescription = null,
-                tint = PrimaryCyan,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(22.dp),
             )
         }
@@ -321,26 +320,26 @@ fun BudgetSummaryCard(
                 Text(
                     stringResource(R.string.cat_total_budget),
                     fontSize = 12.sp,
-                    color = Color(0xFF7A8A99),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = totalBudget.formatCurrency(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     stringResource(R.string.cat_remaining_short),
                     fontSize = 12.sp,
-                    color = Color(0xFF7A8A99),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = (remainingBudget).formatCurrency(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
         } else {
@@ -348,13 +347,13 @@ fun BudgetSummaryCard(
                 Text(
                     stringResource(R.string.cat_total_income_month),
                     fontSize = 12.sp,
-                    color = Color(0xFF7A8A99),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(
                     text = totalPemasukan.formatCurrency(),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
             }
         }
@@ -377,8 +376,8 @@ fun CategoryPager(
     Column(modifier = modifier) {
         PrimaryTabRow(
             selectedTabIndex = pagerState.currentPage,
-            containerColor = Color.White,
-            contentColor = PrimaryCyan,
+            containerColor = MaterialTheme.colorScheme.surface,
+            contentColor = MaterialTheme.colorScheme.primary,
             indicator = {
                 TabRowDefaults.PrimaryIndicator(
                     modifier = Modifier.tabIndicatorOffset(
@@ -386,7 +385,7 @@ fun CategoryPager(
                         matchContentSize = false,
                     ),
                     width = Dp.Unspecified,
-                    color = PrimaryCyan,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             },
 
@@ -402,8 +401,8 @@ fun CategoryPager(
                             fontWeight = if (tabs[pagerState.currentPage] == type) FontWeight.Bold else FontWeight.Medium,
                         )
                     },
-                    selectedContentColor = PrimaryCyan,
-                    unselectedContentColor = Color(0xFF7A8A99),
+                    selectedContentColor = MaterialTheme.colorScheme.primary,
+                    unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -451,7 +450,7 @@ fun CategoryGrid(
             ) {
                 Text(
                     text = stringResource(R.string.cat_empty_no_category),
-                    color = Color(0xFF9E9E9E),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp,
                 )
             }
@@ -486,15 +485,15 @@ fun CategoryCard(
     onClick: () -> Unit,
 ) {
     val isOverBudget = item.persentase > 100
-    val progressColor = if (isOverBudget) Color.Red else PrimaryCyan
-    val badgeBg = if (isOverBudget) Color(0xFFFFEBEE) else Color(0xFFF2F2F2)
-    val badgeText = if (isOverBudget) Color(0xFFE53935) else Color(0xFF616161)
+    val progressColor = if (isOverBudget) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+    val badgeBg = if (isOverBudget) MaterialTheme.colorScheme.errorContainer else MaterialTheme.colorScheme.surfaceVariant
+    val badgeText = if (isOverBudget) MaterialTheme.colorScheme.onErrorContainer else MaterialTheme.colorScheme.onSurfaceVariant
 
     Column(
         modifier = modifier
                 .clip(RoundedCornerShape(16.dp))
-                .background(Color.White)
-                .border(1.dp, Color(0xFFEFEFEF), RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(16.dp))
                 .clickable { onClick() }
                 .padding(14.dp),
     ) {
@@ -533,11 +532,11 @@ fun CategoryCard(
         }
 
         Spacer(Modifier.height(10.dp))
-        Text(item.nama, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = Color.Black)
+        Text(item.nama, fontSize = 15.sp, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onSurface)
         Text(
             stringResource(item.tipe.labelResId),
             fontSize = 12.sp,
-            color = Color(0xFF9E9E9E),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         Spacer(Modifier.height(8.dp))
@@ -546,12 +545,12 @@ fun CategoryCard(
                 text = (item.terpakai).formatCurrency(),
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
             )
             Text(
                 text = stringResource(R.string.cat_used_of_budget_format, item.budget.formatCurrency()),
                 fontSize = 11.sp,
-                color = Color(0xFF9E9E9E),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
 
@@ -563,7 +562,7 @@ fun CategoryCard(
                     .height(6.dp)
                     .clip(RoundedCornerShape(50)),
             color = progressColor,
-            trackColor = Color(0xFFE8F7FD),
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
     }
 }
@@ -578,7 +577,7 @@ fun AddCategoryButton(onClick: () -> Unit) {
                 .clip(RoundedCornerShape(16.dp))
                 .drawBehind {
                     drawRoundRect(
-                        color = Color(0xFFBDBDBD),
+                        color = MaterialTheme.colorScheme.outlineVariant,
                         style = Stroke(
                             width = 2.dp.toPx(),
                             pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f), 0f),
@@ -593,13 +592,13 @@ fun AddCategoryButton(onClick: () -> Unit) {
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = null,
-                tint = Color(0xFF757575),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp),
             )
             Spacer(Modifier.width(6.dp))
             Text(
                 stringResource(R.string.cat_add_new_category),
-                color = Color(0xFF757575),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
             )

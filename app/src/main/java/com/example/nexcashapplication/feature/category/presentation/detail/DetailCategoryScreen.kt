@@ -92,11 +92,7 @@ import com.example.nexcashapplication.feature.category.presentation.addnew.const
 import com.example.nexcashapplication.feature.category.presentation.detail.model.DetailCategoryUiModel
 import com.example.nexcashapplication.feature.category.presentation.detail.model.ParentBudgetUiModel
 import com.example.nexcashapplication.feature.category.presentation.shared.model.CategoryUiItemModel
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.SecondaryDeepPurple
-import com.example.nexcashapplication.ui.theme.TextTertiary
 import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.compose.cartesian.axis.HorizontalAxis
 import com.patrykandpatrick.vico.compose.cartesian.axis.VerticalAxis
@@ -363,7 +359,7 @@ fun DetailCategoryContent(
                         expanded = showActionMenu,
                         onDismissRequest = { showActionMenu = false },
                         shape = RoundedCornerShape(16.dp),
-                        containerColor = Color.White
+                        containerColor = MaterialTheme.colorScheme.surface
                     ) {
                         DropdownMenuItem(
                             text = { Text(stringResource(R.string.cat_edit_category)) },
@@ -394,18 +390,18 @@ fun DetailCategoryContent(
                 ExtendedFloatingActionButton(
                     shape = CircleShape,
                     onClick = { onEvent(DetailCategoryEvent.OnAddSubCategoryClick) },
-                    containerColor = PrimaryCyan,
+                    containerColor = MaterialTheme.colorScheme.primary,
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            tint = Color.White,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             contentDescription = null, // udah ada text di sebelahnya
                         )
                     },
                     text = {
                         Text(
                             text = stringResource(R.string.cat_fab_subcategory),
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                         )
                     },
                 )
@@ -509,8 +505,8 @@ fun TransactionListCard(
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, BorderGray),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Column(modifier = Modifier.padding(vertical = 4.dp)) {
             transactions.forEachIndexed { index, transactionUi ->
@@ -523,7 +519,7 @@ fun TransactionListCard(
                         modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp),
-                        color = BorderGray,
+                        color = MaterialTheme.colorScheme.outlineVariant,
                         thickness = 1.dp,
                     )
                 }
@@ -610,8 +606,8 @@ fun SubcategoryCard(
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, BorderGray),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
             Row(
@@ -623,13 +619,13 @@ fun SubcategoryCard(
                     modifier = Modifier
                             .size(36.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(PrimaryCyan.copy(alpha = 0.1f)),
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
                         subcategory.icon.icon,
                         contentDescription = null,
-                        tint = PrimaryCyan,
+                        tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(18.dp),
                     )
                 }
@@ -656,13 +652,13 @@ fun SubcategoryCard(
                 hasBudget -> Text(
                     text = subcategory.totalBudget.formatCurrency(),
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextTertiary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 isEmpty -> Text(
                     text = stringResource(R.string.cat_no_transactions),
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextTertiary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 else -> {
@@ -672,7 +668,7 @@ fun SubcategoryCard(
                             subcategory.usedBudget.formatCurrency(),
                         ),
                         style = MaterialTheme.typography.bodySmall,
-                        color = TextTertiary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                     )
                     if (parentTotalBudget > 0L && parentName.isNotBlank()) {
                         Text(
@@ -682,7 +678,7 @@ fun SubcategoryCard(
                                 parentName,
                             ),
                             style = MaterialTheme.typography.labelSmall,
-                            color = TextTertiary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -696,8 +692,8 @@ fun SubcategoryCard(
                             .fillMaxWidth()
                             .height(4.dp)
                             .clip(RoundedCornerShape(50)),
-                    color = PrimaryCyan,
-                    trackColor = BorderGray,
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.surfaceVariant,
                 )
             }
         }
@@ -734,8 +730,8 @@ fun SubCategoryBudgetCard(
                 .background(
                     Brush.linearGradient(
                         colors = listOf(
-                            PrimaryCyan,
-                            SecondaryDeepPurple,
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.secondary,
                         ),
                     ),
                 )
@@ -757,7 +753,7 @@ fun SubCategoryBudgetCard(
                     Box(
                         modifier = Modifier
                                 .clip(RoundedCornerShape(50))
-                                .background(PrimaryCyan.copy(alpha = 0.5f))
+                                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
                                 .padding(horizontal = 12.dp, vertical = 4.dp),
                     ) {
                         Text(
@@ -813,7 +809,7 @@ fun SubCategoryBudgetCard(
                             text = parentInfo.thisUsedBudget.formatCurrency(),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                         )
                     }
 
@@ -827,7 +823,7 @@ fun SubCategoryBudgetCard(
                             text = remainingInduk.formatCurrency(),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = FontWeight.SemiBold,
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                         )
                     }
                 }
@@ -855,8 +851,8 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
                 .background(
                     Brush.linearGradient(
                         colors = listOf(
-                            PrimaryCyan,
-                            SecondaryDeepPurple,
+                            MaterialTheme.colorScheme.primary,
+                            MaterialTheme.colorScheme.secondary,
                         ),
 
                         ),
@@ -878,7 +874,7 @@ fun BudgetSummaryCard(totalBudget: String, used: String, remaining: String, used
                 Box(
                     modifier = Modifier
                             .clip(RoundedCornerShape(50))
-                            .background(PrimaryCyan.copy(alpha = 0.5f))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.5f))
                             .padding(horizontal = 12.dp, vertical = 4.dp),
                 ) {
                     Text(
@@ -1002,9 +998,9 @@ fun WeeklyTrendChart(
                 .fillMaxWidth()
                 .height(220.dp),
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        border = BorderStroke(1.dp, BorderGray),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
         // Data selalu berisi 7 slot (0 = tanpa transaksi). Bila semua nol, berarti
         // benar-benar tidak ada transaksi minggu ini → tampilkan empty state,
@@ -1024,14 +1020,14 @@ private fun WeeklyTrendEmptyState(modifier: Modifier = Modifier) {
             Icon(
                 imageVector = Icons.Outlined.ShowChart,
                 contentDescription = null,
-                tint = TextTertiary,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(32.dp),
             )
             Spacer(Modifier.height(8.dp))
             Text(
                 text = stringResource(R.string.cat_no_weekly_data),
                 style = MaterialTheme.typography.bodySmall,
-                color = TextTertiary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
     }
@@ -1071,11 +1067,11 @@ private fun WeeklyTrendChartContent(
             rememberLineCartesianLayer(
                 lineProvider = LineCartesianLayer.LineProvider.series(
                     LineCartesianLayer.rememberLine(
-                        fill = LineCartesianLayer.LineFill.single(Fill(PrimaryCyan)),
+                        fill = LineCartesianLayer.LineFill.single(Fill(MaterialTheme.colorScheme.primary)),
                         areaFill = LineCartesianLayer.AreaFill.single(
                             Fill(
                                 Brush.verticalGradient(
-                                    listOf(PrimaryCyan.copy(alpha = 0.4f), Color.Transparent),
+                                    listOf(MaterialTheme.colorScheme.primary.copy(alpha = 0.4f), Color.Transparent),
                                 ),
                             ),
                         ),
@@ -1086,16 +1082,16 @@ private fun WeeklyTrendChartContent(
             ),
             startAxis = VerticalAxis.rememberStart(
                 label = rememberTextComponent(
-                    style = TextStyle(color = TextTertiary, fontSize = 12.sp),
+                    style = TextStyle(color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp),
                 ),
-                guideline = rememberAxisGuidelineComponent(fill = Fill(color = BorderGray)),
+                guideline = rememberAxisGuidelineComponent(fill = Fill(color = MaterialTheme.colorScheme.outlineVariant)),
                 valueFormatter = CurrencyFormatter,
             ),
             bottomAxis = HorizontalAxis.rememberBottom(
                 label = rememberTextComponent(
-                    style = TextStyle(color = TextTertiary, fontSize = 12.sp),
+                    style = TextStyle(color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp),
                 ),
-                guideline = rememberAxisGuidelineComponent(fill = Fill(color = BorderGray)),
+                guideline = rememberAxisGuidelineComponent(fill = Fill(color = MaterialTheme.colorScheme.outlineVariant)),
                 valueFormatter = bottomAxisFormatter,
             ),
             marker = rememberDefaultCartesianMarker(
@@ -1106,7 +1102,7 @@ private fun WeeklyTrendChartContent(
                         fontWeight = FontWeight.SemiBold,
                     ),
                     background = rememberShapeComponent(
-                        fill = Fill(PrimaryCyan),
+                        fill = Fill(MaterialTheme.colorScheme.primary),
                         shape = RoundedCornerShape(6.dp),
                     ),
                     padding = Insets(all = 6.dp),
@@ -1116,7 +1112,7 @@ private fun WeeklyTrendChartContent(
                 indicator = { color -> ShapeComponent(fill = Fill(color), shape = CircleShape) },
                 indicatorSize = 10.dp,
                 guideline = rememberLineComponent(
-                    fill = Fill(color = BorderGray),
+                    fill = Fill(color = MaterialTheme.colorScheme.outlineVariant),
                     thickness = 1.dp,
                 ),
             ),
@@ -1173,8 +1169,8 @@ private fun QuickActionItem(
         onClick = onClick,
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White),
-        border = BorderStroke(1.dp, Color(0xFFE5E7EB)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
     ) {
         Column(
@@ -1187,14 +1183,14 @@ private fun QuickActionItem(
             Icon(
                 imageVector = icon,
                 contentDescription = label,
-                tint = PrimaryCyan,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(22.dp),
             )
             Text(
                 text = label,
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF1F2937),
+                color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 maxLines = 1,
             )
@@ -1215,7 +1211,7 @@ private fun DetailCategoryContentPreview() {
                     totalBudget = 1_500_000,
                     usedBudget = 1_050_000,
                     typeCategory = TypeCategory.EXPENSE,
-                    color = PrimaryCyan,
+                    color = MaterialTheme.colorScheme.primary,
                 ),
 
                 subCategories = listOf(
@@ -1226,7 +1222,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 450_000,
                         usedBudget = 270_000,
                         typeCategory = TypeCategory.EXPENSE,
-                        color = PrimaryCyan,
+                        color = MaterialTheme.colorScheme.primary,
 
                         ),
                     CategoryUiItemModel(
@@ -1236,7 +1232,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 120_000,
                         usedBudget = 48_000,
                         typeCategory = TypeCategory.EXPENSE,
-                        color = PrimaryCyan,
+                        color = MaterialTheme.colorScheme.primary,
 
                         ),
                     CategoryUiItemModel(
@@ -1246,7 +1242,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 380_000,
                         usedBudget = 323_000,
                         typeCategory = TypeCategory.EXPENSE,
-                        color = PrimaryCyan,
+                        color = MaterialTheme.colorScheme.primary,
 
                         ),
                     CategoryUiItemModel(
@@ -1256,7 +1252,7 @@ private fun DetailCategoryContentPreview() {
                         totalBudget = 100_000,
                         usedBudget = 25_000,
                         typeCategory = TypeCategory.EXPENSE,
-                        color = PrimaryCyan,
+                        color = MaterialTheme.colorScheme.primary,
 
                         ),
                 ),

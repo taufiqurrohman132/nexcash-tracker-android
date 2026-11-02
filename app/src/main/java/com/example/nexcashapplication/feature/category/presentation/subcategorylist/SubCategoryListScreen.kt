@@ -41,7 +41,6 @@ import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.category.presentation.detail.SubcategoryGrid
 import com.example.nexcashapplication.feature.category.presentation.shared.model.CategoryUiItemModel
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.TextSecondary
 
 // SubCategoryListScreen.kt — stateful, TIDAK di-preview
 @OptIn(ExperimentalMaterial3Api::class)
@@ -119,7 +118,7 @@ fun SubCategoryListContent(
                     Text(
                         text = error.asString(),
                         style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.Center,
                     )
                     AppButton(
