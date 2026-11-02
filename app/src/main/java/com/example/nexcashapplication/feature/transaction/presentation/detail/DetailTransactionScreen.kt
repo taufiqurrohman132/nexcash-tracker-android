@@ -76,9 +76,7 @@ import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.transaction.presentation.detail.components.DeleteTransactionDialog
 import com.example.nexcashapplication.feature.transaction.presentation.detail.model.AttachmentUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.detail.model.DetailTransactionUiModel
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.TextSecondary
 import java.time.ZoneId
 import java.time.format.TextStyle
 import java.util.Locale
@@ -176,7 +174,7 @@ fun DetailTransactionContent(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surface),
             )
         },
     ) { padding ->
@@ -200,7 +198,7 @@ fun DetailTransactionContent(
                     } else {
                         Text(
                             text = stringResource(R.string.tx_not_found),
-                            color = TextSecondary,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
                 }
@@ -232,9 +230,8 @@ fun DetailTransactionContent(
 
                     Text(
                         text = stringResource(R.string.tx_attachment),
-                        fontSize = 14.sp,
+                        style = MaterialTheme.typography.titleSmall,
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.Black,
                     )
 
                     Spacer(Modifier.height(10.dp))
@@ -243,7 +240,7 @@ fun DetailTransactionContent(
                         modifier = Modifier
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(14.dp))
-                                .border(1.dp, BorderGray, RoundedCornerShape(14.dp))
+                                .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(14.dp))
                                 .clickable(onClick = { onEvent(DetailTransactionEvent.OnAttachmentClick) })
                                 .padding(12.dp),
                         verticalAlignment = Alignment.CenterVertically,
@@ -252,7 +249,7 @@ fun DetailTransactionContent(
                             modifier = Modifier
                                     .size(76.dp)
                                     .clip(RoundedCornerShape(14.dp))
-                                    .background(BorderGray),
+                                    .background(MaterialTheme.colorScheme.surfaceVariant),
                             contentAlignment = Alignment.Center,
                         ) {
                             if (transaction.attachment.thumbnailUri != null) {
@@ -268,7 +265,7 @@ fun DetailTransactionContent(
                                 Icon(
                                     Icons.Default.Description,
                                     contentDescription = null,
-                                    tint = Color(0xFF999999),
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
                         }
@@ -278,19 +275,18 @@ fun DetailTransactionContent(
                         Column {
                             Text(
                                 text = transaction.attachment.fileName,
-                                fontSize = 13.sp,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.Medium,
-                                color = Color.Black,
                             )
                             Text(
                                 text = transaction.attachment.fileSizeLabel,
-                                fontSize = 12.sp,
-                                color = Color(0xFF999999),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                             )
                             Text(
                                 text = stringResource(R.string.tx_view_fullscreen),
-                                fontSize = 12.sp,
-                                color = Color(0xFF2B9FE8),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Medium,
                             )
                         }
@@ -304,8 +300,8 @@ fun DetailTransactionContent(
                     modifier = Modifier
                             .fillMaxWidth()
                             .clip(RoundedCornerShape(20.dp))
-                            .border(1.dp, BorderGray, RoundedCornerShape(20.dp))
-                            .background(Color(0xFFF7F7F7))
+                            .border(1.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(20.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                             .padding(vertical = 14.dp),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
@@ -418,19 +414,19 @@ fun DetailContent(
             label = stringResource(R.string.tx_date_time),
             value = stringResource(R.string.tx_date_time_value, date, time, zoneLabel),
         )
-        HorizontalDivider(color = BorderGray)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         DetailContentRow(
             icon = Icons.Outlined.Label,
             label = stringResource(R.string.tx_category),
             value = categoryName,
         )
-        HorizontalDivider(color = BorderGray)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         DetailContentRow(
             icon = Icons.Outlined.AccountBalanceWallet,
             label = stringResource(accountLabelRes),
             value = accountName,
         )
-        HorizontalDivider(color = BorderGray)
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         DetailContentRow(
             icon = Icons.Outlined.NoteAlt,
             label = stringResource(R.string.tx_note),
@@ -454,7 +450,7 @@ fun DetailContentRow(
     ) {
         Icon(
             imageVector = icon,
-            tint = TextSecondary,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             contentDescription = null,
         )
         Column(
@@ -463,12 +459,12 @@ fun DetailContentRow(
             Text(
                 text = label.uppercase(),
                 style = MaterialTheme.typography.bodySmall,
-                color = TextSecondary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = value,
                 style = MaterialTheme.typography.bodyLarge,
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
             )
         }

@@ -109,9 +109,7 @@ import com.example.nexcashapplication.feature.common.utils.toDatePickerMillis
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.components.AccountBottomSheetContent
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.components.CategoryBottomSheetContent
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.ToggleOption
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import kotlinx.coroutines.launch
 
 @Composable
@@ -157,7 +155,7 @@ fun AddEditTransactionContent(
     modifier: Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-    val accent = PrimaryCyan // light blue, matching the design
+    val accent = MaterialTheme.colorScheme.primary
 
     // Satu sheetState per sheet: berbagi satu instance membuat sheet baru muncul
     // langsung `Expanded` (tanpa animasi masuk) karena state-nya masih dipakai
@@ -214,6 +212,9 @@ fun AddEditTransactionContent(
                         fontWeight = FontWeight.SemiBold,
                     )
                 },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                ),
                 navigationIcon = {
                     IconButton(onClick = { onEvent(AddEditTransactionEvent.OnBackClick) }) {
                         Icon(
@@ -363,8 +364,8 @@ fun AddEditTransactionContent(
                         },
                     ),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryCyan,
-                        unfocusedBorderColor = BorderGray,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
                     ),
 
                     )
@@ -772,8 +773,8 @@ fun AmountOutlinedTextField(
         label = label,
         prefix = prefix,
         colors = OutlinedTextFieldDefaults.colors(
-            unfocusedBorderColor = BorderGray,
-            focusedBorderColor = PrimaryCyan,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
         ),
     )
 }
@@ -790,7 +791,7 @@ private fun SelectorRow(
         modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .border(BorderStroke(1.dp, BorderGray), RoundedCornerShape(16.dp))
+                .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant), RoundedCornerShape(16.dp))
                 .clickable { onClick() }
                 .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -798,16 +799,16 @@ private fun SelectorRow(
 
         IconCircular(
             icon = icon,
-            iconColor = PrimaryCyan,
+            iconColor = MaterialTheme.colorScheme.primary,
             backgroundColor = iconBg,
             iconToCountainerRatio = 2,
         )
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
-            Text(subtitle, fontSize = 12.sp, color = Color.Gray)
+            Text(subtitle, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = BorderGray)
+        Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
@@ -818,7 +819,7 @@ private fun CompactSelector(
     isActive: Boolean = false,   // kontrol manual, misal true saat dialog kebuka
     onClick: () -> Unit,
 ) {
-    val borderColor = if (isActive) PrimaryCyan else Color(0xFFE6E6E6)
+    val borderColor = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
     val boderWidth = if (isActive) 2.dp else 1.dp
 
     Row(
@@ -834,7 +835,7 @@ private fun CompactSelector(
                 .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp), tint = Color.Gray)
+        Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.width(8.dp))
         Text(text)
     }
@@ -847,7 +848,7 @@ private fun AttachmentBox(fileName: String?, onClick: () -> Unit) {
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(14.dp))
                 .border(
-                    BorderStroke(1.5.dp, Color(0xFFD0D0D0)),
+                    BorderStroke(1.5.dp, MaterialTheme.colorScheme.outlineVariant),
                     RoundedCornerShape(14.dp),
                 ) // TODO: switch to a dashed border via Modifier.drawBehind + PathEffect for an exact match with the design
                 .clickable { onClick() }
@@ -858,11 +859,11 @@ private fun AttachmentBox(fileName: String?, onClick: () -> Unit) {
             modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(Color.White)
-                    .border(BorderStroke(1.dp, Color(0xFFE6E6E6)), CircleShape),
+                    .background(MaterialTheme.colorScheme.surface)
+                    .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant), CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Outlined.AddPhotoAlternate, contentDescription = null, tint = Color.DarkGray)
+            Icon(Icons.Outlined.AddPhotoAlternate, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         Spacer(Modifier.height(10.dp))
         Text(
@@ -874,7 +875,7 @@ private fun AttachmentBox(fileName: String?, onClick: () -> Unit) {
         Text(
             stringResource(R.string.tx_attachment_hint),
             fontSize = 10.sp,
-            color = Color.Gray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
     }
 }

@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.extension.formatCurrency
 import com.example.nexcashapplication.feature.account.presentation.main.model.AccountUiModel
-import com.example.nexcashapplication.ui.theme.BorderGray
+
 
 @Composable
 fun AccountBottomSheetContent(
@@ -59,7 +59,7 @@ fun AccountBottomSheetContent(
                 isSelected = account.id == selectedAccountId,
                 onClick = { onAccountSelected(account) }
             )
-            HorizontalDivider(color = BorderGray.copy(alpha = 0.2f))
+            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         }
     }
 }

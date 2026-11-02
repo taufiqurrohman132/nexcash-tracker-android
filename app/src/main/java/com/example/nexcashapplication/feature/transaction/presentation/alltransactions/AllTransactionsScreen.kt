@@ -46,7 +46,6 @@ import com.example.nexcashapplication.feature.transaction.presentation.main.Tran
 import com.example.nexcashapplication.feature.transaction.presentation.main.component.TransactionEmptyScreen
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionHeaderUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionUiGroupModel
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 
 /**
@@ -171,7 +170,7 @@ fun AllTransactionsContent(
                                         }
                                     },
                                 )
-                                HorizontalDivider(color = BorderGray)
+                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                             }
                         }
                     }

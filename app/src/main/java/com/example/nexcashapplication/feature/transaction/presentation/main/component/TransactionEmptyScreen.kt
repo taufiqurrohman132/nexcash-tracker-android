@@ -20,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconRounded
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 @Composable
 fun TransactionEmptyScreen(
@@ -39,7 +37,7 @@ fun TransactionEmptyScreen(
     Column(
         modifier = modifier
                 .fillMaxWidth()
-                .background(Color.White)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -52,15 +50,15 @@ fun TransactionEmptyScreen(
                         .padding(8.dp)
                         .size(200.dp)
                         .clip(RoundedCornerShape(24.dp))
-                        .background(PrimaryCyan.copy(alpha = 0.1f)),
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)),
             ) {
 
             }
 
             IconRounded(
                 imageVector = Icons.Outlined.AccountBalanceWallet,
-                iconColor = Color.White,
-                backgroundColor = PrimaryCyan,
+                iconColor = MaterialTheme.colorScheme.onPrimary,
+                backgroundColor = MaterialTheme.colorScheme.primary,
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.align(Alignment.BottomEnd),
             )
@@ -75,6 +73,7 @@ fun TransactionEmptyScreen(
         Text(
             stringResource(R.string.tx_empty_description),
             style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
 
@@ -85,20 +84,20 @@ fun TransactionEmptyScreen(
                     .shadow(
                         elevation = 8.dp,
                         shape = RoundedCornerShape(16.dp),
-                        ambientColor = PrimaryCyan,
-                        spotColor = PrimaryCyan,
+                        ambientColor = MaterialTheme.colorScheme.primary,
+                        spotColor = MaterialTheme.colorScheme.primary,
                     )
                     .fillMaxWidth()
                     .height(52.dp),
             shape = RoundedCornerShape(16.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = PrimaryCyan,
+                containerColor = MaterialTheme.colorScheme.primary,
             ),
         ) {
             Text(
                 stringResource(R.string.tx_empty_action),
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
             )
         }
     }

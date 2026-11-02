@@ -50,7 +50,7 @@ import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.CategoryIcon
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.feature.transaction.presentation.addnew.model.TransactionCategoryItemModel
-import com.example.nexcashapplication.ui.theme.BorderGray
+
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 
 @Composable
@@ -125,7 +125,7 @@ fun CategoryBottomSheetContent(
                         .padding(horizontal = 8.dp)
                         .fillMaxHeight(),
                     thickness = 1.dp,
-                    color = BorderGray,
+                    color = MaterialTheme.colorScheme.outlineVariant,
                 )
 
                 if (subCategories.isEmpty()) {
@@ -205,7 +205,7 @@ fun ParentCategoryItem(
         )
         Icon(
             imageVector = Icons.Default.NavigateNext,
-            tint = if (isSelected) MaterialTheme.colorScheme.primary else BorderGray,
+            tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
             contentDescription = null,
         )
     }

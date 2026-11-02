@@ -82,15 +82,7 @@ import com.example.nexcashapplication.feature.transaction.presentation.main.comp
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.CategoryNameItemUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionHeaderUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionUiGroupModel
-import com.example.nexcashapplication.ui.theme.AccentTealGreen
-import com.example.nexcashapplication.ui.theme.BackgroundLight
-import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.SuccessGreen
-import com.example.nexcashapplication.ui.theme.TextSecondary
-import com.example.nexcashapplication.ui.theme.TextTertiary
-import com.example.nexcashapplication.ui.theme.WarningAmber
 import java.time.YearMonth
 
 /** Durasi (ms) animasi fade in/out saat item transaksi muncul atau di-collapse. */
@@ -164,10 +156,11 @@ fun TransactionContent(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onEvent(TransactionEvent.OnAddTransactionClick) },
-                containerColor = PrimaryCyan,
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = CircleShape,
             ) {
-                Icon(Icons.Default.Add, contentDescription = null, tint = Color.White)
+                Icon(Icons.Default.Add, contentDescription = null)
             }
         },
     ) { padding ->
@@ -202,10 +195,10 @@ fun TransactionContent(
                 shape = RoundedCornerShape(50.dp),
                 singleLine = true,
                 colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = PrimaryCyan,
-                    unfocusedIndicatorColor = TextTertiary,
-                    unfocusedContainerColor = BackgroundLight,
-                    focusedContainerColor = BackgroundLight,
+                    focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+                    unfocusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                    focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
                 ),
             )
 
@@ -231,8 +224,8 @@ fun TransactionContent(
                         onClick = { onEvent(TransactionEvent.OnCategorySelected(categoryId = category?.id)) },
                         label = { Text(category?.nameCategory ?: "") },
                         colors = FilterChipDefaults.filterChipColors(
-                            selectedLabelColor = Color.White,
-                            selectedContainerColor = PrimaryCyan,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
+                            selectedContainerColor = MaterialTheme.colorScheme.primary,
                         ),
                         shape = RoundedCornerShape(50.dp),
                     )
@@ -254,7 +247,7 @@ fun TransactionContent(
                                 transaction = item,
                                 onClick = { onEvent(TransactionEvent.OnTransactionClick(item.id)) },
                             )
-                            HorizontalDivider(color = BorderGray)
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                         }
                     }
                 } else {
@@ -366,7 +359,7 @@ fun TransactionContent(
                                                 )
                                             },
                                         )
-                                        HorizontalDivider(color = BorderGray)
+                                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                                     }
                                 }
                             }
@@ -407,7 +400,7 @@ fun TransactionGroupHeader(
         Row(
             modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(MaterialTheme.colorScheme.surface)
                     .clickable { onToggle() }
                     .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -423,7 +416,7 @@ fun TransactionGroupHeader(
             Box(
                 modifier = Modifier
                         .background(
-                            color = BorderGray.copy(alpha = 0.5f),
+                            color = MaterialTheme.colorScheme.surfaceVariant,
                             shape = RoundedCornerShape(50.dp),
                         )
                         .padding(horizontal = 8.dp, vertical = 2.dp),
@@ -431,7 +424,7 @@ fun TransactionGroupHeader(
                 Text(
                     text = "$count",
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextTertiary,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
             Spacer(Modifier.weight(1f))
@@ -443,7 +436,7 @@ fun TransactionGroupHeader(
                     if (isPositive) "+" else "-",
                     Math.abs(total).formatCurrency(),
                 ),
-                color = if (isPositive) AccentTealGreen else Color.Red,
+                color = if (isPositive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Bold,
             )
@@ -453,7 +446,7 @@ fun TransactionGroupHeader(
                 modifier = Modifier
                         .padding(start = 4.dp)
                         .rotate(rotationState),
-                tint = TextTertiary,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 contentDescription = null,
             )
         }
@@ -486,10 +479,10 @@ fun SummaryCard(
         shape = RoundedCornerShape(16.dp),
         border = BorderStroke(
             1.dp,
-            PrimaryCyan,
+            MaterialTheme.colorScheme.outlineVariant,
         ),
         colors = CardDefaults.cardColors(
-            containerColor = BackgroundLight,
+            containerColor = MaterialTheme.colorScheme.surface,
         ),
     ) {
         Column(
@@ -505,7 +498,7 @@ fun SummaryCard(
             Text(
                 modifier = Modifier.padding(vertical = 4.dp),
                 text = title,
-                color = TextSecondary,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 style = MaterialTheme.typography.bodySmall,
             )
             Text(
@@ -564,7 +557,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 category = "Gaji",
                 account = "Bank BCA",
                 icon = Icons.Default.AttachMoney,
-                iconColor = PrimaryCyan,
+                iconColor = Color(0xFF003DFF),
             ),
             TransactionItemUiModel(
                 id = "trx_2",
@@ -575,7 +568,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 category = "Makanan & Minuman",
                 account = "Cash",
                 icon = Icons.Default.Fastfood,
-                iconColor = PrimaryCyan,
+                iconColor = Color(0xFF003DFF),
 
                 ),
             TransactionItemUiModel(
@@ -587,7 +580,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 category = "Transportasi",
                 account = "Cash",
                 icon = Icons.Default.Directions,
-                iconColor = PrimaryCyan,
+                iconColor = Color(0xFF003DFF),
 
                 ),
             TransactionItemUiModel(
@@ -599,7 +592,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 category = "Belanja",
                 account = "Bank BCA",
                 icon = Icons.Default.ShoppingBag,
-                iconColor = PrimaryCyan,
+                iconColor = Color(0xFF003DFF),
 
                 ),
             TransactionItemUiModel(
@@ -611,7 +604,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 category = "Tagihan",
                 account = "Bank BCA",
                 icon = Icons.Default.Receipt,
-                iconColor = PrimaryCyan,
+                iconColor = Color(0xFF003DFF),
 
                 ),
         ),
@@ -634,7 +627,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 category = "Hiburan",
                 account = "Cash",
                 icon = Icons.Default.Movie,
-                iconColor = PrimaryCyan,
+                iconColor = Color(0xFF003DFF),
 
                 ),
             TransactionItemUiModel(
@@ -646,7 +639,7 @@ val groupedTransactions: List<TransactionUiGroupModel> = listOf(
                 category = "Kesehatan",
                 account = "Cash",
                 icon = Icons.Default.LocalHospital,
-                iconColor = PrimaryCyan,
+                iconColor = Color(0xFF003DFF),
 
                 ),
         ),
