@@ -17,13 +17,20 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class SubCategoryListViewModel @Inject constructor(
+class SubCategoryListViewModel internal constructor(
+    private val route: Route.CategoryRoute.SubCategoryList,
     private val getSubCategoriesWithBudgetUseCase: GetSubCategoriesWithBudgetUseCase,
-    savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<SubCategoryListState, SubCategoryListEvent, SubCategoryListEffect>(initialState = SubCategoryListState()) {
 
-    private val route: Route.CategoryRoute.SubCategoryList = savedStateHandle.toRoute()
     private val categoryId = route.categoryId
+
+    @Inject constructor(
+        getSubCategoriesWithBudgetUseCase: GetSubCategoriesWithBudgetUseCase,
+        savedStateHandle: SavedStateHandle,
+    ) : this(
+        route = savedStateHandle.toRoute<Route.CategoryRoute.SubCategoryList>(),
+        getSubCategoriesWithBudgetUseCase = getSubCategoriesWithBudgetUseCase,
+    )
 
     init {
         observerSubCategories()

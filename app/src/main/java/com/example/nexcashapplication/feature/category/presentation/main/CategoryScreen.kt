@@ -570,6 +570,7 @@ fun CategoryCard(
 // ============ ADD CATEGORY BUTTON (dashed) ============
 @Composable
 fun AddCategoryButton(onClick: () -> Unit) {
+    val outlineVariant = MaterialTheme.colorScheme.outlineVariant
     Box(
         modifier = Modifier
                 .fillMaxWidth()
@@ -577,7 +578,7 @@ fun AddCategoryButton(onClick: () -> Unit) {
                 .clip(RoundedCornerShape(16.dp))
                 .drawBehind {
                     drawRoundRect(
-                        color = MaterialTheme.colorScheme.outlineVariant,
+                        color = outlineVariant,
                         style = Stroke(
                             width = 2.dp.toPx(),
                             pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 8f), 0f),

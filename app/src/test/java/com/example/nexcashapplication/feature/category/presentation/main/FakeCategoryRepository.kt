@@ -9,29 +9,37 @@ import com.example.nexcashapplication.feature.category.domain.model.CategoryName
 import com.example.nexcashapplication.feature.category.domain.model.WeeklyTrend
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.MutableStateFlow
 
 /**
- * In-memory [CategoryRepository] untuk unit test (fitur kategori: main & detail).
+ * In-memory [CategoryRepository] untuk unit test (fitur kategori: main, detail, add, delete, subcategorylist).
  * Flow-nya reaktif (MutableStateFlow) supaya `flatMapLatest`/`combine` di ViewModel
  * bekerja seperti Room — seed dulu sebelum membuat ViewModel, atau ubah saat test berjalan.
- *
- * - [seedWeeklyTrend]: isi data tren mingguan (default tetap kosong).
- * - [throwOnLoad]: bila diisi, [getCategoryById] melempar — untuk menguji jalur
- *   `.catch` → `UiState.Error` di DetailCategoryViewModel.
  */
 class FakeCategoryRepository : CategoryRepository {
 
     private val categories = MutableStateFlow<List<Category>>(emptyList())
     private val weeklyTrend = MutableStateFlow(WeeklyTrend(data = emptyList(), labels = emptyList()))
+    private val categoryNames = mutableListOf<CategoryName>()
+
+    val insertedCategories = mutableListOf<Category>()
+    val updatedCategories = mutableListOf<Category>()
+    var lastDeletedCategoryId: String? = null
+    var lastDeleteResolution: CategoryDeleteResolution? = null
+    var transactionCountToReturn: Int = 0
 
     /** Exception yang dilempar [getCategoryById]; null = normal. */
     var throwOnLoad: Exception? = null
+    /** Exception yang dilempar [deleteCategory]; null = normal. */
+    var throwOnDelete: Exception? = null
 
     fun seed(vararg rows: Category) {
         categories.value = categories.value + rows
+    }
+
+    fun seedCategoryNames(vararg rows: CategoryName) {
+        categoryNames.addAll(rows)
     }
 
     /** Isi tren mingguan (7 hari) yang dikembalikan [getWeeklyTrend]. */
@@ -74,8 +82,12 @@ class FakeCategoryRepository : CategoryRepository {
     override suspend fun getParentCategories(): List<Category> =
         categories.value.filter { it.parentId == null }
 
-    override suspend fun getParentCategoriesNameByType(type: String): List<CategoryName> =
-        emptyList()
+    override suspend fun getParentCategoriesNameByType(type: String): List<CategoryName> {
+        if (categoryNames.isNotEmpty()) return categoryNames.toList()
+        return categories.value
+            .filter { it.parentId == null && it.type.name.lowercase() == type }
+            .map { CategoryName(id = it.id, name = it.name, icon = it.iconId, color = it.color) }
+    }
 
     override suspend fun getCategoriesAndSubCategories(): List<CategoryAndSubcategory> =
         emptyList()
@@ -86,10 +98,12 @@ class FakeCategoryRepository : CategoryRepository {
     ): Flow<WeeklyTrend> = weeklyTrend
 
     override suspend fun insertCategory(category: Category) {
+        insertedCategories += category
         categories.value = categories.value + category
     }
 
     override suspend fun updateCategory(category: Category) {
+        updatedCategories += category
         categories.value = categories.value.map { if (it.id == category.id) category else it }
     }
 
@@ -97,6 +111,9 @@ class FakeCategoryRepository : CategoryRepository {
         categoryId: String,
         resolution: CategoryDeleteResolution,
     ) {
+        throwOnDelete?.let { throw it }
+        lastDeletedCategoryId = categoryId
+        lastDeleteResolution = resolution
         categories.value = categories.value.filterNot { it.id == categoryId }
     }
 
@@ -105,7 +122,7 @@ class FakeCategoryRepository : CategoryRepository {
             it.name == name && it.type.name.lowercase() == type && it.parentId == parentId
         }
 
-    override suspend fun countTransactionsByCategory(categoryId: String): Int = 0
+    override suspend fun countTransactionsByCategory(categoryId: String): Int = transactionCountToReturn
 
     override suspend fun countSubCategories(parentId: String): Int =
         categories.value.count { it.parentId == parentId }

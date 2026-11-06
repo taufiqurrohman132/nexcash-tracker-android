@@ -32,16 +32,27 @@ import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
-class AddCategoryViewModel @Inject constructor(
+class AddCategoryViewModel internal constructor(
+    private val route: Route.CategoryRoute.AddNew,
     private val repository: CategoryRepository,
     private val preferencesRepository: PreferencesRepository,
     private val categoryUseCases: CategoryUseCases,
-    savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddCategoryState, AddCategoryEvent, CategoryEffect>(AddCategoryState()) {
 
-    private val route: Route.CategoryRoute.AddNew = savedStateHandle.toRoute()
     private val categoryId = route.categoryId
     private val parentId = route.parentId
+
+    @Inject constructor(
+        repository: CategoryRepository,
+        preferencesRepository: PreferencesRepository,
+        categoryUseCases: CategoryUseCases,
+        savedStateHandle: SavedStateHandle,
+    ) : this(
+        route = savedStateHandle.toRoute<Route.CategoryRoute.AddNew>(),
+        repository = repository,
+        preferencesRepository = preferencesRepository,
+        categoryUseCases = categoryUseCases,
+    )
 
     init {
         parentId?.let { pid ->

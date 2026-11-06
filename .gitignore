@@ -1,6 +1,8 @@
 *.iml
 .gradle
 /local.properties
+.agents/
+
 # File IDE machine-specific; file .idea yang sudah ter-track tetap ikut repo.
 /.idea
 /.kotlin
@@ -10,3 +12,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+.agents/
+

@@ -19,16 +19,25 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class DeleteCategoryViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+class DeleteCategoryViewModel internal constructor(
+    private val route: Route.CategoryRoute.Delete,
     private val categoryRepository: CategoryRepository,
     private val categoryUseCases: CategoryUseCases,
 ) : BaseViewModel<DeleteCategoryState, DeleteCategoryEvent, DeleteCategoryEffect>(
     DeleteCategoryState(),
 ) {
-    private val route: Route.CategoryRoute.Delete = savedStateHandle.toRoute()
     private val categoryId = route.categoryId
     private val typeCategory = route.typeCategory
+
+    @Inject constructor(
+        savedStateHandle: SavedStateHandle,
+        categoryRepository: CategoryRepository,
+        categoryUseCases: CategoryUseCases,
+    ) : this(
+        route = savedStateHandle.toRoute<Route.CategoryRoute.Delete>(),
+        categoryRepository = categoryRepository,
+        categoryUseCases = categoryUseCases,
+    )
 
     init {
         loadData()
