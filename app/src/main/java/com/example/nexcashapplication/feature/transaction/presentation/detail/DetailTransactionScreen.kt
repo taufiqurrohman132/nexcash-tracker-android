@@ -16,9 +16,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.outlined.Label
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Description
@@ -26,7 +29,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.DateRange
-import androidx.compose.material.icons.outlined.Label
 import androidx.compose.material.icons.outlined.NoteAlt
 import androidx.compose.material.icons.outlined.Receipt
 import androidx.compose.material3.CircularProgressIndicator
@@ -79,8 +81,8 @@ import com.example.nexcashapplication.feature.transaction.presentation.detail.mo
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import java.time.ZoneId
 import java.time.format.TextStyle
-import java.util.Locale
 import kotlin.time.Clock
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun DetailTransactionScreen(
@@ -151,7 +153,7 @@ fun DetailTransactionScreen(
 fun DetailTransactionContent(
     state: DetailTransactionState,
     onEvent: (DetailTransactionEvent) -> Unit,
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
     Scaffold(
@@ -181,8 +183,9 @@ fun DetailTransactionContent(
         Column(
             modifier = Modifier
                     .padding(padding)
-                    .padding(horizontal = 16.dp)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 16.dp),
         ) {
             val transaction = state.transaction
 
@@ -208,7 +211,7 @@ fun DetailTransactionContent(
                     amount = transaction.amount,
                     amountColor = transaction.type.toAmountColor(),
                     // ikon & warna ngikut kategori transaksi, bukan gambar tetap
-                    iconColor = transaction.category?.color ?: Color.Black,
+                    iconColor = transaction.category?.color ?: MaterialTheme.colorScheme.onSurface,
                     icon = transaction.category?.icon?.icon ?: Icons.Outlined.Receipt,
                     categoryName = transaction.category?.name ?: "",
                     modifier = Modifier.fillMaxWidth(),
@@ -324,9 +327,9 @@ fun DetailTransactionContent(
                         icon = Icons.Default.Delete,
                         label = stringResource(R.string.tx_action_delete),
                         onClick = { onEvent(DetailTransactionEvent.OnDeleteClick) },
-                        iconTint = Color(0xFFE94057),
-                        labelColor = Color(0xFFE94057),
-                        backgroundColor = Color(0xFFFDE9EC),
+                        iconTint = MaterialTheme.colorScheme.error,
+                        labelColor = MaterialTheme.colorScheme.error,
+                        backgroundColor = MaterialTheme.colorScheme.errorContainer,
                     )
                 }
 
@@ -338,7 +341,7 @@ fun DetailTransactionContent(
                         transaction.transactionId ?: "-",
                     ),
                     fontSize = 11.sp,
-                    color = Color(0xFFB0B0B0),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp),
@@ -363,9 +366,9 @@ private fun ActionButton(
     icon: ImageVector,
     label: String,
     onClick: () -> Unit,
-    iconTint: Color = Color(0xFF444444),
-    labelColor: Color = Color(0xFF444444),
-    backgroundColor: Color = Color.White,
+    iconTint: Color = MaterialTheme.colorScheme.onSurface,
+    labelColor: Color = MaterialTheme.colorScheme.onSurface,
+    backgroundColor: Color = MaterialTheme.colorScheme.surface,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -404,7 +407,7 @@ fun DetailContent(
 ) {
     // Zona waktu mengikuti locale perangkat (bukan teks "WIB" hardcode)
     val zoneLabel = ZoneId.systemDefault()
-            .getDisplayName(TextStyle.SHORT, Locale.getDefault())
+            .getDisplayName(TextStyle.SHORT, LocalLocale.current.platformLocale)
 
     Column(
         modifier = modifier,
@@ -416,7 +419,7 @@ fun DetailContent(
         )
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
         DetailContentRow(
-            icon = Icons.Outlined.Label,
+            icon = Icons.AutoMirrored.Outlined.Label,
             label = stringResource(R.string.tx_category),
             value = categoryName,
         )

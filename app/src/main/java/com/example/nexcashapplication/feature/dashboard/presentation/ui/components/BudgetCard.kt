@@ -37,6 +37,7 @@ import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun BudgetCard(
@@ -84,7 +85,7 @@ fun BudgetCard(
                 val now = YearMonth.now()
                 val period = stringResource(
                     R.string.dash_budget_period,
-                    now.month.getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault()),
+                    now.month.getDisplayName(TextStyle.SHORT_STANDALONE, LocalLocale.current.platformLocale),
                     now.year,
                 )
                 Text(

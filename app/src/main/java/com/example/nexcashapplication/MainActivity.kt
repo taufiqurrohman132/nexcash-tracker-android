@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nexcashapplication.core.i18n.withAppLocale
@@ -21,7 +22,6 @@ import com.example.nexcashapplication.feature.settings.domain.model.AppSettings
 import com.example.nexcashapplication.feature.settings.domain.model.AppThemeMode
 import com.example.nexcashapplication.feature.settings.domain.repository.SettingsRepository
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
-import com.example.nexcashapplication.ui.theme.toComposeColor
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.catch
 import javax.inject.Inject
@@ -62,15 +62,15 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             // DataStore gagal baca (file korup / disk penuh) → jangan crash; app tetap
-            // jalan dengan tema dan warna bawaan. `initialValue` sudah AppSettings() .
-            val settings by settingsRepository.settings
-                    .catch { e ->
-                        Log.e(TAG, "gagal membaca pengaturan aplikasi", e)
-                    }
-                    .collectAsStateWithLifecycle(initialValue = AppSettings())
+            // jalan dengan tema dan warna bawaan. `initialValue` sudah AppSettings().
+            val settingsFlow = remember(settingsRepository) {
+                settingsRepository.settings.catch { e ->
+                    Log.e(TAG, "gagal membaca pengaturan aplikasi", e)
+                }
+            }
+            val settings by settingsFlow.collectAsStateWithLifecycle(initialValue = AppSettings())
 
             NexCashApplicationTheme(
-                seedColor = settings.color.toComposeColor(),
                 darkTheme = when (settings.themeMode) {
                     AppThemeMode.LIGHT -> false
                     AppThemeMode.DARK -> true
@@ -96,8 +96,8 @@ class MainActivity : ComponentActivity() {
 }
 
 /** Terjemahkan extra yang ditanam `NotificationHelper.post` menjadi route aplikasi. */
-private fun Intent.toDestinationRoute(): Route? =
-    when (getStringExtra(NotificationHelper.EXTRA_DESTINATION)) {
+private fun Intent?.toDestinationRoute(): Route? =
+    when (this?.getStringExtra(NotificationHelper.EXTRA_DESTINATION)) {
         NotificationHelper.DEST_NOTIFICATIONS -> Route.NotificationRoute.Main
         else -> null
     }

@@ -15,6 +15,7 @@ val AppFontFamily = FontFamily.Default
 val Typography = Typography(
 
     // ===============================
+
     // Page Title (Header)
     // 20sp / SemiBold
     // ===============================
@@ -22,7 +23,7 @@ val Typography = Typography(
         fontFamily = AppFontFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
-        lineHeight = 28.sp
+        lineHeight = 28.sp,
     ),
 
     // ===============================
@@ -33,7 +34,7 @@ val Typography = Typography(
         fontFamily = AppFontFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
-        lineHeight = 24.sp
+        lineHeight = 24.sp,
     ),
 
     // ===============================
@@ -44,7 +45,7 @@ val Typography = Typography(
         fontFamily = AppFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        lineHeight = 20.sp
+        lineHeight = 20.sp,
     ),
 
     // ===============================
@@ -55,7 +56,7 @@ val Typography = Typography(
         fontFamily = AppFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        lineHeight = 20.sp
+        lineHeight = 20.sp,
     ),
 
     // ===============================
@@ -66,7 +67,7 @@ val Typography = Typography(
         fontFamily = AppFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp,
-        lineHeight = 16.sp
+        lineHeight = 16.sp,
     ),
 
     // ===============================
@@ -77,7 +78,7 @@ val Typography = Typography(
         fontFamily = AppFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 32.sp,
-        lineHeight = 40.sp
+        lineHeight = 40.sp,
     ),
 
     // ===============================
@@ -88,7 +89,7 @@ val Typography = Typography(
         fontFamily = AppFontFamily,
         fontWeight = FontWeight.SemiBold,
         fontSize = 16.sp,
-        lineHeight = 22.sp
+        lineHeight = 22.sp,
     ),
 
     // ===============================
@@ -99,6 +100,6 @@ val Typography = Typography(
         fontFamily = AppFontFamily,
         fontWeight = FontWeight.Normal,
         fontSize = 10.sp,
-        lineHeight = 12.sp
-    )
+        lineHeight = 12.sp,
+    ),
 )

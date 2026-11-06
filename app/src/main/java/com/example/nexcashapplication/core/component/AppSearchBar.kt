@@ -9,16 +9,13 @@ import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.nexcashapplication.feature.transaction.presentation.main.TransactionEvent
-import com.example.nexcashapplication.ui.theme.BackgroundLight
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.TextTertiary
 
 @Composable
 fun AppSearchBar(
@@ -26,10 +23,11 @@ fun AppSearchBar(
     onSearchQueryChange: (String) -> Unit,
     placeholder: String,
     onSearchClear: () -> Unit,
-    modifier: Modifier = Modifier) {
+    modifier: Modifier = Modifier,
+) {
     OutlinedTextField(
         value = searchQuery,
-        onValueChange = { onSearchQueryChange(it) },
+        onValueChange = onSearchQueryChange,
         placeholder = { Text(placeholder) },
         leadingIcon = {
             Icon(Icons.Outlined.Search, contentDescription = null)
@@ -38,24 +36,22 @@ fun AppSearchBar(
             if (searchQuery.isNotEmpty()) {
                 IconButton(
                     modifier = Modifier.padding(horizontal = 4.dp),
-                    onClick = {
-                        onSearchClear()
-                    },
+                    onClick = onSearchClear,
                 ) {
                     Icon(Icons.Default.Clear, contentDescription = null)
                 }
             }
         },
         modifier = modifier
-                .fillMaxWidth()
-                .height(50.dp),
+            .fillMaxWidth()
+            .height(50.dp),
         shape = RoundedCornerShape(50.dp),
         singleLine = true,
         colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = PrimaryCyan,
-            unfocusedIndicatorColor = TextTertiary,
-            unfocusedContainerColor = BackgroundLight,
-            focusedContainerColor = BackgroundLight,
+            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+            unfocusedIndicatorColor = MaterialTheme.colorScheme.outlineVariant,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
         ),
     )
 }

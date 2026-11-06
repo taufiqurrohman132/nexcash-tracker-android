@@ -43,6 +43,7 @@ import androidx.compose.ui.unit.sp
 import com.example.nexcashapplication.R
 import java.time.format.TextStyle
 import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 @Composable
 fun MonthPicker(
@@ -56,8 +57,8 @@ fun MonthPicker(
     // Urutan tetap Jan..Des sehingga months[currentMonth] dan indexOf(month) tetap valid.
     val months = (1..12).map { month ->
         java.time.Month.of(month)
-                .getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault())
-                .uppercase(Locale.getDefault())
+                .getDisplayName(TextStyle.SHORT_STANDALONE, LocalLocale.current.platformLocale)
+                .uppercase(LocalLocale.current.platformLocale)
     }
 
     var month by remember { mutableStateOf(months[currentMonth]) }

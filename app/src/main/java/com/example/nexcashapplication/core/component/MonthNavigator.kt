@@ -29,6 +29,7 @@ import com.example.nexcashapplication.ui.theme.TextTertiary
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
+import androidx.compose.ui.platform.LocalLocale
 
 
 /**
@@ -83,7 +84,7 @@ fun MonthNavigator(
                 text = "${
                     month.month.getDisplayName(
                         TextStyle.SHORT,
-                        Locale.getDefault(),
+                        LocalLocale.current.platformLocale,
                     )
                 } ${month.year}",
                 style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),

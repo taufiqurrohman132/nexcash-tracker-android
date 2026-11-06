@@ -83,6 +83,8 @@ import com.example.nexcashapplication.feature.transaction.presentation.main.mode
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionHeaderUiModel
 import com.example.nexcashapplication.feature.transaction.presentation.main.model.TransactionUiGroupModel
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
+import com.example.nexcashapplication.ui.theme.SuccessGreen
+import com.example.nexcashapplication.ui.theme.WarningAmber
 import java.time.YearMonth
 
 /** Durasi (ms) animasi fade in/out saat item transaksi muncul atau di-collapse. */

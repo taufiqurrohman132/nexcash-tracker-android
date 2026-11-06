@@ -8,12 +8,14 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.example.nexcashapplication.MainActivity
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.i18n.withAppLocale
+import com.example.nexcashapplication.core.notification.NotificationHelper.Companion.EXTRA_DESTINATION
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -72,6 +74,7 @@ class NotificationHelper @Inject constructor(
      * Kirim notifikasi. [id] menentukan notifikasi mana yang ditimpa — pakai kunci anti-spam
      * yang sudah di-hash agar alert yang sama menimpa dirinya sendiri, bukan menumpuk.
      */
+    @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun post(
         id: Int,
         channelId: String,

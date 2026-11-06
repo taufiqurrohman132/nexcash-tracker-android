@@ -102,7 +102,9 @@ class FakeTransactionRepository : TransactionRepository {
     ): Flow<List<CategoryExpenseResult>> = unused()
 
     override fun getTransactionsForCategories(categoryIds: List<String>): Flow<List<Transaction>> =
-        unused()
+        withDetails.map { list ->
+            list.map { it.transaction }.filter { it.categoryId in categoryIds }
+        }
 
     override fun getRecentTransactions(limit: Int): Flow<List<TransactionWithDetails>> = unused()
 
@@ -119,7 +121,8 @@ class FakeTransactionRepository : TransactionRepository {
         if (failLoadById) flow { error("query rusak") }
         else withDetails.map { list -> list.firstOrNull { it.transaction.id == id } }
 
-    override fun getCountTransactionsByAccount(accountId: String): Flow<Int> = unused()
+    override fun getCountTransactionsByAccount(accountId: String): Flow<Int> =
+        withDetails.map { list -> list.count { it.transaction.accountId == accountId } }
 
     override suspend fun countTransactionsInRange(start: Long, end: Long): Int = unused()
 
