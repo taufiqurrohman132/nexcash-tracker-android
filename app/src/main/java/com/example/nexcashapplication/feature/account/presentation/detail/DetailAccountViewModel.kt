@@ -21,14 +21,25 @@ import kotlinx.coroutines.launch
 private const val TAG = "DetailAccountVm"
 
 @HiltViewModel
-class DetailAccountViewModel @Inject constructor(
+class DetailAccountViewModel internal constructor(
+    private val route: Route.AccountRoute.Detail,
     private val deleteAccountUseCase: DeleteAccountUseCase,
     private val validationDeleteAccountUseCase: ValidationDeleteAccountUseCase,
     private val getAccountDetailUseCase: GetAccountDetailUseCase,
-    savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<DetailAccountState, DetailAccountEvent, DetailAccountEffect>(initialState = DetailAccountState()) {
 
-    private val route: Route.AccountRoute.Detail = savedStateHandle.toRoute()
+    @Inject constructor(
+        deleteAccountUseCase: DeleteAccountUseCase,
+        validationDeleteAccountUseCase: ValidationDeleteAccountUseCase,
+        getAccountDetailUseCase: GetAccountDetailUseCase,
+        savedStateHandle: SavedStateHandle,
+    ) : this(
+        route = savedStateHandle.toRoute<Route.AccountRoute.Detail>(),
+        deleteAccountUseCase = deleteAccountUseCase,
+        validationDeleteAccountUseCase = validationDeleteAccountUseCase,
+        getAccountDetailUseCase = getAccountDetailUseCase,
+    )
+
     private val accountId = route.accountId
 
     init {

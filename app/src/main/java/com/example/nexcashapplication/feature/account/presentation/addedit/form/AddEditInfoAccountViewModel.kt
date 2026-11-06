@@ -21,15 +21,27 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class AddEditInfoAccountViewModel @Inject constructor(
+class AddEditInfoAccountViewModel internal constructor(
+    private val route: Route.AccountRoute.AddEditInfo,
     private val updateAssetUseCase: UpdateAccontUseCase,
     private val saveAssetUseCase: SaveAccontUseCase,
     private val getAccountDetailUseCase: GetAccountDetailUseCase,
-    savedStateHandle: SavedStateHandle,
 ) : BaseViewModel<AddEditInfoAccountState, AddEditInfoAccountEvent, AddEditInfoAccountEffect>(
     initialState = AddEditInfoAccountState(),
 ) {
-    private val route: Route.AccountRoute.AddEditInfo = savedStateHandle.toRoute()
+
+    @Inject constructor(
+        updateAssetUseCase: UpdateAccontUseCase,
+        saveAssetUseCase: SaveAccontUseCase,
+        getAccountDetailUseCase: GetAccountDetailUseCase,
+        savedStateHandle: SavedStateHandle,
+    ) : this(
+        route = savedStateHandle.toRoute<Route.AccountRoute.AddEditInfo>(),
+        updateAssetUseCase = updateAssetUseCase,
+        saveAssetUseCase = saveAssetUseCase,
+        getAccountDetailUseCase = getAccountDetailUseCase,
+    )
+
     private val typeAccount = route.typeAccount ?: TypeAccount.OTHER
     private val accountId: String? = route.accountId
 

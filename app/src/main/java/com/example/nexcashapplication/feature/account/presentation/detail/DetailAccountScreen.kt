@@ -339,7 +339,7 @@ private fun RecentTransactionsSection(
                 .fillMaxWidth()
                 .border(
                     width = 1.dp,
-                    color = BorderGray,
+                    color = MaterialTheme.colorScheme.outlineVariant,
                     shape = RoundedCornerShape(16.dp),
                 ),
     ) {
@@ -354,7 +354,7 @@ private fun RecentTransactionsSection(
             if (index != transactions.take(5).lastIndex) {
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 16.dp),
-                    color = BorderGray,
+                    color = MaterialTheme.colorScheme.outlineVariant,
                 )
             }
         }
