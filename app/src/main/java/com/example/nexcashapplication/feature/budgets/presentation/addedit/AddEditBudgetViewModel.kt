@@ -21,8 +21,8 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
-class AddEditBudgetViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
+class AddEditBudgetViewModel internal constructor(
+    private val route: Route.BudgetRoute.AddEdit,
     private val budgetRepository: BudgetRepository,
     private val categoryRepository: CategoryRepository,
     private val getBudgetPeriodUseCase: GetBudgetPeriodUseCase,
@@ -32,7 +32,25 @@ class AddEditBudgetViewModel @Inject constructor(
 ) : BaseViewModel<AddEditBudgetState, AddEditBudgetEvent, AddEditBudgetEffect>(
     AddEditBudgetState(),
 ) {
-    private val route: Route.BudgetRoute.AddEdit = savedStateHandle.toRoute()
+
+    @Inject constructor(
+        savedStateHandle: SavedStateHandle,
+        budgetRepository: BudgetRepository,
+        categoryRepository: CategoryRepository,
+        getBudgetPeriodUseCase: GetBudgetPeriodUseCase,
+        saveBudgetUseCase: SaveBudgetUseCase,
+        deleteBudgetUseCase: DeleteBudgetUseCase,
+        ensureUpToDateBudgets: EnsureUpToDateBudgetsUseCase,
+    ) : this(
+        route = savedStateHandle.toRoute<Route.BudgetRoute.AddEdit>(),
+        budgetRepository = budgetRepository,
+        categoryRepository = categoryRepository,
+        getBudgetPeriodUseCase = getBudgetPeriodUseCase,
+        saveBudgetUseCase = saveBudgetUseCase,
+        deleteBudgetUseCase = deleteBudgetUseCase,
+        ensureUpToDateBudgets = ensureUpToDateBudgets,
+    )
+
     private val budgetId = route.budgetId
     private val categoryId = route.categoryId
 
