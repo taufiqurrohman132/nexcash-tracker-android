@@ -80,6 +80,22 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 #### Pengujian
 
+- **Cakupan unit test lengkap fitur kategori (`feature/category`)**: 104 test mencakup:
+  - Domain use case: `DeleteCategoryUseCaseTest` (resolusi DeleteAll, MoveTo, Uncategorize),
+    `GetCategoryByIdUseCaseTest` (query ID & fallback null), `GetSubCategoriesWithBudgetUseCaseTest`
+    (logika hybrid rollup anggaran induk/sub, window periode terpisah untuk sub ber-budget),
+    serta `CategoryDeleteResolutionTest`.
+  - ViewModels: `AddCategoryViewModelTest` (13 test — mode tambah baru/edit/subkategori, recent icons
+    & colors, validasi form, penyimpanan via `PreferencesRepository`), `DeleteCategoryViewModelTest`
+    (11 test — load transaksi terkait, daftar kategori tujuan tanpa diri sendiri, opsi & konfirmasi
+    hapus dengan guard `isConfirmEnabled`), dan `SubCategoryListViewModelTest` (4 test — subkategori
+    ber-budget, navigasi, error retry).
+  - Mappers & UI states: `AddCategoryStateMapperTest`, `CategoryStateMapperTest`,
+    `DeleteCategoryStateMapperTest`, `DetailCategoryStateMapperTest`, `AddCategoryStateTest` (`isValid`),
+    `DeleteCategoryStateTest` (`isConfirmEnabled`), dan `BudgetPeriodTest` (label enum).
+  - Fake & stubs: `FakeCategoryRepository` (tracking delete/insert/update dan simulasi exception)
+    serta `FakePreferencesRepository` (in-memory DataStore preferences).
+  - Total suite meningkat menjadi **291 unit test**.
 - 23 unit test (JUnit Jupiter): mapper self-ref, generation (rollover, idempoten, cap,
   interval custom, weekly +1, one-shot), save logic (validasi, create, update, ganti tipe,
   urutan hapus FK), dan delete logic (tutup seri, riwayat aman, isolasi antar seri).
@@ -109,6 +125,11 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 ### Diubah
 
+- **Refaktor konstruktor ViewModel kategori untuk pengujian unit** — `AddCategoryViewModel`,
+  `DeleteCategoryViewModel`, dan `SubCategoryListViewModel` kini menyediakan konstruktor
+  `internal` penerima objek `Route` langsung (mengikuti pola `DetailCategoryViewModel`,
+  `DetailAccountViewModel`, dan `AddEditBudgetViewModel`), sehingga pengujian unit di JVM
+  dapat berjalan tanpa terhalang `SavedStateHandle.toRoute()` yang membaca Bundle Android kosong.
 - **Bottom nav hanya tampil di 5 tab utama** — visibilitas `BottomNavBar` di
   `NexcashApp` diturunkan dari hierarchy destination terhadap `TOP_LEVEL_DESTINATION`
   (Home, Transaksi, Aset, Statistik, Settings); layar detail/tambah/hapus kini
