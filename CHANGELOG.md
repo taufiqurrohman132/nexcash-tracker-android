@@ -80,6 +80,12 @@ versi mengikuti [Semantic Versioning](https://semver.org/lang/id/).
 
 #### Pengujian
 
+- **Cakupan unit test lengkap fitur pengaturan (`feature/settings`)**: 44 test mencakup:
+  - Domain models: `AppSettingsTest` (default values & `.copy()`), `AppThemeModeTest` (parsing raw string & fallback `SYSTEM`).
+  - UI models & states: `LanguageItemUiModelTest` (resolusi `nameResId` per bahasa), `LanguageSettingsStateTest` (komputasi `hasChange`), dan `SettingsStateTest` (default values & `.copy()`).
+  - ViewModels & effects: `LanguageSettingsViewModelTest` (11 test — inisialisasi, event item click, back, save sukses dengan `AppLocale` & efek `Saved`, error handling dengan snackbar, search debounce & clear), `SettingsViewModelTest` (10 test — inisialisasi warna hex ke Compose `Color`, fallback `PrimaryCyan`, menu routing, bottom sheet tema/warna, update tema & warna dengan penanganan error), dan `CurrencySettingsViewModelTest` (9 test).
+  - Test double: `FakeSettingsRepository` diperluas dengan parameter konfigurasi inisial lengkap, tracking perubahan, serta simulasi exception.
+  - Total suite meningkat menjadi **375 unit test** (seluruhnya lolos tanpa kegagalan).
 - **Cakupan unit test lengkap fitur kategori (`feature/category`)**: 104 test mencakup:
   - Domain use case: `DeleteCategoryUseCaseTest` (resolusi DeleteAll, MoveTo, Uncategorize),
     `GetCategoryByIdUseCaseTest` (query ID & fallback null), `GetSubCategoriesWithBudgetUseCaseTest`

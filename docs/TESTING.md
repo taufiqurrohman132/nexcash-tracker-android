@@ -7,7 +7,20 @@ We focus on testing business logic, mappers, and ViewModels.
     (untuk ViewModel: `Dispatchers.setMain` + virtual time via `runTest`), fake/repository in-memory
     untuk use case (tanpa mock berat).
 *   **Goal**: Ensure data transformations (Mappers) and State transitions (ViewModels) work correctly.
-*   **Cakupan Unit Test (Total 291 Test)**:
+*   **Cakupan Unit Test (Total 375 Test)**:
+    *   **Fitur Pengaturan (`feature/settings`)**: 44 test mencakup domain, presentation, dan state management:
+        *   **Domain Models**:
+            *   `AppSettingsTest` (2 test) — pengujian nilai default domain model `AppSettings` dan verifikasi integritas mutasi `.copy()`.
+            *   `AppThemeModeTest` (3 test) — pengujian pemetaan enum `AppThemeMode` dari/ke string DataStore serta fallback aman ke `SYSTEM`.
+        *   **UI Models & State**:
+            *   `LanguageItemUiModelTest` (3 test) — pemetaan ekstensi `AppLanguage.nameResId` ke resource string ID dan integritas model `LanguageItemUiModel`.
+            *   `LanguageSettingsStateTest` (4 test) — nilai default `LanguageSettingsState` dan logika komputasi flag `hasChange`.
+            *   `SettingsStateTest` (2 test) — nilai default `SettingsState` dan verifikasi mutasi state `.copy()`.
+        *   **ViewModels (`presentation`)**:
+            *   `LanguageSettingsViewModelTest` (11 test) — inisialisasi preferensi bahasa, stabilitas saat DataStore error, pemilihan bahasa (`OnItemClick`), navigasi kembali (`OnBackClick`), simpan bahasa dengan efek `Saved` & `AppLocale.apply()`, penanganan error simpan (`ShowSnackbar`), pencarian bahasa (`OnSearchQueryChange` ber-debounce 300ms), serta pembersihan pencarian (`OnSearchClear`).
+            *   `SettingsViewModelTest` (10 test) — inisialisasi mata uang/bahasa/tema/warna hex ke Compose `Color`, fallback `PrimaryCyan`, pembukaan sheet tema `TEMA_WARNA` tanpa navigasi, navigasi menu lainnya (`NavigateTo`), penutupan sheet (`OnThemeSheetDismiss`), pemilihan tema & warna dengan penanganan error ke `ShowSnackbar`.
+            *   `CurrencySettingsViewModelTest` (9 test) — pemuatan daftar mata uang, inisialisasi pilihan tersimpan, fallback mata uang tidak dikenal, pemilihan item (`OnItemClick`), simpan & navigasi kembali, serta pencarian mata uang ber-debounce.
+        *   **Fakes & Stubs**: `FakeSettingsRepository` — repositori in-memory reaktif dengan dukungan nilai awal kustom, simulasi exception, dan pelacakan perubahan (`savedThemeMode`, `savedColor`, `savedLanguage`, `savedCurrency`).
     *   **Fitur Kategori (`feature/category`)**: 104 test mencakup seluruh layer fitur:
         *   **Domain Use Cases & Models**:
             *   `DeleteCategoryUseCaseTest` (3 test) — pengujian aksi hapus dengan resolusi `DeleteAllTransactions`, `MoveToCategory(id)`, dan `Uncategorize`.
