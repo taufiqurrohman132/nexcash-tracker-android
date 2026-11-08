@@ -1,11 +1,14 @@
 package com.example.nexcashapplication.feature.dashboard.presentation.ui
 
 import com.example.nexcashapplication.awaitSettled
+import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
+import com.example.nexcashapplication.core.domain.model.TypeCategory
+import com.example.nexcashapplication.core.i18n.UiText
+import com.example.nexcashapplication.feature.category.presentation.main.FakeTransactionRepository
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
 import com.example.nexcashapplication.feature.transaction.domain.model.Transaction
 import com.example.nexcashapplication.feature.transaction.domain.model.TransactionWithDetails
-import com.example.nexcashapplication.core.domain.model.TypeCategory
-import com.example.nexcashapplication.feature.category.presentation.main.FakeTransactionRepository
+import com.example.nexcashapplication.feature.transaction.presentation.main.mapper.toItemUiModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -19,6 +22,8 @@ import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -55,6 +60,7 @@ class DashboardViewModelTest {
     @AfterEach
     fun tearDown() {
         Dispatchers.resetMain()
+        DashboardViewModel.lastSnapshot = null
     }
 
     // ── Load ─────────────────────────────────────────────────────────────
@@ -89,7 +95,72 @@ class DashboardViewModelTest {
         awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
 
         assertTrue(vm.state.value.transactions.isEmpty())
+        assertNull(vm.state.value.error)
     }
+
+    @Test
+    fun `transaksi terakhir - error saat query mengubah state error dan mematikan loading`() =
+        runTest(testDispatcher) {
+            transactionRepository.shouldFailGetRecentTransactions = true
+
+            val vm = createViewModel()
+            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
+
+            assertFalse(vm.state.value.isLoading)
+            assertNotNull(vm.state.value.error)
+            val error = vm.state.value.error
+            assertTrue(
+                error is UiText.Raw && error.value.contains("Database error"),
+                "Pesan error teknis terbawa: $error",
+            )
+        }
+
+    @Test
+    fun `transaksi terakhir - error query tidak menghapus transaksi lama dari snapshot`() =
+        runTest(testDispatcher) {
+            val cachedItems = listOf(
+                withDetails(id = "cached-1", catId = "c1", hoursAgo = 1).toItemUiModel(),
+            )
+            DashboardViewModel.lastSnapshot = DashboardSnapshot(transactions = cachedItems)
+            transactionRepository.shouldFailGetRecentTransactions = true
+
+            val vm = createViewModel()
+            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
+
+            assertFalse(vm.state.value.isLoading)
+            assertNotNull(vm.state.value.error)
+            assertEquals(cachedItems, vm.state.value.transactions)
+        }
+
+    // ── Snapshot Cache ───────────────────────────────────────────────────
+
+    @Test
+    fun `snapshot - memulihkan transaksi terakhir dari cache saat ViewModel diinisialisasi`() =
+        runTest(testDispatcher) {
+            val cachedItems = listOf(
+                withDetails(id = "cached-99", catId = "c1", hoursAgo = 2).toItemUiModel(),
+            )
+            DashboardViewModel.lastSnapshot = DashboardSnapshot(transactions = cachedItems)
+
+            val vm = createViewModel()
+
+            // State langsung berisi transaksi dari snapshot sebelum repository mengembalikan emisi baru
+            assertEquals(cachedItems, vm.state.value.transactions)
+        }
+
+    @Test
+    fun `snapshot - diperbarui otomatis setelah data transaksi berhasil dimuat`() =
+        runTest(testDispatcher) {
+            transactionRepository.seedWithDetails(
+                withDetails(id = "tx-1", catId = "c1", hoursAgo = 1),
+            )
+
+            val vm = createViewModel()
+            awaitSettled(state = { vm.state.value }, isLoading = { it.isLoading })
+
+            assertEquals(1, DashboardViewModel.lastSnapshot?.transactions?.size)
+            assertEquals("tx-1", DashboardViewModel.lastSnapshot?.transactions?.first()?.id)
+        }
 
     // ── State ────────────────────────────────────────────────────────────
 

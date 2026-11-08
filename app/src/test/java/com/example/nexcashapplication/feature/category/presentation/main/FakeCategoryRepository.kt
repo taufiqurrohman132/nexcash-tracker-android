@@ -64,11 +64,14 @@ class FakeCategoryRepository : CategoryRepository {
         }
 
     // Meniru query DAO: parent_id IS NULL, urut nama
-    override fun getExpenseCategories(): Flow<List<Category>> =
-        categories.map { list ->
+    override fun getExpenseCategories(): Flow<List<Category>> {
+        val error = throwOnLoad
+        if (error != null) return flow { throw error }
+        return categories.map { list ->
             list.filter { it.type == TypeCategory.EXPENSE && it.parentId == null }
                 .sortedBy { it.name }
         }
+    }
 
     override fun getIncomeCategories(): Flow<List<Category>> =
         categories.map { list ->

@@ -9,6 +9,7 @@ import com.example.nexcashapplication.feature.transaction.domain.model.Transacti
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
 import java.time.ZoneId
@@ -35,6 +36,9 @@ class FakeTransactionRepository : TransactionRepository {
     private val transactions = MutableStateFlow<List<Transaction>>(emptyList())
     private val withDetails = MutableStateFlow<List<TransactionWithDetails>>(emptyList())
 
+    /** Simulasikan error query untuk pengujian ketahanan ViewModel. */
+    var shouldFailGetRecentTransactions: Boolean = false
+
     fun seed(vararg rows: Transaction) {
         transactions.value = transactions.value + rows
     }
@@ -48,9 +52,13 @@ class FakeTransactionRepository : TransactionRepository {
         transactions.map { list -> list.filter { it.categoryId in categoryIds } }
 
     override fun getRecentTransactions(limit: Int): Flow<List<TransactionWithDetails>> =
-        withDetails.map { list ->
-            list.sortedByDescending { it.transaction.dateTime }
-                .let { rows -> if (limit < 0) rows else rows.take(limit) }
+        if (shouldFailGetRecentTransactions) {
+            flow { throw RuntimeException("Database error") }
+        } else {
+            withDetails.map { list ->
+                list.sortedByDescending { it.transaction.dateTime }
+                    .let { rows -> if (limit < 0) rows else rows.take(limit) }
+            }
         }
 
     override fun getRecentTransactionsByCategory(
@@ -171,7 +179,8 @@ class FakeTransactionRepository : TransactionRepository {
 
     override fun getCountTransactionsByAccount(accountId: String): Flow<Int> = unused()
 
-    override suspend fun countTransactionsInRange(start: Long, end: Long): Int = unused()
+    override suspend fun countTransactionsInRange(start: Long, end: Long): Int =
+        transactions.value.count { it.dateTime.toEpochMilliseconds() in start..end }
 
     override suspend fun getTransactionByIdOnce(id: String): TransactionEntity = unused()
 
