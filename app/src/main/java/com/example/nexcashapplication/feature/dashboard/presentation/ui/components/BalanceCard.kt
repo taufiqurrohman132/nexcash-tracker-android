@@ -37,8 +37,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.extension.toFormatCurrencyVisibility
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
-import com.example.nexcashapplication.ui.theme.SecondaryDeepPurple
 
 
 @Composable
@@ -59,8 +57,8 @@ fun BalanceCard(
                 .shadow(
                     elevation = 12.dp,
                     shape = RoundedCornerShape(24.dp),
-                    ambientColor = PrimaryCyan.copy(alpha = 0.35f),
-                    spotColor = PrimaryCyan.copy(alpha = 0.35f),
+                    ambientColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
+                    spotColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.35f),
                 ),
         elevation = CardDefaults.elevatedCardElevation(
             defaultElevation = 0.dp,   // dimatiin, shadow udah dihandle Modifier.shadow()
@@ -73,9 +71,9 @@ fun BalanceCard(
                     .background(
                         brush = Brush.linearGradient(
                             colors = listOf(
-                                PrimaryCyan,
-                                PrimaryCyan,
-                                SecondaryDeepPurple,
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.onPrimaryContainer,
                             ),
                             start = Offset(0f, 0f),
                             end = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY),
@@ -87,7 +85,7 @@ fun BalanceCard(
 
             Text(
                 text = stringResource(R.string.dash_total_balance_label),
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
             )
 
             Spacer(
@@ -105,7 +103,7 @@ fun BalanceCard(
                     style =
                         MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     maxLines = 1,
                     onTextLayout = { result ->
                         if (result.hasVisualOverflow) {
@@ -120,7 +118,7 @@ fun BalanceCard(
                     modifier = Modifier
                             .size(40.dp)
                             .background(
-                                color = Color.White.copy(0.2f),
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
                                 shape = CircleShape,
                             )
                             .clip(CircleShape)
@@ -131,7 +129,7 @@ fun BalanceCard(
                     Icon(
                         painter = painterResource(R.drawable.eye_show),
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(20.dp),
                     )
                 }
@@ -148,7 +146,7 @@ fun BalanceCard(
                     value = income,
                     modifier = Modifier.weight(1f),
                     icon = painterResource(R.drawable.down),
-                    color = Color.Green,
+                    color = MaterialTheme.colorScheme.tertiary,
                 )
 
                 Spacer(
@@ -160,7 +158,7 @@ fun BalanceCard(
                     value = expense,
                     modifier = Modifier.weight(1f),
                     icon = painterResource(R.drawable.up),
-                    color = Color.Red,
+                    color = MaterialTheme.colorScheme.error,
                 )
             }
         }
@@ -170,11 +168,13 @@ fun BalanceCard(
 @Preview
 @Composable
 fun BalanceCardPreview(modifier: Modifier = Modifier) {
-    BalanceCard(
-        4000,
-        4040,
-        5050,
-        true,
-        {},
-    )
+    com.example.nexcashapplication.ui.theme.NexCashApplicationTheme {
+        BalanceCard(
+            4000,
+            4040,
+            5050,
+            true,
+            {},
+        )
+    }
 }

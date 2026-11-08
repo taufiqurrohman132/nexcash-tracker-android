@@ -45,7 +45,8 @@ fun HeaderSection(
         Text(
             text = stringResource(R.string.dash_greeting_format, userName),
             style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onBackground,
         )
 
         Row {
@@ -53,14 +54,15 @@ fun HeaderSection(
                 modifier = Modifier.size(48.dp),
                 colors = IconButtonDefaults.iconButtonColors(
                     containerColor = Color.Transparent,
-                    contentColor = Color.Black
+                    contentColor = MaterialTheme.colorScheme.onBackground,
                 ),
                 onClick = onClickNotification
             ) {
                 Icon(
                     Icons.Outlined.Notifications,
                     contentDescription = null,
-                    modifier = Modifier.size(28.dp)
+                    modifier = Modifier.size(28.dp),
+                    tint = MaterialTheme.colorScheme.onBackground,
                 )
             }
 
@@ -82,5 +84,7 @@ fun HeaderSection(
 @Preview(showBackground = true)
 @Composable
 private fun Preview() {
-    HeaderSection("kdf", {})
+    com.example.nexcashapplication.ui.theme.NexCashApplicationTheme {
+        HeaderSection("kdf", {})
+    }
 }

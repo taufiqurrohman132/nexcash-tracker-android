@@ -27,13 +27,12 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.material3.CardDefaults
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.currency.AppCurrencyHolder
 import com.example.nexcashapplication.core.extension.formatCurrency
-import com.example.nexcashapplication.ui.theme.LightCyan
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
@@ -59,11 +58,12 @@ fun BudgetCard(
                 text = stringResource(R.string.dash_remaining_budget),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
             )
             TextButton(onClick = { onDetailClick() }) {
                 Text(
                     text = stringResource(R.string.dash_see_detail),
-                    color = PrimaryCyan,
+                    color = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -73,11 +73,13 @@ fun BudgetCard(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp),
             shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer,
+            ),
         ) {
 
             Column(
                 modifier = Modifier
-                        .background(LightCyan)
                         .padding(16.dp),
             ) {
                 // Periode bulan/tahun berjalan, terlokalisasi (bukan placeholder
@@ -91,7 +93,7 @@ fun BudgetCard(
                 Text(
                     text = period,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
 
                 Spacer(modifier = Modifier.height(2.dp))
@@ -106,7 +108,7 @@ fun BudgetCard(
                     text = buildAnnotatedString {
                         withStyle(
                             SpanStyle(
-                                color = PrimaryCyan,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold,
                                 fontSize = MaterialTheme.typography.headlineSmall.fontSize,
                             ),
@@ -115,7 +117,7 @@ fun BudgetCard(
                         }
                         withStyle(
                             SpanStyle(
-                                color = Color.Gray,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 fontWeight = FontWeight.Normal,
                                 fontSize = MaterialTheme.typography.bodySmall.fontSize,
                             ),
@@ -127,7 +129,7 @@ fun BudgetCard(
                 Box(
                     modifier = Modifier
                             .background(
-                                color = PrimaryCyan.copy(alpha = 0.05f),
+                                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                                 shape = RoundedCornerShape(50.dp),
                             )
                             .padding(horizontal = 10.dp, vertical = 4.dp)
@@ -139,7 +141,7 @@ fun BudgetCard(
                             (progress * 100).toInt(),
                         ),
                         style = MaterialTheme.typography.bodySmall,
-                        color = PrimaryCyan,
+                        color = MaterialTheme.colorScheme.primary,
                     )
                 }
 
@@ -152,8 +154,8 @@ fun BudgetCard(
                             .fillMaxWidth()
                             .height(8.dp)
                             .clip(RoundedCornerShape(50)),
-                    color = PrimaryCyan,
-                    trackColor = PrimaryCyan.copy(alpha = 0.1f),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -163,7 +165,7 @@ fun BudgetCard(
                     text = stringResource(R.string.dash_budget_tip),
                     style = MaterialTheme.typography.bodySmall,
                     fontStyle = FontStyle.Italic,
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
         }
@@ -173,9 +175,10 @@ fun BudgetCard(
 @Preview(showBackground = true)
 @Composable
 private fun BudgetCardPreview() {
-    BudgetCard(
-        20,
-        4f,
-    )
-
+    com.example.nexcashapplication.ui.theme.NexCashApplicationTheme {
+        BudgetCard(
+            20,
+            4f,
+        )
+    }
 }

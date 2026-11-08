@@ -26,9 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
-import com.example.nexcashapplication.ui.theme.BorderGray
-import com.example.nexcashapplication.ui.theme.LightCyan
-import com.example.nexcashapplication.ui.theme.PrimaryCyan
 
 @Composable
 fun QuickActionSection(
@@ -80,21 +77,14 @@ fun QuickActionItem(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .size(64.dp)
-                .shadow(
-                    elevation = 4.dp,
-                    ambientColor = PrimaryCyan,
-                    spotColor = PrimaryCyan,
-                    shape = CircleShape,
-                    clip = false
-                )
                 .clip(CircleShape)
                 .background(
-                    color = LightCyan,
+                    color = MaterialTheme.colorScheme.primaryContainer,
                     shape = CircleShape,
                 )
                 .border(
                     1.5.dp,
-                    color = BorderGray,
+                    color = MaterialTheme.colorScheme.outlineVariant,
                     shape = CircleShape
                 )
                 .clickable { onClick() },
@@ -103,7 +93,7 @@ fun QuickActionItem(
                 modifier = Modifier.size(32.dp),
                 painter = icon,
                 contentDescription = label,
-                tint = PrimaryCyan
+                tint = MaterialTheme.colorScheme.primary
             )
         }
 
@@ -113,7 +103,8 @@ fun QuickActionItem(
 
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
@@ -121,6 +112,7 @@ fun QuickActionItem(
 @Preview(showBackground = true)
 @Composable
 private fun QuickActionSectionPreview() {
-    QuickActionSection()
-
+    com.example.nexcashapplication.ui.theme.NexCashApplicationTheme {
+        QuickActionSection()
+    }
 }

@@ -47,7 +47,7 @@ fun SummaryChip(
     Card(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = Color.White.copy(alpha = 0.1f)
+            containerColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.1f)
         ),
         shape = RoundedCornerShape(16.dp)
     ) {
@@ -62,7 +62,7 @@ fun SummaryChip(
                     modifier = Modifier
                         .size(20.dp)
                         .background(
-                            color = Color.White.copy(alpha = 0.2f),
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
                             shape = CircleShape
                         ),
                     contentAlignment = Alignment.Center
@@ -78,7 +78,7 @@ fun SummaryChip(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.labelSmall,
-                    color = Color.White.copy(alpha = 0.8f)
+                    color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                 )
             }
 
@@ -96,7 +96,7 @@ fun SummaryChip(
                 maxLines = 1,
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onPrimary,
                 onTextLayout = { result ->
                     if (result.hasVisualOverflow) { // ← cek dulu
                         isTextOverflow = result.hasVisualOverflow
@@ -110,10 +110,12 @@ fun SummaryChip(
 @Preview
 @Composable
 fun SummaryChipPreview() {
-    SummaryChip(
-        "Income",
-        value = 30030,
-        icon = painterResource(R.drawable.up),
-        color = Color.Green,
-    )
+    com.example.nexcashapplication.ui.theme.NexCashApplicationTheme {
+        SummaryChip(
+            "Income",
+            value = 30030,
+            icon = painterResource(R.drawable.up),
+            color = MaterialTheme.colorScheme.tertiary,
+        )
+    }
 }
