@@ -41,6 +41,23 @@ class FakeTransactionRepository : TransactionRepository {
     /** Melempar di [insertTransaction] — salin/simpan gagal. */
     var failInsert = false
 
+    val monthlySummaryFlow = MutableStateFlow(
+        MonthlySummary(
+            totalPemasukan = 0L,
+            totalPengeluaran = 0L,
+            totalSaldo = 0L,
+            yearMonth = "",
+        ),
+    )
+    var failMonthlySummary = false
+    var failObserverTransactionsByMonth = false
+    var failObserverTransactionsWithDetailsByMonth = false
+    var failSearch = false
+
+    fun seedMonthlySummary(summary: MonthlySummary) {
+        monthlySummaryFlow.value = summary
+    }
+
     /**
      * Ditahan [deleteTransaction] sampai di-complete — menahan proses hapus supaya
      * test bisa mengetuk konfirmasi kedua di tengah jalan.
@@ -66,15 +83,22 @@ class FakeTransactionRepository : TransactionRepository {
     ): Flow<List<TransactionWithDetails>> =
         withDetails.map { list -> list.filter { it.transaction.categoryId in categoryIds } }
 
-    override fun getMonthlySummary(yearMonth: String): Flow<MonthlySummary> = unused()
+    override fun getMonthlySummary(yearMonth: String): Flow<MonthlySummary> =
+        if (failMonthlySummary) flow { error("gagal summary") } else monthlySummaryFlow
 
     override fun getObserverTransactionsByMonth(yearMonth: String): Flow<List<Transaction>> =
-        unused()
+        if (failObserverTransactionsByMonth) flow { error("gagal tx by month") }
+        else withDetails.map { list -> list.map { it.transaction } }
 
     override fun getObserverTransactionsWithDetailsByMonth(
         yearMonth: String,
         categoryFilter: String?,
-    ): Flow<List<TransactionWithDetails>> = unused()
+    ): Flow<List<TransactionWithDetails>> =
+        if (failObserverTransactionsWithDetailsByMonth) flow { error("gagal tx details by month") }
+        else withDetails.map { list ->
+            if (categoryFilter == null) list
+            else list.filter { it.transaction.categoryId == categoryFilter }
+        }
 
     override fun getTotalExpenseByMonth(startOfMonth: Long, endOfMonth: Long): Flow<Long> =
         unused()
@@ -129,7 +153,10 @@ class FakeTransactionRepository : TransactionRepository {
     override suspend fun getTransactionByIdOnce(id: String): TransactionEntity = unused()
 
     override fun searchTransactions(query: String): Flow<List<TransactionWithDetails>> =
-        unused()
+        if (failSearch) flow { error("gagal cari") }
+        else withDetails.map { list ->
+            list.filter { it.transaction.title.contains(query, ignoreCase = true) }
+        }
 
     override suspend fun insertTransaction(transaction: Transaction) {
         if (failInsert) error("simpan gagal")
