@@ -64,8 +64,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import com.example.nexcashapplication.core.component.AppSnackbarHost
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.key
 import androidx.compose.ui.platform.LocalContext
@@ -135,7 +135,7 @@ fun DeleteCategoryContent(
                 },
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) },
+        snackbarHost = { AppSnackbarHost(snackbarHostState) },
         bottomBar = {
             Column {
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)

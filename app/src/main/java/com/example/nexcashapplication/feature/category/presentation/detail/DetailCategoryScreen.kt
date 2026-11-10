@@ -48,8 +48,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import com.example.nexcashapplication.core.component.AppSnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -314,7 +314,7 @@ fun DetailCategoryContent(
     val hostState = snackbarHostState ?: remember { SnackbarHostState() }
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState) },
+        snackbarHost = { AppSnackbarHost(hostState) },
         topBar = {
             TopAppBar(
                 title = {
