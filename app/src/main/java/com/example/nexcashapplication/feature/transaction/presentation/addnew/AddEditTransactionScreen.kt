@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -33,8 +32,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material.icons.filled.TrendingDown
-import androidx.compose.material.icons.filled.TrendingUp
 import androidx.compose.material.icons.outlined.AccountBalanceWallet
 import androidx.compose.material.icons.outlined.AddPhotoAlternate
 import androidx.compose.material.icons.outlined.Category
@@ -45,18 +42,17 @@ import androidx.compose.material.icons.outlined.Timer
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
-import com.example.nexcashapplication.core.component.AppSnackbarHost
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -74,6 +70,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -94,11 +91,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.AppButton
+import com.example.nexcashapplication.core.component.AppSnackbarHost
 import com.example.nexcashapplication.core.component.FormField
 import com.example.nexcashapplication.core.component.IconCircular
 import com.example.nexcashapplication.core.currency.AppCurrencyHolder
 import com.example.nexcashapplication.core.domain.model.TypeCategory
-import com.example.nexcashapplication.core.i18n.UiText
 import com.example.nexcashapplication.core.i18n.resolve
 import com.example.nexcashapplication.feature.common.components.AppDatePickerDialog
 import com.example.nexcashapplication.feature.common.components.AppTimePickerDialog
@@ -192,6 +189,7 @@ fun AddEditTransactionContent(
     val amountFocus = remember { FocusRequester() }
     val nameFocus = remember { FocusRequester() }
     val keyboard: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     // Auto-focus amount + buka keyboard hanya saat TAMBAH BARU. Saat edit
     // transaksi lama keyboard tidak muncul sendiri supaya tidak mengganggu.
@@ -270,7 +268,7 @@ fun AddEditTransactionContent(
                         label = stringResource(R.string.tx_amount_in),
                     ),
 
-                ),
+                    ),
                 onSelect = { onEvent(AddEditTransactionEvent.OnTypeChange(it)) },
             )
 
@@ -359,7 +357,7 @@ fun AddEditTransactionContent(
                     ),
                     keyboardActions = KeyboardActions(
                         onNext = {
-                            nameFocus.freeFocus()
+                            focusManager.clearFocus()
                             keyboard?.hide()
                             // jalur cepat: setelah kategori dipilih lanjut ke sheet Account
                             onEvent(AddEditTransactionEvent.OnCategoryClick(autoAdvance = true))
@@ -793,7 +791,10 @@ private fun SelectorRow(
         modifier = Modifier
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(16.dp))
-                .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant), RoundedCornerShape(16.dp))
+                .border(
+                    BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    RoundedCornerShape(16.dp),
+                )
                 .clickable { onClick() }
                 .padding(14.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -810,7 +811,11 @@ private fun SelectorRow(
             Text(title, fontWeight = FontWeight.SemiBold, fontSize = 14.sp)
             Text(subtitle, fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        Icon(Icons.Default.KeyboardArrowRight, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        Icon(
+            Icons.Default.KeyboardArrowRight,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -821,7 +826,8 @@ private fun CompactSelector(
     isActive: Boolean = false,   // kontrol manual, misal true saat dialog kebuka
     onClick: () -> Unit,
 ) {
-    val borderColor = if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
+    val borderColor =
+        if (isActive) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant
     val boderWidth = if (isActive) 2.dp else 1.dp
 
     Row(
@@ -837,7 +843,12 @@ private fun CompactSelector(
                 .padding(horizontal = 12.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+        Icon(
+            icon,
+            contentDescription = null,
+            modifier = Modifier.size(18.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         Spacer(Modifier.width(8.dp))
         Text(text)
     }
@@ -862,10 +873,17 @@ private fun AttachmentBox(fileName: String?, onClick: () -> Unit) {
                     .size(48.dp)
                     .clip(CircleShape)
                     .background(MaterialTheme.colorScheme.surface)
-                    .border(BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant), CircleShape),
+                    .border(
+                        BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        CircleShape,
+                    ),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(Icons.Outlined.AddPhotoAlternate, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant)
+            Icon(
+                Icons.Outlined.AddPhotoAlternate,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
         Spacer(Modifier.height(10.dp))
         Text(
