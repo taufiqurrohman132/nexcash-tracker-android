@@ -23,6 +23,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import com.example.nexcashapplication.ui.theme.BorderGray
 import com.example.nexcashapplication.ui.theme.PrimaryCyan
 import com.example.nexcashapplication.ui.theme.TextTertiary
@@ -64,11 +65,12 @@ fun MonthNavigator(
             onClick = { onMonthSelected(month.minusMonths(1)) },
         )
 
+        val singleOpenPicker = rememberSingleClick(onClick = onOpenPicker)
         Row(
             modifier = Modifier
                     .fillMaxHeight()
                     .clip(RoundedCornerShape(50))
-                    .clickable { onOpenPicker() }
+                    .clickable { singleOpenPicker() }
                     .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

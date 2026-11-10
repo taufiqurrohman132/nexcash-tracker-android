@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.IconRounded
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 
 @Composable
@@ -77,8 +78,9 @@ fun TransactionEmptyScreen(
             textAlign = TextAlign.Center,
         )
 
+        val singleAddClick = rememberSingleClick { onAddClick() }
         Button(
-            onClick = { onAddClick() },
+            onClick = singleAddClick,
             modifier = Modifier
                     .padding(16.dp)
                     .shadow(

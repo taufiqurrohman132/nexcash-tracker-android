@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 
 @Composable
 fun QuickActionSection(
@@ -69,6 +70,7 @@ fun QuickActionItem(
     label: String,
     onClick: () -> Unit = {}
 ) {
+    val singleClick = rememberSingleClick(onClick = onClick)
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -87,7 +89,7 @@ fun QuickActionItem(
                     color = MaterialTheme.colorScheme.outlineVariant,
                     shape = CircleShape
                 )
-                .clickable { onClick() },
+                .clickable { singleClick() },
         ) {
             Icon(
                 modifier = Modifier.size(32.dp),

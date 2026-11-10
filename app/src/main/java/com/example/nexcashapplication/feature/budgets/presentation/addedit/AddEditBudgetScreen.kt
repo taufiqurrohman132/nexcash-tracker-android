@@ -45,6 +45,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import com.example.nexcashapplication.core.component.AppSnackbarHost
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -330,7 +331,10 @@ fun AddEditBudgetContent(
                     )
                 },
                 confirmButton = {
-                    TextButton(onClick = { onEvent(AddEditBudgetEvent.KonfirmasiHapusClicked) }) {
+                    val singleConfirmDelete = rememberSingleClick {
+                        onEvent(AddEditBudgetEvent.KonfirmasiHapusClicked)
+                    }
+                    TextButton(onClick = singleConfirmDelete) {
                         Text(
                             stringResource(R.string.budget_delete_action),
                             color = MaterialTheme.colorScheme.error,
@@ -548,6 +552,7 @@ private fun ChangeSummaryCard(oldValue: String, newValue: String) {
 
 @Composable
 private fun EditBudgetBottomBar(onCancel: () -> Unit, onSave: () -> Unit) {
+    val singleSave = rememberSingleClick(onClick = onSave)
     Surface(shadowElevation = 4.dp) {
         Row(
             modifier = Modifier
@@ -563,7 +568,7 @@ private fun EditBudgetBottomBar(onCancel: () -> Unit, onSave: () -> Unit) {
                 Text(stringResource(R.string.budget_cancel_action))
             }
             Button(
-                onClick = onSave,
+                onClick = singleSave,
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(24.dp),
             ) {

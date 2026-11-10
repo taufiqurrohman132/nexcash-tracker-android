@@ -38,6 +38,7 @@ import androidx.navigation.NavHostController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.component.TransactionItem
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.i18n.uiText
 import com.example.nexcashapplication.core.navigations.Route
@@ -125,15 +126,19 @@ fun AllTransactionsContent(
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Spacer(Modifier.height(12.dp))
-                TextButton(onClick = { onEvent(AllTransactionsEvent.OnRetryClick) }) {
+                val onRetry = rememberSingleClick { onEvent(AllTransactionsEvent.OnRetryClick) }
+                TextButton(onClick = onRetry) {
                     Text(stringResource(R.string.tx_retry))
                 }
             }
 
-            state.groupedTransactions.isEmpty() -> TransactionEmptyScreen(
-                onAddClick = { onEvent(AllTransactionsEvent.OnAddTransactionClick) },
-                modifier = Modifier.padding(padding),
-            )
+            state.groupedTransactions.isEmpty() -> {
+                val onAdd = rememberSingleClick { onEvent(AllTransactionsEvent.OnAddTransactionClick) }
+                TransactionEmptyScreen(
+                    onAddClick = onAdd,
+                    modifier = Modifier.padding(padding),
+                )
+            }
 
             else -> LazyColumn(
                 modifier = Modifier

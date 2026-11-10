@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.currency.AppCurrencyHolder
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import java.time.YearMonth
 import java.time.format.TextStyle
 import java.util.Locale
@@ -60,7 +61,8 @@ fun BudgetCard(
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onSurface,
             )
-            TextButton(onClick = { onDetailClick() }) {
+            val singleDetailClick = rememberSingleClick { onDetailClick() }
+            TextButton(onClick = singleDetailClick) {
                 Text(
                     text = stringResource(R.string.dash_see_detail),
                     color = MaterialTheme.colorScheme.primary,

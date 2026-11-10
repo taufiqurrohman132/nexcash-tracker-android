@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import com.example.nexcashapplication.core.component.AppSnackbarHost
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
@@ -242,7 +243,10 @@ fun EditPresentageBudgetContent(
                     )
                 },
                 confirmButton = {
-                    TextButton(onClick = { onEvent(EditPresentageBudgetEvent.OnConfirmDeleteClick) }) {
+                    val singleConfirmDelete = rememberSingleClick {
+                        onEvent(EditPresentageBudgetEvent.OnConfirmDeleteClick)
+                    }
+                    TextButton(onClick = singleConfirmDelete) {
                         Text(
                             stringResource(R.string.budget_delete_action),
                             color = MaterialTheme.colorScheme.error,

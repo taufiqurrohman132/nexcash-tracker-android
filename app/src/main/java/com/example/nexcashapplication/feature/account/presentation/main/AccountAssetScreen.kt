@@ -36,6 +36,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import com.example.nexcashapplication.core.component.AppSnackbarHost
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -171,7 +172,8 @@ fun AccountAssetContent(
                         // `state.error` dipastikan non-null oleh kondisi cabang di atas
                         Text(state.error.asString(), color = MaterialTheme.colorScheme.error)
                         Spacer(Modifier.height(8.dp))
-                        Button(onClick = { onEvent(AccountAssetEvent.OnRetry) }) {
+                        val onRetryClick = rememberSingleClick { onEvent(AccountAssetEvent.OnRetry) }
+                        Button(onClick = onRetryClick) {
                             Text(stringResource(R.string.acct_retry))
                         }
                     }
@@ -196,7 +198,8 @@ fun AccountAssetContent(
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                         Spacer(Modifier.height(12.dp))
-                        Button(onClick = { onEvent(AccountAssetEvent.OnAddAccountClick) }) {
+                        val onAddClick = rememberSingleClick { onEvent(AccountAssetEvent.OnAddAccountClick) }
+                        Button(onClick = onAddClick) {
                             Text(stringResource(R.string.acct_add_account))
                         }
                     }

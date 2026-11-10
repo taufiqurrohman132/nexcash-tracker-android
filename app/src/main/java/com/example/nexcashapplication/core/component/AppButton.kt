@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 
 @Composable
@@ -27,9 +28,11 @@ fun AppButton(
     disabledTextColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
     modifier: Modifier = Modifier,
 ) {
+    val guardedClick = rememberSingleClick(onClick = onClick)
+
     Button(
         enabled = isEnabled,
-        onClick = onClick,
+        onClick = guardedClick,
         modifier = modifier
             .shadow(
                 elevation = if (isEnabled) 8.dp else 0.dp,

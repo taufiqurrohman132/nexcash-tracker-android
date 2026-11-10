@@ -75,6 +75,7 @@ import com.example.nexcashapplication.core.component.TransactionItem
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCompact
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.core.domain.model.TypeCategory
@@ -156,8 +157,9 @@ fun TransactionContent(
             )
         },
         floatingActionButton = {
+            val onAddClick = rememberSingleClick { onEvent(TransactionEvent.OnAddTransactionClick) }
             FloatingActionButton(
-                onClick = { onEvent(TransactionEvent.OnAddTransactionClick) },
+                onClick = onAddClick,
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
                 shape = CircleShape,

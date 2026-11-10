@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.domain.model.TransactionItemUiModel
 import com.example.nexcashapplication.core.extension.formatCurrency
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import com.example.nexcashapplication.core.domain.model.TypeCategory
 import com.example.nexcashapplication.ui.theme.AccentTealGreen
 import com.example.nexcashapplication.ui.theme.BorderGray
@@ -39,13 +40,14 @@ fun TransactionItem(
     transaction: TransactionItemUiModel,
     onClick: (id: String?) -> Unit,
 ) {
+    val guardedClick = rememberSingleClick { onClick(transaction.id) }
 
     ListItem(
         modifier = Modifier
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = ripple(),
-                    onClick = { onClick(transaction.id) },
+                    onClick = guardedClick,
                 ),
         leadingContent = {
             Box(

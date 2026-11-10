@@ -40,6 +40,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import com.example.nexcashapplication.core.component.AppSnackbarHost
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -370,11 +371,12 @@ private fun ActionButton(
     labelColor: Color = MaterialTheme.colorScheme.onSurface,
     backgroundColor: Color = MaterialTheme.colorScheme.surface,
 ) {
+    val guardedClick = rememberSingleClick(onClick = onClick)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
                 .clip(RoundedCornerShape(14.dp))
-                .clickable(onClick = onClick)
+                .clickable(onClick = guardedClick)
                 .padding(horizontal = 12.dp, vertical = 6.dp),
     ) {
         IconRounded(

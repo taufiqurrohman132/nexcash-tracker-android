@@ -46,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.nexcashapplication.R
@@ -107,7 +108,8 @@ fun NotificationContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { onEvent(NotificationEvent.SettingsClicked) }) {
+                    val singleSettingsClick = rememberSingleClick { onEvent(NotificationEvent.SettingsClicked) }
+                    IconButton(onClick = singleSettingsClick) {
                         Icon(
                             Icons.Outlined.Settings,
                             contentDescription = stringResource(R.string.notif_settings_content_desc),
@@ -176,8 +178,9 @@ private fun NotificationList(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
+                val singleMarkAllRead = rememberSingleClick { onEvent(NotificationEvent.MarkAllReadClicked) }
                 TextButton(
-                    onClick = { onEvent(NotificationEvent.MarkAllReadClicked) },
+                    onClick = singleMarkAllRead,
                     enabled = state.unreadCount > 0,
                 ) { Text(stringResource(R.string.notif_mark_all_read)) }
             }

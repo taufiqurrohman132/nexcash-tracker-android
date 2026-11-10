@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.extension.formatCompact
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import com.example.nexcashapplication.feature.account.domain.model.DeleteAccountDesision
 
 @Composable
@@ -15,6 +16,7 @@ fun DeleteAccountDialog(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
+    val singleConfirm = rememberSingleClick(onClick = onConfirm)
     when (dialogDesision) {
         is DeleteAccountDesision.Blocked -> {
             AlertDialog(
@@ -47,7 +49,7 @@ fun DeleteAccountDialog(
                     )
                 },
                 confirmButton = {
-                    TextButton(onClick = onConfirm) { Text(stringResource(R.string.acct_delete_confirm)) }
+                    TextButton(onClick = singleConfirm) { Text(stringResource(R.string.acct_delete_confirm)) }
                 },
                 dismissButton = {
                     TextButton(onClick = onDismiss) { Text(stringResource(R.string.acct_cancel)) }
@@ -61,7 +63,7 @@ fun DeleteAccountDialog(
                 title = { Text(stringResource(R.string.acct_delete_confirm_title)) },
                 text = { Text(stringResource(R.string.acct_delete_simple_message)) },
                 confirmButton = {
-                    TextButton(onClick = onConfirm) { Text(stringResource(R.string.acct_delete_confirm)) }
+                    TextButton(onClick = singleConfirm) { Text(stringResource(R.string.acct_delete_confirm)) }
                 },
                 dismissButton = {
                     TextButton(onClick = onDismiss) { Text(stringResource(R.string.acct_cancel)) }

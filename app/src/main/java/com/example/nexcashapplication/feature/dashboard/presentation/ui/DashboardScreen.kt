@@ -31,10 +31,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.nexcashapplication.R
 import com.example.nexcashapplication.core.component.FormField
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.core.navigations.Route
 import com.example.nexcashapplication.feature.dashboard.presentation.event.DashboardEvent
@@ -59,11 +61,21 @@ fun DashboardScreen(
                 DashboardEffect.NavigateToBudgetDetail ->
                     navController.navigate(Route.BudgetRoute.EditMultiple)
 
-                is DashboardEffect.NavigateToTransactionDetail ->
+                is DashboardEffect.NavigateToTransactionDetail -> {
                     navController.navigate(Route.TransactionRoute.Detail(effect.transactionId))
 
-                DashboardEffect.NavigateToAllTransactions ->
-                    navController.navigate(Route.TransactionRoute.Main)
+                }
+
+                DashboardEffect.NavigateToAllTransactions -> {
+                    navController.navigate(Route.TransactionRoute.Main) {
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        restoreState = true
+                        launchSingleTop = true
+                    }
+                }
+
 
                 DashboardEffect.NavigateToAddTransaction ->
                     navController.navigate(Route.TransactionRoute.AddEdit())
@@ -113,10 +125,11 @@ fun DashboardContent(
 
     Scaffold(
         floatingActionButton = {
+            val onAddClick = rememberSingleClick { onEvent(DashboardEvent.OnAddTransactionClick) }
             FloatingActionButton(
                 containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onPrimary,
-                onClick = { onEvent(DashboardEvent.OnAddTransactionClick) }
+                onClick = onAddClick
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,

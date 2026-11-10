@@ -14,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import com.example.nexcashapplication.core.i18n.asString
 import com.example.nexcashapplication.feature.transaction.presentation.detail.state.DeleteTransactionDialogUiState
 
@@ -23,6 +24,7 @@ fun DeleteTransactionDialog(
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
+    val singleConfirm = rememberSingleClick(onClick = onConfirm)
     val balanceEffectText = deleteDialogUiState.balanceEffectText.asString()
     val typeLabel = stringResource(deleteDialogUiState.typeLabelRes)
 
@@ -45,7 +47,7 @@ fun DeleteTransactionDialog(
         },
         confirmButton = {
             TextButton(
-                onClick = onConfirm,
+                onClick = singleConfirm,
                 colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error)
             ) { Text(stringResource(R.string.tx_delete)) }
         },

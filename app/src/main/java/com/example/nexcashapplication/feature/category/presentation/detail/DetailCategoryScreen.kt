@@ -50,6 +50,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import com.example.nexcashapplication.core.component.AppSnackbarHost
+import com.example.nexcashapplication.core.extension.rememberSingleClick
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -387,9 +388,10 @@ fun DetailCategoryContent(
         },
         floatingActionButton = {
             if (state.category?.parentId == null) {
+                val onAddClick = rememberSingleClick { onEvent(DetailCategoryEvent.OnAddSubCategoryClick) }
                 ExtendedFloatingActionButton(
                     shape = CircleShape,
-                    onClick = { onEvent(DetailCategoryEvent.OnAddSubCategoryClick) },
+                    onClick = onAddClick,
                     containerColor = MaterialTheme.colorScheme.primary,
                     icon = {
                         Icon(
