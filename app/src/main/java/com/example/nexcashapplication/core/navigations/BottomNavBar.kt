@@ -27,9 +27,6 @@ fun BottomNavBar(
     modifier: Modifier = Modifier,
     navController: NavController,
 ) {
-//    var selectedNavigationIndex by rememberSaveable {
-//        mutableStateOf(0)
-//    }
 
     BottomAppBar(
         modifier = modifier.shadow(

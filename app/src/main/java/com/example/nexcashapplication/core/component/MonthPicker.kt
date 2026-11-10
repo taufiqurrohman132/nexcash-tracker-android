@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -40,7 +41,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.nexcashapplication.R
+import com.example.nexcashapplication.ui.theme.NexCashApplicationTheme
 import java.time.format.TextStyle
 import java.util.Locale
 import androidx.compose.ui.platform.LocalLocale
@@ -79,7 +82,7 @@ fun MonthPicker(
                 }
             },
             containerColor = Color.White,
-            shape = RoundedCornerShape(10.dp),
+            shape = RoundedCornerShape(20.dp),
             title = {
                 Text(
                     text = stringResource(R.string.core_month_picker_title),
@@ -89,6 +92,8 @@ fun MonthPicker(
             },
             text = {
                 Column {
+
+                    // tahun
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
@@ -128,6 +133,7 @@ fun MonthPicker(
                         )
                     }
 
+                    // bulan
                     Card(
                         modifier = Modifier
                                 .padding(top = 30.dp)
@@ -137,6 +143,8 @@ fun MonthPicker(
                     ) {
                         FlowRow(
                             modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center,
+                            maxItemsInEachRow = 4,
                         ) {
                             months.forEach { item ->
                                 Box(
@@ -180,3 +188,20 @@ fun MonthPicker(
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+private fun MonthPickerPreview() {
+    NexCashApplicationTheme {
+        Box(modifier = Modifier.fillMaxSize()) {
+            MonthPicker(
+                visible = true,
+                currentMonth = 10,
+                currentYear = 2026,
+                confirmButtonCLicked = { _, _ -> },
+                cancelClicked = {},
+            )
+        }
+    }
+}
+
